@@ -1,4 +1,4 @@
-// (c) 2019-2021, Lux Partners Limited.
+// (c) 2019-2025, Lux Industries Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
