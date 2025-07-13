@@ -173,7 +173,13 @@ func (b *backend) GetBlockSignature(blockID ids.ID) ([bls.SignatureLen]byte, err
 	if err != nil {
 		return [bls.SignatureLen]byte{}, fmt.Errorf("failed to get block %s: %w", blockID, err)
 	}
-	if block.Status() != choices.Accepted {
+	
+	// Type assert to check if block has Status method
+	blockWithStatus, ok := block.(interface{ Status() choices.Status })
+	if !ok {
+		return [bls.SignatureLen]byte{}, fmt.Errorf("block %s does not implement Status() method", blockID)
+	}
+	if blockWithStatus.Status() != choices.Accepted {
 		return [bls.SignatureLen]byte{}, fmt.Errorf("block %s was not accepted", blockID)
 	}
 
