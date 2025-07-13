@@ -10,9 +10,9 @@ import (
 	"github.com/luxfi/coreth/core"
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/rpc"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/common/hexutil"
+	"github.com/ava-labs/libevm/rlp"
 )
 
 // GetChainConfig returns the chain config.

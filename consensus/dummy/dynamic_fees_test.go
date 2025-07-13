@@ -10,8 +10,8 @@ import (
 
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/params"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common/math"
+	"github.com/ava-labs/libevm/log"
 	"github.com/stretchr/testify/assert"
 )
 

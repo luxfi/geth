@@ -15,7 +15,7 @@ import (
 
 	snow "github.com/luxfi/node/snow"
 	precompileconfig "github.com/luxfi/coreth/precompile/precompileconfig"
-	common "github.com/ethereum/go-ethereum/common"
+	common "github.com/ava-labs/libevm/common"
 	gomock "go.uber.org/mock/gomock"
 )
 

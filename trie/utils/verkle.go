@@ -22,7 +22,7 @@ import (
 
 	"github.com/luxfi/coreth/metrics"
 	"github.com/crate-crypto/go-ipa/bandersnatch/fr"
-	"github.com/ethereum/go-ethereum/common/lru"
+	"github.com/ava-labs/libevm/common/lru"
 	"github.com/gballet/go-verkle"
 	"github.com/holiman/uint256"
 )

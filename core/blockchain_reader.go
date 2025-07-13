@@ -35,8 +35,8 @@ import (
 	"github.com/luxfi/coreth/core/vm"
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/trie"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/event"
 )
 
 // CurrentHeader retrieves the current head header of the canonical chain. The

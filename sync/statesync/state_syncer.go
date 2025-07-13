@@ -11,8 +11,8 @@ import (
 	"github.com/luxfi/coreth/core/state/snapshot"
 	syncclient "github.com/luxfi/coreth/sync/client"
 	"github.com/luxfi/coreth/trie"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/ethdb"
 	"golang.org/x/sync/errgroup"
 )
 

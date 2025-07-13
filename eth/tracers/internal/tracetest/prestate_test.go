@@ -40,7 +40,7 @@ import (
 	"github.com/luxfi/coreth/core/vm"
 	"github.com/luxfi/coreth/eth/tracers"
 	"github.com/luxfi/coreth/tests"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 // prestateTrace is the result of a prestateTrace run.

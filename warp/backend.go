@@ -16,8 +16,8 @@ import (
 	"github.com/luxfi/node/utils/crypto/bls"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ava-labs/libevm/log"
 )
 
 var (

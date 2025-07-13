@@ -18,9 +18,9 @@ import (
 	"github.com/luxfi/coreth/plugin/evm/message"
 	"github.com/luxfi/coreth/sync/handlers/stats"
 	"github.com/luxfi/coreth/trie"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/rlp"
 	"github.com/stretchr/testify/assert"
 )
 

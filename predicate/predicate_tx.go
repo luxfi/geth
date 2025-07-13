@@ -8,7 +8,7 @@ import (
 
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/utils"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 // NewPredicateTx returns a transaction with the predicateAddress/predicateBytes tuple

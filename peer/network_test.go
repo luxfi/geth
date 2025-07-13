@@ -16,7 +16,7 @@ import (
 	"github.com/luxfi/node/snow/engine/common"
 	"github.com/luxfi/node/utils/logging"
 	"github.com/luxfi/node/utils/set"
-	ethcommon "github.com/ethereum/go-ethereum/common"
+	ethcommon "github.com/ava-labs/libevm/common"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/stretchr/testify/assert"

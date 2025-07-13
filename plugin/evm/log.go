@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/luxfi/coreth/log"
-	gethlog "github.com/ethereum/go-ethereum/log"
+	gethlog "github.com/ava-labs/libevm/log"
 	"golang.org/x/exp/slog"
 )
 

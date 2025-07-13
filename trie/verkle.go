@@ -25,8 +25,8 @@ import (
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/trie/trienode"
 	"github.com/luxfi/coreth/trie/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/ethdb"
 	"github.com/gballet/go-verkle"
 	"github.com/holiman/uint256"
 )

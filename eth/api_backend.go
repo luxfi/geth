@@ -45,9 +45,9 @@ import (
 	"github.com/luxfi/coreth/eth/tracers"
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/rpc"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ava-labs/libevm/event"
 )
 
 var ErrUnfinalizedData = errors.New("cannot query unfinalized data")

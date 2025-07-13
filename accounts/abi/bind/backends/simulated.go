@@ -50,12 +50,12 @@ import (
 	"github.com/luxfi/coreth/interfaces"
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/rpc"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/common/hexutil"
+	"github.com/ava-labs/libevm/common/math"
+	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ava-labs/libevm/event"
+	"github.com/ava-labs/libevm/log"
 )
 
 // Verify that SimulatedBackend implements required interfaces

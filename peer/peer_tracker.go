@@ -13,7 +13,7 @@ import (
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/version"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/log"
 
 	"github.com/luxfi/coreth/metrics"
 )

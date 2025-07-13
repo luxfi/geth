@@ -33,9 +33,9 @@ import (
 	"github.com/luxfi/coreth/core/rawdb"
 	"github.com/luxfi/coreth/core/state"
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/event"
 )
 
 func pricedValuedTransaction(nonce uint64, value int64, gaslimit uint64, gasprice *big.Int, key *ecdsa.PrivateKey) *types.Transaction {

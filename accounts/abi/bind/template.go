@@ -105,8 +105,8 @@ import (
 	"github.com/luxfi/coreth/accounts/abi/bind"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/interfaces"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/event"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

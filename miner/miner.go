@@ -35,8 +35,8 @@ import (
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/precompile/precompileconfig"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/event"
 )
 
 // Backend wraps all methods required for mining.

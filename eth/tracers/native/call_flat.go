@@ -36,8 +36,8 @@ import (
 	"github.com/luxfi/coreth/core/vm"
 	"github.com/luxfi/coreth/eth/tracers"
 	"github.com/luxfi/coreth/vmerrs"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/common/hexutil"
 )
 
 //go:generate go run github.com/fjl/gencodec -type flatCallAction -field-override flatCallActionMarshaling -out gen_flatcallaction_json.go

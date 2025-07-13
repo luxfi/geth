@@ -5,7 +5,7 @@ import (
 
 	"github.com/luxfi/coreth/core/txpool"
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 type TransactionsByPriceAndNonce = transactionsByPriceAndNonce

@@ -23,9 +23,9 @@ import (
 	"github.com/luxfi/coreth/trie/triedb/pathdb"
 	"github.com/luxfi/coreth/trie/trienode"
 	"github.com/luxfi/coreth/trie/triestate"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ava-labs/libevm/log"
 )
 
 // Config defines all necessary options for database.

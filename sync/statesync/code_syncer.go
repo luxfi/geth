@@ -14,8 +14,8 @@ import (
 	"github.com/luxfi/coreth/core/rawdb"
 	"github.com/luxfi/coreth/plugin/evm/message"
 	statesyncclient "github.com/luxfi/coreth/sync/client"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/ethdb"
 )
 
 const (

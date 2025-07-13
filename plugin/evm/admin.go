@@ -9,7 +9,7 @@ import (
 
 	"github.com/luxfi/node/api"
 	"github.com/luxfi/node/utils/profiler"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/log"
 )
 
 // Admin is the API service for admin API calls

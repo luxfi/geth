@@ -21,7 +21,7 @@ import (
 
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/core/vm"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 // accessList is an accumulator for the set of accounts and storage slots an EVM

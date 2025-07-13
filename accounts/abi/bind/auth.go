@@ -37,9 +37,9 @@ import (
 	"github.com/luxfi/coreth/accounts/external"
 	"github.com/luxfi/coreth/accounts/keystore"
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/log"
 )
 
 // ErrNoChainID is returned whenever the user failed to specify a chain id.

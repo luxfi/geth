@@ -9,7 +9,7 @@ import (
 
 	"github.com/luxfi/coreth/precompile/contract"
 	"github.com/luxfi/coreth/vmerrs"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 	"github.com/holiman/uint256"
 )
 

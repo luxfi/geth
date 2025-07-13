@@ -32,8 +32,8 @@ import (
 
 	"github.com/luxfi/coreth/core/txpool"
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/common/math"
 )
 
 // txWithMinerFee wraps a transaction with its gas price or effective miner gasTipCap

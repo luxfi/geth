@@ -33,7 +33,7 @@ import (
 	"github.com/luxfi/coreth/core/state"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/params"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 // ChainHeaderReader defines a small collection of methods needed to access the local

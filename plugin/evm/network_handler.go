@@ -15,7 +15,7 @@ import (
 	"github.com/luxfi/coreth/trie"
 	"github.com/luxfi/coreth/warp"
 	warpHandlers "github.com/luxfi/coreth/warp/handlers"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/ethdb"
 )
 
 var _ message.RequestHandler = &networkHandler{}

@@ -20,7 +20,7 @@ import (
 	"github.com/luxfi/node/utils/logging"
 	"github.com/luxfi/node/utils/wrappers"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 const testCommitInterval = 100

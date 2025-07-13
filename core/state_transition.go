@@ -37,8 +37,8 @@ import (
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/utils"
 	"github.com/luxfi/coreth/vmerrs"
-	"github.com/ethereum/go-ethereum/common"
-	cmath "github.com/ethereum/go-ethereum/common/math"
+	"github.com/ava-labs/libevm/common"
+	cmath "github.com/ava-labs/libevm/common/math"
 )
 
 // ExecutionResult includes all output after executing given evm

@@ -10,7 +10,7 @@ import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/trie/trienode"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/log"
 )
 
 var (

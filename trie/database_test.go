@@ -30,7 +30,7 @@ import (
 	"github.com/luxfi/coreth/core/rawdb"
 	"github.com/luxfi/coreth/trie/triedb/hashdb"
 	"github.com/luxfi/coreth/trie/triedb/pathdb"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/ethdb"
 )
 
 // newTestDatabase initializes the trie database with specified scheme.

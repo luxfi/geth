@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/node/utils/crypto/bls"
 	"github.com/luxfi/coreth/plugin/evm/message"
 	"github.com/luxfi/coreth/warp"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/log"
 )
 
 // SignatureRequestHandler serves warp signature requests. It is a peer.RequestHandler for message.MessageSignatureRequest.

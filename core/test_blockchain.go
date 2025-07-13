@@ -15,9 +15,9 @@ import (
 	"github.com/luxfi/coreth/core/state"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/params"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/ethdb"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -20,9 +20,9 @@ import (
 	"github.com/luxfi/coreth/trie"
 	"github.com/luxfi/coreth/trie/triedb/hashdb"
 	"github.com/luxfi/coreth/trie/trienode"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ava-labs/libevm/log"
 )
 
 const (

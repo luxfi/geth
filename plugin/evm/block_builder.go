@@ -14,7 +14,7 @@ import (
 
 	"github.com/luxfi/node/snow"
 	commonEng "github.com/luxfi/node/snow/engine/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/log"
 )
 
 const (

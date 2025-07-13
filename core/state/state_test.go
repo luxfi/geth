@@ -35,9 +35,9 @@ import (
 	"github.com/luxfi/coreth/core/rawdb"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/trie"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/ethdb"
 )
 
 type stateEnv struct {

@@ -43,8 +43,8 @@ import (
 	"github.com/luxfi/coreth/trie/triedb/pathdb"
 	"github.com/luxfi/coreth/utils"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/ethdb"
 	"github.com/stretchr/testify/require"
 )
 

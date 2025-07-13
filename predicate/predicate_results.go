@@ -11,7 +11,7 @@ import (
 	"github.com/luxfi/node/codec/linearcodec"
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/utils/wrappers"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 const (

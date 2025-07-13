@@ -32,7 +32,7 @@ import (
 	"github.com/luxfi/coreth/accounts"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/interfaces"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ava-labs/libevm/crypto"
 )
 
 // keystoreWallet implements the accounts.Wallet interface for the original

@@ -9,7 +9,7 @@ import (
 
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/coreth/rpc"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ava-labs/libevm/common/hexutil"
 )
 
 var _ Client = (*client)(nil)

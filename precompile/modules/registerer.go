@@ -9,7 +9,7 @@ import (
 
 	"github.com/luxfi/coreth/constants"
 	"github.com/luxfi/coreth/utils"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 var (

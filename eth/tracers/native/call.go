@@ -36,9 +36,9 @@ import (
 	"github.com/luxfi/coreth/core/vm"
 	"github.com/luxfi/coreth/eth/tracers"
 	"github.com/luxfi/coreth/vmerrs"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/common/hexutil"
+	"github.com/ava-labs/libevm/log"
 )
 
 //go:generate go run github.com/fjl/gencodec -type callFrame -field-override callFrameMarshaling -out gen_callframe_json.go
@@ -52,7 +52,7 @@ type callLog struct {
 	Topics  []common.Hash  `json:"topics"`
 	Data    hexutil.Bytes  `json:"data"`
 	// Position of the log relative to subcalls within the same trace
-	// See https://github.com/ethereum/go-ethereum/pull/28389 for details
+	// See https://github.com/ava-labs/libevm/pull/28389 for details
 	Position hexutil.Uint `json:"position"`
 }
 

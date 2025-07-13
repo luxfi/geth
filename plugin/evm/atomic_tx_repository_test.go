@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/node/database/prefixdb"
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/utils"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/utils/set"

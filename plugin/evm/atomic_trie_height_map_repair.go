@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/trie/trienode"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/log"
 )
 
 const (

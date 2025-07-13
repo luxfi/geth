@@ -12,7 +12,7 @@ import (
 
 	"golang.org/x/sync/semaphore"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/log"
 
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"

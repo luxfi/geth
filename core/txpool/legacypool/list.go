@@ -36,7 +36,7 @@ import (
 	"time"
 
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 // nonceHeap is a heap.Interface implementation over 64bit unsigned integers for

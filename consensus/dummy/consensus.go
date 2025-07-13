@@ -17,7 +17,7 @@ import (
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/trie"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 var (

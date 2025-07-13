@@ -18,7 +18,7 @@ import (
 	"github.com/luxfi/node/vms/components/lux"
 	"github.com/luxfi/node/vms/secp256k1fx"
 	"github.com/luxfi/coreth/params"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 // createExportTxOptions adds funds to shared memory, imports them, and returns a list of export transactions

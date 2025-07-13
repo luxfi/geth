@@ -34,8 +34,8 @@ import (
 
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/trie/trienode"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/log"
 )
 
 // Trie is a Merkle Patricia Trie. Use New to create a trie that sits on

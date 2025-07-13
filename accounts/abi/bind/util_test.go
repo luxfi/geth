@@ -37,8 +37,8 @@ import (
 	"github.com/luxfi/coreth/accounts/abi/bind/backends"
 	"github.com/luxfi/coreth/core"
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
 )
 
 var testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")

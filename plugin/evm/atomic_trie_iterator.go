@@ -13,7 +13,7 @@ import (
 	"github.com/luxfi/node/utils/wrappers"
 
 	"github.com/luxfi/coreth/trie"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 const atomicTrieKeyLen = wrappers.LongLen + common.HashLength

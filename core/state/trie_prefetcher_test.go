@@ -33,7 +33,7 @@ import (
 
 	"github.com/luxfi/coreth/core/rawdb"
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 const maxConcurrency = 4

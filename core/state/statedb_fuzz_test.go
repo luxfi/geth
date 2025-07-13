@@ -45,9 +45,9 @@ import (
 	"github.com/luxfi/coreth/trie"
 	"github.com/luxfi/coreth/trie/triedb/pathdb"
 	"github.com/luxfi/coreth/trie/triestate"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/rlp"
 )
 
 // A stateTest checks that the state changes are correctly captured. Instances

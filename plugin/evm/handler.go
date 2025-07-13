@@ -6,8 +6,8 @@ package evm
 import (
 	"github.com/luxfi/node/ids"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ava-labs/libevm/log"
+	"github.com/ava-labs/libevm/rlp"
 
 	"github.com/luxfi/coreth/core/txpool"
 	"github.com/luxfi/coreth/core/types"

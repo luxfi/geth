@@ -34,9 +34,9 @@ import (
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/core/vm"
 	"github.com/luxfi/coreth/predicate"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	//"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/log"
+	//"github.com/ava-labs/libevm/log"
 )
 
 // ChainContext supports retrieving headers and consensus parameters from the

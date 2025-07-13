@@ -19,16 +19,16 @@ import (
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/version"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/log"
 
 	"github.com/luxfi/coreth/core/rawdb"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/peer"
 	"github.com/luxfi/coreth/plugin/evm/message"
 	"github.com/luxfi/coreth/trie"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ava-labs/libevm/ethdb"
 )
 
 const (

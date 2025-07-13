@@ -32,8 +32,8 @@ import (
 
 	"github.com/luxfi/coreth/core"
 	"github.com/luxfi/coreth/core/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/event"
 )
 
 // LazyTransaction contains a small subset of the transaction properties that is

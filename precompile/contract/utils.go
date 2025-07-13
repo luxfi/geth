@@ -10,7 +10,7 @@ import (
 
 	"github.com/luxfi/coreth/accounts/abi"
 	"github.com/luxfi/coreth/vmerrs"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ava-labs/libevm/crypto"
 )
 
 // Gas costs for stateful precompiles

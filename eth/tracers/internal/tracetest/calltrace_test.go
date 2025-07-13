@@ -41,10 +41,10 @@ import (
 	"github.com/luxfi/coreth/eth/tracers"
 	"github.com/luxfi/coreth/params"
 	"github.com/luxfi/coreth/tests"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/common/hexutil"
+	"github.com/ava-labs/libevm/common/math"
+	"github.com/ava-labs/libevm/rlp"
 )
 
 type callContext struct {

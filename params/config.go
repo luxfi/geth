@@ -37,7 +37,7 @@ import (
 	"github.com/luxfi/coreth/precompile/modules"
 	"github.com/luxfi/coreth/precompile/precompileconfig"
 	"github.com/luxfi/coreth/utils"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 const maxJSONLen = 64 * 1024 * 1024 // 64MB

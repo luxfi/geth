@@ -47,9 +47,9 @@ import (
 	"github.com/luxfi/coreth/trie/triedb/hashdb"
 	"github.com/luxfi/coreth/trie/triedb/pathdb"
 	"github.com/luxfi/coreth/trie/trienode"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/crypto"
+	"github.com/ava-labs/libevm/rlp"
 	"github.com/holiman/uint256"
 )
 
@@ -170,7 +170,7 @@ func TestIntermediateLeaks(t *testing.T) {
 
 // TestCopy tests that copying a StateDB object indeed makes the original and
 // the copy independent of each other. This test is a regression test against
-// https://github.com/ethereum/go-ethereum/pull/15549.
+// https://github.com/ava-labs/libevm/pull/15549.
 func TestCopy(t *testing.T) {
 	// Create a random state test to copy and modify "independently"
 	orig, _ := New(types.EmptyRootHash, NewDatabase(rawdb.NewMemoryDatabase()), nil)
@@ -558,7 +558,7 @@ func TestTouchDelete(t *testing.T) {
 }
 
 // TestCopyOfCopy tests that modified objects are carried over to the copy, and the copy of the copy.
-// See https://github.com/ethereum/go-ethereum/pull/15225#issuecomment-380191512
+// See https://github.com/ava-labs/libevm/pull/15225#issuecomment-380191512
 func TestCopyOfCopy(t *testing.T) {
 	state, _ := New(types.EmptyRootHash, NewDatabase(rawdb.NewMemoryDatabase()), nil)
 	addr := common.HexToAddress("aaaa")
@@ -575,7 +575,7 @@ func TestCopyOfCopy(t *testing.T) {
 // Tests a regression where committing a copy lost some internal meta information,
 // leading to corrupted subsequent copies.
 //
-// See https://github.com/ethereum/go-ethereum/issues/20106.
+// See https://github.com/ava-labs/libevm/issues/20106.
 func TestCopyCommitCopy(t *testing.T) {
 	tdb := NewDatabase(rawdb.NewMemoryDatabase())
 	state, _ := New(types.EmptyRootHash, tdb, nil)
@@ -649,7 +649,7 @@ func TestCopyCommitCopy(t *testing.T) {
 // Tests a regression where committing a copy lost some internal meta information,
 // leading to corrupted subsequent copies.
 //
-// See https://github.com/ethereum/go-ethereum/issues/20106.
+// See https://github.com/ava-labs/libevm/issues/20106.
 func TestCopyCopyCommitCopy(t *testing.T) {
 	state, _ := New(types.EmptyRootHash, NewDatabase(rawdb.NewMemoryDatabase()), nil)
 

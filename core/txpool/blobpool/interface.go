@@ -30,7 +30,7 @@ import (
 	"github.com/luxfi/coreth/core/state"
 	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/params"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ava-labs/libevm/common"
 )
 
 // BlockChain defines the minimal set of methods needed to back a blob pool with

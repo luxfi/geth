@@ -43,8 +43,8 @@ import (
 	"github.com/luxfi/coreth/eth/tracers"
 	"github.com/luxfi/coreth/eth/tracers/logger"
 	"github.com/luxfi/coreth/params"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/asm"
+	"github.com/ava-labs/libevm/common"
+	"github.com/ava-labs/libevm/core/asm"
 
 	// force-load js tracers to trigger registration
 	_ "github.com/luxfi/coreth/eth/tracers/js"
@@ -609,7 +609,7 @@ func TestEip2929Cases(t *testing.T) {
 
 // TestColdAccountAccessCost test that the cold account access cost is reported
 // correctly
-// see: https://github.com/ethereum/go-ethereum/issues/22649
+// see: https://github.com/ava-labs/libevm/issues/22649
 func TestColdAccountAccessCost(t *testing.T) {
 	for i, tc := range []struct {
 		code []byte
