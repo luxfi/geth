@@ -56,9 +56,14 @@ func (a *atomicTrie) repairHeightMap(from, to uint64) error {
 		logEach = 90 * time.Second
 	)
 	commitRepairedHeight := func(commitHeight uint64) error {
-		root, nodes := hasher.Commit(false)
+		root, nodes, err := hasher.Commit(false)
+		if err != nil {
+			return err
+		}
 		if nodes != nil {
-			err := a.trieDB.Update(root, types.EmptyRootHash, trienode.NewWithNodeSet(nodes))
+			mergedNodes := trienode.NewMergedNodeSet()
+			mergedNodes.Merge(nodes)
+			err := a.trieDB.Update(types.EmptyRootHash, root, commitHeight, mergedNodes, nil)
 			if err != nil {
 				return err
 			}

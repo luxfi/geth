@@ -1135,10 +1135,9 @@ func (vm *VM) initBlockBuilding() error {
 	}
 
 	// NOTE: gossip network must be initialized first otherwise ETH tx gossip will not work.
-	gossipStats := NewGossipStats()
 	vm.builder = vm.NewBlockBuilder(vm.toEngine)
 	vm.builder.awaitSubmittedTxs()
-	vm.Network.SetGossipHandler(NewGossipHandler(vm, gossipStats))
+	vm.Network.SetGossipHandler(NewGossipHandler(vm, vm.ctx.Log))
 
 	if vm.ethTxGossipHandler == nil {
 		vm.ethTxGossipHandler = newTxGossipHandler[*GossipEthTx](
@@ -1531,7 +1530,12 @@ func (vm *VM) conflicts(inputs set.Set[ids.ID], ancestor *Block) error {
 			return errRejectedParent
 		}
 
-		if blkStatus := nextAncestorIntf.Status(); blkStatus == choices.Unknown || blkStatus == choices.Rejected {
+		// Type assert to check if block has Status method
+		blockWithStatus, ok := nextAncestorIntf.(interface{ Status() choices.Status })
+		if !ok {
+			return fmt.Errorf("block %s does not implement Status() method", nextAncestorIntf.ID())
+		}
+		if blkStatus := blockWithStatus.Status(); blkStatus == choices.Unknown || blkStatus == choices.Rejected {
 			return errRejectedParent
 		}
 		nextAncestor, ok := nextAncestorIntf.(*Block)
@@ -1663,7 +1667,12 @@ func (vm *VM) verifyTxs(txs []*Tx, parentHash common.Hash, baseFee *big.Int, hei
 	if err != nil {
 		return errRejectedParent
 	}
-	if blkStatus := ancestorInf.Status(); blkStatus == choices.Unknown || blkStatus == choices.Rejected {
+	// Type assert to check if block has Status method
+	blockWithStatus, ok := ancestorInf.(interface{ Status() choices.Status })
+	if !ok {
+		return fmt.Errorf("block %s does not implement Status() method", ancestorInf.ID())
+	}
+	if blkStatus := blockWithStatus.Status(); blkStatus == choices.Unknown || blkStatus == choices.Rejected {
 		return errRejectedParent
 	}
 	ancestor, ok := ancestorInf.(*Block)

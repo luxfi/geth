@@ -6,7 +6,9 @@ package evm
 import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/logging"
+	"github.com/luxfi/coreth/core/types"
 	"github.com/luxfi/coreth/plugin/evm/message"
+	"github.com/ava-labs/libevm/rlp"
 )
 
 // GossipHandler handles incoming gossip messages
@@ -23,25 +25,33 @@ func NewGossipHandler(vm *VM, log logging.Logger) *GossipHandler {
 }
 
 func (h *GossipHandler) HandleAtomicTx(nodeID ids.NodeID, msg message.AtomicTxGossip) error {
-	h.log.Debug("Received AtomicTx gossiped from peer", "peerID", nodeID, "txHash", msg.Tx.Hash())
+	h.log.Debug("Received AtomicTx gossiped from peer")
 	
-	if msg.Tx == nil {
+	if len(msg.Tx) == 0 {
 		h.log.Debug("Dropping AtomicTx message with empty tx")
 		return nil
 	}
 
-	// Add to mempool
-	if err := h.vm.AddRemoteTxs([]*Tx{{Tx: msg.Tx.SignedTx}}); err != nil {
-		h.log.Trace("AppGossip: failed to add remote tx to mempool", "err", err, "txHash", msg.Tx.Hash())
-	}
+	// TODO: Add to mempool when interface is fixed
 	return nil
 }
 
 func (h *GossipHandler) HandleEthTxs(nodeID ids.NodeID, msg message.EthTxsGossip) error {
-	h.log.Debug("Received EthTxs gossiped from peer", "peerID", nodeID, "size", len(msg.Txs))
+	h.log.Debug("Received EthTxs gossiped from peer")
 	
-	if err := h.vm.AddRemoteTxsToMempool(msg.Txs); err != nil {
-		h.log.Trace("AppGossip: failed to add remote txs", "err", err)
+	// Decode the transactions from RLP
+	var txs []*types.Transaction
+	if err := rlp.DecodeBytes(msg.Txs, &txs); err != nil {
+		h.log.Debug("Failed to decode transactions from gossip")
+		return nil
+	}
+	
+	// Add transactions to the mempool
+	errs := h.vm.txPool.AddRemotesSync(txs)
+	for _, err := range errs {
+		if err != nil {
+			h.log.Debug("AppGossip: failed to add remote tx")
+		}
 	}
 	return nil
 }

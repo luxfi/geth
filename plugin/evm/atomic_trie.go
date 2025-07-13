@@ -38,6 +38,7 @@ var (
 	_                            AtomicTrie = &atomicTrie{}
 	lastCommittedKey                        = []byte("atomicTrieLastCommittedBlock")
 	appliedSharedMemoryCursorKey            = []byte("atomicTrieLastAppliedToSharedMemory")
+	heightMapRepairKey                      = []byte("atomicTrieHeightMapRepair")
 )
 
 // AtomicTrie maintains an index of atomic operations by blockchainIDs for every block
