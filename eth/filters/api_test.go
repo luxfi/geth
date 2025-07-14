@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/luxfi/coreth/rpc"
+	"github.com/luxfi/geth/rpc"
 	"github.com/ava-labs/libevm/common"
 )
 

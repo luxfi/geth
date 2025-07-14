@@ -27,7 +27,7 @@
 package vm
 
 import (
-	"github.com/luxfi/coreth/vmerrs"
+	"github.com/luxfi/geth/vmerrs"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/math"
 	"github.com/ava-labs/libevm/crypto"

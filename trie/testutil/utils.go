@@ -31,7 +31,7 @@ import (
 	"encoding/binary"
 	mrand "math/rand"
 
-	"github.com/luxfi/coreth/trie/trienode"
+	"github.com/luxfi/geth/trie/trienode"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 )

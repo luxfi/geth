@@ -38,7 +38,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/coreth/metrics"
+	"github.com/luxfi/geth/metrics"
 	"github.com/ava-labs/libevm/log"
 	"golang.org/x/time/rate"
 )

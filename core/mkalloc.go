@@ -42,7 +42,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/luxfi/coreth/core"
+	"github.com/luxfi/geth/core"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/rlp"
 	"golang.org/x/exp/slices"

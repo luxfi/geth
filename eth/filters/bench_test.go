@@ -32,9 +32,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/coreth/core/bloombits"
-	"github.com/luxfi/coreth/core/rawdb"
-	"github.com/luxfi/coreth/core/types"
+	"github.com/luxfi/geth/core/bloombits"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/core/types"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/bitutil"
 	"github.com/ava-labs/libevm/ethdb"

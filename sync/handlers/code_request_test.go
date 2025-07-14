@@ -8,12 +8,12 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/luxfi/coreth/params"
+	"github.com/luxfi/geth/params"
 
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/coreth/core/rawdb"
-	"github.com/luxfi/coreth/plugin/evm/message"
-	"github.com/luxfi/coreth/sync/handlers/stats"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/ava-labs/libevm/ethdb/memorydb"

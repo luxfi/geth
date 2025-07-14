@@ -27,8 +27,8 @@
 package node
 
 import (
-	"github.com/luxfi/coreth/internal/debug"
-	"github.com/luxfi/coreth/rpc"
+	"github.com/luxfi/geth/internal/debug"
+	"github.com/luxfi/geth/rpc"
 	"github.com/ava-labs/libevm/common/hexutil"
 	"github.com/ava-labs/libevm/crypto"
 )

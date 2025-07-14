@@ -37,8 +37,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/coreth/ethdb"
-	"github.com/luxfi/coreth/metrics"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/metrics"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/log"
 	"github.com/syndtr/goleveldb/leveldb"

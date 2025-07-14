@@ -6,7 +6,7 @@ package predicate
 import (
 	"fmt"
 
-	"github.com/luxfi/coreth/params"
+	"github.com/luxfi/geth/params"
 	"github.com/ava-labs/libevm/common"
 )
 

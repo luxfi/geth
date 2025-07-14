@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/coreth/core/txpool"
-	"github.com/luxfi/coreth/params"
-	"github.com/luxfi/coreth/utils"
+	"github.com/luxfi/geth/core/txpool"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/utils"
 )
 
 type gasPriceUpdater struct {

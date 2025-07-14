@@ -13,7 +13,7 @@ import (
 
 	"github.com/ava-labs/libevm/common"
 
-	"github.com/luxfi/coreth/params"
+	"github.com/luxfi/geth/params"
 
 	"github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/ids"

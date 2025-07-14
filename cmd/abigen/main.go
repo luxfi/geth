@@ -34,9 +34,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/luxfi/coreth/accounts/abi/bind"
-	"github.com/luxfi/coreth/cmd/utils"
-	"github.com/luxfi/coreth/internal/flags"
+	"github.com/luxfi/geth/accounts/abi/bind"
+	"github.com/luxfi/geth/cmd/utils"
+	"github.com/luxfi/geth/internal/flags"
 	"github.com/ava-labs/libevm/common/compiler"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/ava-labs/libevm/log"

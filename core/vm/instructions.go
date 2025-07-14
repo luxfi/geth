@@ -29,8 +29,8 @@ package vm
 import (
 	"errors"
 
-	"github.com/luxfi/coreth/params"
-	"github.com/luxfi/coreth/vmerrs"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/vmerrs"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/holiman/uint256"

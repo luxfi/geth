@@ -30,8 +30,8 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/luxfi/coreth/params"
-	"github.com/luxfi/coreth/vmerrs"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/vmerrs"
 	"github.com/ava-labs/libevm/common"
 	"github.com/holiman/uint256"
 )

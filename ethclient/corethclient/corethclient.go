@@ -33,10 +33,10 @@ import (
 	"runtime"
 	"runtime/debug"
 
-	"github.com/luxfi/coreth/core/types"
-	"github.com/luxfi/coreth/ethclient"
-	"github.com/luxfi/coreth/interfaces"
-	"github.com/luxfi/coreth/rpc"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/ethclient"
+	"github.com/luxfi/geth/interfaces"
+	"github.com/luxfi/geth/rpc"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/hexutil"
 )

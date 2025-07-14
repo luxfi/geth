@@ -15,7 +15,7 @@ import (
 
 	"github.com/ava-labs/libevm/log"
 
-	"github.com/luxfi/coreth/metrics"
+	"github.com/luxfi/geth/metrics"
 )
 
 const (

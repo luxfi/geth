@@ -32,8 +32,8 @@ import (
 	"math/big"
 	"sync/atomic"
 
-	"github.com/luxfi/coreth/core/vm"
-	"github.com/luxfi/coreth/eth/tracers"
+	"github.com/luxfi/geth/core/vm"
+	"github.com/luxfi/geth/eth/tracers"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/hexutil"
 	"github.com/ava-labs/libevm/crypto"

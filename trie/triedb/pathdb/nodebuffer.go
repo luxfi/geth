@@ -31,8 +31,8 @@ import (
 	"time"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/luxfi/coreth/core/rawdb"
-	"github.com/luxfi/coreth/trie/trienode"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/trie/trienode"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/ava-labs/libevm/ethdb"

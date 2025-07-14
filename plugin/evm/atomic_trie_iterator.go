@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/wrappers"
 
-	"github.com/luxfi/coreth/trie"
+	"github.com/luxfi/geth/trie"
 	"github.com/ava-labs/libevm/common"
 )
 

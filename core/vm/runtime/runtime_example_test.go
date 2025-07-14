@@ -29,7 +29,7 @@ package runtime_test
 import (
 	"fmt"
 
-	"github.com/luxfi/coreth/core/vm/runtime"
+	"github.com/luxfi/geth/core/vm/runtime"
 	"github.com/ava-labs/libevm/common"
 )
 

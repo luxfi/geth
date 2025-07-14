@@ -32,8 +32,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/luxfi/coreth/internal/blocktest"
-	"github.com/luxfi/coreth/params"
+	"github.com/luxfi/geth/internal/blocktest"
+	"github.com/luxfi/geth/params"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/math"
 	"github.com/ava-labs/libevm/crypto"

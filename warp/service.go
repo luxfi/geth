@@ -11,9 +11,9 @@ import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/luxfi/coreth/peer"
-	"github.com/luxfi/coreth/warp/aggregator"
-	"github.com/luxfi/coreth/warp/validators"
+	"github.com/luxfi/geth/peer"
+	"github.com/luxfi/geth/warp/aggregator"
+	"github.com/luxfi/geth/warp/validators"
 	"github.com/ava-labs/libevm/common/hexutil"
 	"github.com/ava-labs/libevm/log"
 )

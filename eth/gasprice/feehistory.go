@@ -33,8 +33,8 @@ import (
 	"math/big"
 	"slices"
 
-	"github.com/luxfi/coreth/core/types"
-	"github.com/luxfi/coreth/rpc"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/rpc"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/log"
 )

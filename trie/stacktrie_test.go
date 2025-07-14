@@ -32,8 +32,8 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/luxfi/coreth/core/rawdb"
-	"github.com/luxfi/coreth/trie/testutil"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/trie/testutil"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/stretchr/testify/assert"

@@ -32,7 +32,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/coreth/trie/triestate"
+	"github.com/luxfi/geth/trie/triestate"
 	"github.com/ava-labs/libevm/common"
 	"golang.org/x/exp/slices"
 )

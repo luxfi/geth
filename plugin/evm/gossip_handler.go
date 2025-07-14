@@ -6,8 +6,8 @@ package evm
 import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/logging"
-	"github.com/luxfi/coreth/core/types"
-	"github.com/luxfi/coreth/plugin/evm/message"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/ava-labs/libevm/rlp"
 )
 

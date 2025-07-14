@@ -9,8 +9,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/coreth/plugin/evm/message"
-	"github.com/luxfi/coreth/utils"
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/utils"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/log"
 	"golang.org/x/sync/errgroup"

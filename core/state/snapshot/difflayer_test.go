@@ -32,7 +32,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/luxfi/coreth/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/ava-labs/libevm/ethdb/memorydb"

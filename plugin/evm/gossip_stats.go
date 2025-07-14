@@ -3,7 +3,7 @@
 
 package evm
 
-import "github.com/luxfi/coreth/metrics"
+import "github.com/luxfi/geth/metrics"
 
 var _ GossipStats = &gossipStats{}
 

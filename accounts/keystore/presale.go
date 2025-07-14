@@ -35,7 +35,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/coreth/accounts"
+	"github.com/luxfi/geth/accounts"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/pbkdf2"

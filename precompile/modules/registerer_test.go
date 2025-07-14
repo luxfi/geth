@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/coreth/constants"
+	"github.com/luxfi/geth/constants"
 	"github.com/ava-labs/libevm/common"
 	"github.com/stretchr/testify/require"
 )

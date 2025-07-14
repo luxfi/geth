@@ -10,9 +10,9 @@ import (
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"
 
-	"github.com/luxfi/coreth/core/rawdb"
-	"github.com/luxfi/coreth/plugin/evm/message"
-	"github.com/luxfi/coreth/sync/handlers/stats"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/ethdb"
 	"github.com/ava-labs/libevm/log"

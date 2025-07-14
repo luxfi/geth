@@ -47,7 +47,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/luxfi/coreth/accounts"
+	"github.com/luxfi/geth/accounts"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/math"
 	"github.com/ava-labs/libevm/crypto"

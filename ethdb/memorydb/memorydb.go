@@ -33,7 +33,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/luxfi/coreth/ethdb"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/ava-labs/libevm/common"
 )
 

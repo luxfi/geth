@@ -7,7 +7,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/coreth/params"
+	"github.com/luxfi/geth/params"
 	"github.com/ava-labs/libevm/common"
 
 	"github.com/luxfi/node/chains/atomic"

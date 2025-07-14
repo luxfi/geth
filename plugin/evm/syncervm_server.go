@@ -10,8 +10,8 @@ import (
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/snow/engine/snowman/block"
 
-	"github.com/luxfi/coreth/core"
-	"github.com/luxfi/coreth/plugin/evm/message"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/log"
 )

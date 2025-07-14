@@ -33,9 +33,9 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/luxfi/coreth/core/types"
-	"github.com/luxfi/coreth/metrics"
-	"github.com/luxfi/coreth/trie/trienode"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/metrics"
+	"github.com/luxfi/geth/trie/trienode"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/ava-labs/libevm/rlp"

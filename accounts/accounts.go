@@ -31,8 +31,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/luxfi/coreth/core/types"
-	"github.com/luxfi/coreth/interfaces"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/interfaces"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/event"
 	"golang.org/x/crypto/sha3"

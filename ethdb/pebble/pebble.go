@@ -41,8 +41,8 @@ import (
 	"github.com/cockroachdb/pebble/bloom"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/log"
-	"github.com/luxfi/coreth/ethdb"
-	"github.com/luxfi/coreth/metrics"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/metrics"
 )
 
 const (

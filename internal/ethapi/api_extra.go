@@ -7,9 +7,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/luxfi/coreth/core"
-	"github.com/luxfi/coreth/params"
-	"github.com/luxfi/coreth/rpc"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/rpc"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/hexutil"
 	"github.com/ava-labs/libevm/rlp"

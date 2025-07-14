@@ -9,9 +9,9 @@ import (
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/luxfi/coreth/precompile/contract"
-	"github.com/luxfi/coreth/predicate"
-	"github.com/luxfi/coreth/vmerrs"
+	"github.com/luxfi/geth/precompile/contract"
+	"github.com/luxfi/geth/predicate"
+	"github.com/luxfi/geth/vmerrs"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/math"
 )

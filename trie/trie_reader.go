@@ -27,8 +27,8 @@
 package trie
 
 import (
-	"github.com/luxfi/coreth/core/types"
-	"github.com/luxfi/coreth/trie/triestate"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/trie/triestate"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/log"
 )

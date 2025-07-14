@@ -10,9 +10,9 @@ import (
 
 	"github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/luxfi/coreth/precompile/precompileconfig"
-	"github.com/luxfi/coreth/predicate"
-	warpValidators "github.com/luxfi/coreth/warp/validators"
+	"github.com/luxfi/geth/precompile/precompileconfig"
+	"github.com/luxfi/geth/predicate"
+	warpValidators "github.com/luxfi/geth/warp/validators"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/math"
 	"github.com/ava-labs/libevm/log"

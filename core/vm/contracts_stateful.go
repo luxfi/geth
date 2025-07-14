@@ -4,7 +4,7 @@
 package vm
 
 import (
-	"github.com/luxfi/coreth/precompile/contract"
+	"github.com/luxfi/geth/precompile/contract"
 	"github.com/ava-labs/libevm/common"
 )
 

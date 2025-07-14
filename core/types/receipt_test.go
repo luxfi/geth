@@ -34,7 +34,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/luxfi/coreth/params"
+	"github.com/luxfi/geth/params"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/rlp"
 	"github.com/holiman/uint256"

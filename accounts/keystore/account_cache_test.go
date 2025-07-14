@@ -36,7 +36,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/coreth/accounts"
+	"github.com/luxfi/geth/accounts"
 	"github.com/cespare/cp"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ava-labs/libevm/common"

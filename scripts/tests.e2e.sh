@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-# Run Lux Node e2e tests from the target version against the current state of coreth.
+# Run Lux Node e2e tests from the target version against the current state of geth.
 
 # e.g.,
 # ./scripts/tests.e2e.sh
@@ -12,8 +12,8 @@ if ! [[ "$0" =~ scripts/tests.e2e.sh ]]; then
   exit 255
 fi
 
-# Coreth root directory
-CORETH_PATH=$(
+# Geth root directory
+GETH_PATH=$(
   cd "$(dirname "${BASH_SOURCE[0]}")"
   cd .. && pwd
 )
@@ -22,11 +22,11 @@ CORETH_PATH=$(
 LUXD_CLONE_PATH="${LUXD_CLONE_PATH:-node}"
 
 # Load the version
-source "$CORETH_PATH"/scripts/versions.sh
+source "$GETH_PATH"/scripts/versions.sh
 
-# Always return to the coreth path on exit
+# Always return to the geth path on exit
 function cleanup {
-  cd "${CORETH_PATH}"
+  cd "${GETH_PATH}"
 }
 trap cleanup EXIT
 
@@ -43,8 +43,8 @@ fi
 # Branch will be reset to $LUX_VERSION if it already exists
 git checkout -B "test-${LUX_VERSION}" "${LUX_VERSION}"
 
-echo "updating coreth dependency to point to ${CORETH_PATH}"
-go mod edit -replace "github.com/luxfi/coreth=${CORETH_PATH}"
+echo "updating geth dependency to point to ${GETH_PATH}"
+go mod edit -replace "github.com/luxfi/geth=${GETH_PATH}"
 go mod tidy
 
 echo "building node"

@@ -29,7 +29,7 @@ package txpool
 import (
 	"sync"
 
-	"github.com/luxfi/coreth/core/state"
+	"github.com/luxfi/geth/core/state"
 	"github.com/ava-labs/libevm/common"
 )
 

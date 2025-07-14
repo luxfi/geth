@@ -3,7 +3,7 @@ package snapshot
 import (
 	"time"
 
-	"github.com/luxfi/coreth/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/ethdb"
 )

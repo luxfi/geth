@@ -9,10 +9,10 @@ set -euo pipefail
 GOPATH="$(go env GOPATH)"
 
 # Set binary location
-binary_path=${CORETH_BINARY_PATH:-"$GOPATH/src/github.com/luxfi/node/build/plugins/evm"}
+binary_path=${GETH_BINARY_PATH:-"$GOPATH/src/github.com/luxfi/node/build/plugins/evm"}
 
 # Avalabs docker hub
-DOCKERHUB_REPO="avaplatform/coreth"
+DOCKERHUB_REPO="luxfi/geth"
 
 # Current branch
 CURRENT_BRANCH=${CURRENT_BRANCH:-$(git describe --tags --exact-match 2>/dev/null || git symbolic-ref -q --short HEAD || git rev-parse --short HEAD)}
@@ -22,7 +22,7 @@ echo "Using branch: ${CURRENT_BRANCH}"
 # Use an abbreviated version of the full commit to tag the image.
 
 # WARNING: this will use the most recent commit even if there are un-committed changes present
-CORETH_COMMIT="$(git --git-dir="$CORETH_PATH/.git" rev-parse HEAD)"
+GETH_COMMIT="$(git --git-dir="$GETH_PATH/.git" rev-parse HEAD)"
 
 # Set the CGO flags to use the portable version of BLST
 #

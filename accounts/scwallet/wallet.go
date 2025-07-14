@@ -43,9 +43,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/coreth/accounts"
-	"github.com/luxfi/coreth/core/types"
-	"github.com/luxfi/coreth/interfaces"
+	"github.com/luxfi/geth/accounts"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/interfaces"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/crypto"
 	"github.com/ava-labs/libevm/log"

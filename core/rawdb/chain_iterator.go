@@ -31,7 +31,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/luxfi/coreth/core/types"
+	"github.com/luxfi/geth/core/types"
 	"github.com/ava-labs/libevm/common"
 	"github.com/ava-labs/libevm/common/prque"
 	"github.com/ava-labs/libevm/ethdb"

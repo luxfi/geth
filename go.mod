@@ -1,4 +1,4 @@
-module github.com/luxfi/coreth
+module github.com/luxfi/geth
 
 go 1.23.10
 
