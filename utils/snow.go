@@ -29,7 +29,7 @@ func TestSnowContext() *snow.Context {
 	if err != nil {
 		panic(err)
 	}
-	pk := bls.PublicKeyFromSecretKey(sk)
+	pk := new(bls.PublicKey).From(sk)
 	networkID := constants.UnitTestID
 	chainID := testChainID
 
