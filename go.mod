@@ -2,6 +2,11 @@ module github.com/luxfi/geth
 
 go 1.23.6
 
+replace (
+	github.com/luxfi/node => /Users/z/work/lux/node
+	github.com/luxfi/evm => /Users/z/work/lux/evm
+)
+
 require (
 	github.com/VictoriaMetrics/fastcache v1.12.1
 	github.com/luxfi/node v1.12.3-name-fortuna.0
