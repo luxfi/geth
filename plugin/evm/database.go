@@ -7,7 +7,7 @@ import (
 	"errors"
 
 	"github.com/luxfi/node/database"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 var (

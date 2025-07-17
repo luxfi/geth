@@ -43,8 +43,8 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/interfaces"
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func TestSimulatedBackend(t *testing.T) {

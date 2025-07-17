@@ -13,7 +13,7 @@ import (
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/rpc"
 
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 var _ CrossChainRequestHandler = &crossChainHandler{}

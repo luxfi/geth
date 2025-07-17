@@ -8,7 +8,7 @@ import (
 	"github.com/luxfi/node/utils/logging"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/plugin/evm/message"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // GossipHandler handles incoming gossip messages

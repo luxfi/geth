@@ -33,7 +33,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/trie/triestate"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 	"golang.org/x/exp/slices"
 )
 

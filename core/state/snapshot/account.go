@@ -31,8 +31,8 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/core/types"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // Account is a modified version of a state.Account, where the root is replaced
