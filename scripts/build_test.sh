@@ -5,13 +5,13 @@ set -o nounset
 set -o pipefail
 
 # Lux root directory
-CORETH_PATH=$(
+GETH_PATH=$(
   cd "$(dirname "${BASH_SOURCE[0]}")"
   cd .. && pwd
 )
 
 # Load the constants
-source "$CORETH_PATH"/scripts/constants.sh
+source "$GETH_PATH"/scripts/constants.sh
 
 # We pass in the arguments to this script directly to enable easily passing parameters such as enabling race detection,
 # parallelism, and test coverage.

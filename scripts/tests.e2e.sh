@@ -13,7 +13,7 @@ if ! [[ "$0" =~ scripts/tests.e2e.sh ]]; then
 fi
 
 # Geth root directory
-CORETH_PATH=$(
+GETH_PATH=$(
   cd "$(dirname "${BASH_SOURCE[0]}")"
   cd .. && pwd
 )
@@ -22,11 +22,11 @@ CORETH_PATH=$(
 LUXD_CLONE_PATH="${LUXD_CLONE_PATH:-node}"
 
 # Load the version
-source "$CORETH_PATH"/scripts/versions.sh
+source "$GETH_PATH"/scripts/versions.sh
 
 # Always return to the geth path on exit
 function cleanup {
-  cd "${CORETH_PATH}"
+  cd "${GETH_PATH}"
 }
 trap cleanup EXIT
 
@@ -43,8 +43,8 @@ fi
 # Branch will be reset to $LUXD_VERSION if it already exists
 git checkout -B "test-${LUXD_VERSION}" "${LUXD_VERSION}"
 
-echo "updating geth dependency to point to ${CORETH_PATH}"
-go mod edit -replace "github.com/luxfi/geth=${CORETH_PATH}"
+echo "updating geth dependency to point to ${GETH_PATH}"
+go mod edit -replace "github.com/luxfi/geth=${GETH_PATH}"
 go mod tidy
 
 echo "building node"

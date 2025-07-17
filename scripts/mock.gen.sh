@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Root directory
-CORETH_PATH=$(
+GETH_PATH=$(
   cd "$(dirname "${BASH_SOURCE[0]}")"
   cd .. && pwd
 )
@@ -23,10 +23,10 @@ if ! command -v go-license &>/dev/null; then
 fi
 
 # Load the versions
-source "$CORETH_PATH"/scripts/versions.sh
+source "$GETH_PATH"/scripts/versions.sh
 
 # Load the constants
-source "$CORETH_PATH"/scripts/constants.sh
+source "$GETH_PATH"/scripts/constants.sh
 
 # tuples of (source interface import path, comma-separated interface names, output file path)
 input="scripts/mocks.mockgen.txt"

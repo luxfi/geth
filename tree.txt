@@ -512,8 +512,8 @@
 │   ├── bloombits.go
 │   └── state_accessor.go
 ├── ethclient/
-│   ├── corethclient/
-│   │   └── corethclient.go
+│   ├── gethclient/
+│   │   └── gethclient.go
 │   ├── client_interface_test.go
 │   ├── ethclient.go
 │   └── signer.go
