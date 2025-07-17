@@ -1,4 +1,4 @@
-// (c) 2021-2025, Lux Industries Inc. All rights reserved.
+// (c) 2021-2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package utils
@@ -6,7 +6,7 @@ package utils
 import (
 	"bytes"
 
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // AddressRange represents a continuous range of addresses

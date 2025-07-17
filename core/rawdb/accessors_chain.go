@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -35,10 +35,10 @@ import (
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/log"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // ReadCanonicalHash retrieves the hash assigned to a canonical block number.

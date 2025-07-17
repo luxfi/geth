@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package core
@@ -12,8 +12,8 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/geth/predicate"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 var ErrMissingPredicateContext = errors.New("missing predicate context")

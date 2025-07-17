@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -36,9 +36,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // The values in those tests are from the Transaction Tests
@@ -520,9 +520,7 @@ func TestYParityJSONUnmarshalling(t *testing.T) {
 		DynamicFeeTxType,
 		BlobTxType,
 	} {
-		txType := txType
 		for _, test := range tests {
-			test := test
 			t.Run(fmt.Sprintf("txType=%d: %s", txType, test.name), func(t *testing.T) {
 				// Copy the base json
 				testJson := make(map[string]interface{})

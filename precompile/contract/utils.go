@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc. All rights reserved.
+// (c) 2019-2020, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package contract
@@ -10,7 +10,7 @@ import (
 
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // Gas costs for stateful precompiles

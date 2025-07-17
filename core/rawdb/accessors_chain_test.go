@@ -27,8 +27,8 @@ import (
 
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/rlp"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -291,10 +291,10 @@ func TestBlockReceiptStorage(t *testing.T) {
 	// Insert the receipt slice into the database and check presence
 	WriteReceipts(db, hash, 0, receipts)
 	if rs := ReadReceipts(db, hash, 0, 0, params.TestChainConfig); len(rs) == 0 {
-		t.Fatalf("no receipts returned")
+		t.Fatal("no receipts returned")
 	} else {
 		if err := checkReceiptsRLP(rs, receipts); err != nil {
-			t.Fatalf(err.Error())
+			t.Fatal(err)
 		}
 	}
 	// Delete the body and ensure that the receipts are no longer returned (metadata can't be recomputed)
@@ -308,7 +308,7 @@ func TestBlockReceiptStorage(t *testing.T) {
 	}
 	// Ensure that receipts without metadata can be returned without the block body too
 	if err := checkReceiptsRLP(ReadRawReceipts(db, hash, 0), receipts); err != nil {
-		t.Fatalf(err.Error())
+		t.Fatal(err)
 	}
 	// Sanity check that body and header alone without the receipt is a full purge
 	WriteHeader(db, header)

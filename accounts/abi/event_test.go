@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -35,8 +35,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -341,7 +341,6 @@ func TestEventTupleUnpack(t *testing.T) {
 
 	for _, tc := range testCases {
 		assert := assert.New(t)
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			err := unpackTestEventData(tc.dest, tc.data, tc.jsonLog, assert)
 			if tc.error == "" {

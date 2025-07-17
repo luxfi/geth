@@ -1,4 +1,4 @@
-// (c) 2024, Lux Industries Inc.
+// (c) 2024, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -33,9 +33,9 @@ import (
 
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie/trienode"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 	"golang.org/x/crypto/sha3"
 )
 

@@ -21,7 +21,7 @@ import (
 
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // accessList is an accumulator for the set of accounts and storage slots an EVM
@@ -87,7 +87,7 @@ func (al accessList) equal(other accessList) bool {
 	return true
 }
 
-// accesslist converts the accesslist to a types.AccessList.
+// accessList converts the accesslist to a types.AccessList.
 func (al accessList) accessList() types.AccessList {
 	acl := make(types.AccessList, 0, len(al))
 	for addr, slots := range al {

@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package evm
@@ -8,14 +8,14 @@ import (
 
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/plugin/evm/message"
 	syncHandlers "github.com/luxfi/geth/sync/handlers"
 	syncStats "github.com/luxfi/geth/sync/handlers/stats"
-	"github.com/luxfi/geth/trie"
+	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/warp"
 	warpHandlers "github.com/luxfi/geth/warp/handlers"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 var _ message.RequestHandler = &networkHandler{}
@@ -32,8 +32,8 @@ type networkHandler struct {
 func newNetworkHandler(
 	provider syncHandlers.SyncDataProvider,
 	diskDB ethdb.KeyValueReader,
-	evmTrieDB *trie.Database,
-	atomicTrieDB *trie.Database,
+	evmTrieDB *triedb.Database,
+	atomicTrieDB *triedb.Database,
 	warpBackend warp.Backend,
 	networkCodec codec.Manager,
 ) message.RequestHandler {

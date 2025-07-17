@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -32,7 +32,7 @@ import (
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // keystoreWallet implements the accounts.Wallet interface for the original

@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package warp
@@ -15,8 +15,8 @@ import (
 
 	_ "embed"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/math"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
 )
 
 const (

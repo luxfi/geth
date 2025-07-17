@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package predicate
@@ -8,7 +8,7 @@ import (
 
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/utils"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // NewPredicateTx returns a transaction with the predicateAddress/predicateBytes tuple

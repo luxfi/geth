@@ -1,4 +1,4 @@
-// (c) 2020-2025, Lux Industries Inc.
+// (c) 2020-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -30,7 +30,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/trie/trienode"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // committer is the tool used for the trie Commit operation. The committer will
@@ -164,12 +164,12 @@ func (c *committer) store(path []byte, n node) node {
 	return hash
 }
 
-// mptResolver the children resolver in merkle-patricia-tree.
-type mptResolver struct{}
+// MerkleResolver the children resolver in merkle-patricia-tree.
+type MerkleResolver struct{}
 
 // ForEach implements childResolver, decodes the provided node and
 // traverses the children inside.
-func (resolver mptResolver) ForEach(node []byte, onChild func(common.Hash)) {
+func (resolver MerkleResolver) ForEach(node []byte, onChild func(common.Hash)) {
 	forGatherChildren(mustDecodeNodeUnsafe(nil, node), onChild)
 }
 

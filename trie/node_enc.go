@@ -1,4 +1,4 @@
-// (c) 2022, Lux Industries Inc.
+// (c) 2022, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -27,7 +27,7 @@
 package trie
 
 import (
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 func nodeToBytes(n node) []byte {

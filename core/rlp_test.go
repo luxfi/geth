@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -34,9 +34,9 @@ import (
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -51,7 +51,7 @@ func getBlock(transactions int, uncles int, dataSize int) *types.Block {
 		funds   = big.NewInt(50000 * 225000000000 * 200)
 		gspec   = &Genesis{
 			Config: params.TestChainConfig,
-			Alloc:  GenesisAlloc{address: {Balance: funds}},
+			Alloc:  types.GenesisAlloc{address: {Balance: funds}},
 		}
 	)
 	// We need to generate as many blocks +1 as uncles

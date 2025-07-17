@@ -1,4 +1,4 @@
-// (c) 2021-2025, Lux Industries Inc. All rights reserved.
+// (c) 2021-2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package syncutils
@@ -6,7 +6,7 @@ package syncutils
 import (
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 var (

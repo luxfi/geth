@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package predicate
@@ -11,7 +11,7 @@ import (
 	"github.com/luxfi/node/codec/linearcodec"
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/utils/wrappers"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (

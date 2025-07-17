@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -43,11 +43,12 @@ import (
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/core/asm"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/asm"
 
 	// force-load js tracers to trigger registration
 	_ "github.com/luxfi/geth/eth/tracers/js"
+	"github.com/holiman/uint256"
 )
 
 func TestDefaults(t *testing.T) {
@@ -372,12 +373,12 @@ func benchmarkNonModifyingCode(gas uint64, code []byte, name string, tracerCode 
 	//cfg.State.CreateAccount(cfg.Origin)
 	// set the receiver's (the executing contract) code for execution.
 	cfg.State.SetCode(destination, code)
-	vmenv.Call(sender, destination, nil, gas, cfg.Value)
+	vmenv.Call(sender, destination, nil, gas, uint256.MustFromBig(cfg.Value))
 
 	b.Run(name, func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			vmenv.Call(sender, destination, nil, gas, cfg.Value)
+			vmenv.Call(sender, destination, nil, gas, uint256.MustFromBig(cfg.Value))
 		}
 	})
 }
@@ -609,7 +610,7 @@ func TestEip2929Cases(t *testing.T) {
 
 // TestColdAccountAccessCost test that the cold account access cost is reported
 // correctly
-// see: https://github.com/ava-labs/libevm/issues/22649
+// see: https://github.com/ethereum/go-ethereum/issues/22649
 func TestColdAccountAccessCost(t *testing.T) {
 	for i, tc := range []struct {
 		code []byte

@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -33,9 +33,9 @@ import (
 	"os"
 
 	"github.com/luxfi/geth/core/types"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/log"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // errNoActiveJournal is returned if a transaction is attempted to be inserted
@@ -174,7 +174,12 @@ func (journal *journal) rotate(all map[common.Address]types.Transactions) error 
 		return err
 	}
 	journal.writer = sink
-	log.Info("Regenerated local transaction journal", "transactions", journaled, "accounts", len(all))
+
+	logger := log.Info
+	if len(all) == 0 {
+		logger = log.Debug
+	}
+	logger("Regenerated local transaction journal", "transactions", journaled, "accounts", len(all))
 
 	return nil
 }

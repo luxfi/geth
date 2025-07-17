@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -36,8 +36,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ava-labs/libevm/common/bitutil"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/common/bitutil"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // bloomIndexes represents the bit indexes inside the bloom filter that belong

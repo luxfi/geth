@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -108,7 +108,7 @@ func TestWebsocketLargeCall(t *testing.T) {
 
 	// This call sends slightly less than the limit and should work.
 	var result echoResult
-	arg := strings.Repeat("x", maxRequestContentLength-200)
+	arg := strings.Repeat("x", defaultBodyLimit-200)
 	if err := client.Call(&result, "test_echo", arg, 1); err != nil {
 		t.Fatalf("valid call didn't work: %v", err)
 	}
@@ -117,7 +117,7 @@ func TestWebsocketLargeCall(t *testing.T) {
 	}
 
 	// This call sends twice the allowed size and shouldn't work.
-	arg = strings.Repeat("x", maxRequestContentLength*2)
+	arg = strings.Repeat("x", defaultBodyLimit*2)
 	err = client.Call(&result, "test_echo", arg)
 	if err == nil {
 		t.Fatal("no error for too large call")
@@ -248,7 +248,7 @@ func TestClientWebsocketPing(t *testing.T) {
 	// server can't handle the request.
 
 	// Wait for the context's deadline to be reached before proceeding.
-	// This is important for reproducing https://github.com/ava-labs/libevm/issues/19798
+	// This is important for reproducing https://github.com/ethereum/go-ethereum/issues/19798
 	<-ctx.Done()
 	close(sendPing)
 

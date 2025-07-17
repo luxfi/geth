@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package warp
@@ -9,7 +9,7 @@ import (
 
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ava-labs/libevm/common/hexutil"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 var _ Client = (*client)(nil)

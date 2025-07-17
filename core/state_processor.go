@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -38,9 +38,9 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/precompile/modules"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // StateProcessor is a basic Processor, which takes care of transitioning
@@ -198,7 +198,7 @@ func ProcessBeaconBlockRoot(beaconRoot common.Hash, vmenv *vm.EVM, statedb *stat
 	}
 	vmenv.Reset(NewEVMTxContext(msg), statedb)
 	statedb.AddAddressToAccessList(params.BeaconRootsStorageAddress)
-	_, _, _ = vmenv.Call(vm.AccountRef(msg.From), *msg.To, msg.Data, 30_000_000, common.Big0)
+	_, _, _ = vmenv.Call(vm.AccountRef(msg.From), *msg.To, msg.Data, 30_000_000, common.U2560)
 	statedb.Finalise(true)
 }
 

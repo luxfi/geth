@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2024, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -39,8 +39,8 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // Options are the contextual parameters to execute the requested call.
@@ -82,9 +82,9 @@ func Estimate(ctx context.Context, call *core.Message, opts *Options, gasCap uin
 	}
 	// Recap the highest gas limit with account's available balance.
 	if feeCap.BitLen() != 0 {
-		balance := opts.State.GetBalance(call.From)
+		balance := opts.State.GetBalance(call.From).ToBig()
 
-		available := new(big.Int).Set(balance)
+		available := balance
 		if call.Value != nil {
 			if call.Value.Cmp(available) >= 0 {
 				return 0, nil, core.ErrInsufficientFundsForTransfer

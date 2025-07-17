@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc. All rights reserved.
+// (c) 2019-2020, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package vm
@@ -9,7 +9,7 @@ import (
 
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
 )
 

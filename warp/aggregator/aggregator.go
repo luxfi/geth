@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package aggregator
@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/log"
 
 	"github.com/luxfi/node/utils/crypto/bls"
 	"github.com/luxfi/node/utils/set"

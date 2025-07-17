@@ -1,4 +1,4 @@
-// (c) 2020-2025, Lux Industries Inc.
+// (c) 2020-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -34,10 +34,10 @@ import (
 
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 //go:generate go run github.com/fjl/gencodec -type account -field-override accountMarshaling -out gen_account_json.go
@@ -205,7 +205,7 @@ func (t *prestateTracer) CaptureTxEnd(restGas uint64) {
 		}
 		modified := false
 		postAccount := &account{Storage: make(map[common.Hash]common.Hash)}
-		newBalance := t.env.StateDB.GetBalance(addr)
+		newBalance := t.env.StateDB.GetBalance(addr).ToBig()
 		newNonce := t.env.StateDB.GetNonce(addr)
 		newCode := t.env.StateDB.GetCode(addr)
 
@@ -289,7 +289,7 @@ func (t *prestateTracer) lookupAccount(addr common.Address) {
 	}
 
 	t.pre[addr] = &account{
-		Balance: t.env.StateDB.GetBalance(addr),
+		Balance: t.env.StateDB.GetBalance(addr).ToBig(),
 		Nonce:   t.env.StateDB.GetNonce(addr),
 		Code:    t.env.StateDB.GetCode(addr),
 		Storage: make(map[common.Hash]common.Hash),

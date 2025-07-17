@@ -1,4 +1,4 @@
-// (c) 2020-2025, Lux Industries Inc.
+// (c) 2020-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -36,9 +36,9 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 //go:generate go run github.com/fjl/gencodec -type callFrame -field-override callFrameMarshaling -out gen_callframe_json.go
@@ -52,7 +52,7 @@ type callLog struct {
 	Topics  []common.Hash  `json:"topics"`
 	Data    hexutil.Bytes  `json:"data"`
 	// Position of the log relative to subcalls within the same trace
-	// See https://github.com/ava-labs/libevm/pull/28389 for details
+	// See https://github.com/ethereum/go-ethereum/pull/28389 for details
 	Position hexutil.Uint `json:"position"`
 }
 
@@ -172,7 +172,7 @@ func (t *callTracer) CaptureState(pc uint64, op vm.OpCode, gas, cost uint64, sco
 		return
 	}
 	// Avoid processing nested calls when only caring about top call
-	if t.config.OnlyTopCall && depth > 0 {
+	if t.config.OnlyTopCall && depth > 1 {
 		return
 	}
 	// Skip if tracing was interrupted

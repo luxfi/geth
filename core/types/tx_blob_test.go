@@ -4,9 +4,9 @@ import (
 	"crypto/ecdsa"
 	"testing"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/crypto/kzg4844"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/crypto/kzg4844"
 	"github.com/holiman/uint256"
 )
 
@@ -65,6 +65,12 @@ var (
 )
 
 func createEmptyBlobTx(key *ecdsa.PrivateKey, withSidecar bool) *Transaction {
+	blobtx := createEmptyBlobTxInner(withSidecar)
+	signer := NewCancunSigner(blobtx.ChainID.ToBig())
+	return MustSignNewTx(key, signer, blobtx)
+}
+
+func createEmptyBlobTxInner(withSidecar bool) *BlobTx {
 	sidecar := &BlobTxSidecar{
 		Blobs:       []kzg4844.Blob{emptyBlob},
 		Commitments: []kzg4844.Commitment{emptyBlobCommit},
@@ -85,6 +91,5 @@ func createEmptyBlobTx(key *ecdsa.PrivateKey, withSidecar bool) *Transaction {
 	if withSidecar {
 		blobtx.Sidecar = sidecar
 	}
-	signer := NewCancunSigner(blobtx.ChainID.ToBig())
-	return MustSignNewTx(key, signer, blobtx)
+	return blobtx
 }

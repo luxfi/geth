@@ -1,4 +1,4 @@
-// (c) 2020-2025, Lux Industries Inc. All rights reserved.
+// (c) 2020-2021, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package state
@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 func TestStateObjectPartition(t *testing.T) {

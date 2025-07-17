@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -52,9 +52,9 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/accounts"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/event"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/event"
+	"github.com/ethereum/go-ethereum/log"
 	pcsc "github.com/gballet/go-libpcsclite"
 )
 
@@ -251,7 +251,7 @@ func (hub *Hub) refreshWallets() {
 			card.Disconnect(pcsc.LeaveCard)
 			continue
 		}
-		// Card connected, start tracking in amongs the wallets
+		// Card connected, start tracking among the wallets
 		hub.wallets[reader] = wallet
 		events = append(events, accounts.WalletEvent{Wallet: wallet, Kind: accounts.WalletArrived})
 	}

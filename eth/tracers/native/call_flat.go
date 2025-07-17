@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc.
+// (c) 2023, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -36,8 +36,8 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 //go:generate go run github.com/fjl/gencodec -type flatCallAction -field-override flatCallActionMarshaling -out gen_flatcallaction_json.go

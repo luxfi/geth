@@ -23,9 +23,9 @@ import (
 
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/internal/blocktest"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 var newTestHasher = blocktest.NewHasher

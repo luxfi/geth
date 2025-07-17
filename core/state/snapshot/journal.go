@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -33,11 +33,11 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/trie"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/log"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/luxfi/geth/triedb"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // journalGenerator is a disk layer entry containing the generator progress marker.
@@ -56,7 +56,7 @@ type journalGenerator struct {
 // loadSnapshot loads a pre-existing state snapshot backed by a key-value
 // store. If loading the snapshot from disk is successful, this function also
 // returns a boolean indicating whether or not the snapshot is fully generated.
-func loadSnapshot(diskdb ethdb.KeyValueStore, triedb *trie.Database, cache int, blockHash, root common.Hash, noBuild bool) (snapshot, bool, error) {
+func loadSnapshot(diskdb ethdb.KeyValueStore, triedb *triedb.Database, cache int, blockHash, root common.Hash, noBuild bool) (snapshot, bool, error) {
 	// Retrieve the block number and hash of the snapshot, failing if no snapshot
 	// is present in the database (or crashed mid-update).
 	baseBlockHash := rawdb.ReadSnapshotBlockHash(diskdb)

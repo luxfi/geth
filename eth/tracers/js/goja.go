@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc.
+// (c) 2023, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -37,9 +37,9 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
 	jsassets "github.com/luxfi/geth/eth/tracers/js/internal/tracers"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 var assetTracers = make(map[string]string)

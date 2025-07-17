@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -29,8 +29,8 @@ package node
 import (
 	"github.com/luxfi/geth/internal/debug"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // apis returns the collection of built-in RPC APIs.
@@ -56,7 +56,7 @@ type web3API struct {
 
 // ClientVersion returns the node name
 func (s *web3API) ClientVersion() string {
-	return s.stack.config.CorethVersion
+	return s.stack.config.GethVersion
 }
 
 // Sha3 applies the ethereum sha3 implementation on the input.

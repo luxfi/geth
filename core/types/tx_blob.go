@@ -22,9 +22,9 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto/kzg4844"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto/kzg4844"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/holiman/uint256"
 )
 
@@ -43,7 +43,7 @@ type BlobTx struct {
 	BlobHashes []common.Hash
 
 	// A blob transaction can optionally contain blobs. This field must be set when BlobTx
-	// is used to create a transaction for sigining.
+	// is used to create a transaction for signing.
 	Sidecar *BlobTxSidecar `rlp:"-"`
 
 	// Signature values
@@ -61,9 +61,10 @@ type BlobTxSidecar struct {
 
 // BlobHashes computes the blob hashes of the given blobs.
 func (sc *BlobTxSidecar) BlobHashes() []common.Hash {
+	hasher := sha256.New()
 	h := make([]common.Hash, len(sc.Commitments))
 	for i := range sc.Blobs {
-		h[i] = blobHash(&sc.Commitments[i])
+		h[i] = kzg4844.CalcBlobHashV1(hasher, &sc.Commitments[i])
 	}
 	return h
 }
@@ -234,13 +235,4 @@ func (tx *BlobTx) decode(input []byte) error {
 		Proofs:      inner.Proofs,
 	}
 	return nil
-}
-
-func blobHash(commit *kzg4844.Commitment) common.Hash {
-	hasher := sha256.New()
-	hasher.Write(commit[:])
-	var vhash common.Hash
-	hasher.Sum(vhash[:0])
-	vhash[0] = params.BlobTxHashVersion
-	return vhash
 }

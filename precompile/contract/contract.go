@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc. All rights reserved.
+// (c) 2019-2020, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package contract
@@ -6,7 +6,7 @@ package contract
 import (
 	"fmt"
 
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const (

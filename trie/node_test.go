@@ -1,4 +1,4 @@
-// (c) 2020-2025, Lux Industries Inc.
+// (c) 2020-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -30,8 +30,8 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 func newTestFullNode(v []byte) []interface{} {

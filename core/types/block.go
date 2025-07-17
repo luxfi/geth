@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -34,9 +34,9 @@ import (
 	"reflect"
 	"sync/atomic"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // A BlockNonce is a 64-bit hash which proves (combined with the
@@ -67,7 +67,7 @@ func (n *BlockNonce) UnmarshalText(input []byte) error {
 }
 
 //go:generate go run github.com/fjl/gencodec -type Header -field-override headerMarshaling -out gen_header_json.go
-//go:generate go run github.com/ava-labs/libevm/rlp/rlpgen -type Header -out gen_header_rlp.go
+//go:generate go run github.com/ethereum/go-ethereum/rlp/rlpgen -type Header -out gen_header_rlp.go
 
 // Header represents a block header in the Ethereum blockchain.
 type Header struct {
@@ -188,7 +188,7 @@ type Block struct {
 	uncles       []*Header
 	transactions Transactions
 
-	// Coreth specific data structures to support atomic transactions
+	// Geth specific data structures to support atomic transactions
 	version uint32
 	extdata *[]byte
 

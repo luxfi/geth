@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/external"
 	"github.com/luxfi/geth/accounts/keystore"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // Config represents a small collection of configuration values to fine tune the
@@ -66,13 +66,13 @@ type Config struct {
 	// BatchResponseMaxSize is the maximum number of bytes returned from a batched rpc call.
 	BatchResponseMaxSize int `toml:",omitempty"`
 
-	CorethVersion string
+	GethVersion string
 }
 
 // ExtRPCEnabled returns the indicator whether node enables the external
 // RPC(http, ws or graphql).
 func (c *Config) ExtRPCEnabled() bool {
-	// In lux, we always disable the external RPC.
+	// In avalanche, we always disable the external RPC.
 	return false
 }
 
@@ -101,7 +101,7 @@ func (c *Config) GetKeyStoreDir() (string, bool, error) {
 	isEphemeral := false
 	if keydir == "" {
 		// There is no datadir.
-		keydir, err = os.MkdirTemp("", "coreth-keystore")
+		keydir, err = os.MkdirTemp("", "geth-keystore")
 		isEphemeral = true
 	}
 

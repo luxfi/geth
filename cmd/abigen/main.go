@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -37,9 +37,9 @@ import (
 	"github.com/luxfi/geth/accounts/abi/bind"
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/internal/flags"
-	"github.com/ava-labs/libevm/common/compiler"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common/compiler"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 	"github.com/urfave/cli/v2"
 )
 

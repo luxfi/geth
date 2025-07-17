@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -33,8 +33,8 @@ import (
 	"strings"
 
 	"github.com/luxfi/geth/core/types"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 type ValidationInfo struct {
@@ -61,7 +61,7 @@ func (vs *ValidationMessages) Info(msg string) {
 	vs.Messages = append(vs.Messages, ValidationInfo{INFO, msg})
 }
 
-// getWarnings returns an error with all messages of type WARN of above, or nil if no warnings were present
+// GetWarnings returns an error with all messages of type WARN of above, or nil if no warnings were present
 func (v *ValidationMessages) GetWarnings() error {
 	var messages []string
 	for _, msg := range v.Messages {
@@ -90,7 +90,7 @@ type SendTxArgs struct {
 
 	// We accept "data" and "input" for backwards-compatibility reasons.
 	// "input" is the newer name and should be preferred by clients.
-	// Issue detail: https://github.com/ava-labs/libevm/issues/15628
+	// Issue detail: https://github.com/ethereum/go-ethereum/issues/15628
 	Data  *hexutil.Bytes `json:"data"`
 	Input *hexutil.Bytes `json:"input,omitempty"`
 

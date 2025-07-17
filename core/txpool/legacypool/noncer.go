@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -30,7 +30,7 @@ import (
 	"sync"
 
 	"github.com/luxfi/geth/core/state"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // noncer is a tiny virtual state database to manage the executable nonces of

@@ -1,4 +1,4 @@
-// (c) 2021-2025, Lux Industries Inc. All rights reserved.
+// (c) 2021-2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package statesync
@@ -7,8 +7,8 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 // writeAccountSnapshot stores the account represented by [acc] to the snapshot at [accHash], using

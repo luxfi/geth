@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -40,10 +40,10 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -65,7 +65,7 @@ func (mt *mockTransactor) AcceptedCodeAt(ctx context.Context, account common.Add
 	return []byte{1}, nil
 }
 
-func (mt *mockTransactor) AcceptedNonceAt(ctx context.Context, account common.Address) (uint64, error) {
+func (mt *mockTransactor) NonceAt(ctx context.Context, account common.Address, blockNum *big.Int) (uint64, error) {
 	return 0, nil
 }
 

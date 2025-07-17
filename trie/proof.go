@@ -1,4 +1,4 @@
-// (c) 2020-2025, Lux Industries Inc.
+// (c) 2020-2021, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -31,9 +31,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // Prove constructs a merkle proof for key. The result contains all encoded nodes
@@ -399,7 +399,7 @@ func unset(parent node, child node, key []byte, pos int, removeLeft bool) error 
 			} else {
 				if bytes.Compare(cld.Key, key[pos:]) > 0 {
 					// The key of fork shortnode is greater than the
-					// path(it belongs to the range), unset the entrie
+					// path(it belongs to the range), unset the entries
 					// branch. The parent must be a fullnode.
 					fn := parent.(*fullNode)
 					fn.Children[key[pos-1]] = nil

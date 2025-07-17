@@ -1,4 +1,4 @@
-// (c) 2022, Lux Industries Inc. All rights reserved.
+// (c) 2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package gasprice
@@ -12,12 +12,12 @@ import (
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 )
 
 func TestFeeInfoProvider(t *testing.T) {
-	backend := newTestBackend(t, params.TestChainConfig, 2, common.Big0, testGenBlock(t, 55, 370))
+	backend := newTestBackend(t, params.TestChainConfig, 2, common.Big0, testGenBlock(t, 55, 80))
 	f, err := newFeeInfoProvider(backend, 1, 2)
 	require.NoError(t, err)
 

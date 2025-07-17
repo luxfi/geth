@@ -1,4 +1,4 @@
-// (c) 2024, Lux Industries Inc. All rights reserved.
+// (c) 2024, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package types
@@ -6,7 +6,7 @@ package types
 import (
 	"math/big"
 
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 func (b *Block) WithExtData(version uint32, extdata *[]byte) *Block {

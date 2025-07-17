@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -34,11 +34,12 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie"
+	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/utils"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/log"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 const (
@@ -49,7 +50,7 @@ const (
 // generateSnapshot regenerates a brand new snapshot based on an existing state
 // database and head block asynchronously. The snapshot is returned immediately
 // and generation is continued in the background until done.
-func generateSnapshot(diskdb ethdb.KeyValueStore, triedb *trie.Database, cache int, blockHash, root common.Hash, wiper chan struct{}) *diskLayer {
+func generateSnapshot(diskdb ethdb.KeyValueStore, triedb *triedb.Database, cache int, blockHash, root common.Hash, wiper chan struct{}) *diskLayer {
 	// Wipe any previously existing snapshot from the database if no wiper is
 	// currently in progress.
 	if wiper == nil {

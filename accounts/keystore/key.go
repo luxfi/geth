@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -39,8 +39,8 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/accounts"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/google/uuid"
 )
 

@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -40,10 +40,10 @@ import (
 	"github.com/luxfi/geth/interfaces"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/event"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/event"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // Config represents the configuration of the filter system.
@@ -520,14 +520,15 @@ func (es *EventSystem) handlePendingLogs(filters filterIndex, ev []*types.Log) {
 	}
 }
 
-func (es *EventSystem) handleTxsEvent(filters filterIndex, ev core.NewTxsEvent, accepted bool) {
+func (es *EventSystem) handleTxsEvent(filters filterIndex, ev core.NewTxsEvent) {
 	for _, f := range filters[PendingTransactionsSubscription] {
 		f.txs <- ev.Txs
 	}
-	if accepted {
-		for _, f := range filters[AcceptedTransactionsSubscription] {
-			f.txs <- ev.Txs
-		}
+}
+
+func (es *EventSystem) handleTxsAcceptedEvent(filters filterIndex, ev core.NewTxsEvent) {
+	for _, f := range filters[AcceptedTransactionsSubscription] {
+		f.txs <- ev.Txs
 	}
 }
 
@@ -565,7 +566,7 @@ func (es *EventSystem) eventLoop() {
 	for {
 		select {
 		case ev := <-es.txsCh:
-			es.handleTxsEvent(index, ev, false)
+			es.handleTxsEvent(index, ev)
 		case ev := <-es.logsCh:
 			es.handleLogs(index, ev)
 		case ev := <-es.logsAcceptedCh:
@@ -579,7 +580,7 @@ func (es *EventSystem) eventLoop() {
 		case ev := <-es.chainAcceptedCh:
 			es.handleChainAcceptedEvent(index, ev)
 		case ev := <-es.txsAcceptedCh:
-			es.handleTxsEvent(index, ev, true)
+			es.handleTxsAcceptedEvent(index, ev)
 
 		case f := <-es.install:
 			if f.typ == MinedAndPendingLogsSubscription {

@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package warp
@@ -10,7 +10,7 @@ import (
 	"github.com/luxfi/geth/precompile/modules"
 	"github.com/luxfi/geth/precompile/precompileconfig"
 
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var _ contract.Configurator = &configurator{}

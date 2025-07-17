@@ -1,4 +1,4 @@
-// (c) 2024, Lux Industries Inc.
+// (c) 2024, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -38,11 +38,11 @@ import (
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/trie"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/log"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // DebugAPI is the collection of Ethereum full node APIs for debugging the

@@ -29,9 +29,9 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/hexutil"
-	"github.com/ava-labs/libevm/common/math"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/holiman/uint256"
 )
 
@@ -446,7 +446,7 @@ func formatLogs(logs []StructLog) []StructLogRes {
 			}
 			formatted[index].Stack = &stack
 		}
-		if trace.ReturnData != nil && len(trace.ReturnData) > 0 {
+		if len(trace.ReturnData) > 0 {
 			formatted[index].ReturnData = hexutil.Bytes(trace.ReturnData).String()
 		}
 		if trace.Memory != nil {

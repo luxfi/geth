@@ -24,7 +24,7 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/core/vm"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // Context contains some contextual infos for a transaction execution that is not

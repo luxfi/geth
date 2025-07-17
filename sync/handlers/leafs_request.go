@@ -1,4 +1,4 @@
-// (c) 2021-2025, Lux Industries Inc. All rights reserved.
+// (c) 2021-2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package handlers
@@ -19,11 +19,12 @@ import (
 	"github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/luxfi/geth/sync/syncutils"
 	"github.com/luxfi/geth/trie"
+	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/utils"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/ethdb/memorydb"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb/memorydb"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 const (
@@ -42,14 +43,14 @@ const (
 // LeafsRequestHandler is a peer.RequestHandler for types.LeafsRequest
 // serving requested trie data
 type LeafsRequestHandler struct {
-	trieDB           *trie.Database
+	trieDB           *triedb.Database
 	snapshotProvider SnapshotProvider
 	codec            codec.Manager
 	stats            stats.LeafsRequestHandlerStats
 	pool             sync.Pool
 }
 
-func NewLeafsRequestHandler(trieDB *trie.Database, snapshotProvider SnapshotProvider, codec codec.Manager, syncerStats stats.LeafsRequestHandlerStats) *LeafsRequestHandler {
+func NewLeafsRequestHandler(trieDB *triedb.Database, snapshotProvider SnapshotProvider, codec codec.Manager, syncerStats stats.LeafsRequestHandlerStats) *LeafsRequestHandler {
 	return &LeafsRequestHandler{
 		trieDB:           trieDB,
 		snapshotProvider: snapshotProvider,

@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc.
+// (c) 2023, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -30,10 +30,10 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -303,7 +303,7 @@ func ReadStateScheme(db ethdb.Reader) string {
 		return PathScheme
 	}
 	// The root node might be deleted during the initial snap sync, check
-	// the persistentstent state id then.
+	// the persistent state id then.
 	if id := ReadPersistentStateID(db); id != 0 {
 		return PathScheme
 	}

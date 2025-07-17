@@ -1,4 +1,4 @@
-// (c) 2021-2025, Lux Industries Inc. All rights reserved.
+// (c) 2021-2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package handlers
@@ -14,9 +14,9 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/luxfi/geth/sync/handlers/stats"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/ethdb/memorydb"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethdb/memorydb"
 	"github.com/stretchr/testify/assert"
 )
 

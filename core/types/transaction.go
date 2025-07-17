@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -29,15 +29,16 @@ package types
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"math/big"
 	"sync/atomic"
 	"time"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/math"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 var (
@@ -330,6 +331,7 @@ func (tx *Transaction) Cost() *big.Int {
 
 // RawSignatureValues returns the V, R, S signature values of the transaction.
 // The return values should not be modified by the caller.
+// The return values may be nil or zero, if the transaction is unsigned.
 func (tx *Transaction) RawSignatureValues() (v, r, s *big.Int) {
 	return tx.inner.rawSignatureValues()
 }
@@ -517,6 +519,9 @@ func (tx *Transaction) WithSignature(signer Signer, sig []byte) (*Transaction, e
 	r, s, v, err := signer.SignatureValues(tx, sig)
 	if err != nil {
 		return nil, err
+	}
+	if r == nil || s == nil || v == nil {
+		return nil, fmt.Errorf("%w: r: %s, s: %s, v: %s", ErrInvalidSig, r, s, v)
 	}
 	cpy := tx.inner.copy()
 	cpy.setSignatureValues(signer.ChainID(), v, r, s)

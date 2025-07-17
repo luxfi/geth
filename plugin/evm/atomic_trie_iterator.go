@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc. All rights reserved.
+// (c) 2019-2020, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package evm
@@ -13,7 +13,7 @@ import (
 	"github.com/luxfi/node/utils/wrappers"
 
 	"github.com/luxfi/geth/trie"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 const atomicTrieKeyLen = wrappers.LongLen + common.HashLength

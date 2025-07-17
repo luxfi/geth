@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -48,9 +48,9 @@ import (
 	"path/filepath"
 
 	"github.com/luxfi/geth/accounts"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/math"
-	"github.com/ava-labs/libevm/crypto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
@@ -130,7 +130,7 @@ func (ks keyStorePassphrase) StoreKey(filename string, key *Key, auth string) er
 				"This indicates that the keystore is corrupted. \n" +
 				"The corrupted file is stored at \n%v\n" +
 				"Please file a ticket at:\n\n" +
-				"https://github.com/ava-labs/libevm/issues." +
+				"https://github.com/ethereum/go-ethereum/issues." +
 				"The error was : %s"
 			//lint:ignore ST1005 This is a message for the user
 			return fmt.Errorf(msg, tmpName, err)
@@ -146,7 +146,7 @@ func (ks keyStorePassphrase) JoinPath(filename string) string {
 	return filepath.Join(ks.keysDirPath, filename)
 }
 
-// Encryptdata encrypts the data given as 'data' with the password 'auth'.
+// EncryptDataV3 encrypts the data given as 'data' with the password 'auth'.
 func EncryptDataV3(data, auth []byte, scryptN, scryptP int) (CryptoJSON, error) {
 	salt := make([]byte, 32)
 	if _, err := io.ReadFull(rand.Reader, salt); err != nil {

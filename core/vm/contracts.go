@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -37,13 +37,13 @@ import (
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/precompile/modules"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/common/math"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/crypto/blake2b"
-	"github.com/ava-labs/libevm/crypto/bls12381"
-	"github.com/ava-labs/libevm/crypto/bn256"
-	"github.com/ava-labs/libevm/crypto/kzg4844"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/crypto/blake2b"
+	"github.com/ethereum/go-ethereum/crypto/bls12381"
+	"github.com/ethereum/go-ethereum/crypto/bn256"
+	"github.com/ethereum/go-ethereum/crypto/kzg4844"
 	"golang.org/x/crypto/ripemd160"
 )
 
@@ -172,6 +172,9 @@ var PrecompiledContractsCancun = map[common.Address]contract.StatefulPrecompiled
 	common.BytesToAddress([]byte{8}):    newWrappedPrecompiledContract(&bn256PairingIstanbul{}),
 	common.BytesToAddress([]byte{9}):    newWrappedPrecompiledContract(&blake2F{}),
 	common.BytesToAddress([]byte{0x0a}): newWrappedPrecompiledContract(&kzgPointEvaluation{}),
+	genesisContractAddr:                 &deprecatedContract{},
+	NativeAssetBalanceAddr:              &deprecatedContract{},
+	NativeAssetCallAddr:                 &deprecatedContract{},
 }
 
 // PrecompiledContractsBLS contains the set of pre-compiled Ethereum

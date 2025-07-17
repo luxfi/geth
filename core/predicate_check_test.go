@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc. All rights reserved.
+// (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package core
@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/precompileconfig"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )
@@ -293,7 +293,6 @@ func TestCheckPredicate(t *testing.T) {
 			expectedErr: ErrIntrinsicGas,
 		},
 	} {
-		test := test
 		t.Run(name, func(t *testing.T) {
 			require := require.New(t)
 			// Create the rules from TestChainConfig and update the predicates based on the test params

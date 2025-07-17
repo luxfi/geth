@@ -1,4 +1,4 @@
-// (c) 2021-2025, Lux Industries Inc. All rights reserved.
+// (c) 2021-2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package statesyncclient
@@ -19,16 +19,16 @@ import (
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/version"
 
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/crypto"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/log"
 
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/peer"
 	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/luxfi/geth/trie"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 const (

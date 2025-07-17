@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/utils"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 func (t *Tree) DiskAccountIterator(seek common.Hash) AccountIterator {

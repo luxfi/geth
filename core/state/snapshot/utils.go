@@ -1,4 +1,4 @@
-// (c) 2022, Lux Industries Inc.
+// (c) 2022, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -32,9 +32,9 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // CheckDanglingStorage iterates the snap storage data, and verifies that all

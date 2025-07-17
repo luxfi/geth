@@ -1,4 +1,4 @@
-// (c) 2023, Lux Industries Inc.
+// (c) 2023, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -26,7 +26,7 @@
 
 package trie
 
-import "github.com/ava-labs/libevm/common"
+import "github.com/ethereum/go-ethereum/common"
 
 // ID is the identifier for uniquely identifying a trie.
 type ID struct {

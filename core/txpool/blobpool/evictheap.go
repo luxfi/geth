@@ -1,4 +1,4 @@
-// (c) 2024, Lux Industries Inc.
+// (c) 2024, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -32,7 +32,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
 )
 
@@ -40,7 +40,7 @@ import (
 // transaction from each account to determine which account to evict from.
 //
 // The heap internally tracks a slice of cheapest transactions from each account
-// and a mapping from addresses to indices for direct removals/udates.
+// and a mapping from addresses to indices for direct removals/updates.
 //
 // The goal of the heap is to decide which account has the worst bottleneck to
 // evict transactions from.

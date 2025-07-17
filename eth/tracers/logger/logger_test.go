@@ -26,7 +26,8 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/params"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/holiman/uint256"
 )
 
 type dummyContractRef struct {
@@ -50,7 +51,7 @@ func TestStoreCapture(t *testing.T) {
 		logger     = NewStructLogger(nil)
 		statedb, _ = state.New(common.Hash{}, state.NewDatabase(rawdb.NewMemoryDatabase()), nil)
 		env        = vm.NewEVM(vm.BlockContext{}, vm.TxContext{}, statedb, params.TestChainConfig, vm.Config{Tracer: logger})
-		contract   = vm.NewContract(&dummyContractRef{}, &dummyContractRef{}, new(big.Int), 100000)
+		contract   = vm.NewContract(&dummyContractRef{}, &dummyContractRef{}, new(uint256.Int), 100000)
 	)
 	contract.Code = []byte{byte(vm.PUSH1), 0x1, byte(vm.PUSH1), 0x0, byte(vm.SSTORE)}
 	var index common.Hash
@@ -71,7 +72,7 @@ func TestStoreCapture(t *testing.T) {
 }
 
 // Tests that blank fields don't appear in logs when JSON marshalled, to reduce
-// logs bloat and confusion. See https://github.com/ava-labs/libevm/issues/24487
+// logs bloat and confusion. See https://github.com/ethereum/go-ethereum/issues/24487
 func TestStructLogMarshalingOmitEmpty(t *testing.T) {
 	tests := []struct {
 		name string

@@ -1,4 +1,4 @@
-// (c) 2022, Lux Industries Inc. All rights reserved.
+// (c) 2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package statesync
@@ -10,10 +10,10 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/sync/syncutils"
 	"github.com/luxfi/geth/trie"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/log"
-	"github.com/ava-labs/libevm/rlp"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/rlp"
 )
 
 var (

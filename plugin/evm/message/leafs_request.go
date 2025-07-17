@@ -1,4 +1,4 @@
-// (c) 2021-2025, Lux Industries Inc. All rights reserved.
+// (c) 2021-2022, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package message
@@ -8,8 +8,8 @@ import (
 	"fmt"
 
 	"github.com/luxfi/node/ids"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 const MaxCodeHashesPerRequest = 5
@@ -22,9 +22,9 @@ var _ Request = LeafsRequest{}
 type NodeType uint8
 
 const (
-	// StateTrieNode represents a leaf node that belongs to the coreth State trie
+	// StateTrieNode represents a leaf node that belongs to the geth State trie
 	StateTrieNode NodeType = iota + 1
-	// AtomicTrieNode represents a leaf node that belongs to the coreth evm.AtomicTrie
+	// AtomicTrieNode represents a leaf node that belongs to the geth evm.AtomicTrie
 	AtomicTrieNode
 )
 

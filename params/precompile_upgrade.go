@@ -1,4 +1,4 @@
-// (c) 2023 Lux Industries Inc. All rights reserved.
+// (c) 2023 Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
 package params
@@ -11,7 +11,7 @@ import (
 	"github.com/luxfi/geth/precompile/modules"
 	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/geth/utils"
-	"github.com/ava-labs/libevm/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 var errNoKey = errors.New("PrecompileUpgrade cannot be empty")
@@ -155,7 +155,7 @@ func (c *ChainConfig) GetActivatingPrecompileConfigs(address common.Address, fro
 	for _, upgrade := range upgrades {
 		if upgrade.Key() == key {
 			// Check if the precompile activates in the specified range.
-			if utils.IsForkTransition(upgrade.Timestamp(), from, to) {
+			if IsForkTransition(upgrade.Timestamp(), from, to) {
 				configs = append(configs, upgrade.Config)
 			}
 		}

@@ -1,4 +1,4 @@
-// (c) 2019-2025, Lux Industries Inc.
+// (c) 2019-2022, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original
 // notices appear below.
@@ -46,9 +46,9 @@ import (
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ava-labs/libevm/common"
-	"github.com/ava-labs/libevm/ethdb"
-	"github.com/ava-labs/libevm/event"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/event"
 	"github.com/stretchr/testify/require"
 )
 
@@ -467,7 +467,7 @@ func TestInvalidLogFilterCreation(t *testing.T) {
 	}
 }
 
-// TestLogFilterUninstall tests invalid getLogs requests
+// TestInvalidGetLogsRequest tests invalid getLogs requests
 func TestInvalidGetLogsRequest(t *testing.T) {
 	t.Parallel()
 
