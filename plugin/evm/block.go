@@ -24,12 +24,12 @@ import (
 	"github.com/luxfi/geth/predicate"
 
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow/consensus/snowman"
+	"github.com/luxfi/node/consensus/chain"
 	"github.com/luxfi/node/snow/engine/snowman/block"
 )
 
 var (
-	_ snowman.Block           = (*Block)(nil)
+	_ chain.Block             = (*Block)(nil)
 	_ block.WithVerifyContext = (*Block)(nil)
 )
 
@@ -109,7 +109,7 @@ func readMainnetBonusBlocks() (map[uint64]ids.ID, error) {
 	return bonusBlockMainnetHeights, nil
 }
 
-// Block implements the snowman.Block interface
+// Block implements the chain.Block interface
 type Block struct {
 	id        ids.ID
 	ethBlock  *types.Block
@@ -117,7 +117,7 @@ type Block struct {
 	atomicTxs []*atomic.Tx
 }
 
-// newBlock returns a new Block wrapping the ethBlock type and implementing the snowman.Block interface
+// newBlock returns a new Block wrapping the ethBlock type and implementing the chain.Block interface
 func (vm *VM) newBlock(ethBlock *types.Block) (*Block, error) {
 	isApricotPhase5 := vm.chainConfig.IsApricotPhase5(ethBlock.Time())
 	atomicTxs, err := atomic.ExtractAtomicTxs(ethBlock.ExtData(), isApricotPhase5, atomic.Codec)
@@ -133,12 +133,12 @@ func (vm *VM) newBlock(ethBlock *types.Block) (*Block, error) {
 	}, nil
 }
 
-// ID implements the snowman.Block interface
+// ID implements the chain.Block interface
 func (b *Block) ID() ids.ID { return b.id }
 
 func (b *Block) AtomicTxs() []*atomic.Tx { return b.atomicTxs }
 
-// Accept implements the snowman.Block interface
+// Accept implements the chain.Block interface
 func (b *Block) Accept(context.Context) error {
 	vm := b.vm
 
@@ -221,7 +221,7 @@ func (b *Block) handlePrecompileAccept(rules params.Rules) error {
 	return nil
 }
 
-// Reject implements the snowman.Block interface
+// Reject implements the chain.Block interface
 // If [b] contains an atomic transaction, attempt to re-issue it
 func (b *Block) Reject(context.Context) error {
 	log.Debug(fmt.Sprintf("Rejecting block %s (%s) at height %d", b.ID().Hex(), b.ID(), b.Height()))
@@ -243,17 +243,17 @@ func (b *Block) Reject(context.Context) error {
 	return b.vm.blockChain.Reject(b.ethBlock)
 }
 
-// Parent implements the snowman.Block interface
+// Parent implements the chain.Block interface
 func (b *Block) Parent() ids.ID {
 	return ids.ID(b.ethBlock.ParentHash())
 }
 
-// Height implements the snowman.Block interface
+// Height implements the chain.Block interface
 func (b *Block) Height() uint64 {
 	return b.ethBlock.NumberU64()
 }
 
-// Timestamp implements the snowman.Block interface
+// Timestamp implements the chain.Block interface
 func (b *Block) Timestamp() time.Time {
 	return time.Unix(int64(b.ethBlock.Time()), 0)
 }
@@ -269,7 +269,7 @@ func (b *Block) syntacticVerify() error {
 	return b.vm.syntacticBlockValidator.SyntacticVerify(b, rules)
 }
 
-// Verify implements the snowman.Block interface
+// Verify implements the chain.Block interface
 func (b *Block) Verify(context.Context) error {
 	return b.verify(&precompileconfig.PredicateContext{
 		SnowCtx:            b.vm.ctx,
@@ -416,7 +416,7 @@ func (b *Block) verifyUTXOsPresent() error {
 	return nil
 }
 
-// Bytes implements the snowman.Block interface
+// Bytes implements the chain.Block interface
 func (b *Block) Bytes() []byte {
 	res, err := rlp.EncodeToBytes(b.ethBlock)
 	if err != nil {

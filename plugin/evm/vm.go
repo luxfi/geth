@@ -82,7 +82,7 @@ import (
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/snow"
-	"github.com/luxfi/node/snow/consensus/snowman"
+	"github.com/luxfi/node/consensus/chain"
 	"github.com/luxfi/node/snow/engine/snowman/block"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/utils/formatting/address"
@@ -93,7 +93,7 @@ import (
 	"github.com/luxfi/node/utils/timer/mockable"
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/vms/components/lux"
-	"github.com/luxfi/node/vms/components/chain"
+	vmchain "github.com/luxfi/node/vms/components/chain"
 	"github.com/luxfi/node/vms/components/gas"
 	"github.com/luxfi/node/vms/secp256k1fx"
 
@@ -210,14 +210,14 @@ func init() {
 	originalStderr = os.Stderr
 }
 
-// VM implements the snowman.ChainVM interface
+// VM implements the chain.ChainVM interface
 type VM struct {
 	ctx *snow.Context
 	// [cancel] may be nil until [snow.NormalOp] starts
 	cancel context.CancelFunc
-	// *chain.State helps to implement the VM interface by wrapping blocks
+	// *vmchain.State helps to implement the VM interface by wrapping blocks
 	// with an efficient caching layer.
-	*chain.State
+	*vmchain.State
 
 	config config.Config
 
@@ -327,7 +327,7 @@ func (vm *VM) Logger() logging.Logger { return vm.ctx.Log }
 
 /*
  ******************************************************************************
- ********************************* Snowman API ********************************
+ ********************************* Chain API ********************************
  ******************************************************************************
  */
 
@@ -336,7 +336,7 @@ func (vm *VM) GetActivationTime() time.Time {
 	return utils.Uint64ToTime(vm.chainConfig.ApricotPhase4BlockTimestamp)
 }
 
-// Initialize implements the snowman.ChainVM interface
+// Initialize implements the chain.ChainVM interface
 func (vm *VM) Initialize(
 	_ context.Context,
 	chainCtx *snow.Context,
@@ -756,7 +756,7 @@ func (vm *VM) initChainState(lastAcceptedBlock *types.Block) error {
 		return fmt.Errorf("failed to create block wrapper for the last accepted block: %w", err)
 	}
 
-	config := &chain.Config{
+	config := &vmchain.Config{
 		DecidedCacheSize:      decidedCacheSize,
 		MissingCacheSize:      missingCacheSize,
 		UnverifiedCacheSize:   unverifiedCacheSize,
@@ -770,7 +770,7 @@ func (vm *VM) initChainState(lastAcceptedBlock *types.Block) error {
 
 	// Register chain state metrics
 	chainStateRegisterer := prometheus.NewRegistry()
-	state, err := chain.NewMeteredState(chainStateRegisterer, config)
+	state, err := vmchain.NewMeteredState(chainStateRegisterer, config)
 	if err != nil {
 		return fmt.Errorf("could not create metered state: %w", err)
 	}
@@ -1310,7 +1310,7 @@ func (vm *VM) setAppRequestHandlers() {
 	vm.Network.SetRequestHandler(networkHandler)
 }
 
-// Shutdown implements the snowman.ChainVM interface
+// Shutdown implements the chain.ChainVM interface
 func (vm *VM) Shutdown(context.Context) error {
 	if vm.ctx == nil {
 		return nil
@@ -1333,11 +1333,11 @@ func (vm *VM) Shutdown(context.Context) error {
 }
 
 // buildBlock builds a block to be wrapped by ChainState
-func (vm *VM) buildBlock(ctx context.Context) (snowman.Block, error) {
+func (vm *VM) buildBlock(ctx context.Context) (chain.Block, error) {
 	return vm.buildBlockWithContext(ctx, nil)
 }
 
-func (vm *VM) buildBlockWithContext(ctx context.Context, proposerVMBlockCtx *block.Context) (snowman.Block, error) {
+func (vm *VM) buildBlockWithContext(ctx context.Context, proposerVMBlockCtx *block.Context) (chain.Block, error) {
 	if proposerVMBlockCtx != nil {
 		log.Debug("Building block with context", "pChainBlockHeight", proposerVMBlockCtx.PChainHeight)
 	} else {
@@ -1388,7 +1388,7 @@ func (vm *VM) buildBlockWithContext(ctx context.Context, proposerVMBlockCtx *blo
 }
 
 // parseBlock parses [b] into a block to be wrapped by ChainState.
-func (vm *VM) parseBlock(_ context.Context, b []byte) (snowman.Block, error) {
+func (vm *VM) parseBlock(_ context.Context, b []byte) (chain.Block, error) {
 	ethBlock := new(types.Block)
 	if err := rlp.DecodeBytes(b, ethBlock); err != nil {
 		return nil, err
@@ -1418,7 +1418,7 @@ func (vm *VM) ParseEthBlock(b []byte) (*types.Block, error) {
 
 // getBlock attempts to retrieve block [id] from the VM to be wrapped
 // by ChainState.
-func (vm *VM) getBlock(_ context.Context, id ids.ID) (snowman.Block, error) {
+func (vm *VM) getBlock(_ context.Context, id ids.ID) (chain.Block, error) {
 	ethBlock := vm.blockChain.GetBlockByHash(common.Hash(id))
 	// If [ethBlock] is nil, return [database.ErrNotFound] here
 	// so that the miss is considered cacheable.
@@ -1431,7 +1431,7 @@ func (vm *VM) getBlock(_ context.Context, id ids.ID) (snowman.Block, error) {
 
 // GetAcceptedBlock attempts to retrieve block [blkID] from the VM. This method
 // only returns accepted blocks.
-func (vm *VM) GetAcceptedBlock(ctx context.Context, blkID ids.ID) (snowman.Block, error) {
+func (vm *VM) GetAcceptedBlock(ctx context.Context, blkID ids.ID) (chain.Block, error) {
 	blk, err := vm.GetBlock(ctx, blkID)
 	if err != nil {
 		return nil, err

@@ -133,8 +133,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace (
-	github.com/luxfi/evm => /Users/z/work/lux/evm
-	github.com/luxfi/node => /Users/z/work/lux/node
-)
