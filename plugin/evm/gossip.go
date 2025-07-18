@@ -91,6 +91,11 @@ func (t txGossipHandler) AppRequest(ctx context.Context, nodeID ids.NodeID, dead
 	return t.appRequestHandler.AppRequest(ctx, nodeID, deadline, requestBytes)
 }
 
+func (t txGossipHandler) CrossChainAppRequest(ctx context.Context, chainID ids.ID, deadline time.Time, requestBytes []byte) ([]byte, error) {
+	// Cross-chain requests not supported for tx gossip
+	return nil, nil
+}
+
 func NewGossipEthTxPool(mempool *txpool.TxPool, registerer prometheus.Registerer) (*GossipEthTxPool, error) {
 	bloom, err := gossip.NewBloomFilter(
 		registerer,

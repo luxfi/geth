@@ -11,10 +11,12 @@ import (
 
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/params"
+	"github.com/holiman/uint256"
 
 	"github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/snow"
+	luxatomic "github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/node/utils"
 	"github.com/luxfi/node/utils/constants"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
@@ -29,10 +31,17 @@ import (
 )
 
 var (
-	_                           UnsignedAtomicTx       = &UnsignedExportTx{}
-	_                           secp256k1fx.UnsignedTx = &UnsignedExportTx{}
-	errExportNonLUXInputBanff                         = errors.New("export input cannot contain non-LUX in Banff")
-	errExportNonLUXOutputBanff                        = errors.New("export output cannot contain non-LUX in Banff")
+	_                              UnsignedAtomicTx       = &UnsignedExportTx{}
+	_                              secp256k1fx.UnsignedTx = &UnsignedExportTx{}
+	errExportNonLUXInputBanff                            = errors.New("export input cannot contain non-LUX in Banff")
+	errExportNonLUXOutputBanff                           = errors.New("export output cannot contain non-LUX in Banff")
+	errInsufficientFunds                                 = errors.New("insufficient funds")
+	errNoExportOutputs                                   = errors.New("no export outputs")
+	errWrongChainID                                      = errors.New("wrong chain ID")
+	errOutputsNotSorted                                  = errors.New("outputs not sorted")
+	errPublicKeySignatureMismatch                        = errors.New("public key does not match signature")
+	errInputsNotSortedUnique                             = errors.New("inputs not sorted and unique")
+	errOverflowExport                                    = errors.New("overflow when computing export amount + fee")
 )
 
 // UnsignedExportTx is an unsigned ExportTx
@@ -234,7 +243,7 @@ func (utx *UnsignedExportTx) SemanticVerify(
 		if err != nil {
 			return err
 		}
-		if input.Address != PublicKeyToEthAddress(pubKey) {
+		if input.Address != pubKey.EthAddress() {
 			return errPublicKeySignatureMismatch
 		}
 	}
@@ -257,7 +266,7 @@ func (utx *UnsignedExportTx) AtomicOps() (ids.ID, *atomic.Requests, error) {
 			Out:   out.Out,
 		}
 
-		utxoBytes, err := Codec.Marshal(codecVersion, utxo)
+		utxoBytes, err := Codec.Marshal(atomic.CodecVersion, utxo)
 		if err != nil {
 			return ids.ID{}, nil, err
 		}
@@ -297,19 +306,36 @@ func (vm *VM) newExportTx(
 		},
 	}}
 
+	// Get the current state
+	lastAccepted := vm.blockChain.LastAcceptedBlock()
+	statedb, err := vm.blockChain.StateAt(lastAccepted.Root())
+	if err != nil {
+		return nil, err
+	}
+
 	var (
 		luxNeeded           uint64 = 0
 		ins, luxIns         []EVMInput
 		signers, luxSigners [][]*secp256k1.PrivateKey
-		err                  error
 	)
 
 	// consume non-LUX
 	if assetID != vm.ctx.LUXAssetID {
-		ins, signers, err = vm.GetSpendableFunds(keys, assetID, amount)
+		atomicIns, atomicSigners, err := luxatomic.GetSpendableFunds(vm.ctx, statedb, keys, assetID, amount)
 		if err != nil {
 			return nil, fmt.Errorf("couldn't generate tx inputs/signers: %w", err)
 		}
+		// Convert atomic.EVMInput to EVMInput
+		ins = make([]EVMInput, len(atomicIns))
+		for i, atomicIn := range atomicIns {
+			ins[i] = EVMInput{
+				Address: atomicIn.Address,
+				Amount:  atomicIn.Amount,
+				AssetID: atomicIn.AssetID,
+				Nonce:   atomicIn.Nonce,
+			}
+		}
+		signers = atomicSigners
 	} else {
 		luxNeeded = amount
 	}
@@ -325,7 +351,7 @@ func (vm *VM) newExportTx(
 			ExportedOutputs:  outs,
 		}
 		tx := &Tx{UnsignedAtomicTx: utx}
-		if err := tx.Sign(vm.codec, nil); err != nil {
+		if err := tx.Sign(Codec, nil); err != nil {
 			return nil, err
 		}
 
@@ -335,22 +361,47 @@ func (vm *VM) newExportTx(
 			return nil, err
 		}
 
-		luxIns, luxSigners, err = vm.GetSpendableLUXWithFee(keys, luxNeeded, cost, baseFee)
+		atomicLuxIns, atomicLuxSigners, err := luxatomic.GetSpendableLUXWithFee(vm.ctx, statedb, keys, luxNeeded, cost, baseFee)
+		if err != nil {
+			return nil, err
+		}
+		// Convert atomic.EVMInput to EVMInput
+		luxIns = make([]EVMInput, len(atomicLuxIns))
+		for i, atomicIn := range atomicLuxIns {
+			luxIns[i] = EVMInput{
+				Address: atomicIn.Address,
+				Amount:  atomicIn.Amount,
+				AssetID: atomicIn.AssetID,
+				Nonce:   atomicIn.Nonce,
+			}
+		}
+		luxSigners = atomicLuxSigners
 	default:
 		var newLuxNeeded uint64
 		newLuxNeeded, err = math.Add64(luxNeeded, params.LuxAtomicTxFee)
 		if err != nil {
 			return nil, errOverflowExport
 		}
-		luxIns, luxSigners, err = vm.GetSpendableFunds(keys, vm.ctx.LUXAssetID, newLuxNeeded)
-	}
-	if err != nil {
-		return nil, fmt.Errorf("couldn't generate tx inputs/signers: %w", err)
+		atomicLuxIns, atomicLuxSigners, err := luxatomic.GetSpendableFunds(vm.ctx, statedb, keys, vm.ctx.LUXAssetID, newLuxNeeded)
+		if err != nil {
+			return nil, fmt.Errorf("couldn't generate tx inputs/signers: %w", err)
+		}
+		// Convert atomic.EVMInput to EVMInput
+		luxIns = make([]EVMInput, len(atomicLuxIns))
+		for i, atomicIn := range atomicLuxIns {
+			luxIns[i] = EVMInput{
+				Address: atomicIn.Address,
+				Amount:  atomicIn.Amount,
+				AssetID: atomicIn.AssetID,
+				Nonce:   atomicIn.Nonce,
+			}
+		}
+		luxSigners = atomicLuxSigners
 	}
 	ins = append(ins, luxIns...)
 	signers = append(signers, luxSigners...)
 
-	lux.SortTransferableOutputs(outs, vm.codec)
+	lux.SortTransferableOutputs(outs, Codec)
 	SortEVMInputsAndSigners(ins, signers)
 
 	// Create the transaction
@@ -362,7 +413,7 @@ func (vm *VM) newExportTx(
 		ExportedOutputs:  outs,
 	}
 	tx := &Tx{UnsignedAtomicTx: utx}
-	if err := tx.Sign(vm.codec, signers); err != nil {
+	if err := tx.Sign(Codec, signers); err != nil {
 		return nil, err
 	}
 	return tx, utx.Verify(vm.ctx, vm.currentRules())
@@ -377,15 +428,17 @@ func (utx *UnsignedExportTx) EVMStateTransfer(ctx *snow.Context, state *state.St
 			// We multiply the input amount by x2cRate to convert LUX back to the appropriate
 			// denomination before export.
 			amount := new(big.Int).Mul(
-				new(big.Int).SetUint64(from.Amount), x2cRate)
-			if state.GetBalance(from.Address).Cmp(amount) < 0 {
+				new(big.Int).SetUint64(from.Amount), luxatomic.X2CRate.ToBig())
+			balance := state.GetBalance(from.Address).ToBig()
+			if balance.Cmp(amount) < 0 {
 				return errInsufficientFunds
 			}
-			state.SubBalance(from.Address, amount)
+			state.SubBalance(from.Address, uint256.MustFromBig(amount))
 		} else {
 			log.Debug("crosschain", "dest", utx.DestinationChain, "addr", from.Address, "amount", from.Amount, "assetID", from.AssetID)
 			amount := new(big.Int).SetUint64(from.Amount)
-			if state.GetBalanceMultiCoin(from.Address, common.Hash(from.AssetID)).Cmp(amount) < 0 {
+			balanceMulti := state.GetBalanceMultiCoin(from.Address, common.Hash(from.AssetID))
+			if balanceMulti.Cmp(amount) < 0 {
 				return errInsufficientFunds
 			}
 			state.SubBalanceMultiCoin(from.Address, common.Hash(from.AssetID), amount)

@@ -4,16 +4,20 @@
 package evm
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/codec/linearcodec"
 	"github.com/luxfi/node/utils/wrappers"
 	"github.com/luxfi/node/vms/secp256k1fx"
+	"github.com/luxfi/geth/plugin/evm/atomic"
 )
 
 // Codec does serialization and deserialization
 var Codec codec.Manager
+
+var errMissingAtomicTxs = errors.New("cannot build a block with non-empty extra data and zero atomic transactions")
 
 func init() {
 	Codec = codec.NewDefaultManager()
@@ -35,7 +39,7 @@ func init() {
 		lc.RegisterType(&secp256k1fx.Credential{}),
 		lc.RegisterType(&secp256k1fx.Input{}),
 		lc.RegisterType(&secp256k1fx.OutputOwners{}),
-		Codec.RegisterCodec(codecVersion, lc),
+		Codec.RegisterCodec(atomic.CodecVersion, lc),
 	)
 	if errs.Errored() {
 		panic(errs.Err)

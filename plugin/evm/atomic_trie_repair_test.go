@@ -103,7 +103,7 @@ func verifyAtomicTrieIsAlreadyRepaired(
 		require.NoError(err)
 
 		requests := make(map[ids.ID][]byte)
-		ops, err := mergeAtomicOps(txs)
+		ops, err := mergeAtomicOpsFromTxs(txs)
 		require.NoError(err)
 		for id, op := range ops {
 			bytes, err := Codec.Marshal(codecVersion, op)

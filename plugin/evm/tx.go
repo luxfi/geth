@@ -18,6 +18,7 @@ import (
 	"github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"
+	luxatomic "github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/node/snow"
 	"github.com/luxfi/node/utils"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
@@ -46,6 +47,9 @@ var (
 	TxBytesGas   uint64 = 1
 	EVMOutputGas uint64 = (common.AddressLength + wrappers.LongLen + hashing.HashLen) * TxBytesGas
 	EVMInputGas  uint64 = (common.AddressLength+wrappers.LongLen+hashing.HashLen+wrappers.LongLen)*TxBytesGas + secp256k1fx.CostPerSignature
+	
+	// x2cRateMinus1 is X2CRate - 1 for fee rounding
+	x2cRateMinus1 = new(big.Int).Sub(luxatomic.X2CRate.ToBig(), big.NewInt(1))
 )
 
 // EVMOutput defines an output that is added to the EVM state created by import transactions
@@ -157,7 +161,7 @@ func (tx *Tx) Compare(other *Tx) int {
 
 // Sign this transaction with the provided signers
 func (tx *Tx) Sign(c codec.Manager, signers [][]*secp256k1.PrivateKey) error {
-	unsignedBytes, err := c.Marshal(codecVersion, &tx.UnsignedAtomicTx)
+	unsignedBytes, err := c.Marshal(atomic.CodecVersion, &tx.UnsignedAtomicTx)
 	if err != nil {
 		return fmt.Errorf("couldn't marshal UnsignedAtomicTx: %w", err)
 	}
@@ -178,7 +182,7 @@ func (tx *Tx) Sign(c codec.Manager, signers [][]*secp256k1.PrivateKey) error {
 		tx.Creds = append(tx.Creds, cred) // Attach credential
 	}
 
-	signedBytes, err := c.Marshal(codecVersion, tx)
+	signedBytes, err := c.Marshal(atomic.CodecVersion, tx)
 	if err != nil {
 		return fmt.Errorf("couldn't marshal Tx: %w", err)
 	}
@@ -216,7 +220,7 @@ func (tx *Tx) BlockFeeContribution(fixedFee bool, luxAssetID ids.ID, baseFee *bi
 
 	// Calculate the amount of LUX that has been burned above the required fee denominated
 	// in C-Chain native 18 decimal places
-	blockFeeContribution := new(big.Int).Mul(new(big.Int).SetUint64(excessBurned), x2cRate)
+	blockFeeContribution := new(big.Int).Mul(new(big.Int).SetUint64(excessBurned), luxatomic.X2CRate.ToBig())
 	return blockFeeContribution, new(big.Int).SetUint64(gasUsed), nil
 }
 
@@ -255,7 +259,7 @@ func CalculateDynamicFee(cost uint64, baseFee *big.Int) (uint64, error) {
 	bigCost := new(big.Int).SetUint64(cost)
 	fee := new(big.Int).Mul(bigCost, baseFee)
 	feeToRoundUp := new(big.Int).Add(fee, x2cRateMinus1)
-	feeInNLUX := new(big.Int).Div(feeToRoundUp, x2cRate)
+	feeInNLUX := new(big.Int).Div(feeToRoundUp, luxatomic.X2CRate.ToBig())
 	if !feeInNLUX.IsUint64() {
 		// the fee is more than can fit in a uint64
 		return 0, errFeeOverflow
@@ -267,9 +271,9 @@ func calcBytesCost(len int) uint64 {
 	return uint64(len) * TxBytesGas
 }
 
-// mergeAtomicOps merges atomic requests represented by [txs]
+// mergeAtomicOpsFromTxs merges atomic requests represented by [txs]
 // to the [output] map, depending on whether [chainID] is present in the map.
-func mergeAtomicOps(txs []*Tx) (map[ids.ID]*atomic.Requests, error) {
+func mergeAtomicOpsFromTxs(txs []*Tx) (map[ids.ID]*atomic.Requests, error) {
 	if len(txs) > 1 {
 		// txs should be stored in order of txID to ensure consistency
 		// with txs initialized from the txID index.

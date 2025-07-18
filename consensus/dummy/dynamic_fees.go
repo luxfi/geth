@@ -5,6 +5,7 @@ package dummy
 
 import (
 	"encoding/binary"
+	"errors"
 	"fmt"
 	"math/big"
 
@@ -16,6 +17,10 @@ import (
 )
 
 var (
+	// Error definitions
+	errBaseFeeNil      = errors.New("base fee is nil")
+	errBlockGasCostNil = errors.New("block gas cost is nil")
+
 	ApricotPhase3MinBaseFee     = big.NewInt(params.ApricotPhase3MinBaseFee)
 	ApricotPhase3MaxBaseFee     = big.NewInt(params.ApricotPhase3MaxBaseFee)
 	ApricotPhase4MinBaseFee     = big.NewInt(params.ApricotPhase4MinBaseFee)

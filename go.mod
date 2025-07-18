@@ -5,8 +5,8 @@ go 1.23.9
 toolchain go1.24.5
 
 replace (
-	github.com/luxfi/evm => /Users/z/work/lux/evm
-	github.com/luxfi/node => /Users/z/work/lux/node
+	github.com/luxfi/evm => /home/z/work/lux/evm
+	github.com/luxfi/node => /home/z/work/lux/node
 )
 
 require (

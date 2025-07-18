@@ -10,9 +10,9 @@ import (
 
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/ids"
+	"github.com/luxfi/node/snow/choices"
 	"github.com/luxfi/node/snow/consensus/snowman"
 	"github.com/luxfi/node/snow/consensus/snowman/snowmantest"
-	"github.com/luxfi/node/snow/snowtest"
 )
 
 // EmptyBlockClient returns an error if a block is requested
@@ -34,9 +34,9 @@ func MakeBlockClient(blkIDs ...ids.ID) BlockClient {
 		}
 
 		return &snowmantest.Block{
-			Decidable: snowtest.Decidable{
-				IDV:    blkID,
-				Status: snowtest.Accepted,
+			TestDecidable: choices.TestDecidable{
+				IDV:     blkID,
+				StatusV: choices.Accepted,
 			},
 		}, nil
 	}

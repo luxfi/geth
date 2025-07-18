@@ -15,18 +15,25 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/luxfi/geth/metrics"
+	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/ethereum/go-ethereum/log"
 )
 
 const (
 	discardedTxsCacheSize = 50
+	
+	// Bloom filter parameters similar to platformvm
+	txGossipBloomMinTargetElements        = 8 * 1024
+	txGossipBloomTargetFalsePositiveRate  = 0.01
+	txGossipBloomResetFalsePositiveRate   = 0.05
+	txGossipBloomChurnMultiplier         = 3
 )
 
 var (
 	errTxAlreadyKnown = errors.New("tx already known")
 	errNoGasUsed      = errors.New("no gas used")
 
-	_ gossip.Set[*GossipAtomicTx] = (*Mempool)(nil)
+	_ gossip.Set[*atomic.GossipAtomicTx] = (*Mempool)(nil)
 )
 
 // mempoolMetrics defines the metrics for the atomic mempool
@@ -139,7 +146,7 @@ func (m *Mempool) atomicTxGasPrice(tx *Tx) (uint64, error) {
 	return burned / gasUsed, nil
 }
 
-func (m *Mempool) Add(tx *GossipAtomicTx) error {
+func (m *Mempool) Add(tx *atomic.GossipAtomicTx) error {
 	m.ctx.Lock.RLock()
 	defer m.ctx.Lock.RUnlock()
 
@@ -335,7 +342,7 @@ func (m *Mempool) addTx(tx *Tx, force bool) error {
 		m.utxoSpenders[utxoID] = tx
 	}
 
-	m.bloom.Add(&GossipAtomicTx{Tx: tx})
+	m.bloom.Add(&atomic.GossipAtomicTx{Tx: tx})
 	reset, err := gossip.ResetBloomFilterIfNeeded(m.bloom, m.length()*txGossipBloomChurnMultiplier)
 	if err != nil {
 		return err
@@ -345,7 +352,7 @@ func (m *Mempool) addTx(tx *Tx, force bool) error {
 		log.Debug("resetting bloom filter", "reason", "reached max filled ratio")
 
 		for _, pendingTx := range m.txHeap.minHeap.items {
-			m.bloom.Add(&GossipAtomicTx{Tx: pendingTx.tx})
+			m.bloom.Add(&atomic.GossipAtomicTx{Tx: pendingTx.tx})
 		}
 	}
 
@@ -359,12 +366,12 @@ func (m *Mempool) addTx(tx *Tx, force bool) error {
 	return nil
 }
 
-func (m *Mempool) Iterate(f func(tx *GossipAtomicTx) bool) {
+func (m *Mempool) Iterate(f func(tx *atomic.GossipAtomicTx) bool) {
 	m.lock.RLock()
 	defer m.lock.RUnlock()
 
 	for _, item := range m.txHeap.maxHeap.items {
-		if !f(&GossipAtomicTx{Tx: item.tx}) {
+		if !f(&atomic.GossipAtomicTx{Tx: item.tx}) {
 			return
 		}
 	}

@@ -84,7 +84,7 @@ func testTxCodec() codec.Manager {
 		c.RegisterType(&TestUnsignedTx{}),
 		c.RegisterType(&atomic.Element{}),
 		c.RegisterType(&atomic.Requests{}),
-		codec.RegisterCodec(codecVersion, c),
+		codec.RegisterCodec(atomic.CodecVersion, c),
 	)
 
 	if errs.Errored() {

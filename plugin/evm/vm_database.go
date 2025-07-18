@@ -51,7 +51,7 @@ func (vm *VM) inspectDatabases() error {
 	return nil
 }
 
-func inspectDB(db avalanchedatabase.Database, label string) error {
+func inspectDB(db luxdatabase.Database, label string) error {
 	it := db.NewIterator()
 	defer it.Release()
 

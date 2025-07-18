@@ -23,10 +23,20 @@ import (
 	"github.com/luxfi/geth/trie/triedb/pathdb"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/trie/triestate"
+	"github.com/luxfi/geth/triedb/database"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 )
+
+// mptResolver is a no-op implementation of ChildResolver
+type mptResolver struct{}
+
+// ForEach implements ChildResolver interface
+func (mptResolver) ForEach(node []byte, onChild func(common.Hash)) {
+	// The implementation needs to parse node and call onChild for each child hash
+	// For now, this is a placeholder implementation
+}
 
 // Config defines all necessary options for database.
 type Config struct {
@@ -115,7 +125,7 @@ func NewDatabase(diskdb ethdb.Database, config *Config) *Database {
 
 // Reader returns a reader for accessing all trie nodes with provided state root.
 // An error will be returned if the requested state is not available.
-func (db *Database) Reader(blockRoot common.Hash) (Reader, error) {
+func (db *Database) Reader(blockRoot common.Hash) (database.Reader, error) {
 	switch b := db.backend.(type) {
 	case *hashdb.Database:
 		return b.Reader(blockRoot)
@@ -260,7 +270,8 @@ func (db *Database) Recover(target common.Hash) error {
 	if !ok {
 		return errors.New("not supported")
 	}
-	return pdb.Recover(target, &trieLoader{db: db})
+	// TODO: Implement trieLoader
+	return pdb.Recover(target, nil)
 }
 
 // Recoverable returns the indicator if the specified state is enabled to be

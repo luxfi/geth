@@ -57,7 +57,7 @@ func (a *atomicTrie) repairAtomicTrie(bonusBlockIDs map[uint64]ids.ID, bonusBloc
 			return 0, fmt.Errorf("failed to extract atomic txs from bonus block at height %d: %w", height, err)
 		}
 		log.Info("repairing atomic trie", "height", height, "block", blockID, "txs", len(txs))
-		combinedOps, err := mergeAtomicOps(txs)
+		combinedOps, err := mergeAtomicOpsFromTxs(txs)
 		if err != nil {
 			return 0, err
 		}

@@ -10,6 +10,7 @@ import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/plugin/evm/atomic"
 )
 
 // Key in the database whose corresponding value is the list of
@@ -69,7 +70,7 @@ func (u *user) putAddress(privKey *secp256k1.PrivateKey) error {
 		return errKeyNil
 	}
 
-	address := GetEthAddress(privKey) // address the privKey controls
+	address := privKey.EthAddress() // address the privKey controls
 	controlsAddress, err := u.controlsAddress(address)
 	if err != nil {
 		return err
@@ -93,7 +94,7 @@ func (u *user) putAddress(privKey *secp256k1.PrivateKey) error {
 		}
 	}
 	addresses = append(addresses, address)
-	bytes, err := Codec.Marshal(codecVersion, addresses)
+	bytes, err := Codec.Marshal(atomic.CodecVersion, addresses)
 	if err != nil {
 		return err
 	}

@@ -12,8 +12,10 @@ import (
 
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/params"
+	"github.com/holiman/uint256"
 
 	"github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/snow"
 	"github.com/luxfi/node/utils"
@@ -32,6 +34,11 @@ var (
 	_                           secp256k1fx.UnsignedTx = &UnsignedImportTx{}
 	errImportNonLUXInputBanff                         = errors.New("import input cannot contain non-LUX in Banff")
 	errImportNonLUXOutputBanff                        = errors.New("import output cannot contain non-LUX in Banff")
+	errAssetIDMismatch                                = errors.New("asset IDs in the input don't match the utxo")
+	errNoImportInputs                                  = errors.New("import transaction must have at least one input")
+	errNoEVMOutputs                                    = errors.New("import transaction must have at least one output")
+	errOutputsNotSortedUnique                          = errors.New("outputs not sorted and unique")
+	errInsufficientFundsForFee                         = errors.New("insufficient funds to cover transaction fee")
 )
 
 // UnsignedImportTx is an unsigned ImportTx
@@ -220,7 +227,7 @@ func (utx *UnsignedImportTx) SemanticVerify(
 		return fmt.Errorf("import tx contained mismatched number of inputs/credentials (%d vs. %d)", len(utx.ImportedInputs), len(stx.Creds))
 	}
 
-	if !vm.bootstrapped {
+	if !vm.bootstrapped.Get() {
 		// Allow for force committing during bootstrapping
 		return nil
 	}
@@ -240,7 +247,7 @@ func (utx *UnsignedImportTx) SemanticVerify(
 		utxoBytes := allUTXOBytes[i]
 
 		utxo := &lux.UTXO{}
-		if _, err := vm.codec.Unmarshal(utxoBytes, utxo); err != nil {
+		if _, err := Codec.Unmarshal(utxoBytes, utxo); err != nil {
 			return fmt.Errorf("failed to unmarshal UTXO: %w", err)
 		}
 
@@ -257,7 +264,37 @@ func (utx *UnsignedImportTx) SemanticVerify(
 		}
 	}
 
-	return vm.conflicts(utx.InputUTXOs(), parent)
+	// Check for conflicts with atomic inputs in ancestor blocks
+	inputs := utx.InputUTXOs()
+	lastAcceptedBlock := vm.blockChain.LastAcceptedBlock()
+	lastAcceptedHeight := lastAcceptedBlock.NumberU64()
+	
+	for parent.Height() > lastAcceptedHeight {
+		// If any of the atomic transactions in the ancestor conflict with inputs
+		// return an error.
+		for _, atomicTx := range parent.atomicTxs {
+			if importTx, ok := atomicTx.UnsignedAtomicTx.(*luxatomic.UnsignedImportTx); ok {
+				if inputs.Overlaps(importTx.InputUTXOs()) {
+					return luxatomic.ErrConflictingAtomicInputs
+				}
+			}
+		}
+		
+		// Get parent block
+		parentHash := parent.ethBlock.ParentHash()
+		parentEthBlock := vm.blockChain.GetBlock(parentHash, parent.Height()-1)
+		if parentEthBlock == nil {
+			break
+		}
+		
+		var err error
+		parent, err = vm.newBlock(parentEthBlock)
+		if err != nil {
+			return err
+		}
+	}
+	
+	return nil
 }
 
 // AtomicOps returns imported inputs spent on this transaction
@@ -366,7 +403,7 @@ func (vm *VM) newImportTxWithUTXOs(
 			SourceChain:    chainID,
 		}
 		tx := &Tx{UnsignedAtomicTx: utx}
-		if err := tx.Sign(vm.codec, nil); err != nil {
+		if err := tx.Sign(Codec, nil); err != nil {
 			return nil, err
 		}
 
@@ -420,7 +457,7 @@ func (vm *VM) newImportTxWithUTXOs(
 		SourceChain:    chainID,
 	}
 	tx := &Tx{UnsignedAtomicTx: utx}
-	if err := tx.Sign(vm.codec, signers); err != nil {
+	if err := tx.Sign(Codec, signers); err != nil {
 		return nil, err
 	}
 	return tx, utx.Verify(vm.ctx, vm.currentRules())
@@ -435,8 +472,8 @@ func (utx *UnsignedImportTx) EVMStateTransfer(ctx *snow.Context, state *state.St
 			// If the asset is LUX, convert the input amount in nLUX to gWei by
 			// multiplying by the x2c rate.
 			amount := new(big.Int).Mul(
-				new(big.Int).SetUint64(to.Amount), x2cRate)
-			state.AddBalance(to.Address, amount)
+				new(big.Int).SetUint64(to.Amount), luxatomic.X2CRate.ToBig())
+			state.AddBalance(to.Address, uint256.MustFromBig(amount))
 		} else {
 			log.Debug("crosschain", "src", utx.SourceChain, "addr", to.Address, "amount", to.Amount, "assetID", to.AssetID)
 			amount := new(big.Int).SetUint64(to.Amount)

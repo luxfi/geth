@@ -435,3 +435,21 @@ func (n *network) nextRequestID() uint32 {
 
 	return next
 }
+
+// CrossChainAppRequest implements the common.AppHandler interface
+func (n *network) CrossChainAppRequest(ctx context.Context, chainID ids.ID, requestID uint32, deadline time.Time, msg []byte) error {
+	// TODO: Implement cross-chain app request handling
+	return nil
+}
+
+// CrossChainAppRequestFailed implements the common.AppHandler interface
+func (n *network) CrossChainAppRequestFailed(ctx context.Context, chainID ids.ID, requestID uint32, appErr *common.AppError) error {
+	// TODO: Implement cross-chain app request failure handling
+	return nil
+}
+
+// CrossChainAppResponse implements the common.AppHandler interface
+func (n *network) CrossChainAppResponse(ctx context.Context, chainID ids.ID, requestID uint32, msg []byte) error {
+	// TODO: Implement cross-chain app response handling
+	return nil
+}

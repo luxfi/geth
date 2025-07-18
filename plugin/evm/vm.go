@@ -93,6 +93,7 @@ import (
 	"github.com/luxfi/node/utils/timer/mockable"
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/vms/components/lux"
+	avax "github.com/luxfi/node/vms/components/avax"
 	"github.com/luxfi/node/vms/components/chain"
 	"github.com/luxfi/node/vms/components/gas"
 	"github.com/luxfi/node/vms/secp256k1fx"
@@ -1726,7 +1727,8 @@ func (vm *VM) GetAtomicUTXOs(
 		limit = maxUTXOsToFetch
 	}
 
-	return lux.GetAtomicUTXOs(
+	// Use avax.GetAtomicUTXOs but convert to lux.UTXO types
+	avaxUTXOs, lastAddr, lastUTXO, err := avax.GetAtomicUTXOs(
 		vm.ctx.SharedMemory,
 		atomic.Codec,
 		chainID,
@@ -1735,6 +1737,26 @@ func (vm *VM) GetAtomicUTXOs(
 		startUTXOID,
 		limit,
 	)
+	if err != nil {
+		return nil, lastAddr, lastUTXO, err
+	}
+	
+	// Convert avax.UTXO to lux.UTXO
+	luxUTXOs := make([]*lux.UTXO, len(avaxUTXOs))
+	for i, utxo := range avaxUTXOs {
+		luxUTXOs[i] = &lux.UTXO{
+			UTXOID: lux.UTXOID{
+				TxID:        utxo.TxID,
+				OutputIndex: utxo.OutputIndex,
+			},
+			Asset: lux.Asset{
+				ID: utxo.AssetID(),
+			},
+			Out: utxo.Out,
+		}
+	}
+	
+	return luxUTXOs, lastAddr, lastUTXO, nil
 }
 
 // currentRules returns the chain rules for the current block.
@@ -1854,54 +1876,3 @@ func (vm *VM) stateSyncEnabled(lastAcceptedHeight uint64) bool {
 	return lastAcceptedHeight == 0
 }
 
-func (vm *VM) newImportTx(
-	chainID ids.ID, // chain to import from
-	to common.Address, // Address of recipient
-	baseFee *big.Int, // fee to use post-AP3
-	keys []*secp256k1.PrivateKey, // Keys to import the funds
-) (*atomic.Tx, error) {
-	kc := secp256k1fx.NewKeychain()
-	for _, key := range keys {
-		kc.Add(key)
-	}
-
-	atomicUTXOs, _, _, err := vm.GetAtomicUTXOs(chainID, kc.Addresses(), ids.ShortEmpty, ids.Empty, -1)
-	if err != nil {
-		return nil, fmt.Errorf("problem retrieving atomic UTXOs: %w", err)
-	}
-
-	return atomic.NewImportTx(vm.ctx, vm.currentRules(), vm.clock.Unix(), chainID, to, baseFee, kc, atomicUTXOs)
-}
-
-// newExportTx returns a new ExportTx
-func (vm *VM) newExportTx(
-	assetID ids.ID, // AssetID of the tokens to export
-	amount uint64, // Amount of tokens to export
-	chainID ids.ID, // Chain to send the UTXOs to
-	to ids.ShortID, // Address of chain recipient
-	baseFee *big.Int, // fee to use post-AP3
-	keys []*secp256k1.PrivateKey, // Pay the fee and provide the tokens
-) (*atomic.Tx, error) {
-	state, err := vm.blockChain.State()
-	if err != nil {
-		return nil, err
-	}
-
-	// Create the transaction
-	tx, err := atomic.NewExportTx(
-		vm.ctx,            // Context
-		vm.currentRules(), // VM rules
-		state,
-		assetID, // AssetID
-		amount,  // Amount
-		chainID, // ID of the chain to send the funds to
-		to,      // Address
-		baseFee,
-		keys, // Private keys
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return tx, nil
-}
