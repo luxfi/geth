@@ -2,7 +2,7 @@
 // See the file LICENSE for licensing terms.
 
 // Package luxcache provides backward compatibility types for cache
-// that were present in older avalanchego versions
+// that were present in older Lux versions
 package luxcache
 
 import (
@@ -10,9 +10,9 @@ import (
 )
 
 // LRU provides a backward compatibility type for cache.LRU
-// In newer avalanchego versions, use cache/lru.Cache instead
+// In newer Lux versions, use cache/lru.Cache instead
 type LRU[K comparable, V any] struct {
-	Size int
+	Size  int
 	cache *lru.Cache[K, V]
 }
 
