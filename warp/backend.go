@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/node/cache"
+	"github.com/luxfi/geth/cachecompat"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p/acp118"
@@ -57,7 +58,7 @@ type backend struct {
 	warpSigner                luxWarp.Signer
 	blockClient               BlockClient
 	signatureCache            cache.Cacher[ids.ID, []byte]
-	messageCache              *cache.LRU[ids.ID, *luxWarp.UnsignedMessage]
+	messageCache              *cachecompat.LRU[ids.ID, *luxWarp.UnsignedMessage]
 	offchainAddressedCallMsgs map[ids.ID]*luxWarp.UnsignedMessage
 	stats                     *verifierStats
 }
@@ -79,7 +80,7 @@ func NewBackend(
 		warpSigner:                warpSigner,
 		blockClient:               blockClient,
 		signatureCache:            signatureCache,
-		messageCache:              &cache.LRU[ids.ID, *luxWarp.UnsignedMessage]{Size: messageCacheSize},
+		messageCache:              &cachecompat.LRU[ids.ID, *luxWarp.UnsignedMessage]{Size: messageCacheSize},
 		stats:                     newVerifierStats(),
 		offchainAddressedCallMsgs: make(map[ids.ID]*luxWarp.UnsignedMessage),
 	}

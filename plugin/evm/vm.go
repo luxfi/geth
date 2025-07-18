@@ -75,7 +75,7 @@ import (
 
 	luxRPC "github.com/gorilla/rpc/v2"
 
-	"github.com/luxfi/node/cache"
+	"github.com/luxfi/geth/cachecompat"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/codec/linearcodec"
 	"github.com/luxfi/node/database"
@@ -253,7 +253,7 @@ type VM struct {
 	// set to a prefixDB with the prefix [warpPrefix]
 	warpDB database.Database
 
-	toEngine chan<- commonEng.Message
+	toEngine chan commonEng.Message
 
 	syntacticBlockValidator BlockValidator
 
@@ -276,7 +276,7 @@ type VM struct {
 	shutdownWg   sync.WaitGroup
 
 	fx        secp256k1fx.Fx
-	secpCache secp256k1.RecoverCache
+	secpCache *secp256k1.RecoverCache
 
 	// Continuous Profiler
 	profiler profiler.ContinuousProfiler
@@ -344,7 +344,6 @@ func (vm *VM) Initialize(
 	genesisBytes []byte,
 	upgradeBytes []byte,
 	configBytes []byte,
-	toEngine chan<- commonEng.Message,
 	fxs []*commonEng.Fx,
 	appSender commonEng.AppSender,
 ) error {
@@ -394,9 +393,11 @@ func (vm *VM) Initialize(
 	}
 
 	// Enable debug-level metrics that might impact runtime performance
-	metrics.EnabledExpensive = vm.config.MetricsExpensiveEnabled
+	// TODO: metrics.EnabledExpensive is no longer a global variable in newer go-ethereum
+	// metrics.EnabledExpensive = vm.config.MetricsExpensiveEnabled
 
-	vm.toEngine = toEngine
+	// Create an internal channel for block building notifications
+	vm.toEngine = make(chan commonEng.Message, 1)
 	vm.shutdownChan = make(chan struct{}, 1)
 
 	if err := vm.initializeMetrics(); err != nil {
@@ -521,11 +522,7 @@ func (vm *VM) Initialize(
 
 	vm.chainConfig = g.Config
 	vm.networkID = vm.ethConfig.NetworkId
-	vm.secpCache = secp256k1.RecoverCache{
-		LRU: cache.LRU[ids.ID, *secp256k1.PublicKey]{
-			Size: secpCacheSize,
-		},
-	}
+	vm.secpCache = secp256k1.NewRecoverCache(secpCacheSize)
 
 	if err := vm.chainConfig.Verify(); err != nil {
 		return fmt.Errorf("failed to verify chain config: %w", err)
@@ -557,7 +554,7 @@ func (vm *VM) Initialize(
 	for i, hexMsg := range vm.config.WarpOffChainMessages {
 		offchainWarpMessages[i] = []byte(hexMsg)
 	}
-	warpSignatureCache := &cache.LRU[ids.ID, []byte]{Size: warpSignatureCacheSize}
+	warpSignatureCache := &cachecompat.LRU[ids.ID, []byte]{Size: warpSignatureCacheSize}
 	meteredCache, err := metercacher.New("warp_signature_cache", vm.sdkMetrics, warpSignatureCache)
 	if err != nil {
 		return fmt.Errorf("failed to create warp signature cache: %w", err)
@@ -637,7 +634,8 @@ func (vm *VM) Initialize(
 }
 
 func (vm *VM) initializeMetrics() error {
-	metrics.Enabled = true
+	// TODO: metrics.Enabled is now a function in newer go-ethereum
+	// metrics.Enabled = true
 	vm.sdkMetrics = prometheus.NewRegistry()
 	gatherer := gethprometheus.NewGatherer(metrics.DefaultRegistry)
 	if err := vm.ctx.Metrics.Register(ethMetricsPrefix, gatherer); err != nil {
@@ -778,7 +776,7 @@ func (vm *VM) initChainState(lastAcceptedBlock *types.Block) error {
 	}
 	vm.State = state
 
-	if !metrics.Enabled {
+	if !metrics.Enabled() {
 		return nil
 	}
 
@@ -1261,6 +1259,32 @@ func (vm *VM) initBlockBuilding() error {
 	return nil
 }
 
+// WaitForEvent implements the common.VM interface
+func (vm *VM) WaitForEvent(ctx context.Context) (commonEng.Message, error) {
+	select {
+	case <-ctx.Done():
+		return 0, ctx.Err()
+	case msg := <-vm.toEngine:
+		return msg, nil
+	}
+}
+
+// NewHTTPHandler implements the common.VM interface
+func (vm *VM) NewHTTPHandler(ctx context.Context) (http.Handler, error) {
+	// Return the same handlers as CreateHandlers
+	handlers, err := vm.CreateHandlers(ctx)
+	if err != nil {
+		return nil, err
+	}
+	
+	// Create a mux to route requests
+	mux := http.NewServeMux()
+	for endpoint, handler := range handlers {
+		mux.Handle("/"+endpoint, handler)
+	}
+	return mux, nil
+}
+
 // setAppRequestHandlers sets the request handlers for the VM to serve state sync
 // requests.
 func (vm *VM) setAppRequestHandlers() {
@@ -1658,7 +1682,7 @@ func (vm *VM) verifyTx(tx *atomic.Tx, parentHash common.Hash, baseFee *big.Int, 
 		Rules:        rules,
 		Bootstrapped: vm.bootstrapped.Get(),
 		BlockFetcher: vm,
-		SecpCache:    &vm.secpCache,
+		SecpCache:    vm.secpCache,
 	}
 	if err := tx.UnsignedAtomicTx.SemanticVerify(atomicBackend, tx, parent, baseFee); err != nil {
 		return err
@@ -1697,7 +1721,7 @@ func (vm *VM) verifyTxs(txs []*atomic.Tx, parentHash common.Hash, baseFee *big.I
 		Rules:        rules,
 		Bootstrapped: vm.bootstrapped.Get(),
 		BlockFetcher: vm,
-		SecpCache:    &vm.secpCache,
+		SecpCache:    vm.secpCache,
 	}
 	for _, atomicTx := range txs {
 		utx := atomicTx.UnsignedAtomicTx

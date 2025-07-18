@@ -210,12 +210,22 @@ func (c *Config) VerifyPredicate(predicateContext *precompileconfig.PredicateCon
 		c.RequirePrimaryNetworkSigners,
 	)
 
+	// Get validators at the specified P-chain height
+	validatorSet, err := state.GetValidatorSet(context.Background(), predicateContext.ProposerVMBlockCtx.PChainHeight, warpMsg.SourceChainID)
+	if err != nil {
+		return fmt.Errorf("failed to get validator set: %w", err)
+	}
+
+	// Convert validator set to canonical format
+	canonicalValidators, err := warp.FlattenValidatorSet(validatorSet)
+	if err != nil {
+		return fmt.Errorf("failed to flatten validator set: %w", err)
+	}
+
 	err = warpMsg.Signature.Verify(
-		context.Background(),
 		&warpMsg.UnsignedMessage,
 		predicateContext.SnowCtx.NetworkID,
-		state,
-		predicateContext.ProposerVMBlockCtx.PChainHeight,
+		canonicalValidators,
 		quorumNumerator,
 		WarpQuorumDenominator,
 	)

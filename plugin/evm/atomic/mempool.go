@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/luxfi/node/cache"
+	"github.com/luxfi/node/cache/lru"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p/gossip"
 	"github.com/luxfi/node/snow"
@@ -35,12 +35,12 @@ var (
 
 // mempoolMetrics defines the metrics for the atomic mempool
 type mempoolMetrics struct {
-	pendingTxs metrics.Gauge // Gauge of currently pending transactions in the txHeap
-	currentTxs metrics.Gauge // Gauge of current transactions to be issued into a block
-	issuedTxs  metrics.Gauge // Gauge of transactions that have been issued into a block
+	pendingTxs *metrics.Gauge // Gauge of currently pending transactions in the txHeap
+	currentTxs *metrics.Gauge // Gauge of current transactions to be issued into a block
+	issuedTxs  *metrics.Gauge // Gauge of transactions that have been issued into a block
 
-	addedTxs     metrics.Counter // Count of all transactions added to the mempool
-	discardedTxs metrics.Counter // Count of all discarded transactions
+	addedTxs     *metrics.Counter // Count of all transactions added to the mempool
+	discardedTxs *metrics.Counter // Count of all discarded transactions
 }
 
 // newMempoolMetrics constructs metrics for the atomic mempool
@@ -67,7 +67,7 @@ type Mempool struct {
 	issuedTxs map[ids.ID]*Tx
 	// discardedTxs is an LRU Cache of transactions that have been discarded after failing
 	// verification.
-	discardedTxs *cache.LRU[ids.ID, *Tx]
+	discardedTxs *lru.Cache[ids.ID, *Tx]
 	// Pending is a channel of length one, which the mempool ensures has an item on
 	// it as long as there is an unissued transaction remaining in [txs]
 	Pending chan struct{}
@@ -98,7 +98,7 @@ func NewMempool(ctx *snow.Context, registerer prometheus.Registerer, maxSize int
 	return &Mempool{
 		ctx:          ctx,
 		issuedTxs:    make(map[ids.ID]*Tx),
-		discardedTxs: &cache.LRU[ids.ID, *Tx]{Size: discardedTxsCacheSize},
+		discardedTxs: lru.NewCache[ids.ID, *Tx](discardedTxsCacheSize),
 		currentTxs:   make(map[ids.ID]*Tx),
 		Pending:      make(chan struct{}, 1),
 		txHeap:       newTxHeap(maxSize),

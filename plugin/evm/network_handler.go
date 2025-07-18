@@ -37,7 +37,7 @@ func newNetworkHandler(
 	warpBackend warp.Backend,
 	networkCodec codec.Manager,
 ) message.RequestHandler {
-	syncStats := syncStats.NewHandlerStats(metrics.Enabled)
+	syncStats := syncStats.NewHandlerStats(metrics.Enabled())
 	return &networkHandler{
 		stateTrieLeafsRequestHandler:  syncHandlers.NewLeafsRequestHandler(evmTrieDB, provider, networkCodec, syncStats),
 		atomicTrieLeafsRequestHandler: syncHandlers.NewLeafsRequestHandler(atomicTrieDB, nil, networkCodec, syncStats),

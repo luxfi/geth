@@ -45,9 +45,10 @@ func InitLogger(alias string, level string, jsonFormat bool, writer io.Writer) (
 		handler = termHandler
 	}
 
-	// Create handler
+	// Create handler by wrapping the exp/slog handler with our adapter
+	adaptedHandler := &slogAdapter{handler: handler}
 	c := GethLogger{
-		Logger:   gethlog.NewLogger(handler),
+		Logger:   gethlog.NewLogger(adaptedHandler),
 		logLevel: logLevel,
 	}
 
@@ -65,7 +66,8 @@ func (c *GethLogger) SetLogLevel(level string) error {
 	if err != nil {
 		return err
 	}
-	c.logLevel.Set(logLevel)
+	// Convert exp/slog.Level to int value for standard library slog.Level
+	c.logLevel.Set(slog.Level(int(logLevel)))
 	return nil
 }
 

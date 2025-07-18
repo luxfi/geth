@@ -14,8 +14,8 @@ import (
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
 	"github.com/luxfi/geth/plugin/evm/upgrade/etna"
+	luxcommon "github.com/luxfi/geth/common"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
 )
 
 var (
@@ -84,7 +84,7 @@ func baseFeeFromWindow(config *params.ChainConfig, parent *types.Header, timesta
 		num.Mul(num, parent.BaseFee)
 		num.Div(num, parentGasTargetBig)
 		num.Div(num, baseFeeChangeDenominator)
-		baseFeeDelta := math.BigMax(num, common.Big1)
+		baseFeeDelta := luxcommon.BigMax(num, common.Big1)
 
 		baseFee.Add(baseFee, baseFeeDelta)
 	} else {
@@ -93,7 +93,7 @@ func baseFeeFromWindow(config *params.ChainConfig, parent *types.Header, timesta
 		num.Mul(num, parent.BaseFee)
 		num.Div(num, parentGasTargetBig)
 		num.Div(num, baseFeeChangeDenominator)
-		baseFeeDelta := math.BigMax(num, common.Big1)
+		baseFeeDelta := luxcommon.BigMax(num, common.Big1)
 
 		if timestamp < parent.Time {
 			// This should never happen as the fee window calculations should
