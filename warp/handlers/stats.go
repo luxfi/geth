@@ -11,15 +11,15 @@ import (
 
 type handlerStats struct {
 	// MessageSignatureRequestHandler metrics
-	messageSignatureRequest         metrics.Counter
-	messageSignatureHit             metrics.Counter
-	messageSignatureMiss            metrics.Counter
-	messageSignatureRequestDuration metrics.Gauge
+	messageSignatureRequest         *metrics.Counter
+	messageSignatureHit             *metrics.Counter
+	messageSignatureMiss            *metrics.Counter
+	messageSignatureRequestDuration *metrics.Gauge
 	// BlockSignatureRequestHandler metrics
-	blockSignatureRequest         metrics.Counter
-	blockSignatureHit             metrics.Counter
-	blockSignatureMiss            metrics.Counter
-	blockSignatureRequestDuration metrics.Gauge
+	blockSignatureRequest         *metrics.Counter
+	blockSignatureHit             *metrics.Counter
+	blockSignatureMiss            *metrics.Counter
+	blockSignatureRequestDuration *metrics.Gauge
 }
 
 func newStats() *handlerStats {

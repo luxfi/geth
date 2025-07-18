@@ -33,7 +33,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 // makeTestTrie create a sample test trie to test node-wise reconstruction.

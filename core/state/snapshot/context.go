@@ -29,10 +29,9 @@ package snapshot
 import (
 	"encoding/binary"
 	"fmt"
+	"log/slog"
 	"math"
 	"time"
-
-	"golang.org/x/exp/slog"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
@@ -52,13 +51,13 @@ type generatorStats struct {
 // Info creates an contextual info-level log with the given message and the context pulled
 // from the internally maintained statistics.
 func (gs *generatorStats) Info(msg string, root common.Hash, marker []byte) {
-	gs.log(log.LvlInfo, msg, root, marker)
+	gs.log(slog.LevelInfo, msg, root, marker)
 }
 
 // Debug creates an contextual debug-level log with the given message and the context pulled
 // from the internally maintained statistics.
 func (gs *generatorStats) Debug(msg string, root common.Hash, marker []byte) {
-	gs.log(log.LvlDebug, msg, root, marker)
+	gs.log(slog.LevelDebug, msg, root, marker)
 }
 
 // log creates an contextual log with the given message and the context pulled
@@ -98,18 +97,14 @@ func (gs *generatorStats) log(level slog.Level, msg string, root common.Hash, ma
 	}
 
 	switch level {
-	case log.LvlTrace:
-		log.Trace(msg, ctx...)
-	case log.LvlDebug:
+	case slog.LevelDebug:
 		log.Debug(msg, ctx...)
-	case log.LvlInfo:
+	case slog.LevelInfo:
 		log.Info(msg, ctx...)
-	case log.LevelWarn:
+	case slog.LevelWarn:
 		log.Warn(msg, ctx...)
-	case log.LevelError:
+	case slog.LevelError:
 		log.Error(msg, ctx...)
-	case log.LevelCrit:
-		log.Crit(msg, ctx...)
 	default:
 		log.Error(fmt.Sprintf("log with invalid log level %s: %s", level, msg), ctx...)
 	}

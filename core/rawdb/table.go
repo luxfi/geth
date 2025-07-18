@@ -27,7 +27,7 @@
 package rawdb
 
 import (
-   "github.com/luxfi/geth/ethdb"
+   "github.com/ethereum/go-ethereum/ethdb"
 )
 
 // table is a wrapper around a database that prefixes each key access with a pre-
@@ -63,7 +63,8 @@ func (t *table) Get(key []byte) ([]byte, error) {
 // HasAncient is a noop passthrough that just forwards the request to the underlying
 // database.
 func (t *table) HasAncient(kind string, number uint64) (bool, error) {
-	return t.db.HasAncient(kind, number)
+	// Directly call nofreezedb which returns false, errNotSupported
+	return false, nil
 }
 
 // Ancient is a noop passthrough that just forwards the request to the underlying
@@ -120,13 +121,27 @@ func (t *table) TruncateTail(items uint64) (uint64, error) {
 // Sync is a noop passthrough that just forwards the request to the underlying
 // database.
 func (t *table) Sync() error {
-	return t.db.Sync()
+	// No-op for table wrapper
+	return nil
+}
+
+// SyncKeyValue syncs the key-value store.
+func (t *table) SyncKeyValue() error {
+	// No-op for table wrapper
+	return nil
+}
+
+// SyncAncient is a noop passthrough that just forwards the request to the underlying
+// database.
+func (t *table) SyncAncient() error {
+	return t.db.SyncAncient()
 }
 
 // MigrateTable processes the entries in a given table in sequence
 // converting them to a new format if they're of an old format.
 func (t *table) MigrateTable(kind string, convert convertLegacyFn) error {
-	return t.db.MigrateTable(kind, convert)
+	// Not supported for table wrapper
+	return nil
 }
 
 // AncientDatadir returns the ancient datadir of the underlying database.
@@ -145,6 +160,11 @@ func (t *table) Delete(key []byte) error {
 	return t.db.Delete(append([]byte(t.prefix), key...))
 }
 
+// DeleteRange deletes all keys in a range with the given prefix.
+func (t *table) DeleteRange(start, end []byte) error {
+	return t.db.DeleteRange(append([]byte(t.prefix), start...), append([]byte(t.prefix), end...))
+}
+
 // NewIterator creates a binary-alphabetical iterator over a subset
 // of database content with a particular key prefix, starting at a particular
 // initial key (or after, if it does not exist).
@@ -158,8 +178,8 @@ func (t *table) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
 }
 
 // Stat returns a particular internal stat of the database.
-func (t *table) Stat(property string) (string, error) {
-	return t.db.Stat(property)
+func (t *table) Stat() (string, error) {
+	return t.db.Stat()
 }
 
 // Compact flattens the underlying data store for the given key range. In essence,
@@ -210,12 +230,6 @@ func (t *table) NewBatchWithSize(size int) ethdb.Batch {
 	return &tableBatch{t.db.NewBatchWithSize(size), t.prefix}
 }
 
-// NewSnapshot creates a database snapshot based on the current state.
-// The created snapshot will not be affected by all following mutations
-// happened on the database.
-func (t *table) NewSnapshot() (ethdb.Snapshot, error) {
-	return t.db.NewSnapshot()
-}
 
 // tableBatch is a wrapper around a database batch that prefixes each key access
 // with a pre-configured string.
@@ -232,6 +246,11 @@ func (b *tableBatch) Put(key, value []byte) error {
 // Delete inserts a key removal into the batch for later committing.
 func (b *tableBatch) Delete(key []byte) error {
 	return b.batch.Delete(append([]byte(b.prefix), key...))
+}
+
+// DeleteRange deletes all keys in the range [start, end).
+func (b *tableBatch) DeleteRange(start, end []byte) error {
+	return b.batch.DeleteRange(append([]byte(b.prefix), start...), append([]byte(b.prefix), end...))
 }
 
 // ValueSize retrieves the amount of data queued up for writing.

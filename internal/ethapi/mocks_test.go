@@ -25,7 +25,7 @@ import (
 	params "github.com/luxfi/geth/params"
 	rpc "github.com/luxfi/geth/rpc"
 	common "github.com/ethereum/go-ethereum/common"
-	ethdb "github.com/luxfi/geth/ethdb"
+	ethdb "github.com/ethereum/go-ethereum/ethdb"
 	event "github.com/ethereum/go-ethereum/event"
 	gomock "go.uber.org/mock/gomock"
 )

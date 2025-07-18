@@ -15,7 +15,7 @@ import (
 	"github.com/luxfi/geth/plugin/evm/message"
 	statesyncclient "github.com/luxfi/geth/sync/client"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 const (

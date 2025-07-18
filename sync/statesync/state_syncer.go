@@ -12,7 +12,7 @@ import (
 	syncclient "github.com/luxfi/geth/sync/client"
 	"github.com/luxfi/geth/triedb"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"golang.org/x/sync/errgroup"
 )
 

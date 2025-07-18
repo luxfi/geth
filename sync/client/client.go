@@ -28,7 +28,7 @@ import (
 	"github.com/luxfi/geth/peer"
 	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/luxfi/geth/trie"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 const (

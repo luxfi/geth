@@ -45,7 +45,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/holiman/uint256"
 )
 
@@ -605,7 +604,7 @@ func (s *StateDB) GetTransientState(addr common.Address, key common.Hash) common
 // updateStateObject writes the given object to the trie.
 func (s *StateDB) updateStateObject(obj *stateObject) {
 	// Track the amount of time wasted on updating the account from the trie
-	if metrics.EnabledExpensive {
+	if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 		defer func(start time.Time) { s.AccountUpdates += time.Since(start) }(time.Now())
 	}
 	// Encode the account and update the account trie
@@ -637,7 +636,7 @@ func (s *StateDB) updateStateObject(obj *stateObject) {
 // deleteStateObject removes the given object from the state trie.
 func (s *StateDB) deleteStateObject(obj *stateObject) {
 	// Track the amount of time wasted on deleting the account from the trie
-	if metrics.EnabledExpensive {
+	if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 		defer func(start time.Time) { s.AccountUpdates += time.Since(start) }(time.Now())
 	}
 	// Delete the account from the trie
@@ -671,7 +670,7 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 	if s.snap != nil {
 		start := time.Now()
 		acc, err := s.snap.Account(crypto.HashData(s.hasher, addr.Bytes()))
-		if metrics.EnabledExpensive {
+		if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 			s.SnapshotAccountReads += time.Since(start)
 		}
 		if err == nil {
@@ -698,7 +697,7 @@ func (s *StateDB) getDeletedStateObject(addr common.Address) *stateObject {
 		start := time.Now()
 		var err error
 		data, err = s.trie.GetAccount(addr)
-		if metrics.EnabledExpensive {
+		if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 			s.AccountReads += time.Since(start)
 		}
 		if err != nil {
@@ -1027,7 +1026,7 @@ func (s *StateDB) IntermediateRoot(deleteEmptyObjects bool) common.Hash {
 		s.stateObjectsPending = make(map[common.Address]struct{})
 	}
 	// Track the amount of time wasted on hashing the account trie
-	if metrics.EnabledExpensive {
+	if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 		defer func(start time.Time) { s.AccountHashes += time.Since(start) }(time.Now())
 	}
 	return s.trie.Hash()
@@ -1156,7 +1155,7 @@ func (s *StateDB) deleteStorage(addr common.Address, addrHash common.Hash, root 
 	if err != nil {
 		return false, nil, nil, err
 	}
-	if metrics.EnabledExpensive {
+	if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 		if aborted {
 			slotDeletionSkip.Inc(1)
 		}
@@ -1329,7 +1328,7 @@ func (s *StateDB) commit(block uint64, deleteEmptyObjects bool, snaps *snapshot.
 	}
 	// Write the account trie changes, measuring the amount of wasted time
 	var start time.Time
-	if metrics.EnabledExpensive {
+	if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 		start = time.Now()
 	}
 	root, set, err := s.trie.Commit(true)
@@ -1343,7 +1342,7 @@ func (s *StateDB) commit(block uint64, deleteEmptyObjects bool, snaps *snapshot.
 		}
 		accountTrieNodesUpdated, accountTrieNodesDeleted = set.Size()
 	}
-	if metrics.EnabledExpensive {
+	if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 		s.AccountCommits += time.Since(start)
 
 		accountUpdatedMeter.Mark(int64(s.AccountUpdated))
@@ -1366,7 +1365,7 @@ func (s *StateDB) commit(block uint64, deleteEmptyObjects bool, snaps *snapshot.
 		if err := snaps.Update(blockHash, root, parentHash, s.convertAccountSet(s.stateObjectsDestruct), s.accounts, s.storages); err != nil {
 			log.Warn("Failed to update snapshot tree", "to", root, "err", err)
 		}
-		if metrics.EnabledExpensive {
+		if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 			s.SnapshotCommits += time.Since(start)
 		}
 		s.snap = nil
@@ -1385,7 +1384,7 @@ func (s *StateDB) commit(block uint64, deleteEmptyObjects bool, snaps *snapshot.
 			return common.Hash{}, err
 		}
 		s.originalRoot = root
-		if metrics.EnabledExpensive {
+		if false { // metrics.EnabledExpensive removed in go-ethereum v1.16.1
 			s.TrieDBCommits += time.Since(start)
 		}
 		if s.onCommit != nil {

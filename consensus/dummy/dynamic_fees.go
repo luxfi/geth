@@ -7,13 +7,15 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"math"
 	"math/big"
 
 	"github.com/luxfi/node/utils/wrappers"
+	luxcommon "github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
+	commonmath "github.com/ethereum/go-ethereum/common/math"
 )
 
 var (
@@ -123,14 +125,14 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header, timestamp uin
 		}
 
 		// Compute the new state of the gas rolling window.
-		addedGas, overflow := math.SafeAdd(parent.GasUsed, parentExtraStateGasUsed)
+		addedGas, overflow := commonmath.SafeAdd(parent.GasUsed, parentExtraStateGasUsed)
 		if overflow {
 			addedGas = math.MaxUint64
 		}
 
 		// Only add the [blockGasCost] to the gas used if it isn't AP5
 		if !isApricotPhase5 {
-			addedGas, overflow = math.SafeAdd(addedGas, blockGasCost)
+			addedGas, overflow = commonmath.SafeAdd(addedGas, blockGasCost)
 			if overflow {
 				addedGas = math.MaxUint64
 			}
@@ -153,7 +155,7 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header, timestamp uin
 		gasUsedDelta := new(big.Int).SetUint64(totalGas - parentGasTarget)
 		x := new(big.Int).Mul(parent.BaseFee, gasUsedDelta)
 		y := x.Div(x, parentGasTargetBig)
-		baseFeeDelta := math.BigMax(
+		baseFeeDelta := luxcommon.BigMax(
 			x.Div(y, baseFeeChangeDenominator),
 			common.Big1,
 		)
@@ -164,7 +166,7 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header, timestamp uin
 		gasUsedDelta := new(big.Int).SetUint64(parentGasTarget - totalGas)
 		x := new(big.Int).Mul(parent.BaseFee, gasUsedDelta)
 		y := x.Div(x, parentGasTargetBig)
-		baseFeeDelta := math.BigMax(
+		baseFeeDelta := luxcommon.BigMax(
 			x.Div(y, baseFeeChangeDenominator),
 			common.Big1,
 		)
@@ -268,7 +270,7 @@ func sumLongWindow(window []byte, numLongs int) uint64 {
 	for i := 0; i < numLongs; i++ {
 		// If an overflow occurs while summing the elements of the window, return the maximum
 		// uint64 value immediately.
-		sum, overflow = math.SafeAdd(sum, binary.BigEndian.Uint64(window[wrappers.LongLen*i:]))
+		sum, overflow = commonmath.SafeAdd(sum, binary.BigEndian.Uint64(window[wrappers.LongLen*i:]))
 		if overflow {
 			return math.MaxUint64
 		}
@@ -282,7 +284,7 @@ func sumLongWindow(window []byte, numLongs int) uint64 {
 func updateLongWindow(window []byte, start uint64, gasConsumed uint64) {
 	prevGasConsumed := binary.BigEndian.Uint64(window[start:])
 
-	totalGasConsumed, overflow := math.SafeAdd(prevGasConsumed, gasConsumed)
+	totalGasConsumed, overflow := commonmath.SafeAdd(prevGasConsumed, gasConsumed)
 	if overflow {
 		totalGasConsumed = math.MaxUint64
 	}

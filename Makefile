@@ -19,12 +19,8 @@ BUILDFLAGS=-v
 
 # Build target is a no-op in this repo; see the lux/node README for build instructions
 build:
-	@echo "This repository is a Geth plugin for Lux; it must be built via the Lux node build script."
-	@echo "Run the following from the lux/node directory:"
-	@echo "  ./scripts/build.sh"
+	./scripts/build.sh
 
-# Build-all is an alias for build
-build-all: build
 
 # Test
 test:

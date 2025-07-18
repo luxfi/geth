@@ -46,7 +46,7 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 // snapshotTestBasic wraps the common testing fields in the snapshot tests.

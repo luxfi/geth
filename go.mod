@@ -13,7 +13,7 @@ require (
 	github.com/ethereum/go-ethereum v1.16.1
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/gballet/go-libpcsclite v0.0.0-20191108122812-4678299bea08
-	github.com/gballet/go-verkle v0.1.1-0.20231031103413-a67434b50f46
+	// github.com/gballet/go-verkle v0.1.1-0.20231031103413-a67434b50f46
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/rpc v1.2.0
 	github.com/gorilla/websocket v1.5.0
@@ -52,9 +52,10 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
+require github.com/ethereum/go-verkle v0.2.2
+
 require (
 	github.com/DataDog/zstd v1.5.2 // indirect
-	github.com/StephenButtolph/canoto v0.17.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.20.0 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.3 // indirect
@@ -130,4 +131,9 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+)
+
+replace (
+	github.com/luxfi/evm => /Users/z/work/lux/evm
+	github.com/luxfi/node => /Users/z/work/lux/node
 )

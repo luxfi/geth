@@ -34,10 +34,10 @@ import (
    "time"
 
    "github.com/ethereum/go-ethereum/common"
-   "github.com/luxfi/geth/ethdb"
-   "github.com/luxfi/geth/ethdb/leveldb"
-   "github.com/luxfi/geth/ethdb/memorydb"
-   "github.com/luxfi/geth/ethdb/pebble"
+   "github.com/ethereum/go-ethereum/ethdb"
+   "github.com/ethereum/go-ethereum/ethdb/leveldb"
+   "github.com/ethereum/go-ethereum/ethdb/memorydb"
+   "github.com/ethereum/go-ethereum/ethdb/pebble"
    "github.com/ethereum/go-ethereum/log"
    "github.com/olekukonko/tablewriter"
 )
@@ -58,7 +58,7 @@ func (db *nofreezedb) Ancient(kind string, number uint64) ([]byte, error) {
 }
 
 // AncientRange returns an error as we don't have a backing chain freezer.
-func (db *nofreezedb) AncientRange(kind string, start, max, maxByteSize uint64) ([][]byte, error) {
+func (db *nofreezedb) AncientRange(kind string, start, count, maxBytes uint64) ([][]byte, error) {
 	return nil, errNotSupported
 }
 
@@ -78,7 +78,7 @@ func (db *nofreezedb) AncientSize(kind string) (uint64, error) {
 }
 
 // ModifyAncients is not supported.
-func (db *nofreezedb) ModifyAncients(func(ethdb.AncientWriteOp) error) (int64, error) {
+func (db *nofreezedb) ModifyAncients(fn func(ethdb.AncientWriteOp) error) (int64, error) {
 	return 0, errNotSupported
 }
 
@@ -122,6 +122,16 @@ func (db *nofreezedb) MigrateTable(kind string, convert convertLegacyFn) error {
 // AncientDatadir returns an error as we don't have a backing chain freezer.
 func (db *nofreezedb) AncientDatadir() (string, error) {
 	return "", errNotSupported
+}
+
+// Close implements io.Closer
+func (db *nofreezedb) Close() error {
+	return db.KeyValueStore.Close()
+}
+
+// SyncAncient returns an error as we don't have a backing chain freezer.
+func (db *nofreezedb) SyncAncient() error {
+	return errNotSupported
 }
 
 // NewDatabase creates a high level database on top of a given key-value data

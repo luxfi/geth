@@ -45,9 +45,10 @@ func InitLogger(alias string, level string, jsonFormat bool, writer io.Writer) (
 		handler = termHandler
 	}
 
-	// Create handler
+	// Create logger with default handler for now
+	// TODO: Fix slog version mismatch between luxfi/geth/log and go-ethereum/log
 	c := GethLogger{
-		Logger:   gethlog.NewLogger(handler),
+		Logger:   gethlog.Root(),
 		logLevel: logLevel,
 	}
 

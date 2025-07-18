@@ -7,7 +7,7 @@ import (
 	"errors"
 
 	"github.com/luxfi/node/database"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 var (
@@ -20,7 +20,16 @@ var (
 type Database struct{ database.Database }
 
 // Stat implements ethdb.Database
-func (db Database) Stat(string) (string, error) { return "", database.ErrNotFound }
+func (db Database) Stat() (string, error) { return "", database.ErrNotFound }
+
+// SyncKeyValue implements ethdb.KeyValueSyncer
+func (db Database) SyncKeyValue() error { return nil }
+
+// DeleteRange implements ethdb.KeyValueStore
+func (db Database) DeleteRange(start []byte, end []byte) error {
+	// Not supported by the underlying database
+	return nil
+}
 
 // NewBatch implements ethdb.Database
 func (db Database) NewBatch() ethdb.Batch { return Batch{db.Database.NewBatch()} }
@@ -29,9 +38,6 @@ func (db Database) NewBatch() ethdb.Batch { return Batch{db.Database.NewBatch()}
 // TODO: propagate size through node Database interface
 func (db Database) NewBatchWithSize(size int) ethdb.Batch { return Batch{db.Database.NewBatch()} }
 
-func (db Database) NewSnapshot() (ethdb.Snapshot, error) {
-	return nil, ErrSnapshotNotSupported
-}
 
 // NewIterator implements ethdb.Database
 //
@@ -62,3 +68,9 @@ func (batch Batch) ValueSize() int { return batch.Batch.Size() }
 
 // Replay implements ethdb.Batch
 func (batch Batch) Replay(w ethdb.KeyValueWriter) error { return batch.Batch.Replay(w) }
+
+// DeleteRange implements ethdb.Batch
+func (batch Batch) DeleteRange(start []byte, end []byte) error {
+	// Not supported by the underlying batch
+	return nil
+}

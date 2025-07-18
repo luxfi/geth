@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 )
 

@@ -14,8 +14,7 @@ import (
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/warp"
 	warpHandlers "github.com/luxfi/geth/warp/handlers"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 var _ message.RequestHandler = &networkHandler{}
@@ -37,7 +36,7 @@ func newNetworkHandler(
 	warpBackend warp.Backend,
 	networkCodec codec.Manager,
 ) message.RequestHandler {
-	syncStats := syncStats.NewHandlerStats(metrics.Enabled)
+	syncStats := syncStats.NewHandlerStats(true) // metrics always enabled in go-ethereum v1.16.1
 	return &networkHandler{
 		stateTrieLeafsRequestHandler:  syncHandlers.NewLeafsRequestHandler(evmTrieDB, provider, networkCodec, syncStats),
 		atomicTrieLeafsRequestHandler: syncHandlers.NewLeafsRequestHandler(atomicTrieDB, nil, networkCodec, syncStats),

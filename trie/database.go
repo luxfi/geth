@@ -25,7 +25,7 @@ import (
 	"github.com/luxfi/geth/trie/triestate"
 	"github.com/luxfi/geth/triedb/database"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 )
 
