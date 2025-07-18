@@ -34,6 +34,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
+	"github.com/luxfi/geth/internal/luxcache"
 	gethprometheus "github.com/luxfi/geth/metrics/prometheus"
 	"github.com/luxfi/geth/miner"
 	"github.com/luxfi/geth/node"
@@ -75,7 +76,6 @@ import (
 
 	luxRPC "github.com/gorilla/rpc/v2"
 
-	"github.com/luxfi/geth/cachecompat"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/codec/linearcodec"
 	"github.com/luxfi/node/database"
@@ -554,7 +554,7 @@ func (vm *VM) Initialize(
 	for i, hexMsg := range vm.config.WarpOffChainMessages {
 		offchainWarpMessages[i] = []byte(hexMsg)
 	}
-	warpSignatureCache := &cachecompat.LRU[ids.ID, []byte]{Size: warpSignatureCacheSize}
+	warpSignatureCache := &luxcache.LRU[ids.ID, []byte]{Size: warpSignatureCacheSize}
 	meteredCache, err := metercacher.New("warp_signature_cache", vm.sdkMetrics, warpSignatureCache)
 	if err != nil {
 		return fmt.Errorf("failed to create warp signature cache: %w", err)

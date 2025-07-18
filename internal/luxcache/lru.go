@@ -1,9 +1,9 @@
 // (c) 2023, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
-// Package cachecompat provides compatibility types for cache.LRU 
-// that was present in older avalanchego versions
-package cachecompat
+// Package luxcache provides backward compatibility types for cache
+// that were present in older avalanchego versions
+package luxcache
 
 import (
 	"github.com/luxfi/node/cache/lru"

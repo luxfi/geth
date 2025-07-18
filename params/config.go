@@ -544,6 +544,40 @@ var (
 	}
 
 	TestRules = TestChainConfig.Rules(new(big.Int), 0)
+
+	// LuxLocalChainConfig is the configuration for local development networks
+	LuxLocalChainConfig = &ChainConfig{
+		LuxContext:          LuxContext{utils.TestSnowContext()},
+		ChainID:             LuxLocalChainID,
+		HomesteadBlock:      big.NewInt(0),
+		DAOForkBlock:        big.NewInt(0),
+		DAOForkSupport:      true,
+		EIP150Block:         big.NewInt(0),
+		EIP155Block:         big.NewInt(0),
+		EIP158Block:         big.NewInt(0),
+		ByzantiumBlock:      big.NewInt(0),
+		ConstantinopleBlock: big.NewInt(0),
+		PetersburgBlock:     big.NewInt(0),
+		IstanbulBlock:       big.NewInt(0),
+		MuirGlacierBlock:    big.NewInt(0),
+		BerlinBlock:         big.NewInt(0),
+		LondonBlock:         big.NewInt(0),
+		NetworkUpgrades: NetworkUpgrades{
+			ApricotPhase1BlockTimestamp:     utils.NewUint64(0),
+			ApricotPhase2BlockTimestamp:     utils.NewUint64(0),
+			ApricotPhase3BlockTimestamp:     utils.NewUint64(0),
+			ApricotPhase4BlockTimestamp:     utils.NewUint64(0),
+			ApricotPhase5BlockTimestamp:     utils.NewUint64(0),
+			ApricotPhasePre6BlockTimestamp:  utils.NewUint64(0),
+			ApricotPhase6BlockTimestamp:     utils.NewUint64(0),
+			ApricotPhasePost6BlockTimestamp: utils.NewUint64(0),
+			BanffBlockTimestamp:             utils.NewUint64(0),
+			CortinaBlockTimestamp:           utils.NewUint64(0),
+			DurangoBlockTimestamp:           utils.NewUint64(0),
+			EtnaTimestamp:                   utils.NewUint64(0),
+			FortunaTimestamp:                utils.NewUint64(0),
+		},
+	}
 )
 
 // ChainConfig is the core config which determines the blockchain settings.
