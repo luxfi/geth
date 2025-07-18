@@ -11,7 +11,7 @@ import (
 
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/snow"
-	"github.com/luxfi/node/snow/engine/snowman/block"
+	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/snow/validators"
 	"github.com/luxfi/node/snow/validators/validatorstest"
 	agoUtils "github.com/luxfi/node/utils"

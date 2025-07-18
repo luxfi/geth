@@ -23,7 +23,7 @@ import (
 	"github.com/luxfi/node/snow"
 	commonEng "github.com/luxfi/node/snow/engine/common"
 	"github.com/luxfi/node/snow/engine/enginetest"
-	"github.com/luxfi/node/snow/engine/snowman/block"
+	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/utils/units"
