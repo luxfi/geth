@@ -7,7 +7,7 @@ import (
 	"encoding/binary"
 	"testing"
 
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/prefixdb"
 	"github.com/luxfi/node/database/versiondb"
@@ -28,7 +28,7 @@ import (
 // addTxs writes [txsPerHeight] txs for heights ranging in [fromHeight, toHeight) directly to [acceptedAtomicTxDB],
 // storing the resulting transactions in [txMap] if non-nil and the resulting atomic operations in [operationsMap]
 // if non-nil.
-func addTxs(t testing.TB, codec codec.Manager, acceptedAtomicTxDB database.Database, fromHeight uint64, toHeight uint64, txsPerHeight int, txMap map[uint64][]*atomic.Tx, operationsMap map[uint64]map[ids.ID]*avalancheatomic.Requests) {
+func addTxs(t testing.TB, codec codec.Manager, acceptedAtomicTxDB database.Database, fromHeight uint64, toHeight uint64, txsPerHeight int, txMap map[uint64][]*atomic.Tx, operationsMap map[uint64]map[ids.ID]*luxatomic.Requests) {
 	for height := fromHeight; height < toHeight; height++ {
 		txs := make([]*atomic.Tx, 0, txsPerHeight)
 		for i := 0; i < txsPerHeight; i++ {
@@ -71,7 +71,7 @@ func constTxsPerHeight(txCount int) func(uint64) int {
 // storing the resulting transactions in [txMap] if non-nil and the resulting atomic operations in [operationsMap]
 // if non-nil.
 func writeTxs(t testing.TB, repo AtomicTxRepository, fromHeight uint64, toHeight uint64,
-	txsPerHeight func(height uint64) int, txMap map[uint64][]*atomic.Tx, operationsMap map[uint64]map[ids.ID]*avalancheatomic.Requests,
+	txsPerHeight func(height uint64) int, txMap map[uint64][]*atomic.Tx, operationsMap map[uint64]map[ids.ID]*luxatomic.Requests,
 ) {
 	for height := fromHeight; height < toHeight; height++ {
 		txs := atomic.NewTestTxs(txsPerHeight(height))
@@ -116,7 +116,7 @@ func verifyTxs(t testing.TB, repo AtomicTxRepository, txMap map[uint64][]*atomic
 
 // verifyOperations creates an iterator over the atomicTrie at [rootHash] and verifies that the all of the operations in the trie in the interval [from, to] are identical to
 // the atomic operations contained in [operationsMap] on the same interval.
-func verifyOperations(t testing.TB, atomicTrie AtomicTrie, codec codec.Manager, rootHash common.Hash, from, to uint64, operationsMap map[uint64]map[ids.ID]*avalancheatomic.Requests) {
+func verifyOperations(t testing.TB, atomicTrie AtomicTrie, codec codec.Manager, rootHash common.Hash, from, to uint64, operationsMap map[uint64]map[ids.ID]*luxatomic.Requests) {
 	t.Helper()
 
 	// Start the iterator at [from]

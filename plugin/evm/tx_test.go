@@ -17,7 +17,7 @@ import (
 	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/geth/utils"
 
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/snow"
 )
@@ -80,7 +80,7 @@ func executeTxVerifyTest(t *testing.T, test atomicTxVerifyTest) {
 
 type atomicTxTest struct {
 	// setup returns the atomic transaction for the test
-	setup func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx
+	setup func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx
 	// define a string that should be contained in the error message if the tx fails verification
 	// at some point. If the strings are empty, then the tx should pass verification at the
 	// respective step.

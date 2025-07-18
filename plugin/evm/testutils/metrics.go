@@ -3,7 +3,7 @@ package testutils
 import (
 	"testing"
 
-	"github.com/luxfi/geth/metrics"
+	"github.com/ethereum/go-ethereum/metrics"
 )
 
 // WithMetrics enables go-ethereum metrics globally for the test.

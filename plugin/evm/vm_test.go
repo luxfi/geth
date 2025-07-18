@@ -35,7 +35,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/luxfi/node/api/metrics"
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/database/prefixdb"
@@ -66,7 +66,7 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
 
-	avalancheWarp "github.com/luxfi/node/vms/platformvm/warp"
+	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	accountKeystore "github.com/luxfi/geth/accounts/keystore"
 )
 
@@ -228,7 +228,7 @@ func NewContext() *snow.Context {
 	if err != nil {
 		panic(err)
 	}
-	ctx.WarpSigner = avalancheWarp.NewSigner(blsSecretKey, ctx.NetworkID, ctx.ChainID)
+	ctx.WarpSigner = luxWarp.NewSigner(blsSecretKey, ctx.NetworkID, ctx.ChainID)
 	ctx.PublicKey = blsSecretKey.PublicKey()
 	return ctx
 }
@@ -242,7 +242,7 @@ func setupGenesis(
 	database.Database,
 	[]byte,
 	chan commonEng.Message,
-	*avalancheatomic.Memory,
+	*luxatomic.Memory,
 ) {
 	if len(genesisJSON) == 0 {
 		genesisJSON = genesisJSONLatest
@@ -253,7 +253,7 @@ func setupGenesis(
 	baseDB := memdb.New()
 
 	// initialize the atomic memory
-	atomicMemory := avalancheatomic.NewMemory(prefixdb.New([]byte{0}, baseDB))
+	atomicMemory := luxatomic.NewMemory(prefixdb.New([]byte{0}, baseDB))
 	ctx.SharedMemory = atomicMemory.NewSharedMemory(ctx.ChainID)
 
 	// NB: this lock is intentionally left locked when this function returns.
@@ -278,7 +278,7 @@ func GenesisVM(t *testing.T,
 	chan commonEng.Message,
 	*VM,
 	database.Database,
-	*avalancheatomic.Memory,
+	*luxatomic.Memory,
 	*enginetest.Sender,
 ) {
 	return GenesisVMWithClock(t, finishBootstrapping, genesisJSON, configJSON, upgradeJSON, mockable.Clock{})
@@ -297,7 +297,7 @@ func GenesisVMWithClock(
 	chan commonEng.Message,
 	*VM,
 	database.Database,
-	*avalancheatomic.Memory,
+	*luxatomic.Memory,
 	*enginetest.Sender,
 ) {
 	vm := &VM{clock: clock}
@@ -326,7 +326,7 @@ func GenesisVMWithClock(
 	return issuer, vm, dbManager, m, appSender
 }
 
-func addUTXO(sharedMemory *avalancheatomic.Memory, ctx *snow.Context, txID ids.ID, index uint32, assetID ids.ID, amount uint64, addr ids.ShortID) (*lux.UTXO, error) {
+func addUTXO(sharedMemory *luxatomic.Memory, ctx *snow.Context, txID ids.ID, index uint32, assetID ids.ID, amount uint64, addr ids.ShortID) (*lux.UTXO, error) {
 	utxo := &lux.UTXO{
 		UTXOID: lux.UTXOID{
 			TxID:        txID,
@@ -348,7 +348,7 @@ func addUTXO(sharedMemory *avalancheatomic.Memory, ctx *snow.Context, txID ids.I
 
 	xChainSharedMemory := sharedMemory.NewSharedMemory(ctx.XChainID)
 	inputID := utxo.InputID()
-	if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+	if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 		Key:   inputID[:],
 		Value: utxoBytes,
 		Traits: [][]byte{
@@ -364,7 +364,7 @@ func addUTXO(sharedMemory *avalancheatomic.Memory, ctx *snow.Context, txID ids.I
 // GenesisVMWithUTXOs creates a GenesisVM and generates UTXOs in the X-Chain Shared Memory containing LUX based on the [utxos] map
 // Generates UTXOIDs by using a hash of the address in the [utxos] map such that the UTXOs will be generated deterministically.
 // If [genesisJSON] is empty, defaults to using [genesisJSONLatest]
-func GenesisVMWithUTXOs(t *testing.T, finishBootstrapping bool, genesisJSON string, configJSON string, upgradeJSON string, utxos map[ids.ShortID]uint64) (chan commonEng.Message, *VM, database.Database, *avalancheatomic.Memory, *enginetest.Sender) {
+func GenesisVMWithUTXOs(t *testing.T, finishBootstrapping bool, genesisJSON string, configJSON string, upgradeJSON string, utxos map[ids.ShortID]uint64) (chan commonEng.Message, *VM, database.Database, *luxatomic.Memory, *enginetest.Sender) {
 	issuer, vm, db, sharedMemory, sender := GenesisVM(t, finishBootstrapping, genesisJSON, configJSON, upgradeJSON)
 	for addr, luxAmount := range utxos {
 		txID, err := ids.ToID(hashing.ComputeHash256(addr.Bytes()))
@@ -1012,8 +1012,8 @@ func testConflictingImportTxs(t *testing.T, genesis string) {
 func TestReissueAtomicTxHigherGasPrice(t *testing.T) {
 	kc := secp256k1fx.NewKeychain(testKeys...)
 
-	for name, issueTxs := range map[string]func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) (issued []*atomic.Tx, discarded []*atomic.Tx){
-		"single UTXO override": func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) (issued []*atomic.Tx, evicted []*atomic.Tx) {
+	for name, issueTxs := range map[string]func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) (issued []*atomic.Tx, discarded []*atomic.Tx){
+		"single UTXO override": func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) (issued []*atomic.Tx, evicted []*atomic.Tx) {
 			utxo, err := addUTXO(sharedMemory, vm.ctx, ids.GenerateTestID(), 0, vm.ctx.LUXAssetID, units.Lux, testShortIDAddrs[0])
 			if err != nil {
 				t.Fatal(err)
@@ -1036,7 +1036,7 @@ func TestReissueAtomicTxHigherGasPrice(t *testing.T) {
 
 			return []*atomic.Tx{tx2}, []*atomic.Tx{tx1}
 		},
-		"one of two UTXOs overrides": func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) (issued []*atomic.Tx, evicted []*atomic.Tx) {
+		"one of two UTXOs overrides": func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) (issued []*atomic.Tx, evicted []*atomic.Tx) {
 			utxo1, err := addUTXO(sharedMemory, vm.ctx, ids.GenerateTestID(), 0, vm.ctx.LUXAssetID, units.Lux, testShortIDAddrs[0])
 			if err != nil {
 				t.Fatal(err)
@@ -1063,7 +1063,7 @@ func TestReissueAtomicTxHigherGasPrice(t *testing.T) {
 
 			return []*atomic.Tx{tx2}, []*atomic.Tx{tx1}
 		},
-		"hola": func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) (issued []*atomic.Tx, evicted []*atomic.Tx) {
+		"hola": func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) (issued []*atomic.Tx, evicted []*atomic.Tx) {
 			utxo1, err := addUTXO(sharedMemory, vm.ctx, ids.GenerateTestID(), 0, vm.ctx.LUXAssetID, units.Lux, testShortIDAddrs[0])
 			if err != nil {
 				t.Fatal(err)
@@ -1538,7 +1538,7 @@ func TestBonusBlocksTxs(t *testing.T) {
 
 	xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 	inputID := utxo.InputID()
-	if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+	if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 		Key:   inputID[:],
 		Value: utxoBytes,
 		Traits: [][]byte{
@@ -1568,7 +1568,7 @@ func TestBonusBlocksTxs(t *testing.T) {
 	vm.atomicBackend.(*atomicBackend).bonusBlocks = map[uint64]ids.ID{blk.Height(): blk.ID()}
 
 	// Remove the UTXOs from shared memory, so that non-bonus blocks will fail verification
-	if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.XChainID: {RemoveRequests: [][]byte{inputID[:]}}}); err != nil {
+	if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.XChainID: {RemoveRequests: [][]byte{inputID[:]}}}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3233,7 +3233,7 @@ func TestBuildApricotPhase4Block(t *testing.T) {
 
 	xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 	inputID := utxo.InputID()
-	if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+	if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 		Key:   inputID[:],
 		Value: utxoBytes,
 		Traits: [][]byte{
@@ -3403,7 +3403,7 @@ func TestBuildApricotPhase5Block(t *testing.T) {
 
 	xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 	inputID := utxo.InputID()
-	if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+	if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 		Key:   inputID[:],
 		Value: utxoBytes,
 		Traits: [][]byte{
@@ -3978,7 +3978,7 @@ func TestNoBlobsAllowed(t *testing.T) {
 	vmBlock, err := vm.newBlock(blocks[0])
 	require.NoError(err)
 	_, err = vm.ParseBlock(ctx, vmBlock.Bytes())
-	require.ErrorContains(err, "blobs not enabled on avalanche networks")
+	require.ErrorContains(err, "blobs not enabled on lux networks")
 	err = vmBlock.Verify(ctx)
-	require.ErrorContains(err, "blobs not enabled on avalanche networks")
+	require.ErrorContains(err, "blobs not enabled on lux networks")
 }

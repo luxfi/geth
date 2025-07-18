@@ -13,9 +13,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
 
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/ids"
-	avalancheutils "github.com/luxfi/node/utils"
+	luxutils "github.com/luxfi/node/utils"
 	"github.com/luxfi/node/utils/constants"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/utils/set"
@@ -25,7 +25,7 @@ import (
 
 // createImportTxOptions adds a UTXO to shared memory and generates a list of import transactions sending this UTXO
 // to each of the three test keys (conflicting transactions)
-func createImportTxOptions(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) []*atomic.Tx {
+func createImportTxOptions(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) []*atomic.Tx {
 	utxo := &lux.UTXO{
 		UTXOID: lux.UTXOID{TxID: ids.GenerateTestID()},
 		Asset:  lux.Asset{ID: vm.ctx.LUXAssetID},
@@ -44,7 +44,7 @@ func createImportTxOptions(t *testing.T, vm *VM, sharedMemory *avalancheatomic.M
 
 	xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 	inputID := utxo.InputID()
-	if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+	if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 		Key:   inputID[:],
 		Value: utxoBytes,
 		Traits: [][]byte{
@@ -118,8 +118,8 @@ func TestImportTxVerify(t *testing.T) {
 	}
 
 	// Sort the inputs and outputs to ensure the transaction is canonical
-	avalancheutils.Sort(importTx.ImportedInputs)
-	avalancheutils.Sort(importTx.Outs)
+	luxutils.Sort(importTx.ImportedInputs)
+	luxutils.Sort(importTx.Outs)
 
 	tests := map[string]atomicTxVerifyTest{
 		"nil tx": {
@@ -428,7 +428,7 @@ func TestNewImportTx(t *testing.T) {
 	importAmount := uint64(5000000)
 	// createNewImportLUXTx adds a UTXO to shared memory and then constructs a new import transaction
 	// and checks that it has the correct fee for the base fee that has been used
-	createNewImportLUXTx := func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+	createNewImportLUXTx := func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 		txID := ids.GenerateTestID()
 		_, err := addUTXO(sharedMemory, vm.ctx, txID, 0, vm.ctx.LUXAssetID, importAmount, testShortIDAddrs[0])
 		if err != nil {
@@ -871,7 +871,7 @@ func TestImportTxGasCost(t *testing.T) {
 func TestImportTxSemanticVerify(t *testing.T) {
 	tests := map[string]atomicTxTest{
 		"UTXO not present during bootstrapping": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				tx := &atomic.Tx{UnsignedAtomicTx: &atomic.UnsignedImportTx{
 					NetworkID:    vm.ctx.NetworkID,
 					BlockchainID: vm.ctx.ChainID,
@@ -900,7 +900,7 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			bootstrapping: true,
 		},
 		"UTXO not present": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				tx := &atomic.Tx{UnsignedAtomicTx: &atomic.UnsignedImportTx{
 					NetworkID:    vm.ctx.NetworkID,
 					BlockchainID: vm.ctx.ChainID,
@@ -929,11 +929,11 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			semanticVerifyErr: "failed to fetch import UTXOs from",
 		},
 		"garbage UTXO": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				utxoID := lux.UTXOID{TxID: ids.GenerateTestID()}
 				xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 				inputID := utxoID.InputID()
-				if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+				if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 					Key:   inputID[:],
 					Value: []byte("hey there"),
 					Traits: [][]byte{
@@ -969,7 +969,7 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			semanticVerifyErr: "failed to unmarshal UTXO",
 		},
 		"UTXO AssetID mismatch": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				expectedAssetID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, expectedAssetID, 1, testShortIDAddrs[0])
@@ -1003,7 +1003,7 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			semanticVerifyErr: atomic.ErrAssetIDMismatch.Error(),
 		},
 		"insufficient LUX funds": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, vm.ctx.LUXAssetID, 1, testShortIDAddrs[0])
 				if err != nil {
@@ -1036,7 +1036,7 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			semanticVerifyErr: "import tx flow check failed due to",
 		},
 		"insufficient non-LUX funds": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				assetID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, assetID, 1, testShortIDAddrs[0])
@@ -1070,7 +1070,7 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			semanticVerifyErr: "import tx flow check failed due to",
 		},
 		"no signatures": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, vm.ctx.LUXAssetID, 1, testShortIDAddrs[0])
 				if err != nil {
@@ -1103,7 +1103,7 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			semanticVerifyErr: "import tx contained mismatched number of inputs/credentials",
 		},
 		"incorrect signature": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, vm.ctx.LUXAssetID, 1, testShortIDAddrs[0])
 				if err != nil {
@@ -1137,7 +1137,7 @@ func TestImportTxSemanticVerify(t *testing.T) {
 			semanticVerifyErr: "import tx transfer failed verification",
 		},
 		"non-unique EVM Outputs": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, vm.ctx.LUXAssetID, 2, testShortIDAddrs[0])
 				if err != nil {
@@ -1190,7 +1190,7 @@ func TestImportTxEVMStateTransfer(t *testing.T) {
 	assetID := ids.GenerateTestID()
 	tests := map[string]atomicTxTest{
 		"LUX UTXO": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, vm.ctx.LUXAssetID, 1, testShortIDAddrs[0])
 				if err != nil {
@@ -1235,7 +1235,7 @@ func TestImportTxEVMStateTransfer(t *testing.T) {
 			},
 		},
 		"non-LUX UTXO": {
-			setup: func(t *testing.T, vm *VM, sharedMemory *avalancheatomic.Memory) *atomic.Tx {
+			setup: func(t *testing.T, vm *VM, sharedMemory *luxatomic.Memory) *atomic.Tx {
 				txID := ids.GenerateTestID()
 				utxo, err := addUTXO(sharedMemory, vm.ctx, txID, 0, assetID, 1, testShortIDAddrs[0])
 				if err != nil {

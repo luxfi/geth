@@ -244,7 +244,7 @@ func (v blockValidator) SyntacticVerify(b *Block, rules params.Rules) error {
 		if ethHeader.BlobGasUsed == nil {
 			return fmt.Errorf("blob gas used must not be nil in Cancun")
 		} else if *ethHeader.BlobGasUsed > 0 {
-			return fmt.Errorf("blobs not enabled on avalanche networks: used %d blob gas, expected 0", *ethHeader.BlobGasUsed)
+			return fmt.Errorf("blobs not enabled on lux networks: used %d blob gas, expected 0", *ethHeader.BlobGasUsed)
 		}
 	}
 	return nil

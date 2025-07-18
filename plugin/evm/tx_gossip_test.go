@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p"
@@ -178,7 +178,7 @@ func TestAtomicTxGossip(t *testing.T) {
 	snowCtx.LUXAssetID = ids.GenerateTestID()
 	validatorState := utils.NewTestValidatorState()
 	snowCtx.ValidatorState = validatorState
-	memory := avalancheatomic.NewMemory(memdb.New())
+	memory := luxatomic.NewMemory(memdb.New())
 	snowCtx.SharedMemory = memory.NewSharedMemory(snowCtx.ChainID)
 
 	pk, err := secp256k1.NewPrivateKey()
@@ -442,7 +442,7 @@ func TestAtomicTxPushGossipOutbound(t *testing.T) {
 	snowCtx.LUXAssetID = ids.GenerateTestID()
 	validatorState := utils.NewTestValidatorState()
 	snowCtx.ValidatorState = validatorState
-	memory := avalancheatomic.NewMemory(memdb.New())
+	memory := luxatomic.NewMemory(memdb.New())
 	snowCtx.SharedMemory = memory.NewSharedMemory(snowCtx.ChainID)
 
 	pk, err := secp256k1.NewPrivateKey()
@@ -515,7 +515,7 @@ func TestAtomicTxPushGossipInbound(t *testing.T) {
 	snowCtx.LUXAssetID = ids.GenerateTestID()
 	validatorState := utils.NewTestValidatorState()
 	snowCtx.ValidatorState = validatorState
-	memory := avalancheatomic.NewMemory(memdb.New())
+	memory := luxatomic.NewMemory(memdb.New())
 	snowCtx.SharedMemory = memory.NewSharedMemory(snowCtx.ChainID)
 
 	pk, err := secp256k1.NewPrivateKey()

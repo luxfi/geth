@@ -6,7 +6,7 @@ package evm
 import (
 	"testing"
 
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/ids"
@@ -17,8 +17,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func testSharedMemory() avalancheatomic.SharedMemory {
-	m := avalancheatomic.NewMemory(memdb.New())
+func testSharedMemory() luxatomic.SharedMemory {
+	m := luxatomic.NewMemory(memdb.New())
 	return m.NewSharedMemory(testCChainID)
 }
 
@@ -32,7 +32,7 @@ func TestIteratorCanIterate(t *testing.T) {
 	// create state with multiple transactions
 	// since each test transaction generates random ID for blockchainID we should get
 	// multiple blockchain IDs per block in the overall combined atomic operation map
-	operationsMap := make(map[uint64]map[ids.ID]*avalancheatomic.Requests)
+	operationsMap := make(map[uint64]map[ids.ID]*luxatomic.Requests)
 	writeTxs(t, repo, 1, lastAcceptedHeight, constTxsPerHeight(3), nil, operationsMap)
 
 	// create an atomic trie
@@ -72,7 +72,7 @@ func TestIteratorHandlesInvalidData(t *testing.T) {
 	// create state with multiple transactions
 	// since each test transaction generates random ID for blockchainID we should get
 	// multiple blockchain IDs per block in the overall combined atomic operation map
-	operationsMap := make(map[uint64]map[ids.ID]*avalancheatomic.Requests)
+	operationsMap := make(map[uint64]map[ids.ID]*luxatomic.Requests)
 	writeTxs(t, repo, 1, lastAcceptedHeight, constTxsPerHeight(3), nil, operationsMap)
 
 	// create an atomic trie

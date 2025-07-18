@@ -9,7 +9,7 @@ import (
 	"math/big"
 	"testing"
 
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
+	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/ids"
 	engCommon "github.com/luxfi/node/snow/engine/common"
 	"github.com/luxfi/node/utils/constants"
@@ -26,7 +26,7 @@ import (
 
 // createExportTxOptions adds funds to shared memory, imports them, and returns a list of export transactions
 // that attempt to send the funds to each of the test keys (list of length 3).
-func createExportTxOptions(t *testing.T, vm *VM, issuer chan engCommon.Message, sharedMemory *avalancheatomic.Memory) []*atomic.Tx {
+func createExportTxOptions(t *testing.T, vm *VM, issuer chan engCommon.Message, sharedMemory *luxatomic.Memory) []*atomic.Tx {
 	// Add a UTXO to shared memory
 	utxo := &lux.UTXO{
 		UTXOID: lux.UTXOID{TxID: ids.GenerateTestID()},
@@ -46,7 +46,7 @@ func createExportTxOptions(t *testing.T, vm *VM, issuer chan engCommon.Message, 
 
 	xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 	inputID := utxo.InputID()
-	if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+	if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 		Key:   inputID[:],
 		Value: utxoBytes,
 		Traits: [][]byte{
@@ -354,7 +354,7 @@ func TestExportTxEVMStateTransfer(t *testing.T) {
 			}
 
 			xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
-			if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{
+			if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{
 				{
 					Key:   luxInputID[:],
 					Value: luxUTXOBytes,
@@ -1021,7 +1021,7 @@ func TestExportTxAccept(t *testing.T) {
 		t.Fatalf("Failed to accept export transaction due to: %s", err)
 	}
 
-	if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{chainID: {PutRequests: atomicRequests.PutRequests}}, commitBatch); err != nil {
+	if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*luxatomic.Requests{chainID: {PutRequests: atomicRequests.PutRequests}}, commitBatch); err != nil {
 		t.Fatal(err)
 	}
 	indexedValues, _, _, err := xChainSharedMemory.Indexed(vm.ctx.ChainID, [][]byte{addr.Bytes()}, nil, nil, 3)
@@ -1727,7 +1727,7 @@ func TestNewExportTx(t *testing.T) {
 
 			xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 			inputID := utxo.InputID()
-			if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{{
+			if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{{
 				Key:   inputID[:],
 				Value: utxoBytes,
 				Traits: [][]byte{
@@ -1810,7 +1810,7 @@ func TestNewExportTx(t *testing.T) {
 				t.Fatalf("Failed to accept export transaction due to: %s", err)
 			}
 
-			if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{chainID: {PutRequests: atomicRequests.PutRequests}}, commitBatch); err != nil {
+			if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*luxatomic.Requests{chainID: {PutRequests: atomicRequests.PutRequests}}, commitBatch); err != nil {
 				t.Fatal(err)
 			}
 
@@ -1921,7 +1921,7 @@ func TestNewExportTxMulticoin(t *testing.T) {
 
 			xChainSharedMemory := sharedMemory.NewSharedMemory(vm.ctx.XChainID)
 			inputID2 := utxo2.InputID()
-			if err := xChainSharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{vm.ctx.ChainID: {PutRequests: []*avalancheatomic.Element{
+			if err := xChainSharedMemory.Apply(map[ids.ID]*luxatomic.Requests{vm.ctx.ChainID: {PutRequests: []*luxatomic.Element{
 				{
 					Key:   inputID[:],
 					Value: utxoBytes,
@@ -2010,7 +2010,7 @@ func TestNewExportTxMulticoin(t *testing.T) {
 				t.Fatalf("Failed to accept export transaction due to: %s", err)
 			}
 
-			if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*avalancheatomic.Requests{chainID: {PutRequests: atomicRequests.PutRequests}}, commitBatch); err != nil {
+			if err := vm.ctx.SharedMemory.Apply(map[ids.ID]*luxatomic.Requests{chainID: {PutRequests: atomicRequests.PutRequests}}, commitBatch); err != nil {
 				t.Fatal(err)
 			}
 

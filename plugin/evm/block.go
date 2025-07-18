@@ -24,7 +24,6 @@ import (
 	"github.com/luxfi/geth/predicate"
 
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow/choices"
 	"github.com/luxfi/node/snow/consensus/snowman"
 	"github.com/luxfi/node/snow/engine/snowman/block"
 )
@@ -257,22 +256,6 @@ func (b *Block) Height() uint64 {
 // Timestamp implements the snowman.Block interface
 func (b *Block) Timestamp() time.Time {
 	return time.Unix(int64(b.ethBlock.Time()), 0)
-}
-
-// Status implements the snowman.Block interface
-func (b *Block) Status() choices.Status {
-	// Check if the block is accepted
-	lastAccepted := b.vm.blockChain.LastAcceptedBlock()
-	if lastAccepted != nil && lastAccepted.Hash() == b.ethBlock.Hash() {
-		return choices.Accepted
-	}
-	
-	// Check if the block exists in the blockchain
-	if b.vm.blockChain.HasBlock(b.ethBlock.Hash(), b.ethBlock.NumberU64()) {
-		return choices.Processing
-	}
-	
-	return choices.Unknown
 }
 
 // syntacticVerify verifies that a *Block is well-formed.

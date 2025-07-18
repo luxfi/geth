@@ -73,7 +73,7 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 
-	avalancheRPC "github.com/gorilla/rpc/v2"
+	luxRPC "github.com/gorilla/rpc/v2"
 
 	"github.com/luxfi/node/cache"
 	"github.com/luxfi/node/codec"
@@ -99,8 +99,8 @@ import (
 
 	commonEng "github.com/luxfi/node/snow/engine/common"
 
-	avalancheUtils "github.com/luxfi/node/utils"
-	avalancheJSON "github.com/luxfi/node/utils/json"
+	luxUtils "github.com/luxfi/node/utils"
+	luxJSON "github.com/luxfi/node/utils/json"
 )
 
 var (
@@ -290,7 +290,7 @@ type VM struct {
 	// Metrics
 	sdkMetrics *prometheus.Registry
 
-	bootstrapped avalancheUtils.Atomic[bool]
+	bootstrapped luxUtils.Atomic[bool]
 	IsPlugin     bool
 
 	logger GethLogger
@@ -305,7 +305,7 @@ type VM struct {
 	// Initialize only sets these if nil so they can be overridden in tests
 	p2pSender             commonEng.AppSender
 	ethTxGossipHandler    p2p.Handler
-	ethTxPushGossiper     avalancheUtils.Atomic[*gossip.PushGossiper[*GossipEthTx]]
+	ethTxPushGossiper     luxUtils.Atomic[*gossip.PushGossiper[*GossipEthTx]]
 	ethTxPullGossiper     gossip.Gossiper
 	atomicTxGossipHandler p2p.Handler
 	atomicTxPushGossiper  *gossip.PushGossiper[*atomic.GossipAtomicTx]
@@ -394,7 +394,7 @@ func (vm *VM) Initialize(
 	}
 
 	// Enable debug-level metrics that might impact runtime performance
-	// metrics.EnabledExpensive = vm.config.MetricsExpensiveEnabled
+	metrics.EnabledExpensive = vm.config.MetricsExpensiveEnabled
 
 	vm.toEngine = toEngine
 	vm.shutdownChan = make(chan struct{}, 1)
@@ -637,7 +637,7 @@ func (vm *VM) Initialize(
 }
 
 func (vm *VM) initializeMetrics() error {
-	// metrics.Enabled = true
+	metrics.Enabled = true
 	vm.sdkMetrics = prometheus.NewRegistry()
 	gatherer := gethprometheus.NewGatherer(metrics.DefaultRegistry)
 	if err := vm.ctx.Metrics.Register(ethMetricsPrefix, gatherer); err != nil {
@@ -778,7 +778,10 @@ func (vm *VM) initChainState(lastAcceptedBlock *types.Block) error {
 	}
 	vm.State = state
 
-	// Always register metrics in go-ethereum v1.16.1
+	if !metrics.Enabled {
+		return nil
+	}
+
 	return vm.ctx.Metrics.Register(chainStateMetricsPrefix, chainStateRegisterer)
 }
 
@@ -1468,9 +1471,9 @@ func (vm *VM) Version(context.Context) (string, error) {
 //     [service] should be a gorilla RPC service (see https://www.gorillatoolkit.org/pkg/rpc/v2)
 //   - The name of the service is [name]
 func newHandler(name string, service interface{}) (http.Handler, error) {
-	server := avalancheRPC.NewServer()
-	server.RegisterCodec(avalancheJSON.NewCodec(), "application/json")
-	server.RegisterCodec(avalancheJSON.NewCodec(), "application/json;charset=UTF-8")
+	server := luxRPC.NewServer()
+	server.RegisterCodec(luxJSON.NewCodec(), "application/json")
+	server.RegisterCodec(luxJSON.NewCodec(), "application/json;charset=UTF-8")
 	return server, server.RegisterService(service, name)
 }
 
@@ -1723,9 +1726,15 @@ func (vm *VM) GetAtomicUTXOs(
 		limit = maxUTXOsToFetch
 	}
 
-	// TODO: Implement GetAtomicUTXOs properly with shared memory
-	// For now, return empty results to allow compilation
-	return nil, ids.ShortEmpty, ids.Empty, nil
+	return lux.GetAtomicUTXOs(
+		vm.ctx.SharedMemory,
+		atomic.Codec,
+		chainID,
+		addrs,
+		startAddr,
+		startUTXOID,
+		limit,
+	)
 }
 
 // currentRules returns the chain rules for the current block.
@@ -1845,3 +1854,54 @@ func (vm *VM) stateSyncEnabled(lastAcceptedHeight uint64) bool {
 	return lastAcceptedHeight == 0
 }
 
+func (vm *VM) newImportTx(
+	chainID ids.ID, // chain to import from
+	to common.Address, // Address of recipient
+	baseFee *big.Int, // fee to use post-AP3
+	keys []*secp256k1.PrivateKey, // Keys to import the funds
+) (*atomic.Tx, error) {
+	kc := secp256k1fx.NewKeychain()
+	for _, key := range keys {
+		kc.Add(key)
+	}
+
+	atomicUTXOs, _, _, err := vm.GetAtomicUTXOs(chainID, kc.Addresses(), ids.ShortEmpty, ids.Empty, -1)
+	if err != nil {
+		return nil, fmt.Errorf("problem retrieving atomic UTXOs: %w", err)
+	}
+
+	return atomic.NewImportTx(vm.ctx, vm.currentRules(), vm.clock.Unix(), chainID, to, baseFee, kc, atomicUTXOs)
+}
+
+// newExportTx returns a new ExportTx
+func (vm *VM) newExportTx(
+	assetID ids.ID, // AssetID of the tokens to export
+	amount uint64, // Amount of tokens to export
+	chainID ids.ID, // Chain to send the UTXOs to
+	to ids.ShortID, // Address of chain recipient
+	baseFee *big.Int, // fee to use post-AP3
+	keys []*secp256k1.PrivateKey, // Pay the fee and provide the tokens
+) (*atomic.Tx, error) {
+	state, err := vm.blockChain.State()
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the transaction
+	tx, err := atomic.NewExportTx(
+		vm.ctx,            // Context
+		vm.currentRules(), // VM rules
+		state,
+		assetID, // AssetID
+		amount,  // Amount
+		chainID, // ID of the chain to send the funds to
+		to,      // Address
+		baseFee,
+		keys, // Private keys
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return tx, nil
+}

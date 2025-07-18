@@ -5,18 +5,11 @@ package message
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/luxfi/node/ids"
 )
 
 var _ RequestHandler = NoopRequestHandler{}
-
-// GossipHandler handles inbound gossip messages
-type GossipHandler interface {
-	HandleAtomicTx(nodeID ids.NodeID, msg AtomicTxGossip) error
-	HandleEthTxs(nodeID ids.NodeID, msg EthTxsGossip) error
-}
 
 // RequestHandler interface handles incoming requests from peers
 // Must have methods in format of handleType(context.Context, ids.NodeID, uint32, request Type) error
@@ -30,17 +23,6 @@ type RequestHandler interface {
 	HandleCodeRequest(ctx context.Context, nodeID ids.NodeID, requestID uint32, codeRequest CodeRequest) ([]byte, error)
 	HandleMessageSignatureRequest(ctx context.Context, nodeID ids.NodeID, requestID uint32, signatureRequest MessageSignatureRequest) ([]byte, error)
 	HandleBlockSignatureRequest(ctx context.Context, nodeID ids.NodeID, requestID uint32, signatureRequest BlockSignatureRequest) ([]byte, error)
-}
-
-// CrossChainRequestHandler interface handles incoming cross-chain requests
-type CrossChainRequestHandler interface {
-	HandleEthCallRequest(ctx context.Context, requestingChainID ids.ID, requestID uint32, ethCallRequest EthCallRequest) ([]byte, error)
-}
-
-// CrossChainRequest is an interface for cross-chain requests
-type CrossChainRequest interface {
-	fmt.Stringer
-	Handle(ctx context.Context, requestingChainID ids.ID, requestID uint32, handler CrossChainRequestHandler) ([]byte, error)
 }
 
 // ResponseHandler handles response for a sent request

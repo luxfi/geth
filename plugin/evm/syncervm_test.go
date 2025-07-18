@@ -16,8 +16,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/luxfi/node/api/metrics"
-	avalancheatomic "github.com/luxfi/node/chains/atomic"
-	avalanchedatabase "github.com/luxfi/node/database"
+	luxatomic "github.com/luxfi/node/chains/atomic"
+	luxdatabase "github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/prefixdb"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/snow"
@@ -429,9 +429,9 @@ type syncVMSetup struct {
 	fundedAccounts    map[*keystore.Key]*types.StateAccount
 
 	syncerVM             *VM
-	syncerDB             avalanchedatabase.Database
+	syncerDB             luxdatabase.Database
 	syncerEngineChan     <-chan commonEng.Message
-	syncerAtomicMemory   *avalancheatomic.Memory
+	syncerAtomicMemory   *luxatomic.Memory
 	shutdownOnceSyncerVM *shutdownOnceVM
 }
 
