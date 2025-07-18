@@ -93,7 +93,6 @@ import (
 	"github.com/luxfi/node/utils/timer/mockable"
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/vms/components/lux"
-	avax "github.com/luxfi/node/vms/components/avax"
 	"github.com/luxfi/node/vms/components/chain"
 	"github.com/luxfi/node/vms/components/gas"
 	"github.com/luxfi/node/vms/secp256k1fx"
@@ -1727,8 +1726,8 @@ func (vm *VM) GetAtomicUTXOs(
 		limit = maxUTXOsToFetch
 	}
 
-	// Use avax.GetAtomicUTXOs but convert to lux.UTXO types
-	avaxUTXOs, lastAddr, lastUTXO, err := avax.GetAtomicUTXOs(
+	// Use lux.GetAtomicUTXOs
+	luxUTXOs, lastAddr, lastUTXO, err := lux.GetAtomicUTXOs(
 		vm.ctx.SharedMemory,
 		atomic.Codec,
 		chainID,
@@ -1741,9 +1740,6 @@ func (vm *VM) GetAtomicUTXOs(
 		return nil, lastAddr, lastUTXO, err
 	}
 	
-	// Convert avax.UTXO to lux.UTXO
-	luxUTXOs := make([]*lux.UTXO, len(avaxUTXOs))
-	for i, utxo := range avaxUTXOs {
 		luxUTXOs[i] = &lux.UTXO{
 			UTXOID: lux.UTXOID{
 				TxID:        utxo.TxID,

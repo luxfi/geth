@@ -22,10 +22,13 @@ type ethDbWrapper struct{ database.Database }
 func WrapDatabase(db database.Database) ethdb.KeyValueStore { return ethDbWrapper{db} }
 
 // Stat implements ethdb.Database
-func (db ethDbWrapper) Stat(string) (string, error) { return "", database.ErrNotFound }
+func (db ethDbWrapper) Stat() (string, error) { return "", database.ErrNotFound }
 
 // NewBatch implements ethdb.Database
 func (db ethDbWrapper) NewBatch() ethdb.Batch { return wrappedBatch{db.Database.NewBatch()} }
+
+// SyncKeyValue implements ethdb.KeyValueSyncer
+func (db ethDbWrapper) SyncKeyValue() error { return nil }
 
 // NewBatchWithSize implements ethdb.Database
 // TODO: propagate size through node Database interface
@@ -33,9 +36,7 @@ func (db ethDbWrapper) NewBatchWithSize(size int) ethdb.Batch {
 	return wrappedBatch{db.Database.NewBatch()}
 }
 
-func (db ethDbWrapper) NewSnapshot() (ethdb.Snapshot, error) {
-	return nil, ErrSnapshotNotSupported
-}
+// Note: NewSnapshot was removed in go-ethereum v1.16.1
 
 // NewIterator implements ethdb.Database
 //
@@ -58,6 +59,12 @@ func (db ethDbWrapper) NewIteratorWithStart(start []byte) ethdb.Iterator {
 	return db.Database.NewIteratorWithStart(start)
 }
 
+// DeleteRange implements ethdb.KeyValueStore
+func (db ethDbWrapper) DeleteRange(start []byte, end []byte) error {
+	// Not supported by the underlying database, return nil
+	return nil
+}
+
 // wrappedBatch implements ethdb.wrappedBatch
 type wrappedBatch struct{ database.Batch }
 
@@ -66,3 +73,9 @@ func (batch wrappedBatch) ValueSize() int { return batch.Batch.Size() }
 
 // Replay implements ethdb.Batch
 func (batch wrappedBatch) Replay(w ethdb.KeyValueWriter) error { return batch.Batch.Replay(w) }
+
+// DeleteRange implements ethdb.Batch
+func (batch wrappedBatch) DeleteRange(start []byte, end []byte) error {
+	// Not supported by the underlying batch, return nil
+	return nil
+}

@@ -44,7 +44,7 @@ import (
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/params"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/asm"
+	// "github.com/ethereum/go-ethereum/core/asm" // Removed in go-ethereum v1.16.1
 
 	// force-load js tracers to trigger registration
 	_ "github.com/luxfi/geth/eth/tracers/js"
@@ -504,21 +504,22 @@ func TestEip2929Cases(t *testing.T) {
 	t.Skip("Test only useful for generating documentation")
 	id := 1
 	prettyPrint := func(comment string, code []byte) {
-		instrs := make([]string, 0)
-		it := asm.NewInstructionIterator(code)
-		for it.Next() {
-			if it.Arg() != nil && 0 < len(it.Arg()) {
-				instrs = append(instrs, fmt.Sprintf("%v %#x", it.Op(), it.Arg()))
-			} else {
-				instrs = append(instrs, fmt.Sprintf("%v", it.Op()))
-			}
-		}
-		ops := strings.Join(instrs, ", ")
+		// Commented out due to removal of asm package in go-ethereum v1.16.1
+		// instrs := make([]string, 0)
+		// it := asm.NewInstructionIterator(code)
+		// for it.Next() {
+		// 	if it.Arg() != nil && 0 < len(it.Arg()) {
+		// 		instrs = append(instrs, fmt.Sprintf("%v %#x", it.Op(), it.Arg()))
+		// 	} else {
+		// 		instrs = append(instrs, fmt.Sprintf("%v", it.Op()))
+		// 	}
+		// }
+		// ops := strings.Join(instrs, ", ")
 		fmt.Printf("### Case %d\n\n", id)
 		id++
-		fmt.Printf("%v\n\nBytecode: \n```\n%#x\n```\nOperations: \n```\n%v\n```\n\n",
+		fmt.Printf("%v\n\nBytecode: \n```\n%#x\n```\n\n",
 			comment,
-			code, ops)
+			code)
 		Execute(code, nil, &Config{
 			EVMConfig: vm.Config{
 				Tracer:    logger.NewMarkdownLogger(nil, os.Stdout),

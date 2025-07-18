@@ -35,12 +35,12 @@ var (
 
 // mempoolMetrics defines the metrics for the atomic mempool
 type mempoolMetrics struct {
-	pendingTxs metrics.Gauge // Gauge of currently pending transactions in the txHeap
-	currentTxs metrics.Gauge // Gauge of current transactions to be issued into a block
-	issuedTxs  metrics.Gauge // Gauge of transactions that have been issued into a block
+	pendingTxs *metrics.Gauge // Gauge of currently pending transactions in the txHeap
+	currentTxs *metrics.Gauge // Gauge of current transactions to be issued into a block
+	issuedTxs  *metrics.Gauge // Gauge of transactions that have been issued into a block
 
-	addedTxs     metrics.Counter // Count of all transactions added to the mempool
-	discardedTxs metrics.Counter // Count of all discarded transactions
+	addedTxs     *metrics.Counter // Count of all transactions added to the mempool
+	discardedTxs *metrics.Counter // Count of all discarded transactions
 }
 
 // newMempoolMetrics constructs metrics for the atomic mempool
