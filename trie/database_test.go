@@ -32,7 +32,7 @@ import (
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/triedb/database"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 // testReader implements database.Reader interface, providing function to

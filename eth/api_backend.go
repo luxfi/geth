@@ -47,7 +47,7 @@ import (
 	customheader "github.com/luxfi/geth/plugin/evm/header"
 	"github.com/luxfi/geth/rpc"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/ethereum/go-ethereum/event"
 )
 

@@ -2,11 +2,6 @@ module github.com/luxfi/geth
 
 go 1.24.5
 
-replace (
-	github.com/luxfi/evm => /home/z/work/lux/evm
-	github.com/luxfi/node => /home/z/work/lux/node
-)
-
 require (
 	github.com/VictoriaMetrics/fastcache v1.12.2
 	github.com/cespare/cp v0.1.0
@@ -59,6 +54,7 @@ require (
 
 require (
 	github.com/DataDog/zstd v1.5.2 // indirect
+	github.com/StephenButtolph/canoto v0.17.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.20.0 // indirect
 	github.com/btcsuite/btcd/btcutil v1.1.3 // indirect

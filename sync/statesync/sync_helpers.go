@@ -8,7 +8,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 // writeAccountSnapshot stores the account represented by [acc] to the snapshot at [accHash], using

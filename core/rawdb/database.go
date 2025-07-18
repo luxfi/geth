@@ -27,19 +27,19 @@
 package rawdb
 
 import (
-	"bytes"
-	"fmt"
-	"os"
-	"path/filepath"
-	"time"
+   "bytes"
+   "fmt"
+   "os"
+   "path/filepath"
+   "time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/ethdb/leveldb"
-	"github.com/ethereum/go-ethereum/ethdb/memorydb"
-	"github.com/ethereum/go-ethereum/ethdb/pebble"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/olekukonko/tablewriter"
+   "github.com/ethereum/go-ethereum/common"
+   "github.com/luxfi/geth/ethdb"
+   "github.com/luxfi/geth/ethdb/leveldb"
+   "github.com/luxfi/geth/ethdb/memorydb"
+   "github.com/luxfi/geth/ethdb/pebble"
+   "github.com/ethereum/go-ethereum/log"
+   "github.com/olekukonko/tablewriter"
 )
 
 // nofreezedb is a database wrapper that disables freezer data retrievals.
@@ -157,7 +157,7 @@ func NewLevelDBDatabase(file string, cache int, handles int, namespace string, r
 // NewPebbleDBDatabase creates a persistent key-value database without a freezer
 // moving immutable chain segments into cold storage.
 func NewPebbleDBDatabase(file string, cache int, handles int, namespace string, readonly, ephemeral bool) (ethdb.Database, error) {
-	db, err := pebble.New(file, cache, handles, namespace, readonly, ephemeral)
+	db, err := pebble.New(file, cache, handles, namespace, readonly)
 	if err != nil {
 		return nil, err
 	}

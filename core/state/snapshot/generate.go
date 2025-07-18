@@ -37,7 +37,7 @@ import (
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 )

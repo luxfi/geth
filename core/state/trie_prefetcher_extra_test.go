@@ -20,7 +20,7 @@ import (
 	"github.com/luxfi/geth/triedb/hashdb"
 	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/stretchr/testify/require"
 )
 

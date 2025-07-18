@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/trie/utils"
 	"github.com/luxfi/geth/triedb/database"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/gballet/go-verkle"
 	"github.com/holiman/uint256"
 )

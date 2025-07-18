@@ -14,7 +14,7 @@ import (
 	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 )
 

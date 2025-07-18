@@ -15,7 +15,7 @@ import (
 	"github.com/luxfi/geth/warp"
 	warpHandlers "github.com/luxfi/geth/warp/handlers"
 	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 var _ message.RequestHandler = &networkHandler{}

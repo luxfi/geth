@@ -13,8 +13,8 @@ DEFAULT_VM_ID="srEXiWaHuhNyGwPUi444Tu47ZEDwxTWrbQiuD7FmgSAQ6X7Dy"
 # Set binary location
 binary_path=${GETH_BINARY_PATH:-"$GOPATH/src/github.com/luxfi/node/build/plugins/evm"}
 
-# Avalabs docker hub
-DOCKERHUB_REPO="avaplatform/geth"
+# Lux docker hub
+DOCKERHUB_REPO="luxfi/geth"
 
 # Current branch
 CURRENT_BRANCH=${CURRENT_BRANCH:-$(git describe --tags --exact-match 2>/dev/null || git symbolic-ref -q --short HEAD || git rev-parse --short HEAD)}

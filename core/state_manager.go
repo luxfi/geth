@@ -33,7 +33,7 @@ import (
 
 	"github.com/luxfi/geth/core/types"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 func init() {

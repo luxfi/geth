@@ -31,7 +31,7 @@ import (
 
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 const defaultPreimagesLimit = 4 * 1024 * 1024 // 4 MB

@@ -5,7 +5,7 @@ import (
 
 	"github.com/luxfi/geth/utils"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 func (t *Tree) DiskAccountIterator(seek common.Hash) AccountIterator {

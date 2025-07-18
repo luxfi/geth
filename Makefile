@@ -17,27 +17,14 @@ BUILDFLAGS=-v
 # Default target
 .DEFAULT_GOAL := build
 
-# Build the binary
+# Build target is a no-op in this repo; see the lux/node README for build instructions
 build:
-	@echo "Building $(BINARY_NAME)..."
-	$(GOBUILD) $(BUILDFLAGS) $(LDFLAGS) -o $(BINARY_NAME) ./cmd/geth
+	@echo "This repository is a Geth plugin for Lux; it must be built via the Lux node build script."
+	@echo "Run the following from the lux/node directory:"
+	@echo "  ./scripts/build.sh"
 
-# Build for multiple platforms
-build-all: build-linux build-darwin build-windows
-
-build-linux:
-	@echo "Building for Linux..."
-	GOOS=linux GOARCH=amd64 $(GOBUILD) $(BUILDFLAGS) $(LDFLAGS) -o $(BINARY_NAME)-linux-amd64 ./cmd/geth
-	GOOS=linux GOARCH=arm64 $(GOBUILD) $(BUILDFLAGS) $(LDFLAGS) -o $(BINARY_NAME)-linux-arm64 ./cmd/geth
-
-build-darwin:
-	@echo "Building for macOS..."
-	GOOS=darwin GOARCH=amd64 $(GOBUILD) $(BUILDFLAGS) $(LDFLAGS) -o $(BINARY_NAME)-darwin-amd64 ./cmd/geth
-	GOOS=darwin GOARCH=arm64 $(GOBUILD) $(BUILDFLAGS) $(LDFLAGS) -o $(BINARY_NAME)-darwin-arm64 ./cmd/geth
-
-build-windows:
-	@echo "Building for Windows..."
-	GOOS=windows GOARCH=amd64 $(GOBUILD) $(BUILDFLAGS) $(LDFLAGS) -o $(BINARY_NAME)-windows-amd64.exe ./cmd/geth
+# Build-all is an alias for build
+build-all: build
 
 # Test
 test:
@@ -84,15 +71,7 @@ lint:
 	@which golangci-lint > /dev/null || (echo "golangci-lint not installed. Please install: https://golangci-lint.run/usage/install/" && exit 1)
 	golangci-lint run
 
-# Run
-run: build
-	@echo "Running $(BINARY_NAME)..."
-	./$(BINARY_NAME)
-
-# Install
-install: build
-	@echo "Installing $(BINARY_NAME)..."
-	$(GOCMD) install ./cmd/geth
+# Run and install targets are no longer supported; use the build script directly
 
 # Check for security vulnerabilities
 security:
@@ -114,8 +93,8 @@ help:
 	@echo "Makefile for Lux Geth"
 	@echo ""
 	@echo "Usage:"
-	@echo "  make build          Build the binary"
-	@echo "  make build-all      Build for all platforms"
+		@echo "  make build          Print Lux C-Chain plugin build instructions"
+		@echo "  make build-all      Alias for make build"
 	@echo "  make test           Run tests"
 	@echo "  make test-coverage  Run tests with coverage"
 	@echo "  make bench          Run benchmarks"
@@ -124,11 +103,9 @@ help:
 	@echo "  make update-deps    Update dependencies"
 	@echo "  make fmt            Format code"
 	@echo "  make lint           Run linter"
-	@echo "  make run            Build and run"
-	@echo "  make install        Install the binary"
 	@echo "  make security       Check for vulnerabilities"
 	@echo "  make mocks          Generate mocks"
 	@echo "  make verify         Verify modules"
 	@echo "  make help           Show this help"
 
-.PHONY: build build-all build-linux build-darwin build-windows test test-coverage bench clean deps update-deps fmt lint run install security mocks verify help
+.PHONY: build build-all test test-coverage bench clean deps update-deps fmt lint security mocks verify help
