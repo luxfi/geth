@@ -12,15 +12,15 @@ import (
 
 	safemath "github.com/luxfi/node/utils/math"
 
-	"github.com/ethereum/go-ethereum/constants"
+	"github.com/luxfi/geth/constants"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/header"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap0"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap1"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap5"
+	"github.com/luxfi/geth/plugin/evm/header"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
 	"github.com/ethereum/go-ethereum/trie"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 )
 
 var (

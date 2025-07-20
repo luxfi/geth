@@ -6,9 +6,9 @@ package warp
 import (
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/precompile/contract"
-	"github.com/ethereum/go-ethereum/precompile/modules"
-	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
+	"github.com/luxfi/geth/precompile/contract"
+	"github.com/luxfi/geth/precompile/modules"
+	"github.com/luxfi/geth/precompile/precompileconfig"
 
 	"github.com/ethereum/go-ethereum/common"
 )

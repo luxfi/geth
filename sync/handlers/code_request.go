@@ -14,8 +14,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	"github.com/ethereum/go-ethereum/sync/handlers/stats"
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/sync/handlers/stats"
 )
 
 // CodeRequestHandler is a peer.RequestHandler for message.CodeRequest

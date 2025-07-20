@@ -39,8 +39,8 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/interfaces"
-	"github.com/ethereum/go-ethereum/internal/ethapi"
+	"github.com/luxfi/geth/interfaces"
+	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/ethereum/go-ethereum/rpc"
 )
 

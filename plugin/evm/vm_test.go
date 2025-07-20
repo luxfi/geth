@@ -21,15 +21,15 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/holiman/uint256"
 
-	"github.com/ethereum/go-ethereum/constants"
-	"github.com/ethereum/go-ethereum/eth/filters"
-	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/plugin/evm/config"
-	"github.com/ethereum/go-ethereum/plugin/evm/header"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap0"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap1"
+	"github.com/luxfi/geth/constants"
+	"github.com/luxfi/geth/eth/filters"
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/plugin/evm/config"
+	"github.com/luxfi/geth/plugin/evm/header"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
 	"github.com/ethereum/go-ethereum/trie"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -59,14 +59,14 @@ import (
 	"github.com/luxfi/node/consensus/engine/enginetest"
 	constantsEng "github.com/luxfi/node/utils/constants"
 
-	"github.com/ethereum/go-ethereum/consensus/dummy"
+	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth"
+	"github.com/luxfi/geth/eth"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/go-ethereum/rpc"
 
-	accountKeystore "github.com/ethereum/go-ethereum/accounts/keystore"
+	accountKeystore "github.com/luxfi/geth/accounts/keystore"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 )
 

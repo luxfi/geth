@@ -25,7 +25,7 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/trie/utils"
+	"github.com/luxfi/geth/trie/utils"
 )
 
 var (

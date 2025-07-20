@@ -14,7 +14,7 @@ import (
 	"github.com/luxfi/node/ids"
 
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/sync/client/stats"
+	"github.com/luxfi/geth/sync/client/stats"
 
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/version"
@@ -26,8 +26,8 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/peer"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
+	"github.com/luxfi/geth/peer"
+	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/ethereum/go-ethereum/trie"
 )
 

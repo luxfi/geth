@@ -17,16 +17,16 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/consensus/dummy"
+	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	clientstats "github.com/ethereum/go-ethereum/sync/client/stats"
-	"github.com/ethereum/go-ethereum/sync/handlers"
-	handlerstats "github.com/ethereum/go-ethereum/sync/handlers/stats"
-	"github.com/ethereum/go-ethereum/sync/syncutils"
+	"github.com/luxfi/geth/plugin/evm/message"
+	clientstats "github.com/luxfi/geth/sync/client/stats"
+	"github.com/luxfi/geth/sync/handlers"
+	handlerstats "github.com/luxfi/geth/sync/handlers/stats"
+	"github.com/luxfi/geth/sync/syncutils"
 	"github.com/ethereum/go-ethereum/triedb"
 )
 

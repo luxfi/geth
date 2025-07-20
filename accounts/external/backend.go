@@ -38,9 +38,9 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/interfaces"
+	"github.com/luxfi/geth/interfaces"
 	"github.com/ethereum/go-ethereum/rpc"
-	"github.com/ethereum/go-ethereum/signer/core/apitypes"
+	"github.com/luxfi/geth/signer/core/apitypes"
 )
 
 type ExternalBackend struct {

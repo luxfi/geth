@@ -37,7 +37,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/interfaces"
+	"github.com/luxfi/geth/interfaces"
 	"github.com/ethereum/go-ethereum/rpc"
 )
 

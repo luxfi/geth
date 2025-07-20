@@ -33,7 +33,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 )
 
 func TestCheckCompatible(t *testing.T) {

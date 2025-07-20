@@ -17,7 +17,7 @@
 package simulated
 
 import (
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
+	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/ethereum/go-ethereum/node"
 )
 

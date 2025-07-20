@@ -6,4 +6,3 @@ import (
 )
 
 // PrettyDuration is a wrapper for time.Duration for pretty printing
-type PrettyDuration = common.PrettyDuration

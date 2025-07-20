@@ -7,7 +7,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/consensus/validators"
 	"github.com/luxfi/node/consensus/validators/validatorsmock"
 	"github.com/luxfi/node/ids"

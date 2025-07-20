@@ -23,8 +23,8 @@ import (
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/version"
 
-	"github.com/ethereum/go-ethereum/peer/stats"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
+	"github.com/luxfi/geth/peer/stats"
+	"github.com/luxfi/geth/plugin/evm/message"
 )
 
 // Minimum amount of time to handle a request

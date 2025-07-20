@@ -22,11 +22,11 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/trie/triedb/hashdb"
-	"github.com/ethereum/go-ethereum/trie/triedb/pathdb"
+	"github.com/luxfi/geth/trie/triedb/hashdb"
+	"github.com/luxfi/geth/trie/triedb/pathdb"
 	"github.com/ethereum/go-ethereum/trie/trienode"
-	"github.com/ethereum/go-ethereum/trie/triestate"
-	"github.com/ethereum/go-ethereum/triedb/database"
+	"github.com/luxfi/geth/trie/triestate"
+	"github.com/luxfi/geth/triedb/database"
 )
 
 // mptResolver is a no-op implementation of ChildResolver

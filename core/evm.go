@@ -31,11 +31,11 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/misc/eip4844"
+	"github.com/luxfi/geth/consensus"
+	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/predicate"
+	"github.com/luxfi/geth/predicate"
 )
 
 // ChainContext supports retrieving headers and consensus parameters from the

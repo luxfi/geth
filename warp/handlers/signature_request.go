@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	"github.com/ethereum/go-ethereum/warp"
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/warp"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/crypto/bls"

@@ -14,4 +14,3 @@ func DeleteRange(b Batch, start, end []byte) error {
 	}
 	// Fallback: not supported
 	return nil
-}

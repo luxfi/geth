@@ -27,8 +27,8 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/trie/trienode"
-	"github.com/ethereum/go-ethereum/trie/utils"
-	"github.com/ethereum/go-ethereum/triedb/database"
+	"github.com/luxfi/geth/trie/utils"
+	"github.com/luxfi/geth/triedb/database"
 )
 
 var (

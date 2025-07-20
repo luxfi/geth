@@ -15,7 +15,7 @@ import (
 
 	common "github.com/ethereum/go-ethereum/common"
 	uint256 "github.com/holiman/uint256"
-	precompileconfig "github.com/ethereum/go-ethereum/precompile/precompileconfig"
+	precompileconfig "github.com/luxfi/geth/precompile/precompileconfig"
 	snow "github.com/luxfi/node/consensus"
 	gomock "go.uber.org/mock/gomock"
 )

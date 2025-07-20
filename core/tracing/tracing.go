@@ -23,4 +23,3 @@ const (
 	BalanceIncreaseRewardTransactionFee = tracing.BalanceIncreaseRewardTransactionFee
 	BalanceDecreaseGasBuy = tracing.BalanceDecreaseGasBuy
 	BalanceDecreaseSelfdestructBurn = tracing.BalanceDecreaseSelfdestructBurn
-)

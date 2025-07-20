@@ -33,7 +33,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient/simulated"
-	"github.com/ethereum/go-ethereum/interfaces"
+	"github.com/luxfi/geth/interfaces"
 )
 
 // Verify that SimulatedBackend implements required interfaces

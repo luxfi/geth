@@ -10,8 +10,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/plugin/evm/header"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap4"
+	"github.com/luxfi/geth/plugin/evm/header"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
 )
 
 func TestVerifyBlockFee(t *testing.T) {

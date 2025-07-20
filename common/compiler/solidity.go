@@ -16,4 +16,3 @@ var (
 	CompileSolidityString = compiler.CompileSolidityString
 	CompileSolidity = compiler.CompileSolidity
 	ParseCombinedJSON = compiler.ParseCombinedJSON
-)

@@ -10,7 +10,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
+	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/utils/set"
 	"github.com/stretchr/testify/require"

@@ -9,9 +9,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/precompile/contract"
-	"github.com/ethereum/go-ethereum/predicate"
-	"github.com/ethereum/go-ethereum/vmerrs"
+	"github.com/luxfi/geth/precompile/contract"
+	"github.com/luxfi/geth/predicate"
+	"github.com/luxfi/geth/vmerrs"
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"

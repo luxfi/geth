@@ -12,9 +12,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/plugin/evm/client"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap3"
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/plugin/evm/client"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
 	"github.com/luxfi/node/api"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/formatting"

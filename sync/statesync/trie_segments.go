@@ -14,10 +14,10 @@ import (
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	syncclient "github.com/ethereum/go-ethereum/sync/client"
+	"github.com/luxfi/geth/plugin/evm/message"
+	syncclient "github.com/luxfi/geth/sync/client"
 	"github.com/ethereum/go-ethereum/trie"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/utils/wrappers"
 )
 

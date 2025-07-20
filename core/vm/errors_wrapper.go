@@ -20,4 +20,3 @@ var (
 	ErrGasUintOverflow = vm.ErrGasUintOverflow
 	ErrInvalidCode = vm.ErrInvalidCode
 	ErrNonceUintOverflow = vm.ErrNonceUintOverflow
-)

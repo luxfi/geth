@@ -10,7 +10,7 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/upgrade"
 )

@@ -9,9 +9,9 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
-	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap0"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
+	"github.com/luxfi/geth/utils"
 
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/ids"

@@ -9,7 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/acp176"
+	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 	"github.com/luxfi/node/vms/components/gas"
 )
 

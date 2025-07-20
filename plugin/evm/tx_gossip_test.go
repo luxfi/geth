@@ -34,10 +34,10 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/plugin/evm/config"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap0"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/plugin/evm/config"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
+	"github.com/luxfi/geth/utils"
 )
 
 func TestEthTxGossip(t *testing.T) {

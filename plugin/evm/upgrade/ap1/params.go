@@ -4,7 +4,7 @@
 // AP1 defines constants used after the Apricot Phase 1 upgrade.
 package ap1
 
-import "github.com/ethereum/go-ethereum/utils"
+import "github.com/luxfi/geth/utils"
 
 const (
 	// MinGasPrice is the minimum gas price of a transaction after the Apricot

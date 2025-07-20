@@ -17,4 +17,3 @@ type GT struct{}
 // Re-export functions
 var (
 	PairingCheck = bn256.PairingCheck
-)

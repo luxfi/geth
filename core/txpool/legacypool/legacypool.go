@@ -44,11 +44,11 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/txpool"
+	"github.com/luxfi/geth/core/txpool"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/header"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/plugin/evm/header"
+	"github.com/luxfi/geth/utils"
 )
 
 const (

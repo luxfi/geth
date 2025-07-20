@@ -10,8 +10,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/core/state/snapshot"
-	syncclient "github.com/ethereum/go-ethereum/sync/client"
+	"github.com/luxfi/geth/core/state/snapshot"
+	syncclient "github.com/luxfi/geth/sync/client"
 	"github.com/ethereum/go-ethereum/triedb"
 	"golang.org/x/sync/errgroup"
 )

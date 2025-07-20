@@ -20,4 +20,3 @@ var (
 	ComputeProof = kzg4844.ComputeProof
 	VerifyProof = kzg4844.VerifyProof
 	CalcBlobHashV1 = kzg4844.CalcBlobHashV1
-)

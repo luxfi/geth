@@ -45,4 +45,3 @@ var (
 
 // Type aliases for convenience
 type Hash = common.Hash
-type Address = common.Address

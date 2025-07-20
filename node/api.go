@@ -29,7 +29,7 @@ package node
 import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/internal/debug"
+	"github.com/luxfi/geth/internal/debug"
 	"github.com/ethereum/go-ethereum/rpc"
 )
 

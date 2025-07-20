@@ -11,8 +11,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/utils"
 	"golang.org/x/sync/errgroup"
 )
 

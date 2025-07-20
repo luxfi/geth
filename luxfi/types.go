@@ -138,4 +138,3 @@ var (
 	CreateAddress = crypto.CreateAddress
 	CreateAddress2 = crypto.CreateAddress2
 	PubkeyToAddress = crypto.PubkeyToAddress
-)

@@ -11,7 +11,7 @@ import (
 	"math"
 
 	safemath "github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/utils/wrappers"
 )
 

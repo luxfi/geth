@@ -5,7 +5,7 @@
 package ap0
 
 import (
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/utils/units"
 )
 

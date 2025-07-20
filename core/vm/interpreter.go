@@ -31,7 +31,7 @@ import (
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/vmerrs"
+	"github.com/luxfi/geth/vmerrs"
 )
 
 // Config are the configuration options for the Interpreter

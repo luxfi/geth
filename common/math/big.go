@@ -22,4 +22,3 @@ var (
 	PaddedBigBytes = math.PaddedBigBytes
 	ReadBits = math.ReadBits
 	U256Bytes = math.U256Bytes
-)

@@ -11,8 +11,8 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
-	"github.com/ethereum/go-ethereum/predicate"
+	"github.com/luxfi/geth/precompile/precompileconfig"
+	"github.com/luxfi/geth/predicate"
 	"github.com/luxfi/node/utils/set"
 )
 

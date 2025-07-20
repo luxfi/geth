@@ -33,7 +33,7 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/holiman/uint256"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/vmerrs"
+	"github.com/luxfi/geth/vmerrs"
 )
 
 func opAdd(pc *uint64, interpreter *EVMInterpreter, scope *ScopeContext) ([]byte, error) {

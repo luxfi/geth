@@ -38,9 +38,9 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/crypto/blake2b"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/precompile/contract"
-	"github.com/ethereum/go-ethereum/precompile/modules"
-	"github.com/ethereum/go-ethereum/vmerrs"
+	"github.com/luxfi/geth/precompile/contract"
+	"github.com/luxfi/geth/precompile/modules"
+	"github.com/luxfi/geth/vmerrs"
 	// "github.com/ethereum/go-ethereum/crypto/bls12381" // TODO: BLS12381 not available in go-ethereum v1.16.1
 	"github.com/ethereum/go-ethereum/crypto/bn256"
 	"github.com/ethereum/go-ethereum/crypto/kzg4844"

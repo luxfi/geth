@@ -12,8 +12,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethdb"
 	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	statesyncclient "github.com/ethereum/go-ethereum/sync/client"
+	"github.com/luxfi/geth/plugin/evm/message"
+	statesyncclient "github.com/luxfi/geth/sync/client"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/set"
 )

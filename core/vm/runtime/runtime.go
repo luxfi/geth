@@ -38,7 +38,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap3"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
 )
 
 // Config is a basic type specifying certain configuration flags for running

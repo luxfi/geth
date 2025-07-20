@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
+	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/ethereum/go-ethereum/trie/trienode"
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database"

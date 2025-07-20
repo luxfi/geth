@@ -49,7 +49,7 @@ import (
 	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/interfaces"
+	"github.com/luxfi/geth/interfaces"
 	"github.com/status-im/keycard-go/derivationpath"
 )
 

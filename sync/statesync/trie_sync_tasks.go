@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/sync/syncutils"
+	"github.com/luxfi/geth/sync/syncutils"
 	"github.com/ethereum/go-ethereum/trie"
 )
 

@@ -41,8 +41,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/trie/trienode"
-	"github.com/ethereum/go-ethereum/trie/triestate"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/trie/triestate"
+	"github.com/luxfi/geth/utils"
 )
 
 const (

@@ -35,20 +35,20 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/consensus"
+	"github.com/luxfi/geth/consensus"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
-	"github.com/ethereum/go-ethereum/eth/tracers"
-	"github.com/ethereum/go-ethereum/eth/tracers/logger"
+	"github.com/luxfi/geth/eth/tracers"
+	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/ethereum/go-ethereum/params"
 	// "github.com/ethereum/go-ethereum/core/asm" // Removed in go-ethereum v1.16.1
 
 	// force-load js tracers to trigger registration
 	"github.com/holiman/uint256"
-	_ "github.com/ethereum/go-ethereum/eth/tracers/js"
+	_ "github.com/luxfi/geth/eth/tracers/js"
 )
 
 func TestDefaults(t *testing.T) {

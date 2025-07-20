@@ -37,8 +37,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/accounts/external"
-	"github.com/ethereum/go-ethereum/accounts/keystore"
+	"github.com/luxfi/geth/accounts/external"
+	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 

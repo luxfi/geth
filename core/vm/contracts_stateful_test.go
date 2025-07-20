@@ -13,7 +13,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/vmerrs"
+	"github.com/luxfi/geth/vmerrs"
 	"github.com/stretchr/testify/assert"
 )
 

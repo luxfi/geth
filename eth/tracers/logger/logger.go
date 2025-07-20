@@ -32,7 +32,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/vmerrs"
+	"github.com/luxfi/geth/vmerrs"
 )
 
 // Storage represents a contract's storage.

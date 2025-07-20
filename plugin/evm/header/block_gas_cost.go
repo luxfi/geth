@@ -10,8 +10,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap4"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap5"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
 )
 
 var (

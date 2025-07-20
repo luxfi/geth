@@ -13,4 +13,3 @@ var (
 	TestBytes = bitutil.TestBytes
 	CompressBytes = bitutil.CompressBytes
 	DecompressBytes = bitutil.DecompressBytes
-)

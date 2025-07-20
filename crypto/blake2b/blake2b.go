@@ -8,4 +8,3 @@ import (
 // Re-export functions
 var (
 	F = blake2b.F
-)

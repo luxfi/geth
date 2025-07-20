@@ -85,4 +85,3 @@ func BigMin(x, y *big.Int) *big.Int {
 		return x
 	}
 	return y
-}

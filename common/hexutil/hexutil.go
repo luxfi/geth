@@ -40,4 +40,3 @@ var (
 	UnmarshalFixedJSON = hexutil.UnmarshalFixedJSON
 	UnmarshalFixedText = hexutil.UnmarshalFixedText
 	UnmarshalFixedUnprefixedText = hexutil.UnmarshalFixedUnprefixedText
-)

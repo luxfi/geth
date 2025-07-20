@@ -23,10 +23,10 @@ import (
 	"github.com/luxfi/node/utils/logging"
 
 	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/txpool"
+	"github.com/luxfi/geth/core/txpool"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/plugin/evm/config"
+	"github.com/luxfi/geth/eth"
+	"github.com/luxfi/geth/plugin/evm/config"
 )
 
 const pendingTxsBuffer = 10

@@ -10,8 +10,8 @@ import (
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/acp176"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/etna"
+	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
+	"github.com/luxfi/geth/plugin/evm/upgrade/etna"
 )
 
 const (

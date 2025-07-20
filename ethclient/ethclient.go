@@ -38,11 +38,11 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/interfaces"
+	"github.com/luxfi/geth/interfaces"
 	"github.com/ethereum/go-ethereum/rpc"
 
 	// Force-load precompiles to trigger registration
-	_ "github.com/ethereum/go-ethereum/precompile/registry"
+	_ "github.com/luxfi/geth/precompile/registry"
 )
 
 // Verify that Client implements required interfaces
