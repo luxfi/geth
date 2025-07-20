@@ -322,7 +322,8 @@ func generateTrieRoot(db ethdb.KeyValueWriter, scheme string, it Iterator, accou
 					return stop(err)
 				}
 				// Fetch the next account and process it concurrently
-				account, err := types.FullAccount(it.(AccountIterator).Account())
+				var account types.FullAccount
+				err := rlp.DecodeBytes(it.(AccountIterator).Account(), &account)
 				if err != nil {
 					return stop(err)
 				}
