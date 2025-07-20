@@ -3,9 +3,9 @@ package snapshot
 import (
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/utils"
 )
 
 func (t *Tree) DiskAccountIterator(seek common.Hash) AccountIterator {

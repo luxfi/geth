@@ -38,8 +38,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/metrics"
 	"golang.org/x/time/rate"
 )
 

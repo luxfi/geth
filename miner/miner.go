@@ -28,14 +28,14 @@
 package miner
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/txpool"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/event"
+	"github.com/luxfi/geth/consensus"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/txpool"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/node/utils/timer/mockable"
 )
 

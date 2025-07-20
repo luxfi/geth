@@ -4,8 +4,8 @@
 package evm
 
 import (
-	"github.com/ethereum/go-ethereum/core/txpool/legacypool"
-	"github.com/ethereum/go-ethereum/plugin/evm/config"
+	"github.com/luxfi/geth/core/txpool/legacypool"
+	"github.com/luxfi/geth/plugin/evm/config"
 )
 
 // defaultTxPoolConfig uses [legacypool.DefaultConfig] to make a [config.TxPoolConfig]

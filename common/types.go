@@ -3,7 +3,7 @@ package common
 
 import (
 	"math/big"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 )
 
 // Re-export constants

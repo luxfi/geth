@@ -2,7 +2,7 @@
 package kzg4844
 
 import (
-	"github.com/ethereum/go-ethereum/crypto/kzg4844"
+	"github.com/luxfi/geth/crypto/kzg4844"
 )
 
 // Re-export types

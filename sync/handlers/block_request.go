@@ -12,10 +12,10 @@ import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/units"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	"github.com/ethereum/go-ethereum/sync/handlers/stats"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/sync/handlers/stats"
 )
 
 const (

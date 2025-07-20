@@ -33,10 +33,10 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 )
 
-const ourPath = "github.com/ethereum/go-ethereum" // Path to our module
+const ourPath = "github.com/luxfi/geth" // Path to our module
 
 // These variables are set at build-time by the linker when the build is
 // done by build/ci.go.

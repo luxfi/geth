@@ -2,7 +2,7 @@
 package ethdb
 
 import (
-	gethdb "github.com/ethereum/go-ethereum/ethdb"
+	gethdb "github.com/luxfi/geth/ethdb"
 )
 
 // databaseWrapper wraps a gethdb.Database to implement our extended Database interface

@@ -2,7 +2,7 @@
 package memorydb
 
 import (
-	"github.com/ethereum/go-ethereum/ethdb/memorydb"
+	"github.com/luxfi/geth/ethdb/memorydb"
 )
 
 // Re-export memorydb types

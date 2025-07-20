@@ -27,11 +27,11 @@
 package trie
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/trie/triestate"
-	"github.com/ethereum/go-ethereum/triedb/database"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/trie/triestate"
+	"github.com/luxfi/geth/triedb/database"
 )
 
 // trieReader is a wrapper of the underlying node reader. It's not safe

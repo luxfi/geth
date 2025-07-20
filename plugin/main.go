@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/node/utils/ulimit"
 	"github.com/luxfi/node/vms/rpcchainvm"
 
-	"github.com/ethereum/go-ethereum/plugin/evm"
+	"github.com/luxfi/geth/plugin/evm"
 )
 
 func main() {

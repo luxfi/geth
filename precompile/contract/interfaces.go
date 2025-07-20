@@ -7,9 +7,9 @@ package contract
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 	"github.com/holiman/uint256"
-	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
+	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/node/consensus"
 )
 

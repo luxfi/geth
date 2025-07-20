@@ -2,7 +2,7 @@
 package bn256
 
 import (
-	"github.com/ethereum/go-ethereum/crypto/bn256"
+	"github.com/luxfi/geth/crypto/bn256"
 )
 
 // Re-export types

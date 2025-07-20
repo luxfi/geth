@@ -2,7 +2,7 @@
 package blake2b
 
 import (
-	"github.com/ethereum/go-ethereum/crypto/blake2b"
+	"github.com/luxfi/geth/crypto/blake2b"
 )
 
 // Re-export functions

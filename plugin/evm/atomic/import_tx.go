@@ -11,12 +11,12 @@ import (
 	"slices"
 
 	"github.com/holiman/uint256"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap0"
-	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap5"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"

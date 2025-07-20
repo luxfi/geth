@@ -2,7 +2,7 @@
 package common
 
 import (
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 )
 
 // PrettyDuration is a wrapper for time.Duration for pretty printing

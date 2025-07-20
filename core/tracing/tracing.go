@@ -2,7 +2,7 @@
 package tracing
 
 import (
-	"github.com/ethereum/go-ethereum/core/tracing"
+	"github.com/luxfi/geth/core/tracing"
 )
 
 // Re-export types

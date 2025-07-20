@@ -7,7 +7,7 @@ import (
 	"context"
 	"encoding/json"
 
-	"github.com/ethereum/go-ethereum/core"
+	"github.com/luxfi/geth/core"
 	"github.com/luxfi/node/utils/formatting"
 )
 

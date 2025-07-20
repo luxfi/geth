@@ -2,7 +2,7 @@
 package compiler
 
 import (
-	"github.com/ethereum/go-ethereum/common/compiler"
+	"github.com/luxfi/geth/common/compiler"
 )
 
 // Re-export types

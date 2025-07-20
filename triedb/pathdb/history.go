@@ -32,8 +32,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/trie/triestate"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/trie/triestate"
 	"golang.org/x/exp/slices"
 )
 

@@ -2,8 +2,8 @@
 package leveldb
 
 import (
-	goleveldb "github.com/ethereum/go-ethereum/ethdb/leveldb"
-	"github.com/ethereum/go-ethereum/ethdb"
+	goleveldb "github.com/luxfi/geth/ethdb/leveldb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 // Database wraps go-ethereum's leveldb.Database

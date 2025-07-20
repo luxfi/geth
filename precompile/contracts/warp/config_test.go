@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
-	"github.com/ethereum/go-ethereum/precompile/testutils"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/precompile/precompileconfig"
+	"github.com/luxfi/geth/precompile/testutils"
+	"github.com/luxfi/geth/utils"
 	"go.uber.org/mock/gomock"
 )
 

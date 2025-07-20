@@ -11,11 +11,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/utils"
 
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/consensus"

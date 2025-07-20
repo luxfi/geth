@@ -2,7 +2,7 @@
 package bitutil
 
 import (
-	"github.com/ethereum/go-ethereum/common/bitutil"
+	"github.com/luxfi/geth/common/bitutil"
 )
 
 // Re-export functions

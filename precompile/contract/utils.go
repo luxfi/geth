@@ -8,9 +8,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/vmerrs"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/accounts/abi"
+	"github.com/luxfi/geth/vmerrs"
 )
 
 // Gas costs for stateful precompiles

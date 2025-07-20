@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/ethereum/go-ethereum/utils"
+	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/upgrade"
 )
 

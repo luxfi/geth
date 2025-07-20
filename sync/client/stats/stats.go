@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
+	"github.com/luxfi/geth/metrics"
+	"github.com/luxfi/geth/plugin/evm/message"
 )
 
 var (

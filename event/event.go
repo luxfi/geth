@@ -2,7 +2,7 @@
 package event
 
 import (
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/luxfi/geth/event"
 )
 
 // Re-export all event types from go-ethereum

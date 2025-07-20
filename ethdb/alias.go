@@ -4,7 +4,7 @@
 package ethdb
 
 import (
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 // Type aliases for go-ethereum database interfaces

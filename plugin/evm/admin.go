@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/plugin/evm/client"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/plugin/evm/client"
 	"github.com/luxfi/node/api"
 	"github.com/luxfi/node/utils/profiler"
 )

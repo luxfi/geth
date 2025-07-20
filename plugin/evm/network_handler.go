@@ -6,14 +6,14 @@ package evm
 import (
 	"context"
 
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/plugin/evm/message"
-	syncHandlers "github.com/ethereum/go-ethereum/sync/handlers"
-	syncStats "github.com/ethereum/go-ethereum/sync/handlers/stats"
-	"github.com/ethereum/go-ethereum/triedb"
-	"github.com/ethereum/go-ethereum/warp"
-	warpHandlers "github.com/ethereum/go-ethereum/warp/handlers"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/metrics"
+	"github.com/luxfi/geth/plugin/evm/message"
+	syncHandlers "github.com/luxfi/geth/sync/handlers"
+	syncStats "github.com/luxfi/geth/sync/handlers/stats"
+	"github.com/luxfi/geth/triedb"
+	"github.com/luxfi/geth/warp"
+	warpHandlers "github.com/luxfi/geth/warp/handlers"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"
 )

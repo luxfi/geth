@@ -3,7 +3,7 @@ package rlp
 
 import (
 	"io"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/luxfi/geth/rlp"
 )
 
 // Re-export types

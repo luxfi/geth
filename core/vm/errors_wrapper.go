@@ -2,7 +2,7 @@
 package vm
 
 import (
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/luxfi/geth/core/vm"
 )
 
 // Re-export error variables
