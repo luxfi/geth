@@ -265,7 +265,16 @@ func (ec *client) getBlock(ctx context.Context, method string, args ...interface
 		}
 		txs[i] = tx.tx
 	}
-	block := types.NewBlockWithHeader(head).WithBody(txs, uncles)
+	// Create ethereum Body for WithBody
+	ethBody := struct {
+		Transactions []*types.Transaction
+		Uncles       []*types.Header
+		Withdrawals  []*types.Withdrawal
+	}{
+		Transactions: txs,
+		Uncles:       uncles,
+	}
+	block := types.NewBlockWithHeader(head).WithBody(ethBody)
 	if body.BlockExtraData != nil {
 		return types.BlockWithExtData(block, body.Version, *body.BlockExtraData), nil
 	}
