@@ -5,6 +5,7 @@ import (
 	
 	"github.com/luxfi/geth/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/holiman/uint256"
 )
 
 // Body represents a block body with Lux extensions
@@ -60,3 +61,21 @@ type ExtendedSlimAccount struct {
 
 // SlimAccount is our extended slim account type
 type SlimAccount = ExtendedSlimAccount
+
+// SlimAccountRLP converts an account to its RLP representation for snapshot storage
+func SlimAccountRLP(acc StateAccount) []byte {
+	// Convert our extended account to ethereum StateAccount
+	// Need to convert big.Int to uint256
+	var balance uint256.Int
+	if acc.Balance != nil {
+		balance.SetFromBig(acc.Balance)
+	}
+	
+	ethAcc := ethtypes.StateAccount{
+		Nonce:    acc.Nonce,
+		Balance:  &balance,
+		Root:     acc.Root,
+		CodeHash: acc.CodeHash,
+	}
+	return ethtypes.SlimAccountRLP(ethAcc)
+}

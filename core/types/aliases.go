@@ -128,7 +128,7 @@ const (
 var (
 	NewEmptyStateAccount = ethtypes.NewEmptyStateAccount
 	FullAccountRLP       = ethtypes.FullAccountRLP
-	SlimAccountRLP       = ethtypes.SlimAccountRLP
+	// SlimAccountRLP is defined in lux_types.go
 )
 
 // TrieRootHash is the hash of a trie root

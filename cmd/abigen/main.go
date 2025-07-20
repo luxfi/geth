@@ -1,3 +1,6 @@
+//go:build ignore
+// +build ignore
+
 // (c) 2019-2020, Lux Industries, Inc.
 //
 // This file is a derived work, based on the go-ethereum library whose original

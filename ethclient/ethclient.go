@@ -40,6 +40,8 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/interfaces"
 	"github.com/luxfi/geth/rpc"
+	
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 
 	// Force-load precompiles to trigger registration
 	_ "github.com/luxfi/geth/precompile/registry"
@@ -266,11 +268,7 @@ func (ec *client) getBlock(ctx context.Context, method string, args ...interface
 		txs[i] = tx.tx
 	}
 	// Create ethereum Body for WithBody
-	ethBody := struct {
-		Transactions []*types.Transaction
-		Uncles       []*types.Header
-		Withdrawals  []*types.Withdrawal
-	}{
+	ethBody := ethtypes.Body{
 		Transactions: txs,
 		Uncles:       uncles,
 	}
