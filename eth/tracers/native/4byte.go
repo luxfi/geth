@@ -32,9 +32,9 @@ import (
 	"strconv"
 	"sync/atomic"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 func init() {

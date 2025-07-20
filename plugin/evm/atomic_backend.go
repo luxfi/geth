@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/plugin/evm/atomic"
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/database"
@@ -16,9 +19,6 @@ import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils"
 	"github.com/luxfi/node/utils/wrappers"
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 var _ AtomicBackend = &atomicBackend{}

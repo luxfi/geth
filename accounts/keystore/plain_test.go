@@ -35,7 +35,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 )
 
 func tmpKeyStoreIface(t *testing.T, encrypted bool) (dir string, ks keyStore) {
@@ -148,7 +148,7 @@ func TestV3_PBKDF2_1(t *testing.T) {
 var testsSubmodule = filepath.Join("..", "..", "tests", "testdata", "KeyStoreTests")
 
 func skipIfSubmoduleMissing(t *testing.T) {
-	if !common.FileExist(testsSubmodule) {
+	if !engine.FileExist(testsSubmodule) {
 		t.Skipf("can't find JSON tests from submodule at %s", testsSubmodule)
 	}
 }
@@ -200,7 +200,7 @@ func testDecryptV3(test KeyStoreTestV3, t *testing.T) {
 
 func loadKeyStoreTestV3(file string, t *testing.T) map[string]KeyStoreTestV3 {
 	tests := make(map[string]KeyStoreTestV3)
-	err := common.LoadJSON(file, &tests)
+	err := engine.LoadJSON(file, &tests)
 	if err != nil {
 		t.Fatal(err)
 	}

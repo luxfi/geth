@@ -14,6 +14,9 @@ import (
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/utils/wrappers"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/plugin/evm/atomic"
@@ -22,9 +25,6 @@ import (
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/hashdb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 const (
@@ -116,12 +116,12 @@ type AtomicTrieIterator interface {
 
 // atomicTrie implements the AtomicTrie interface
 type atomicTrie struct {
-	commitInterval      uint64                     // commit interval, same as commitHeightInterval by default
+	commitInterval      uint64               // commit interval, same as commitHeightInterval by default
 	metadataDB          luxdatabase.Database // Underlying database containing the atomic trie metadata
-	trieDB              *triedb.Database           // Trie database
-	lastCommittedRoot   common.Hash                // trie root of the most recent commit
-	lastCommittedHeight uint64                     // index height of the most recent commit
-	lastAcceptedRoot    common.Hash                // most recent trie root passed to accept trie or the root of the atomic trie on intialization.
+	trieDB              *triedb.Database     // Trie database
+	lastCommittedRoot   common.Hash          // trie root of the most recent commit
+	lastCommittedHeight uint64               // index height of the most recent commit
+	lastAcceptedRoot    common.Hash          // most recent trie root passed to accept trie or the root of the atomic trie on intialization.
 	codec               codec.Manager
 	memoryCap           common.StorageSize
 }

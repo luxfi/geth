@@ -16,9 +16,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/rlp"
 	"github.com/holiman/uint256"
 
 	"github.com/luxfi/geth/constants"
@@ -36,12 +36,12 @@ import (
 
 	"github.com/luxfi/node/api/metrics"
 	luxatomic "github.com/luxfi/node/chains/atomic"
+	"github.com/luxfi/node/consensus"
+	"github.com/luxfi/node/consensus/validators/validatorstest"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/database/prefixdb"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
-	"github.com/luxfi/node/snow/validators/validatorstest"
 	"github.com/luxfi/node/upgrade"
 	"github.com/luxfi/node/utils/cb58"
 	"github.com/luxfi/node/utils/crypto/bls/signer/localsigner"
@@ -51,12 +51,12 @@ import (
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/utils/timer/mockable"
 	"github.com/luxfi/node/utils/units"
-	"github.com/luxfi/node/vms/components/lux"
 	"github.com/luxfi/node/vms/components/chain"
+	"github.com/luxfi/node/vms/components/lux"
 	"github.com/luxfi/node/vms/secp256k1fx"
 
-	commonEng "github.com/luxfi/node/snow/engine/common"
-	"github.com/luxfi/node/snow/engine/enginetest"
+	commonEng "github.com/luxfi/node/consensus/engine"
+	"github.com/luxfi/node/consensus/engine/enginetest"
 	constantsEng "github.com/luxfi/node/utils/constants"
 
 	"github.com/luxfi/geth/consensus/dummy"
@@ -66,8 +66,8 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
 
-	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	accountKeystore "github.com/luxfi/geth/accounts/keystore"
+	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 )
 
 var (
@@ -78,7 +78,7 @@ var (
 	testKeys         []*secp256k1.PrivateKey
 	testEthAddrs     []common.Address // testEthAddrs[i] corresponds to testKeys[i]
 	testShortIDAddrs []ids.ShortID
-	testLuxAssetID  = ids.ID{1, 2, 3}
+	testLuxAssetID   = ids.ID{1, 2, 3}
 
 	genesisJSON = func(cfg *params.ChainConfig) string {
 		g := new(core.Genesis)
@@ -198,7 +198,7 @@ func BuildGenesisTest(t *testing.T, genesisJSON string) []byte {
 	return genesisBytes
 }
 
-func NewContext() *snow.Context {
+func NewContext() *consensus.Context {
 	ctx := utils.TestSnowContext()
 	ctx.NodeID = ids.GenerateTestNodeID()
 	ctx.NetworkID = testNetworkID
@@ -238,7 +238,7 @@ func NewContext() *snow.Context {
 func setupGenesis(
 	t *testing.T,
 	genesisJSON string,
-) (*snow.Context,
+) (*consensus.Context,
 	database.Database,
 	[]byte,
 	chan commonEng.Message,
@@ -319,14 +319,14 @@ func GenesisVMWithClock(
 	require.NoError(t, err, "error initializing GenesisVM")
 
 	if finishBootstrapping {
-		require.NoError(t, vm.SetState(context.Background(), snow.Bootstrapping))
-		require.NoError(t, vm.SetState(context.Background(), snow.NormalOp))
+		require.NoError(t, vm.SetState(context.Background(), consensus.Bootstrapping))
+		require.NoError(t, vm.SetState(context.Background(), consensus.NormalOp))
 	}
 
 	return issuer, vm, dbManager, m, appSender
 }
 
-func addUTXO(sharedMemory *luxatomic.Memory, ctx *snow.Context, txID ids.ID, index uint32, assetID ids.ID, amount uint64, addr ids.ShortID) (*lux.UTXO, error) {
+func addUTXO(sharedMemory *luxatomic.Memory, ctx *consensus.Context, txID ids.ID, index uint32, assetID ids.ID, amount uint64, addr ids.ShortID) (*lux.UTXO, error) {
 	utxo := &lux.UTXO{
 		UTXOID: lux.UTXOID{
 			TxID:        txID,

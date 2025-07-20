@@ -8,15 +8,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow/validators"
-	"github.com/luxfi/node/vms/platformvm/warp"
-	"github.com/luxfi/node/vms/platformvm/warp/payload"
+	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/peer"
 	"github.com/luxfi/geth/warp/aggregator"
 	warpValidators "github.com/luxfi/geth/warp/validators"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/node/consensus/validators"
+	"github.com/luxfi/node/ids"
+	"github.com/luxfi/node/vms/platformvm/warp"
+	"github.com/luxfi/node/vms/platformvm/warp/payload"
 )
 
 var errNoValidators = errors.New("cannot aggregate signatures from subnet with no validators")

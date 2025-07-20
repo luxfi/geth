@@ -31,9 +31,9 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 func init() {

@@ -6,13 +6,13 @@ package evm
 import (
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/plugin/evm/atomic"
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils"
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

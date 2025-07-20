@@ -7,16 +7,16 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/node/vms/platformvm/warp"
-	"github.com/luxfi/node/vms/platformvm/warp/payload"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/vmerrs"
+	"github.com/luxfi/node/vms/platformvm/warp"
+	"github.com/luxfi/node/vms/platformvm/warp/payload"
 
 	_ "embed"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/math"
 )
 
 const (

@@ -27,8 +27,8 @@
 package vm
 
 import (
-	"github.com/luxfi/geth/vmerrs"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/vmerrs"
 )
 
 // Gas costs

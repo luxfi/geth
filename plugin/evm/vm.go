@@ -25,6 +25,7 @@ import (
 	nodeConstants "github.com/luxfi/node/utils/constants"
 	"github.com/prometheus/client_golang/prometheus"
 
+	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/constants"
 	"github.com/luxfi/geth/core"
@@ -49,7 +50,6 @@ import (
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/hashdb"
 	"github.com/luxfi/geth/utils"
-	"github.com/ethereum/go-ethereum/metrics"
 
 	warpcontract "github.com/luxfi/geth/precompile/contracts/warp"
 	"github.com/luxfi/geth/rpc"
@@ -69,21 +69,21 @@ import (
 	// Force-load precompiles to trigger registration
 	_ "github.com/luxfi/geth/precompile/registry"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/rlp"
 
 	luxRPC "github.com/gorilla/rpc/v2"
 
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/codec/linearcodec"
+	"github.com/luxfi/node/consensus"
+	"github.com/luxfi/node/consensus/chain"
+	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
-	"github.com/luxfi/node/consensus/chain"
-	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/utils/formatting/address"
 	"github.com/luxfi/node/utils/logging"
@@ -92,12 +92,12 @@ import (
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/utils/timer/mockable"
 	"github.com/luxfi/node/utils/units"
-	"github.com/luxfi/node/vms/components/lux"
 	vmchain "github.com/luxfi/node/vms/components/chain"
 	"github.com/luxfi/node/vms/components/gas"
+	"github.com/luxfi/node/vms/components/lux"
 	"github.com/luxfi/node/vms/secp256k1fx"
 
-	commonEng "github.com/luxfi/node/snow/engine/common"
+	commonEng "github.com/luxfi/node/consensus/engine"
 
 	luxUtils "github.com/luxfi/node/utils"
 	luxJSON "github.com/luxfi/node/utils/json"
@@ -149,7 +149,7 @@ const (
 
 // Define the API endpoints for the VM
 const (
-	luxEndpoint            = "/lux"
+	luxEndpoint             = "/lux"
 	adminEndpoint           = "/admin"
 	ethRPCEndpoint          = "/rpc"
 	ethWSEndpoint           = "/ws"
@@ -212,8 +212,8 @@ func init() {
 
 // VM implements the chain.ChainVM interface
 type VM struct {
-	ctx *snow.Context
-	// [cancel] may be nil until [snow.NormalOp] starts
+	ctx *consensus.Context
+	// [cancel] may be nil until [consensus.NormalOp] starts
 	cancel context.CancelFunc
 	// *vmchain.State helps to implement the VM interface by wrapping blocks
 	// with an efficient caching layer.
@@ -339,7 +339,7 @@ func (vm *VM) GetActivationTime() time.Time {
 // Initialize implements the chain.ChainVM interface
 func (vm *VM) Initialize(
 	_ context.Context,
-	chainCtx *snow.Context,
+	chainCtx *consensus.Context,
 	db database.Database,
 	genesisBytes []byte,
 	upgradeBytes []byte,
@@ -646,7 +646,7 @@ func (vm *VM) initializeMetrics() error {
 
 func (vm *VM) initializeChain(lastAcceptedHash common.Hash) error {
 	nodecfg := &node.Config{
-		GethVersion:         Version,
+		GethVersion:           Version,
 		KeyStoreDir:           vm.config.KeystoreDirectory,
 		ExternalSigner:        vm.config.KeystoreExternalSigner,
 		InsecureUnlockAllowed: vm.config.KeystoreInsecureUnlockAllowed,
@@ -1028,17 +1028,17 @@ func (vm *VM) onExtraStateChange(block *types.Block, parent *types.Header, state
 	return batchContribution, batchGasUsed, nil
 }
 
-func (vm *VM) SetState(_ context.Context, state snow.State) error {
+func (vm *VM) SetState(_ context.Context, state consensus.State) error {
 	switch state {
-	case snow.StateSyncing:
+	case consensus.StateSyncing:
 		vm.bootstrapped.Set(false)
 		return nil
-	case snow.Bootstrapping:
+	case consensus.Bootstrapping:
 		return vm.onBootstrapStarted()
-	case snow.NormalOp:
+	case consensus.NormalOp:
 		return vm.onNormalOperationsStarted()
 	default:
-		return snow.ErrUnknownState
+		return consensus.ErrUnknownState
 	}
 }
 
@@ -1259,7 +1259,7 @@ func (vm *VM) initBlockBuilding() error {
 	return nil
 }
 
-// WaitForEvent implements the common.VM interface
+// WaitForEvent implements the engine.VM interface
 func (vm *VM) WaitForEvent(ctx context.Context) (commonEng.Message, error) {
 	select {
 	case <-ctx.Done():
@@ -1269,14 +1269,14 @@ func (vm *VM) WaitForEvent(ctx context.Context) (commonEng.Message, error) {
 	}
 }
 
-// NewHTTPHandler implements the common.VM interface
+// NewHTTPHandler implements the engine.VM interface
 func (vm *VM) NewHTTPHandler(ctx context.Context) (http.Handler, error) {
 	// Return the same handlers as CreateHandlers
 	handlers, err := vm.CreateHandlers(ctx)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	// Create a mux to route requests
 	mux := http.NewServeMux()
 	for endpoint, handler := range handlers {

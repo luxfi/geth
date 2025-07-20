@@ -28,15 +28,15 @@
 package miner
 
 import (
-	"github.com/luxfi/node/utils/timer/mockable"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/precompileconfig"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/event"
+	"github.com/luxfi/node/utils/timer/mockable"
 )
 
 // Backend wraps all methods required for mining.

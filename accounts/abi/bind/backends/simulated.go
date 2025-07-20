@@ -29,11 +29,11 @@ package backends
 import (
 	"context"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/accounts/abi/bind"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethclient/simulated"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 // Verify that SimulatedBackend implements required interfaces

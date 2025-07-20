@@ -5,8 +5,8 @@ package evm
 
 import (
 	"context"
-	stdslog "log/slog"
 	"golang.org/x/exp/slog"
+	stdslog "log/slog"
 )
 
 // slogAdapter adapts between golang.org/x/exp/slog and log/slog
@@ -30,13 +30,13 @@ func (s *slogAdapter) Handle(ctx context.Context, record stdslog.Record) error {
 		Message: record.Message,
 		PC:      record.PC,
 	}
-	
+
 	// Copy attributes
 	record.Attrs(func(attr stdslog.Attr) bool {
 		expRecord.Add(slog.String(attr.Key, attr.Value.String()))
 		return true
 	})
-	
+
 	return s.handler.Handle(ctx, expRecord)
 }
 

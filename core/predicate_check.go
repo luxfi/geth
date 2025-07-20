@@ -7,13 +7,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/node/utils/set"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/geth/predicate"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/node/utils/set"
 )
 
 var ErrMissingPredicateContext = errors.New("missing predicate context")

@@ -37,14 +37,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/accounts/abi/bind"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/interfaces"
 	"github.com/luxfi/geth/params"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func TestSimulatedBackend(t *testing.T) {

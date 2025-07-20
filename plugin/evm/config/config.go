@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/luxfi/node/utils/constants"
-	"github.com/luxfi/node/vms/components/gas"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/plugin/evm/upgrade/etna"
 	"github.com/luxfi/geth/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/luxfi/node/utils/constants"
+	"github.com/luxfi/node/vms/components/gas"
 	"github.com/spf13/cast"
 )
 
@@ -99,12 +99,12 @@ type Config struct {
 	GasTarget *gas.Gas `json:"gas-target,omitempty"`
 
 	// Geth APIs
-	SnowmanAPIEnabled     bool   `json:"snowman-api-enabled"`
-	AdminAPIEnabled       bool   `json:"admin-api-enabled"`
-	AdminAPIDir           string `json:"admin-api-dir"`
+	SnowmanAPIEnabled   bool   `json:"snowman-api-enabled"`
+	AdminAPIEnabled     bool   `json:"admin-api-enabled"`
+	AdminAPIDir         string `json:"admin-api-dir"`
 	GethAdminAPIEnabled bool   `json:"geth-admin-api-enabled"` // Deprecated: use AdminAPIEnabled instead
 	GethAdminAPIDir     string `json:"geth-admin-api-dir"`     // Deprecated: use AdminAPIDir instead
-	WarpAPIEnabled        bool   `json:"warp-api-enabled"`
+	WarpAPIEnabled      bool   `json:"warp-api-enabled"`
 
 	// EnabledEthAPIs is a list of Ethereum services that should be enabled
 	// If none is specified, then we use the default list [defaultEnabledAPIs]

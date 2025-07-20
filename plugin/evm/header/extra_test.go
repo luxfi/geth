@@ -7,7 +7,6 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/node/vms/components/gas"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
@@ -15,6 +14,7 @@ import (
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
 	"github.com/luxfi/geth/utils"
+	"github.com/luxfi/node/vms/components/gas"
 	"github.com/stretchr/testify/require"
 )
 

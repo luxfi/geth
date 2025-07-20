@@ -6,13 +6,13 @@ package evm
 import (
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/plugin/evm/database"
 	luxdatabase "github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/prefixdb"
 	"github.com/luxfi/node/database/versiondb"
-	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/plugin/evm/database"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 // initializeDBs initializes the databases used by the VM.

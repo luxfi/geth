@@ -19,14 +19,14 @@ package trie
 import (
 	"errors"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/trie/triedb/hashdb"
 	"github.com/luxfi/geth/trie/triedb/pathdb"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/trie/triestate"
 	"github.com/luxfi/geth/triedb/database"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 // mptResolver is a no-op implementation of ChildResolver

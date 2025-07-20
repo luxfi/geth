@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/rlp"
 
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
@@ -23,9 +23,9 @@ import (
 	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/geth/predicate"
 
-	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/consensus/chain"
 	"github.com/luxfi/node/consensus/engine/chain/block"
+	"github.com/luxfi/node/ids"
 )
 
 var (

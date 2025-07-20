@@ -9,14 +9,14 @@ import (
 	"sync"
 
 	"github.com/luxfi/node/cache/lru"
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p/gossip"
-	"github.com/luxfi/node/snow"
 	"github.com/prometheus/client_golang/prometheus"
 
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/plugin/evm/config"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 const (
@@ -35,12 +35,12 @@ var (
 
 // mempoolMetrics defines the metrics for the atomic mempool
 type mempoolMetrics struct {
-	pendingTxs *metrics.Gauge // Gauge of currently pending transactions in the txHeap
-	currentTxs *metrics.Gauge // Gauge of current transactions to be issued into a block
-	issuedTxs  *metrics.Gauge // Gauge of transactions that have been issued into a block
+	pendingTxs metrics.Gauge // Gauge of currently pending transactions in the txHeap
+	currentTxs metrics.Gauge // Gauge of current transactions to be issued into a block
+	issuedTxs  metrics.Gauge // Gauge of transactions that have been issued into a block
 
-	addedTxs     *metrics.Counter // Count of all transactions added to the mempool
-	discardedTxs *metrics.Counter // Count of all discarded transactions
+	addedTxs     metrics.Counter // Count of all transactions added to the mempool
+	discardedTxs metrics.Counter // Count of all discarded transactions
 }
 
 // newMempoolMetrics constructs metrics for the atomic mempool
@@ -58,7 +58,7 @@ func newMempoolMetrics() *mempoolMetrics {
 type Mempool struct {
 	lock sync.RWMutex
 
-	ctx *snow.Context
+	ctx *consensus.Context
 	// maxSize is the maximum number of transactions allowed to be kept in mempool
 	maxSize int
 	// currentTxs is the set of transactions about to be added to a block.
@@ -85,7 +85,7 @@ type Mempool struct {
 }
 
 // NewMempool returns a Mempool with [maxSize]
-func NewMempool(ctx *snow.Context, registerer prometheus.Registerer, maxSize int, verify func(tx *Tx) error) (*Mempool, error) {
+func NewMempool(ctx *consensus.Context, registerer prometheus.Registerer, maxSize int, verify func(tx *Tx) error) (*Mempool, error) {
 	bloom, err := gossip.NewBloomFilter(registerer, "atomic_mempool_bloom_filter",
 		config.TxGossipBloomMinTargetElements,
 		config.TxGossipBloomTargetFalsePositiveRate,

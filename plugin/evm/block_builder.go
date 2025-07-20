@@ -7,16 +7,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/node/utils/timer"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/node/utils/timer"
 
-	"github.com/luxfi/node/snow"
-	commonEng "github.com/luxfi/node/snow/engine/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/node/consensus"
+	commonEng "github.com/luxfi/node/consensus/engine"
 )
 
 const (
@@ -26,7 +26,7 @@ const (
 )
 
 type blockBuilder struct {
-	ctx         *snow.Context
+	ctx         *consensus.Context
 	chainConfig *params.ChainConfig
 
 	txPool  *txpool.TxPool

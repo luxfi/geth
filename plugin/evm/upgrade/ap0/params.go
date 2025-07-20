@@ -5,8 +5,8 @@
 package ap0
 
 import (
-	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/geth/utils"
+	"github.com/luxfi/node/utils/units"
 )
 
 const (

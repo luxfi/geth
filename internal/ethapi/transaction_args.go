@@ -35,17 +35,17 @@ import (
 	"math"
 	"math/big"
 
-	luxcommon "github.com/luxfi/geth/common"
+	ethcommon "github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/geth/log"
+	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto/kzg4844"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/holiman/uint256"
 )
 
 var (
@@ -55,8 +55,8 @@ var (
 // TransactionArgs represents the arguments to construct a new transaction
 // or a message call.
 type TransactionArgs struct {
-	From                 *common.Address `json:"from"`
-	To                   *common.Address `json:"to"`
+	From                 *ethcommon.Address `json:"from"`
+	To                   *ethcommon.Address `json:"to"`
 	Gas                  *hexutil.Uint64 `json:"gas"`
 	GasPrice             *hexutil.Big    `json:"gasPrice"`
 	MaxFeePerGas         *hexutil.Big    `json:"maxFeePerGas"`
@@ -66,7 +66,7 @@ type TransactionArgs struct {
 
 	// We accept "data" and "input" for backwards-compatibility reasons.
 	// "input" is the newer name and should be preferred by clients.
-	// Issue detail: https://github.com/ethereum/go-ethereum/issues/15628
+	// Issue detail: https://github.com/luxfi/geth/issues/15628
 	Data  *hexutil.Bytes `json:"data"`
 	Input *hexutil.Bytes `json:"input"`
 
@@ -76,7 +76,7 @@ type TransactionArgs struct {
 
 	// For BlobTxType
 	BlobFeeCap *hexutil.Big  `json:"maxFeePerBlobGas"`
-	BlobHashes []common.Hash `json:"blobVersionedHashes,omitempty"`
+	BlobHashes []ethcommon.Hash `json:"blobVersionedHashes,omitempty"`
 
 	// For BlobTxType transactions with blob sidecar
 	Blobs       []kzg4844.Blob       `json:"blobs"`
@@ -88,9 +88,9 @@ type TransactionArgs struct {
 }
 
 // from retrieves the transaction sender address.
-func (args *TransactionArgs) from() common.Address {
+func (args *TransactionArgs) from() ethcommon.Address {
 	if args.From == nil {
-		return common.Address{}
+		return ethcommon.Address{}
 	}
 	return *args.From
 }
@@ -215,7 +215,7 @@ func (args *TransactionArgs) setFeeDefaults(ctx context.Context, b feeBackend) e
 	}
 	// If the tx has completely specified a fee mechanism, no default is needed.
 	// This allows users who are not yet synced past London to get defaults for
-	// other tx values. See https://github.com/ethereum/go-ethereum/pull/23274
+	// other tx values. See https://github.com/luxfi/geth/pull/23274
 	// for more information.
 	eip1559ParamsSet := args.MaxFeePerGas != nil && args.MaxPriorityFeePerGas != nil
 	// Sanity check the EIP-1559 fee parameters if present.
@@ -364,7 +364,7 @@ func (args *TransactionArgs) setBlobTxSidecar(ctx context.Context, b Backend) er
 		}
 	}
 
-	hashes := make([]common.Hash, n)
+	hashes := make([]ethcommon.Hash, n)
 	hasher := sha256.New()
 	for i, c := range args.Commitments {
 		hashes[i] = kzg4844.CalcBlobHashV1(hasher, &c)
@@ -436,7 +436,7 @@ func (args *TransactionArgs) ToMessage(globalGasCap uint64, baseFee *big.Int) (*
 			// Backfill the legacy gasPrice for EVM execution, unless we're all zeroes
 			gasPrice = new(big.Int)
 			if gasFeeCap.BitLen() > 0 || gasTipCap.BitLen() > 0 {
-				gasPrice = luxcommon.BigMin(new(big.Int).Add(gasTipCap, baseFee), gasFeeCap)
+				gasPrice = common.BigMin(new(big.Int).Add(gasTipCap, baseFee), gasFeeCap)
 			}
 		}
 	}

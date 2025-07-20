@@ -39,6 +39,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/geth/ethdb/memorydb"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/rlp"
+	"github.com/holiman/billy"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
@@ -48,14 +56,6 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/header"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/kzg4844"
-	"github.com/ethereum/go-ethereum/ethdb/memorydb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/holiman/billy"
-	"github.com/holiman/uint256"
 )
 
 var (

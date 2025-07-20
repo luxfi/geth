@@ -29,13 +29,13 @@ package core
 import (
 	"math/big"
 
+	"github.com/luxfi/geth/common"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/predicate"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/holiman/uint256"
 )
 
 // ChainContext supports retrieving headers and consensus parameters from the

@@ -36,13 +36,13 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/internal/flags"
-	"github.com/ethereum/go-ethereum/log"
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 	"github.com/urfave/cli/v2"
-	"log/slog"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"log/slog"
 )
 
 var (

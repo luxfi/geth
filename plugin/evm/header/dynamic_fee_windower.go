@@ -8,14 +8,14 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/luxfi/geth/common"
+	luxcommon "github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
 	"github.com/luxfi/geth/plugin/evm/upgrade/etna"
-	luxcommon "github.com/luxfi/geth/common"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (

@@ -30,7 +30,10 @@ import (
 	"math/big"
 	"sync/atomic"
 
-	"github.com/luxfi/node/snow"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/log"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/constants"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
@@ -40,10 +43,7 @@ import (
 	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/geth/predicate"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/node/consensus"
 )
 
 var (
@@ -274,8 +274,8 @@ func (evm *EVM) Cancelled() bool {
 	return evm.abort.Load()
 }
 
-// GetSnowContext returns the evm's snow.Context.
-func (evm *EVM) GetSnowContext() *snow.Context {
+// GetSnowContext returns the evm's consensus.Context.
+func (evm *EVM) GetSnowContext() *consensus.Context {
 	return evm.chainConfig.SnowCtx
 }
 

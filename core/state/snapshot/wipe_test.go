@@ -30,9 +30,9 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb/memorydb"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb/memorydb"
 )
 
 // Tests that given a database with random data content, all parts of a snapshot

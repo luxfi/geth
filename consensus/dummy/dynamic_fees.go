@@ -10,12 +10,12 @@ import (
 	"math"
 	"math/big"
 
-	"github.com/luxfi/node/utils/wrappers"
-	luxcommon "github.com/luxfi/geth/common"
+	ethcommon "github.com/luxfi/geth/common"
+	commonmath "github.com/luxfi/geth/common/math"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/ethereum/go-ethereum/common"
-	commonmath "github.com/ethereum/go-ethereum/common/math"
+	"github.com/luxfi/node/utils/wrappers"
 )
 
 var (
@@ -33,7 +33,7 @@ var (
 	ApricotPhase5BaseFeeChangeDenominator = new(big.Int).SetUint64(params.ApricotPhase5BaseFeeChangeDenominator)
 
 	ApricotPhase3BlockGasFee      uint64 = 1_000_000
-	ApricotPhase4MinBlockGasCost         = new(big.Int).Set(common.Big0)
+	ApricotPhase4MinBlockGasCost         = new(big.Int).Set(ethcommon.Big0)
 	ApricotPhase4MaxBlockGasCost         = big.NewInt(1_000_000)
 	ApricotPhase4BlockGasCostStep        = big.NewInt(50_000)
 	ApricotPhase4TargetBlockRate  uint64 = 2 // in seconds
@@ -53,7 +53,7 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header, timestamp uin
 		isApricotPhase4 = config.IsApricotPhase4(parent.Time)
 		isApricotPhase5 = config.IsApricotPhase5(parent.Time)
 	)
-	if !isApricotPhase3 || parent.Number.Cmp(common.Big0) == 0 {
+	if !isApricotPhase3 || parent.Number.Cmp(ethcommon.Big0) == 0 {
 		initialSlice := make([]byte, params.DynamicFeeExtraDataSize)
 		initialBaseFee := big.NewInt(params.ApricotPhase3InitialBaseFee)
 		return initialSlice, initialBaseFee, nil
@@ -155,9 +155,9 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header, timestamp uin
 		gasUsedDelta := new(big.Int).SetUint64(totalGas - parentGasTarget)
 		x := new(big.Int).Mul(parent.BaseFee, gasUsedDelta)
 		y := x.Div(x, parentGasTargetBig)
-		baseFeeDelta := luxcommon.BigMax(
+		baseFeeDelta := common.BigMax(
 			x.Div(y, baseFeeChangeDenominator),
-			common.Big1,
+			ethcommon.Big1,
 		)
 
 		baseFee.Add(baseFee, baseFeeDelta)
@@ -166,9 +166,9 @@ func CalcBaseFee(config *params.ChainConfig, parent *types.Header, timestamp uin
 		gasUsedDelta := new(big.Int).SetUint64(parentGasTarget - totalGas)
 		x := new(big.Int).Mul(parent.BaseFee, gasUsedDelta)
 		y := x.Div(x, parentGasTargetBig)
-		baseFeeDelta := luxcommon.BigMax(
+		baseFeeDelta := common.BigMax(
 			x.Div(y, baseFeeChangeDenominator),
-			common.Big1,
+			ethcommon.Big1,
 		)
 
 		// If [roll] is greater than [rollupWindow], apply the state transition to the base fee to account

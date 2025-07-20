@@ -27,7 +27,7 @@
 package rawdb
 
 import (
-   "github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
 
 // table is a wrapper around a database that prefixes each key access with a pre-
@@ -229,7 +229,6 @@ func (t *table) NewBatch() ethdb.Batch {
 func (t *table) NewBatchWithSize(size int) ethdb.Batch {
 	return &tableBatch{t.db.NewBatchWithSize(size), t.prefix}
 }
-
 
 // tableBatch is a wrapper around a database batch that prefixes each key access
 // with a pre-configured string.

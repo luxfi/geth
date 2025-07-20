@@ -30,10 +30,10 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/trie/testutil"
 	"github.com/luxfi/geth/trie/trienode"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 func emptyLayer() *diskLayer {

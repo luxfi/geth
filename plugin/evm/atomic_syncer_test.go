@@ -16,6 +16,7 @@ import (
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/database/versiondb"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/plugin/evm/config"
 	"github.com/luxfi/geth/plugin/evm/message"
@@ -25,7 +26,6 @@ import (
 	"github.com/luxfi/geth/sync/syncutils"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 const commitInterval = 1024

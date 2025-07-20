@@ -6,8 +6,8 @@ package evm
 import (
 	"container/heap"
 
-	"github.com/luxfi/node/ids"
 	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/node/ids"
 )
 
 // txEntry is used to track the [gasPrice] transactions pay to be included in

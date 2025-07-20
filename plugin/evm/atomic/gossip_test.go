@@ -6,8 +6,8 @@ package atomic
 import (
 	"testing"
 
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/vms/components/verify"
 	"github.com/prometheus/client_golang/prometheus"
@@ -91,7 +91,7 @@ func TestAtomicMempoolIterate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			require := require.New(t)
-			m, err := NewMempool(&snow.Context{}, prometheus.NewRegistry(), 10, nil)
+			m, err := NewMempool(&consensus.Context{}, prometheus.NewRegistry(), 10, nil)
 			require.NoError(err)
 
 			for _, add := range tt.add {

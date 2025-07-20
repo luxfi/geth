@@ -10,14 +10,14 @@ import (
 
 	"golang.org/x/exp/slog"
 
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/plugin/evm/config"
 	"github.com/luxfi/node/api"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/formatting"
 	"github.com/luxfi/node/utils/formatting/address"
 	"github.com/luxfi/node/utils/json"
 	"github.com/luxfi/node/utils/rpc"
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/luxfi/geth/plugin/evm/config"
 )
 
 // Interface compliance

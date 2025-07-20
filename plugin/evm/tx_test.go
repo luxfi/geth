@@ -11,15 +11,15 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/geth/utils"
 
 	luxatomic "github.com/luxfi/node/chains/atomic"
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
 )
 
 func TestCalculateDynamicFee(t *testing.T) {
@@ -60,7 +60,7 @@ func TestCalculateDynamicFee(t *testing.T) {
 }
 
 type atomicTxVerifyTest struct {
-	ctx         *snow.Context
+	ctx         *consensus.Context
 	generate    func(t *testing.T) atomic.UnsignedAtomicTx
 	rules       params.Rules
 	expectedErr string
@@ -158,7 +158,7 @@ func executeTxTest(t *testing.T, test atomicTxTest) {
 
 	if test.bootstrapping {
 		// If this test simulates processing txs during bootstrapping (where some verification is skipped),
-		// initialize the block building goroutines normally initialized in SetState(snow.NormalOps).
+		// initialize the block building goroutines normally initialized in SetState(consensus.NormalOps).
 		// This ensures that the VM can build a block correctly during the test.
 		if err := vm.initBlockBuilding(); err != nil {
 			t.Fatal(err)

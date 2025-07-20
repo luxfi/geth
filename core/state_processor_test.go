@@ -31,7 +31,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/node/upgrade"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
@@ -46,9 +48,7 @@ import (
 	"github.com/luxfi/geth/plugin/evm/upgrade/cortina"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/node/upgrade"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -131,7 +131,7 @@ func TestStateProcessorErrors(t *testing.T) {
 		)
 
 		defer blockchain.Stop()
-		bigNumber := new(big.Int).SetBytes(common.MaxHash.Bytes())
+		bigNumber := new(big.Int).SetBytes(common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff").Bytes())
 		tooBigNumber := new(big.Int).Set(bigNumber)
 		tooBigNumber.Add(tooBigNumber, common.Big1)
 		for i, tt := range []struct {

@@ -30,6 +30,9 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/rawdb"
@@ -39,9 +42,6 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/header"
 	"github.com/luxfi/geth/triedb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/holiman/uint256"
 )
 
 // BlockGen creates blocks for testing.

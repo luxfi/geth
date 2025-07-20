@@ -31,6 +31,9 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	ethCrypto "github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
@@ -39,9 +42,6 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	ethCrypto "github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/require"
 )
 

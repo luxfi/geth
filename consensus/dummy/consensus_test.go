@@ -8,10 +8,10 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/plugin/evm/header"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 func TestVerifyBlockFee(t *testing.T) {

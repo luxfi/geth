@@ -10,16 +10,16 @@ import (
 	"math/big"
 	"net/http"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/plugin/evm/client"
+	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
 	"github.com/luxfi/node/api"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/formatting"
 	"github.com/luxfi/node/utils/json"
 	"github.com/luxfi/node/utils/set"
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/luxfi/geth/plugin/evm/client"
-	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 // test constants

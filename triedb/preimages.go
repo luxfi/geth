@@ -29,9 +29,9 @@ package triedb
 import (
 	"sync"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 const defaultPreimagesLimit = 4 * 1024 * 1024 // 4 MB

@@ -27,10 +27,10 @@
 package node
 
 import (
+	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/debug"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // apis returns the collection of built-in RPC APIs.

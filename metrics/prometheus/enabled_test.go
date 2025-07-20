@@ -13,7 +13,7 @@ import (
 	// may have false negatives.
 	"github.com/stretchr/testify/assert"
 
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/luxfi/geth/metrics"
 )
 
 func TestMetricsEnabledByDefault(t *testing.T) {

@@ -10,14 +10,16 @@ import (
 	"math/big"
 	"slices"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
-	"github.com/holiman/uint256"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/node/chains/atomic"
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
 	"github.com/luxfi/node/utils"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/utils/math"
@@ -25,26 +27,24 @@ import (
 	"github.com/luxfi/node/vms/components/lux"
 	"github.com/luxfi/node/vms/components/verify"
 	"github.com/luxfi/node/vms/secp256k1fx"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 var (
-	_                           UnsignedAtomicTx       = &UnsignedImportTx{}
-	_                           secp256k1fx.UnsignedTx = &UnsignedImportTx{}
+	_                          UnsignedAtomicTx       = &UnsignedImportTx{}
+	_                          secp256k1fx.UnsignedTx = &UnsignedImportTx{}
 	ErrImportNonLUXInputBanff                         = errors.New("import input cannot contain non-LUX in Banff")
 	ErrImportNonLUXOutputBanff                        = errors.New("import output cannot contain non-LUX in Banff")
-	ErrNoImportInputs                                  = errors.New("tx has no imported inputs")
-	ErrConflictingAtomicInputs                         = errors.New("invalid block due to conflicting atomic inputs")
-	ErrWrongChainID                                    = errors.New("tx has wrong chain ID")
-	ErrNoEVMOutputs                                    = errors.New("tx has no EVM outputs")
-	ErrInputsNotSortedUnique                           = errors.New("inputs not sorted and unique")
-	ErrOutputsNotSortedUnique                          = errors.New("outputs not sorted and unique")
-	ErrOutputsNotSorted                                = errors.New("tx outputs not sorted")
-	ErrAssetIDMismatch                                 = errors.New("asset IDs in the input don't match the utxo")
-	errNilBaseFeeApricotPhase3                         = errors.New("nil base fee is invalid after apricotPhase3")
-	errInsufficientFundsForFee                         = errors.New("insufficient LUX funds to pay transaction fee")
-	errRejectedParent                                  = errors.New("rejected parent")
+	ErrNoImportInputs                                 = errors.New("tx has no imported inputs")
+	ErrConflictingAtomicInputs                        = errors.New("invalid block due to conflicting atomic inputs")
+	ErrWrongChainID                                   = errors.New("tx has wrong chain ID")
+	ErrNoEVMOutputs                                   = errors.New("tx has no EVM outputs")
+	ErrInputsNotSortedUnique                          = errors.New("inputs not sorted and unique")
+	ErrOutputsNotSortedUnique                         = errors.New("outputs not sorted and unique")
+	ErrOutputsNotSorted                               = errors.New("tx outputs not sorted")
+	ErrAssetIDMismatch                                = errors.New("asset IDs in the input don't match the utxo")
+	errNilBaseFeeApricotPhase3                        = errors.New("nil base fee is invalid after apricotPhase3")
+	errInsufficientFundsForFee                        = errors.New("insufficient LUX funds to pay transaction fee")
+	errRejectedParent                                 = errors.New("rejected parent")
 )
 
 // UnsignedImportTx is an unsigned ImportTx
@@ -73,7 +73,7 @@ func (utx *UnsignedImportTx) InputUTXOs() set.Set[ids.ID] {
 
 // Verify this transaction is well-formed
 func (utx *UnsignedImportTx) Verify(
-	ctx *snow.Context,
+	ctx *consensus.Context,
 	rules params.Rules,
 ) error {
 	switch {
@@ -290,7 +290,7 @@ func (utx *UnsignedImportTx) AtomicOps() (ids.ID, *atomic.Requests, error) {
 
 // NewImportTx returns a new ImportTx
 func NewImportTx(
-	ctx *snow.Context,
+	ctx *consensus.Context,
 	rules params.Rules,
 	time uint64,
 	chainID ids.ID, // chain to import from
@@ -422,7 +422,7 @@ func NewImportTx(
 
 // EVMStateTransfer performs the state transfer to increase the balances of
 // accounts accordingly with the imported EVMOutputs
-func (utx *UnsignedImportTx) EVMStateTransfer(ctx *snow.Context, state StateDB) error {
+func (utx *UnsignedImportTx) EVMStateTransfer(ctx *consensus.Context, state StateDB) error {
 	for _, to := range utx.Outs {
 		if to.AssetID == ctx.LUXAssetID {
 			log.Debug("import_tx", "src", utx.SourceChain, "addr", to.Address, "amount", to.Amount, "assetID", "LUX")

@@ -43,13 +43,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/log"
+	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
-	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/status-im/keycard-go/derivationpath"
 )
 

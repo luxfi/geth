@@ -9,7 +9,9 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/luxfi/node/ids"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
@@ -18,9 +20,7 @@ import (
 	"github.com/luxfi/geth/sync/syncutils"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/node/ids"
 	"github.com/stretchr/testify/assert"
 )
 

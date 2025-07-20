@@ -7,11 +7,11 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 var (

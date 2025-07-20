@@ -37,6 +37,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/bloombits"
@@ -46,9 +49,6 @@ import (
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
 	"github.com/stretchr/testify/require"
 )
 

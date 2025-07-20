@@ -8,12 +8,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/luxfi/node/database"
-	"github.com/luxfi/node/database/versiondb"
-	"github.com/luxfi/node/ids"
-	commonEng "github.com/luxfi/node/snow/engine/common"
-	"github.com/luxfi/node/consensus/engine/chain/block"
-	"github.com/luxfi/node/vms/components/chain"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/eth"
@@ -21,9 +18,12 @@ import (
 	"github.com/luxfi/geth/plugin/evm/message"
 	syncclient "github.com/luxfi/geth/sync/client"
 	"github.com/luxfi/geth/sync/statesync"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
+	commonEng "github.com/luxfi/node/consensus/engine"
+	"github.com/luxfi/node/consensus/engine/chain/block"
+	"github.com/luxfi/node/database"
+	"github.com/luxfi/node/database/versiondb"
+	"github.com/luxfi/node/ids"
+	"github.com/luxfi/node/vms/components/chain"
 )
 
 const (
@@ -216,7 +216,7 @@ func (client *stateSyncerClient) acceptSyncSummary(proposedSummary message.SyncS
 		}
 		// notify engine regardless of whether err == nil,
 		// this error will be propagated to the engine when it calls
-		// vm.SetState(snow.Bootstrapping)
+		// vm.SetState(consensus.Bootstrapping)
 		log.Info("stateSync completed, notifying engine", "err", client.stateSyncErr)
 		client.toEngine <- commonEng.StateSyncDone
 	}()

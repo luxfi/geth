@@ -4,13 +4,13 @@ import (
 	_ "embed"
 	"encoding/json"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 )
 
 var (
 	//go:embed fuji_ext_data_hashes.json
 	rawTestnetExtDataHashes []byte
-	fujiExtDataHashes    map[common.Hash]common.Hash
+	fujiExtDataHashes       map[common.Hash]common.Hash
 
 	//go:embed mainnet_ext_data_hashes.json
 	rawMainnetExtDataHashes []byte

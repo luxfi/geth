@@ -32,8 +32,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
 )
 
 func TestMakeTopics(t *testing.T) {
@@ -84,7 +84,7 @@ func TestMakeTopics(t *testing.T) {
 				{big.NewInt(math.MinInt64)},
 			}},
 			[][]common.Hash{
-				{common.MaxHash},
+				{common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")},
 				{common.HexToHash("ffffffffffffffffffffffffffffffffffffffffffffffff8000000000000000")},
 			},
 			false,

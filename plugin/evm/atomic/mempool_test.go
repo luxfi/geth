@@ -6,15 +6,15 @@ package atomic
 import (
 	"testing"
 
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/require"
 )
 
 func TestMempoolAddTx(t *testing.T) {
 	require := require.New(t)
-	m, err := NewMempool(&snow.Context{}, prometheus.NewRegistry(), 5_000, nil)
+	m, err := NewMempool(&consensus.Context{}, prometheus.NewRegistry(), 5_000, nil)
 	require.NoError(err)
 
 	txs := make([]*GossipAtomicTx, 0)
@@ -39,7 +39,7 @@ func TestMempoolAddTx(t *testing.T) {
 // Add should return an error if a tx is already known
 func TestMempoolAdd(t *testing.T) {
 	require := require.New(t)
-	m, err := NewMempool(&snow.Context{}, prometheus.NewRegistry(), 5_000, nil)
+	m, err := NewMempool(&consensus.Context{}, prometheus.NewRegistry(), 5_000, nil)
 	require.NoError(err)
 
 	tx := &GossipAtomicTx{

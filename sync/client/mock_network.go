@@ -7,8 +7,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/luxfi/node/ids"
 	"github.com/luxfi/geth/peer"
+	"github.com/luxfi/node/ids"
 
 	"github.com/luxfi/node/version"
 )

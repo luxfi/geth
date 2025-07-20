@@ -9,7 +9,10 @@ import (
 	"os"
 	"testing"
 
-	"github.com/luxfi/node/upgrade"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
@@ -19,10 +22,7 @@ import (
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/node/upgrade"
 )
 
 var (

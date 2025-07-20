@@ -9,19 +9,19 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/geth/utils"
 	luxatomic "github.com/luxfi/node/chains/atomic"
+	engCommon "github.com/luxfi/node/consensus/engine"
 	"github.com/luxfi/node/ids"
-	engCommon "github.com/luxfi/node/snow/engine/common"
 	"github.com/luxfi/node/utils/constants"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/vms/components/lux"
 	"github.com/luxfi/node/vms/secp256k1fx"
-	"github.com/luxfi/geth/params"
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/luxfi/geth/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/holiman/uint256"
 )
 
 // createExportTxOptions adds funds to shared memory, imports them, and returns a list of export transactions
@@ -135,14 +135,14 @@ func TestExportTxEVMStateTransfer(t *testing.T) {
 	tests := []struct {
 		name          string
 		tx            []atomic.EVMInput
-		luxBalance   *uint256.Int
+		luxBalance    *uint256.Int
 		balances      map[ids.ID]*big.Int
 		expectedNonce uint64
 		shouldErr     bool
 	}{
 		{
-			name:        "no transfers",
-			tx:          nil,
+			name:       "no transfers",
+			tx:         nil,
 			luxBalance: uint256.NewInt(luxAmount * atomic.X2CRateUint64),
 			balances: map[ids.ID]*big.Int{
 				customAssetID: big.NewInt(int64(customAmount)),
@@ -456,7 +456,7 @@ func TestExportTxSemanticVerify(t *testing.T) {
 	ethAddr := testEthAddrs[0]
 
 	var (
-		luxBalance           = 10 * units.Lux
+		luxBalance            = 10 * units.Lux
 		custom0Balance uint64 = 100
 		custom0AssetID        = ids.ID{1, 2, 3, 4, 5}
 		custom1Balance uint64 = 1000
@@ -953,7 +953,7 @@ func TestExportTxAccept(t *testing.T) {
 	ethAddr := testEthAddrs[0]
 
 	var (
-		luxBalance           = 10 * units.Lux
+		luxBalance            = 10 * units.Lux
 		custom0Balance uint64 = 100
 		custom0AssetID        = ids.ID{1, 2, 3, 4, 5}
 	)
@@ -1646,52 +1646,52 @@ func TestExportTxGasCost(t *testing.T) {
 
 func TestNewExportTx(t *testing.T) {
 	tests := []struct {
-		name               string
-		genesis            string
-		rules              params.Rules
-		bal                uint64
+		name              string
+		genesis           string
+		rules             params.Rules
+		bal               uint64
 		expectedBurnedLUX uint64
 	}{
 		{
-			name:               "apricot phase 0",
-			genesis:            genesisJSONApricotPhase0,
-			rules:              apricotRulesPhase0,
-			bal:                44000000,
+			name:              "apricot phase 0",
+			genesis:           genesisJSONApricotPhase0,
+			rules:             apricotRulesPhase0,
+			bal:               44000000,
 			expectedBurnedLUX: 1000000,
 		},
 		{
-			name:               "apricot phase 1",
-			genesis:            genesisJSONApricotPhase1,
-			rules:              apricotRulesPhase1,
-			bal:                44000000,
+			name:              "apricot phase 1",
+			genesis:           genesisJSONApricotPhase1,
+			rules:             apricotRulesPhase1,
+			bal:               44000000,
 			expectedBurnedLUX: 1000000,
 		},
 		{
-			name:               "apricot phase 2",
-			genesis:            genesisJSONApricotPhase2,
-			rules:              apricotRulesPhase2,
-			bal:                43000000,
+			name:              "apricot phase 2",
+			genesis:           genesisJSONApricotPhase2,
+			rules:             apricotRulesPhase2,
+			bal:               43000000,
 			expectedBurnedLUX: 1000000,
 		},
 		{
-			name:               "apricot phase 3",
-			genesis:            genesisJSONApricotPhase3,
-			rules:              apricotRulesPhase3,
-			bal:                44446500,
+			name:              "apricot phase 3",
+			genesis:           genesisJSONApricotPhase3,
+			rules:             apricotRulesPhase3,
+			bal:               44446500,
 			expectedBurnedLUX: 276750,
 		},
 		{
-			name:               "apricot phase 4",
-			genesis:            genesisJSONApricotPhase4,
-			rules:              apricotRulesPhase4,
-			bal:                44446500,
+			name:              "apricot phase 4",
+			genesis:           genesisJSONApricotPhase4,
+			rules:             apricotRulesPhase4,
+			bal:               44446500,
 			expectedBurnedLUX: 276750,
 		},
 		{
-			name:               "apricot phase 5",
-			genesis:            genesisJSONApricotPhase5,
-			rules:              apricotRulesPhase5,
-			bal:                39946500,
+			name:              "apricot phase 5",
+			genesis:           genesisJSONApricotPhase5,
+			rules:             apricotRulesPhase5,
+			bal:               39946500,
 			expectedBurnedLUX: 2526750,
 		},
 	}

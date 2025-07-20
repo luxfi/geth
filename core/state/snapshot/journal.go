@@ -32,12 +32,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/triedb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // journalGenerator is a disk layer entry containing the generator progress marker.

@@ -8,8 +8,9 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/utils/units"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
@@ -18,9 +19,8 @@ import (
 	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/luxfi/geth/triedb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/luxfi/node/ids"
+	"github.com/luxfi/node/utils/units"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -36,9 +36,9 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/stretchr/testify/require"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 func TestFeeHistory(t *testing.T) {

@@ -30,10 +30,10 @@ package consensus
 import (
 	"math/big"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 // ChainHeaderReader defines a small collection of methods needed to access the local

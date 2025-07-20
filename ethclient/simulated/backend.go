@@ -21,7 +21,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/luxfi/node/utils/timer/mockable"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/constants"
 	"github.com/luxfi/geth/core"
@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/node/utils/timer/mockable"
 )
 
 var _ eth.PushGossiper = (*fakePushGossiper)(nil)

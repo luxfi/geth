@@ -36,10 +36,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/accounts"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/event"
 	"golang.org/x/exp/slices"
 )
 
@@ -72,7 +72,7 @@ func TestKeyStore(t *testing.T) {
 	if err := ks.Delete(a, "bar"); err != nil {
 		t.Errorf("Delete error: %v", err)
 	}
-	if common.FileExist(a.URL.Path) {
+	if engine.FileExist(a.URL.Path) {
 		t.Errorf("account file %s should be gone after Delete", a.URL)
 	}
 	if ks.HasAddress(a.Address) {

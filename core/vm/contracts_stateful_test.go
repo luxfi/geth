@@ -7,13 +7,13 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/assert"
 )
 

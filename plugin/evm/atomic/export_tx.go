@@ -9,14 +9,16 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
-	"github.com/holiman/uint256"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/node/chains/atomic"
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
 	luxutils "github.com/luxfi/node/utils"
 	"github.com/luxfi/node/utils/constants"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
@@ -26,15 +28,13 @@ import (
 	"github.com/luxfi/node/vms/components/lux"
 	"github.com/luxfi/node/vms/components/verify"
 	"github.com/luxfi/node/vms/secp256k1fx"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 var (
 	_                             UnsignedAtomicTx       = &UnsignedExportTx{}
 	_                             secp256k1fx.UnsignedTx = &UnsignedExportTx{}
-	ErrExportNonLUXInputBanff                           = errors.New("export input cannot contain non-LUX in Banff")
-	ErrExportNonLUXOutputBanff                          = errors.New("export output cannot contain non-LUX in Banff")
+	ErrExportNonLUXInputBanff                            = errors.New("export input cannot contain non-LUX in Banff")
+	ErrExportNonLUXOutputBanff                           = errors.New("export output cannot contain non-LUX in Banff")
 	ErrNoExportOutputs                                   = errors.New("tx has no export outputs")
 	errPublicKeySignatureMismatch                        = errors.New("signature doesn't match public key")
 	errOverflowExport                                    = errors.New("overflow when computing export amount + txFee")
@@ -74,7 +74,7 @@ func (utx *UnsignedExportTx) InputUTXOs() set.Set[ids.ID] {
 
 // Verify this transaction is well-formed
 func (utx *UnsignedExportTx) Verify(
-	ctx *snow.Context,
+	ctx *consensus.Context,
 	rules params.Rules,
 ) error {
 	switch {
@@ -286,7 +286,7 @@ func (utx *UnsignedExportTx) AtomicOps() (ids.ID, *atomic.Requests, error) {
 
 // NewExportTx returns a new ExportTx
 func NewExportTx(
-	ctx *snow.Context,
+	ctx *consensus.Context,
 	rules params.Rules,
 	state StateDB,
 	assetID ids.ID, // AssetID of the tokens to export
@@ -312,7 +312,7 @@ func NewExportTx(
 		luxNeeded           uint64 = 0
 		ins, luxIns         []EVMInput
 		signers, luxSigners [][]*secp256k1.PrivateKey
-		err                  error
+		err                 error
 	)
 
 	// consume non-LUX
@@ -379,7 +379,7 @@ func NewExportTx(
 }
 
 // EVMStateTransfer executes the state update from the atomic export transaction
-func (utx *UnsignedExportTx) EVMStateTransfer(ctx *snow.Context, state StateDB) error {
+func (utx *UnsignedExportTx) EVMStateTransfer(ctx *consensus.Context, state StateDB) error {
 	addrs := map[[20]byte]uint64{}
 	for _, from := range utx.Ins {
 		if from.AssetID == ctx.LUXAssetID {
@@ -419,7 +419,7 @@ func (utx *UnsignedExportTx) EVMStateTransfer(ctx *snow.Context, state StateDB) 
 // corresponds to a single key, so that the signers can be passed in to
 // [tx.Sign] which supports multiple keys on a single input.
 func GetSpendableFunds(
-	ctx *snow.Context,
+	ctx *consensus.Context,
 	state StateDB,
 	keys []*secp256k1.PrivateKey,
 	assetID ids.ID,
@@ -476,7 +476,7 @@ func GetSpendableFunds(
 // corresponds to a single key, so that the signers can be passed in to
 // [tx.Sign] which supports multiple keys on a single input.
 func GetSpendableLUXWithFee(
-	ctx *snow.Context,
+	ctx *consensus.Context,
 	state StateDB,
 	keys []*secp256k1.PrivateKey,
 	amount uint64,

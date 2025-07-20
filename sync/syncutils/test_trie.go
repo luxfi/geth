@@ -9,17 +9,17 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/luxfi/node/utils/wrappers"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/triedb"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/node/utils/wrappers"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/rlp"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/rlp"
 	"github.com/stretchr/testify/assert"
 )
 

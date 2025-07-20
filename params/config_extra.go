@@ -9,10 +9,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/luxfi/node/snow"
-	"github.com/luxfi/node/upgrade"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/utils"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/node/consensus"
+	"github.com/luxfi/node/upgrade"
 )
 
 const (
@@ -30,7 +30,7 @@ type UpgradeConfig struct {
 
 // LuxContext provides Lux specific context directly into the EVM.
 type LuxContext struct {
-	SnowCtx *snow.Context
+	SnowCtx *consensus.Context
 }
 
 // SetEthUpgrades enables Etheruem network upgrades using the same time as

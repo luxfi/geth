@@ -11,12 +11,12 @@ import (
 	"github.com/luxfi/node/codec/linearcodec"
 	"github.com/luxfi/node/utils"
 
+	"github.com/luxfi/geth/params"
 	luxatomic "github.com/luxfi/node/chains/atomic"
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
 	"github.com/luxfi/node/utils/set"
 	"github.com/luxfi/node/utils/wrappers"
-	"github.com/luxfi/geth/params"
 )
 
 var TestTxCodec codec.Manager
@@ -37,8 +37,8 @@ func init() {
 }
 
 type TestUnsignedTx struct {
-	GasUsedV                    uint64                    `serialize:"true"`
-	AcceptRequestsBlockchainIDV ids.ID                    `serialize:"true"`
+	GasUsedV                    uint64              `serialize:"true"`
+	AcceptRequestsBlockchainIDV ids.ID              `serialize:"true"`
 	AcceptRequestsV             *luxatomic.Requests `serialize:"true"`
 	VerifyV                     error
 	IDV                         ids.ID `serialize:"true" json:"id"`
@@ -56,7 +56,7 @@ var _ UnsignedAtomicTx = &TestUnsignedTx{}
 func (t *TestUnsignedTx) GasUsed(fixedFee bool) (uint64, error) { return t.GasUsedV, nil }
 
 // Verify implements the UnsignedAtomicTx interface
-func (t *TestUnsignedTx) Verify(ctx *snow.Context, rules params.Rules) error { return t.VerifyV }
+func (t *TestUnsignedTx) Verify(ctx *consensus.Context, rules params.Rules) error { return t.VerifyV }
 
 // AtomicOps implements the UnsignedAtomicTx interface
 func (t *TestUnsignedTx) AtomicOps() (ids.ID, *luxatomic.Requests, error) {
@@ -87,7 +87,7 @@ func (t *TestUnsignedTx) SemanticVerify(backend *Backend, stx *Tx, parent Atomic
 }
 
 // EVMStateTransfer implements the UnsignedAtomicTx interface
-func (t *TestUnsignedTx) EVMStateTransfer(ctx *snow.Context, state StateDB) error {
+func (t *TestUnsignedTx) EVMStateTransfer(ctx *consensus.Context, state StateDB) error {
 	return t.EVMStateTransferV
 }
 

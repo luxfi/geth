@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/node/consensus/engine"
+	"github.com/luxfi/node/consensus/engine/enginetest"
 	"github.com/luxfi/node/network/p2p"
-	"github.com/luxfi/node/snow/engine/common"
-	"github.com/luxfi/node/snow/engine/enginetest"
 	"github.com/luxfi/node/utils/logging"
 	"github.com/luxfi/node/utils/set"
 	"github.com/prometheus/client_golang/prometheus"
@@ -50,7 +50,7 @@ var (
 	_ message.RequestHandler = &HelloGreetingRequestHandler{}
 	_ message.RequestHandler = &testRequestHandler{}
 
-	_ common.AppSender = testAppSender{}
+	_ engine.AppSender = testAppSender{}
 
 	_ p2p.Handler = &testSDKHandler{}
 )
@@ -606,7 +606,7 @@ func TestNetworkRouting(t *testing.T) {
 	err = network.AppResponse(context.Background(), ids.GenerateTestNodeID(), 0, foobar)
 	require.ErrorIs(err, p2p.ErrUnrequestedResponse)
 
-	err = network.AppRequestFailed(context.Background(), nodeID, 0, common.ErrTimeout)
+	err = network.AppRequestFailed(context.Background(), nodeID, 0, engine.ErrTimeout)
 	require.ErrorIs(err, p2p.ErrUnrequestedResponse)
 }
 
@@ -629,7 +629,7 @@ func marshalStruct(codec codec.Manager, obj interface{}) ([]byte, error) {
 type testAppSender struct {
 	sendAppRequestFn  func(context.Context, set.Set[ids.NodeID], uint32, []byte) error
 	sendAppResponseFn func(ids.NodeID, uint32, []byte) error
-	sendAppGossipFn   func(common.SendConfig, []byte) error
+	sendAppGossipFn   func(engine.SendConfig, []byte) error
 }
 
 func (t testAppSender) SendAppRequest(ctx context.Context, nodeIDs set.Set[ids.NodeID], requestID uint32, message []byte) error {
@@ -640,7 +640,7 @@ func (t testAppSender) SendAppResponse(_ context.Context, nodeID ids.NodeID, req
 	return t.sendAppResponseFn(nodeID, requestID, message)
 }
 
-func (t testAppSender) SendAppGossip(_ context.Context, config common.SendConfig, message []byte) error {
+func (t testAppSender) SendAppGossip(_ context.Context, config engine.SendConfig, message []byte) error {
 	return t.sendAppGossipFn(config, message)
 }
 
@@ -762,7 +762,7 @@ func (t *testSDKHandler) AppGossip(ctx context.Context, nodeID ids.NodeID, gossi
 	panic("implement me")
 }
 
-func (t *testSDKHandler) AppRequest(ctx context.Context, nodeID ids.NodeID, deadline time.Time, requestBytes []byte) ([]byte, *common.AppError) {
+func (t *testSDKHandler) AppRequest(ctx context.Context, nodeID ids.NodeID, deadline time.Time, requestBytes []byte) ([]byte, *engine.AppError) {
 	t.appRequested = true
 	return nil, nil
 }

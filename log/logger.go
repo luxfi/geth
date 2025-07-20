@@ -38,6 +38,14 @@ const (
 	LvlDebug = LevelDebug
 )
 
+// root logger instance
+var root = New()
+
+// Root returns the default logger
+func Root() Logger {
+	return root
+}
+
 // LvlFromString returns the appropriate Lvl from a string name.
 // Useful for parsing command line args and configuration files.
 func LvlFromString(lvlString string) (slog.Level, error) {
@@ -173,6 +181,15 @@ func NewLogger(h slog.Handler) Logger {
 	}
 }
 
+// New returns a new logger with the default handler.
+func New(ctx ...interface{}) Logger {
+	l := &logger{slog.Default()}
+	if len(ctx) > 0 {
+		return l.With(ctx...)
+	}
+	return l
+}
+
 // write logs a message at the specified level:
 func (l *logger) Write(level slog.Level, msg string, attrs ...any) {
 	if !l.inner.Enabled(context.Background(), level) {
@@ -230,4 +247,32 @@ func (l *logger) Error(msg string, ctx ...interface{}) {
 func (l *logger) Crit(msg string, ctx ...interface{}) {
 	l.Write(LevelCrit, msg, ctx...)
 	os.Exit(1)
+}
+
+// Global logger instance
+var defaultLogger = NewLogger(NewTerminalHandler(os.Stderr, false))
+
+// Global logging functions
+func Info(msg string, ctx ...interface{}) {
+	defaultLogger.Info(msg, ctx...)
+}
+
+func Warn(msg string, ctx ...interface{}) {
+	defaultLogger.Warn(msg, ctx...)
+}
+
+func Error(msg string, ctx ...interface{}) {
+	defaultLogger.Error(msg, ctx...)
+}
+
+func Debug(msg string, ctx ...interface{}) {
+	defaultLogger.Debug(msg, ctx...)
+}
+
+func Trace(msg string, ctx ...interface{}) {
+	defaultLogger.Trace(msg, ctx...)
+}
+
+func Crit(msg string, ctx ...interface{}) {
+	defaultLogger.Crit(msg, ctx...)
 }

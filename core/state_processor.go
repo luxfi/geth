@@ -31,6 +31,9 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
@@ -38,9 +41,6 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/precompile/modules"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 // StateProcessor is a basic Processor, which takes care of transitioning

@@ -8,15 +8,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/node/cache"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/internal/luxcache"
+	"github.com/luxfi/node/cache"
+	"github.com/luxfi/node/consensus/chain"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p/acp118"
-	"github.com/luxfi/node/consensus/chain"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 var (

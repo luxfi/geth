@@ -7,6 +7,11 @@ import (
 	"context"
 	"testing"
 
+	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/plugin/evm/testutils"
+	"github.com/luxfi/geth/utils"
+	"github.com/luxfi/geth/warp"
+	"github.com/luxfi/geth/warp/warptest"
 	"github.com/luxfi/node/cache"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/ids"
@@ -14,11 +19,6 @@ import (
 	"github.com/luxfi/node/utils/crypto/bls/signer/localsigner"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/luxfi/geth/plugin/evm/message"
-	"github.com/luxfi/geth/plugin/evm/testutils"
-	"github.com/luxfi/geth/utils"
-	"github.com/luxfi/geth/warp"
-	"github.com/luxfi/geth/warp/warptest"
 	"github.com/stretchr/testify/require"
 )
 

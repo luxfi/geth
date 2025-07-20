@@ -7,15 +7,15 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/node/utils/math"
-	"github.com/luxfi/node/vms/components/gas"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
 	"github.com/luxfi/geth/plugin/evm/upgrade/cortina"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/node/utils/math"
+	"github.com/luxfi/node/vms/components/gas"
 	"github.com/stretchr/testify/require"
 )
 

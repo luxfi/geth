@@ -38,6 +38,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core/rawdb"
@@ -45,8 +47,6 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 // snapshotTestBasic wraps the common testing fields in the snapshot tests.

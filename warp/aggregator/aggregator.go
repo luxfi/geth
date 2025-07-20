@@ -7,12 +7,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/geth/log"
 
+	"github.com/luxfi/geth/precompile/contracts/warp"
 	"github.com/luxfi/node/utils/crypto/bls"
 	"github.com/luxfi/node/utils/set"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
-	"github.com/luxfi/geth/precompile/contracts/warp"
 )
 
 type AggregateSignatureResult struct {

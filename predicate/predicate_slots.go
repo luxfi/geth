@@ -4,10 +4,10 @@
 package predicate
 
 import (
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/utils"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 // PreparePredicateStorageSlots populates the the predicate storage slots of a transaction's access list

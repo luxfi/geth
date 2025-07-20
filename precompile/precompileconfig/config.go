@@ -5,10 +5,10 @@
 package precompileconfig
 
 import (
-	"github.com/luxfi/node/snow"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/vms/platformvm/warp"
-	"github.com/ethereum/go-ethereum/common"
 )
 
 // StatefulPrecompileConfig defines the interface for a stateful precompile to
@@ -32,7 +32,7 @@ type Config interface {
 // PredicateContext is the context passed in to the Predicater interface to verify
 // a precompile predicate within a specific ProposerVM wrapper.
 type PredicateContext struct {
-	SnowCtx *snow.Context
+	SnowCtx *consensus.Context
 	// ProposerVMBlockCtx defines the ProposerVM context the predicate is verified within
 	ProposerVMBlockCtx *block.Context
 }
@@ -57,7 +57,7 @@ type WarpMessageWriter interface {
 
 // AcceptContext defines the context passed in to a precompileconfig's Accepter
 type AcceptContext struct {
-	SnowCtx *snow.Context
+	SnowCtx *consensus.Context
 	Warp    WarpMessageWriter
 }
 

@@ -10,8 +10,8 @@ import (
 	"runtime"
 	"strings"
 
+	gethlog "github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/log"
-	gethlog "github.com/ethereum/go-ethereum/log"
 	"golang.org/x/exp/slog"
 )
 

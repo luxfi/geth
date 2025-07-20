@@ -15,6 +15,8 @@ import (
 
 	"github.com/luxfi/node/ids"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
@@ -26,8 +28,6 @@ import (
 	handlerstats "github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/luxfi/geth/sync/syncutils"
 	"github.com/luxfi/geth/triedb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 func TestGetCode(t *testing.T) {

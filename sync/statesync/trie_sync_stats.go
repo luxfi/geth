@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/metrics"
 	utils_math "github.com/luxfi/node/utils/math"
 	"github.com/luxfi/node/utils/timer"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 const (

@@ -31,16 +31,16 @@ import (
 	"math"
 	"math/big"
 
-	luxcommon "github.com/luxfi/geth/common"
+	ethcommon "github.com/luxfi/geth/common"
+	cmath "github.com/luxfi/geth/common/math"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/geth/vmerrs"
-	"github.com/ethereum/go-ethereum/common"
-	cmath "github.com/ethereum/go-ethereum/common/math"
-	"github.com/ethereum/go-ethereum/crypto/kzg4844"
-	"github.com/holiman/uint256"
 )
 
 // ExecutionResult includes all output after executing given evm
@@ -67,7 +67,7 @@ func (result *ExecutionResult) Return() []byte {
 	if result.Err != nil {
 		return nil
 	}
-	return common.CopyBytes(result.ReturnData)
+	return ethcommon.CopyBytes(result.ReturnData)
 }
 
 // Revert returns the concrete revert reason if the execution is aborted by `REVERT`
@@ -76,7 +76,7 @@ func (result *ExecutionResult) Revert() []byte {
 	if result.Err != vmerrs.ErrExecutionReverted {
 		return nil
 	}
-	return common.CopyBytes(result.ReturnData)
+	return ethcommon.CopyBytes(result.ReturnData)
 }
 
 // IntrinsicGas computes the 'intrinsic gas' for a message with the given data.
@@ -187,8 +187,8 @@ func toWordSize(size uint64) uint64 {
 // A Message contains the data derived from a single transaction that is relevant to state
 // processing.
 type Message struct {
-	To            *common.Address
-	From          common.Address
+	To            *ethcommon.Address
+	From          ethcommon.Address
 	Nonce         uint64
 	Value         *big.Int
 	GasLimit      uint64
@@ -198,7 +198,7 @@ type Message struct {
 	Data          []byte
 	AccessList    types.AccessList
 	BlobGasFeeCap *big.Int
-	BlobHashes    []common.Hash
+	BlobHashes    []ethcommon.Hash
 
 	// When SkipAccountChecks is true, the message nonce is not checked against the
 	// account nonce in state. It also disables checking that the sender is an EOA.
@@ -224,7 +224,7 @@ func TransactionToMessage(tx *types.Transaction, s types.Signer, baseFee *big.In
 	}
 	// If baseFee provided, set gasPrice to effectiveGasPrice.
 	if baseFee != nil {
-		msg.GasPrice = luxcommon.BigMin(msg.GasPrice.Add(msg.GasTipCap, baseFee), msg.GasFeeCap)
+		msg.GasPrice = common.BigMin(msg.GasPrice.Add(msg.GasTipCap, baseFee), msg.GasFeeCap)
 	}
 	var err error
 	msg.From, err = types.Sender(s, tx)
@@ -284,9 +284,9 @@ func NewStateTransition(evm *vm.EVM, msg *Message, gp *GasPool) *StateTransition
 }
 
 // to returns the recipient of the message.
-func (st *StateTransition) to() common.Address {
+func (st *StateTransition) to() ethcommon.Address {
 	if st.msg == nil || st.msg.To == nil /* contract creation */ {
-		return common.Address{}
+		return ethcommon.Address{}
 	}
 	return *st.msg.To
 }
@@ -348,7 +348,7 @@ func (st *StateTransition) preCheck() error {
 		}
 		// Make sure the sender is an EOA
 		codeHash := st.state.GetCodeHash(msg.From)
-		if codeHash != (common.Hash{}) && codeHash != types.EmptyCodeHash {
+		if codeHash != (ethcommon.Hash{}) && codeHash != types.EmptyCodeHash {
 			return fmt.Errorf("%w: address %v, codehash: %s", ErrSenderNoEOA,
 				msg.From.Hex(), codeHash)
 		}

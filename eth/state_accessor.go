@@ -32,6 +32,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
@@ -40,8 +42,6 @@ import (
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 // noopReleaser is returned in case there is no operation expected

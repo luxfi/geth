@@ -7,13 +7,13 @@ import (
 	"encoding/binary"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/plugin/evm/atomic"
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/prefixdb"
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/utils"
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/ethereum/go-ethereum/common"
 
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/utils/set"

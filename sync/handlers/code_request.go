@@ -10,12 +10,12 @@ import (
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/luxfi/geth/sync/handlers/stats"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
 )
 
 // CodeRequestHandler is a peer.RequestHandler for message.CodeRequest

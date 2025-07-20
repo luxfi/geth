@@ -8,18 +8,18 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/geth/plugin/evm/testutils"
+	"github.com/luxfi/geth/utils"
+	"github.com/luxfi/geth/warp/warptest"
 	"github.com/luxfi/node/cache"
+	"github.com/luxfi/node/consensus/engine"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p/acp118"
 	"github.com/luxfi/node/proto/pb/sdk"
-	"github.com/luxfi/node/snow/engine/common"
 	"github.com/luxfi/node/utils/crypto/bls/signer/localsigner"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/luxfi/geth/plugin/evm/testutils"
-	"github.com/luxfi/geth/utils"
-	"github.com/luxfi/geth/warp/warptest"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/proto"
 )
@@ -83,7 +83,7 @@ func TestAddressedCallSignatures(t *testing.T) {
 				require.EqualValues(t, 1, stats.messageParseFail.Snapshot().Count())
 				require.EqualValues(t, 0, stats.blockValidationFail.Snapshot().Count())
 			},
-			err: &common.AppError{Code: ParseErrCode},
+			err: &engine.AppError{Code: ParseErrCode},
 		},
 	}
 
@@ -195,7 +195,7 @@ func TestBlockSignatures(t *testing.T) {
 				require.EqualValues(t, 1, stats.blockValidationFail.Snapshot().Count())
 				require.EqualValues(t, 0, stats.messageParseFail.Snapshot().Count())
 			},
-			err: &common.AppError{Code: VerifyErrCode},
+			err: &engine.AppError{Code: VerifyErrCode},
 		},
 	}
 

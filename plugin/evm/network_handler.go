@@ -6,16 +6,16 @@ package evm
 import (
 	"context"
 
-	"github.com/luxfi/node/codec"
-	"github.com/luxfi/node/ids"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/plugin/evm/message"
 	syncHandlers "github.com/luxfi/geth/sync/handlers"
 	syncStats "github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/warp"
 	warpHandlers "github.com/luxfi/geth/warp/handlers"
-	"github.com/ethereum/go-ethereum/metrics"
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/node/codec"
+	"github.com/luxfi/node/ids"
 )
 
 var _ message.RequestHandler = &networkHandler{}

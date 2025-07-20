@@ -20,9 +20,9 @@ import (
 	"encoding/binary"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/crate-crypto/go-ipa/bandersnatch/fr"
-	"github.com/ethereum/go-ethereum/common/lru"
+	"github.com/luxfi/geth/common/lru"
+	"github.com/luxfi/geth/metrics"
 	"github.com/ethereum/go-verkle"
 	"github.com/holiman/uint256"
 )
@@ -73,7 +73,7 @@ func init() {
 
 // PointCache is the LRU cache for storing evaluated address commitment.
 type PointCache struct {
-	lru  lru.BasicLRU[string, *verkle.Point]
+	lru  *lru.BasicLRU[string, *verkle.Point]
 	lock sync.RWMutex
 }
 

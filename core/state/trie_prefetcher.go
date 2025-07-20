@@ -19,9 +19,9 @@ package state
 import (
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/metrics"
 )
 
 var (
@@ -69,7 +69,7 @@ func newTriePrefetcher(db Database, root common.Hash, namespace string, concurre
 		storageDupMeter:   metrics.GetOrRegisterMeter(prefix+"/storage/dup", nil),
 		storageSkipMeter:  metrics.GetOrRegisterMeter(prefix+"/storage/skip", nil),
 		storageWasteMeter: metrics.GetOrRegisterMeter(prefix+"/storage/waste", nil),
-		
+
 		concurrency: 1, // Default to single-threaded
 	}
 	if len(concurrency) > 0 && concurrency[0] > 0 {
@@ -129,7 +129,7 @@ func (p *triePrefetcher) copy() *triePrefetcher {
 		storageDupMeter:   p.storageDupMeter,
 		storageSkipMeter:  p.storageSkipMeter,
 		storageWasteMeter: p.storageWasteMeter,
-		
+
 		concurrency: p.concurrency,
 	}
 	// If the prefetcher is already a copy, duplicate the data
@@ -235,9 +235,9 @@ type subfetcher struct {
 	seen map[string]struct{} // Tracks the entries already loaded
 	dups int                 // Number of duplicate preload tasks
 	used [][]byte            // Tracks the entries used in the end
-	
-	concurrency int         // Number of concurrent workers
-	workers     chan struct{} // Worker semaphore
+
+	concurrency int            // Number of concurrent workers
+	workers     chan struct{}  // Worker semaphore
 	wg          sync.WaitGroup // Wait group for workers
 }
 
@@ -245,11 +245,11 @@ type subfetcher struct {
 // particular root hash.
 func newSubfetcher(db Database, state common.Hash, owner common.Hash, root common.Hash, addr common.Address, concurrency int) *subfetcher {
 	sf := &subfetcher{
-		db:    db,
-		state: state,
-		owner: owner,
-		root:  root,
-		addr:  addr,
+		db:          db,
+		state:       state,
+		owner:       owner,
+		root:        root,
+		addr:        addr,
 		wake:        make(chan struct{}, 1),
 		stop:        make(chan struct{}),
 		term:        make(chan struct{}),
@@ -357,7 +357,7 @@ func (sf *subfetcher) loop() {
 						sf.dups++
 					} else {
 						sf.seen[string(task)] = struct{}{}
-						
+
 						if sf.concurrency > 1 {
 							// Concurrent execution
 							sf.workers <- struct{}{} // Acquire worker slot
@@ -367,10 +367,10 @@ func (sf *subfetcher) loop() {
 									<-sf.workers // Release worker slot
 									sf.wg.Done()
 								}()
-								
+
 								// Create a copy of the trie for this worker
 								trie := sf.db.CopyTrie(sf.trie)
-								
+
 								if len(task) == common.AddressLength {
 									if _, err := trie.GetAccount(common.BytesToAddress(task)); err != nil {
 										log.Error("account prefetching failed", "address", common.BytesToAddress(task), "err", err)

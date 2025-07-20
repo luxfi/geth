@@ -21,11 +21,11 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie/utils"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/holiman/uint256"
 )
 
 var (
@@ -45,12 +45,12 @@ var (
 		{1}: {
 			common.Hash{10}: []byte{10},
 			common.Hash{11}: []byte{11},
-			common.MaxHash:  []byte{0xff},
+			common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"): []byte{0xff},
 		},
 		{2}: {
 			common.Hash{20}: []byte{20},
 			common.Hash{21}: []byte{21},
-			common.MaxHash:  []byte{0xff},
+			common.HexToHash("0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"): []byte{0xff},
 		},
 	}
 )

@@ -8,9 +8,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
 
+	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/prefixdb"
@@ -19,7 +20,6 @@ import (
 	"github.com/luxfi/node/utils"
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/utils/wrappers"
-	"github.com/luxfi/geth/plugin/evm/atomic"
 )
 
 const (

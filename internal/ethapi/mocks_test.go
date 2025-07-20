@@ -15,6 +15,9 @@ import (
 	reflect "reflect"
 	time "time"
 
+	common "github.com/luxfi/geth/common"
+	ethdb "github.com/luxfi/geth/ethdb"
+	event "github.com/luxfi/geth/event"
 	accounts "github.com/luxfi/geth/accounts"
 	consensus "github.com/luxfi/geth/consensus"
 	core "github.com/luxfi/geth/core"
@@ -24,9 +27,6 @@ import (
 	vm "github.com/luxfi/geth/core/vm"
 	params "github.com/luxfi/geth/params"
 	rpc "github.com/luxfi/geth/rpc"
-	common "github.com/ethereum/go-ethereum/common"
-	ethdb "github.com/ethereum/go-ethereum/ethdb"
-	event "github.com/ethereum/go-ethereum/event"
 	gomock "go.uber.org/mock/gomock"
 )
 

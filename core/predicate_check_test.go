@@ -7,12 +7,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/luxfi/node/consensus/engine/chain/block"
-	"github.com/luxfi/node/utils/set"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/precompileconfig"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/node/consensus/engine/chain/block"
+	"github.com/luxfi/node/utils/set"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"
 )

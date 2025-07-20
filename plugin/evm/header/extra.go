@@ -8,11 +8,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/node/vms/components/gas"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
+	"github.com/luxfi/node/vms/components/gas"
 )
 
 var (

@@ -8,11 +8,11 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
-	"github.com/luxfi/node/snow"
 	"github.com/luxfi/node/utils/crypto/secp256k1"
 	"github.com/luxfi/node/vms/components/chain"
-	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/stretchr/testify/assert"
@@ -94,7 +94,7 @@ func TestMempoolAddLocallyCreateAtomicTx(t *testing.T) {
 func TestMempoolMaxMempoolSizeHandling(t *testing.T) {
 	assert := assert.New(t)
 
-	mempool, err := atomic.NewMempool(&snow.Context{}, prometheus.NewRegistry(), 1, nil)
+	mempool, err := atomic.NewMempool(&consensus.Context{}, prometheus.NewRegistry(), 1, nil)
 	assert.NoError(err)
 	// create candidate tx (we will drop before validation)
 	tx := atomic.GenerateTestImportTx()

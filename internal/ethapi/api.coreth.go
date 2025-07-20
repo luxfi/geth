@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"math/big"
 
-	luxcommon "github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 	"github.com/luxfi/geth/plugin/evm/upgrade/etna"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 const (
@@ -129,12 +129,12 @@ func calculateFeeSpeeds(
 	fastFeePerc *big.Int,
 ) feeSpeeds {
 	// Cap the fee to keep slow and normal options reasonable during fee spikes.
-	cappedFee := luxcommon.BigMin(estimate, maxFee)
+	cappedFee := common.BigMin(estimate, maxFee)
 
 	slowFee := new(big.Int).Set(cappedFee)
 	slowFee.Mul(slowFee, slowFeePerc)
 	slowFee.Div(slowFee, bigFeeDenominator)
-	slowFee = luxcommon.BigMax(slowFee, minFee)
+	slowFee = common.BigMax(slowFee, minFee)
 
 	normalFee := cappedFee
 

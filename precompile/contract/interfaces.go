@@ -7,10 +7,10 @@ package contract
 import (
 	"math/big"
 
-	"github.com/luxfi/node/snow"
-	"github.com/luxfi/geth/precompile/precompileconfig"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/precompile/precompileconfig"
+	"github.com/luxfi/node/consensus"
 )
 
 // StatefulPrecompiledContract is the interface for executing a precompiled contract
@@ -49,7 +49,7 @@ type StateDB interface {
 type AccessibleState interface {
 	GetStateDB() StateDB
 	GetBlockContext() BlockContext
-	GetSnowContext() *snow.Context
+	GetSnowContext() *consensus.Context
 	GetChainConfig() precompileconfig.ChainConfig
 	NativeAssetCall(caller common.Address, input []byte, suppliedGas uint64, gasCost uint64, readOnly bool) (ret []byte, remainingGas uint64, err error)
 }

@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/luxfi/node/consensus/engine"
 	"github.com/luxfi/node/database"
-	"github.com/luxfi/node/snow/engine/common"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
 )
@@ -20,13 +20,13 @@ const (
 
 // Verify verifies the signature of the message
 // It also implements the acp118.Verifier interface
-func (b *backend) Verify(ctx context.Context, unsignedMessage *luxWarp.UnsignedMessage, _ []byte) *common.AppError {
+func (b *backend) Verify(ctx context.Context, unsignedMessage *luxWarp.UnsignedMessage, _ []byte) *engine.AppError {
 	messageID := unsignedMessage.ID()
 	// Known on-chain messages should be signed
 	if _, err := b.GetMessage(messageID); err == nil {
 		return nil
 	} else if err != database.ErrNotFound {
-		return &common.AppError{
+		return &engine.AppError{
 			Code:    ParseErrCode,
 			Message: fmt.Sprintf("failed to get message %s: %s", messageID, err.Error()),
 		}
@@ -35,7 +35,7 @@ func (b *backend) Verify(ctx context.Context, unsignedMessage *luxWarp.UnsignedM
 	parsed, err := payload.Parse(unsignedMessage.Payload)
 	if err != nil {
 		b.stats.IncMessageParseFail()
-		return &common.AppError{
+		return &engine.AppError{
 			Code:    ParseErrCode,
 			Message: "failed to parse payload: " + err.Error(),
 		}
@@ -46,7 +46,7 @@ func (b *backend) Verify(ctx context.Context, unsignedMessage *luxWarp.UnsignedM
 		return b.verifyBlockMessage(ctx, p)
 	default:
 		b.stats.IncMessageParseFail()
-		return &common.AppError{
+		return &engine.AppError{
 			Code:    ParseErrCode,
 			Message: fmt.Sprintf("unknown payload type: %T", p),
 		}
@@ -55,12 +55,12 @@ func (b *backend) Verify(ctx context.Context, unsignedMessage *luxWarp.UnsignedM
 
 // verifyBlockMessage returns nil if blockHashPayload contains the ID
 // of an accepted block indicating it should be signed by the VM.
-func (b *backend) verifyBlockMessage(ctx context.Context, blockHashPayload *payload.Hash) *common.AppError {
+func (b *backend) verifyBlockMessage(ctx context.Context, blockHashPayload *payload.Hash) *engine.AppError {
 	blockID := blockHashPayload.Hash
 	_, err := b.blockClient.GetAcceptedBlock(ctx, blockID)
 	if err != nil {
 		b.stats.IncBlockValidationFail()
-		return &common.AppError{
+		return &engine.AppError{
 			Code:    VerifyErrCode,
 			Message: fmt.Sprintf("failed to get block %s: %s", blockID, err.Error()),
 		}

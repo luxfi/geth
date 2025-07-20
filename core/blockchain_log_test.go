@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core/rawdb"
@@ -15,8 +17,6 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/require"
 )
 

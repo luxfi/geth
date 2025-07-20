@@ -33,12 +33,12 @@ import (
 	"runtime"
 	"runtime/debug"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethclient"
 	"github.com/luxfi/geth/interfaces"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 // Client is a wrapper around rpc.Client that implements geth-specific functionality.

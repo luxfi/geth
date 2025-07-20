@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/utils/wrappers"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 
 	"github.com/luxfi/geth/plugin/evm/message"
 	syncclient "github.com/luxfi/geth/sync/client"

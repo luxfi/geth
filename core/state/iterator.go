@@ -31,10 +31,10 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/trie"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/rlp"
 )
 
 // nodeIterator is an iterator to traverse the entire state trie post-order,

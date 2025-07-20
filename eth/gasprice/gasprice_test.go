@@ -32,6 +32,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
@@ -44,9 +47,6 @@ import (
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
 	"github.com/luxfi/geth/rpc"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/event"
 	"github.com/stretchr/testify/require"
 )
 

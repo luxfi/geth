@@ -9,8 +9,7 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/luxfi/node/utils/timer/mockable"
-	"github.com/luxfi/node/vms/components/gas"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/state"
@@ -18,7 +17,8 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/utils"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/node/utils/timer/mockable"
+	"github.com/luxfi/node/vms/components/gas"
 
 	customheader "github.com/luxfi/geth/plugin/evm/header"
 )

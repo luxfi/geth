@@ -7,6 +7,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/luxfi/geth/warp/warptest"
 	"github.com/luxfi/node/cache"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/memdb"
@@ -15,7 +16,6 @@ import (
 	"github.com/luxfi/node/utils/crypto/bls/signer/localsigner"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
-	"github.com/luxfi/geth/warp/warptest"
 	"github.com/stretchr/testify/require"
 )
 

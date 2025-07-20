@@ -33,6 +33,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/core"
@@ -43,12 +44,11 @@ import (
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/params"
-	"github.com/ethereum/go-ethereum/common"
-	// "github.com/ethereum/go-ethereum/core/asm" // Removed in go-ethereum v1.16.1
+	// "github.com/luxfi/geth/core/asm" // Removed in go-ethereum v1.16.1
 
 	// force-load js tracers to trigger registration
-	_ "github.com/luxfi/geth/eth/tracers/js"
 	"github.com/holiman/uint256"
+	_ "github.com/luxfi/geth/eth/tracers/js"
 )
 
 func TestDefaults(t *testing.T) {
@@ -611,7 +611,7 @@ func TestEip2929Cases(t *testing.T) {
 
 // TestColdAccountAccessCost test that the cold account access cost is reported
 // correctly
-// see: https://github.com/ethereum/go-ethereum/issues/22649
+// see: https://github.com/luxfi/geth/issues/22649
 func TestColdAccountAccessCost(t *testing.T) {
 	for i, tc := range []struct {
 		code []byte
