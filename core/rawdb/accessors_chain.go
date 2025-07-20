@@ -409,9 +409,22 @@ func ReadReceipts(db ethdb.Reader, hash common.Hash, number uint64, time uint64,
 	if header != nil && header.ExcessBlobGas != nil {
 		blobGasPrice = eip4844.CalcBlobFee(*header.ExcessBlobGas)
 	}
-	// Convert our ChainConfig to ethereum's ChainConfig for DeriveFields
-	// This works because params.ChainConfig embeds ethereum's ChainConfig
-	ethConfig := (*ethparams.ChainConfig)(config)
+	// Create a minimal ethereum ChainConfig for DeriveFields
+	// Only the fields needed for receipt derivation are populated
+	ethConfig := &ethparams.ChainConfig{
+		ChainID:             config.ChainID,
+		HomesteadBlock:      config.HomesteadBlock,
+		EIP150Block:         config.EIP150Block,
+		EIP155Block:         config.EIP155Block,
+		EIP158Block:         config.EIP158Block,
+		ByzantiumBlock:      config.ByzantiumBlock,
+		ConstantinopleBlock: config.ConstantinopleBlock,
+		PetersburgBlock:     config.PetersburgBlock,
+		IstanbulBlock:       config.IstanbulBlock,
+		BerlinBlock:         config.BerlinBlock,
+		LondonBlock:         config.LondonBlock,
+		CancunTime:          config.CancunTime,
+	}
 	if err := receipts.DeriveFields(ethConfig, hash, number, time, baseFee, blobGasPrice, body.Transactions); err != nil {
 		log.Error("Failed to derive block receipts fields", "hash", hash, "number", number, "err", err)
 		return nil
@@ -527,16 +540,8 @@ func ReadBlock(db ethdb.Reader, hash common.Hash, number uint64) *types.Block {
 	if body == nil {
 		return nil
 	}
-	// Create ethereum Body for WithBody method
-	ethBody := &struct {
-		Transactions []*types.Transaction
-		Uncles       []*types.Header
-	}{
-		Transactions: body.Transactions,
-		Uncles:       body.Uncles,
-	}
-	block := types.NewBlockWithHeader(header).WithBody(ethBody.Transactions, ethBody.Uncles)
-	return types.BlockWithExtData(block, body.Version, body.ExtData)
+	// Use NewBlockWithExtData to create the block with all data
+	return types.NewBlockWithExtData(header, body.Transactions, body.Uncles, nil, body.Version, body.ExtData, false)
 }
 
 // WriteBlock serializes a block into the database, header and body separately.
