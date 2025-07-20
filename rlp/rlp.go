@@ -35,6 +35,7 @@ var (
 	Split            = rlp.Split
 	CountValues      = rlp.CountValues
 	SplitString      = rlp.SplitString
+	String           = rlp.String
 )
 
 // Re-export constants

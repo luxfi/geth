@@ -66,6 +66,7 @@ var (
 	EmptyTxsHash         = ethtypes.EmptyTxsHash
 	EmptyReceiptsHash    = ethtypes.EmptyReceiptsHash
 	EmptyWithdrawalsHash = ethtypes.EmptyWithdrawalsHash
+	EmptyVerkleHash      = ethtypes.EmptyVerkleHash
 	
 	// Errors
 	ErrInvalidSig           = ethtypes.ErrInvalidSig

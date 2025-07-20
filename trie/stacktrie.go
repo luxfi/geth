@@ -447,7 +447,7 @@ func (t *StackTrie) hash(st *stNode, path []byte) {
 	// configured to filter the boundary.
 	if t.options.SkipLeftBoundary && bytes.HasPrefix(t.first, path) {
 		if g := t.options.boundaryGauge; g != nil {
-			g.Inc(1)
+			(*g).Inc(1)
 		}
 		return
 	}
@@ -455,7 +455,7 @@ func (t *StackTrie) hash(st *stNode, path []byte) {
 	// configured to filter the boundary.
 	if t.options.SkipRightBoundary && bytes.HasPrefix(t.last, path) {
 		if g := t.options.boundaryGauge; g != nil {
-			g.Inc(1)
+			(*g).Inc(1)
 		}
 		return
 	}
