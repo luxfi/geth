@@ -124,5 +124,8 @@ var (
 	NewEmptyStateAccount = ethtypes.NewEmptyStateAccount
 )
 
+// TrieRootHash is the hash of a trie root
+type TrieRootHash = common.Hash
+
 // FullAccount is StateAccount in newer versions
 type FullAccount = StateAccount
