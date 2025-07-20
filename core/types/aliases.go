@@ -15,9 +15,9 @@ type (
 	TxByNonce    = ethtypes.TxByNonce
 	
 	// Block types
-	Block    = ethtypes.Block
-	Header   = ethtypes.Header
-	Body     = ethtypes.Body
+	Block      = ethtypes.Block
+	Header     = ethtypes.Header
+	// Body is defined in block_ext.go as ExtendedBody
 	BlockNonce = ethtypes.BlockNonce
 	
 	// Receipt types
@@ -95,8 +95,9 @@ var (
 	MakeSigner             = ethtypes.MakeSigner
 	
 	// Block functions
-	CalcUncleHash = ethtypes.CalcUncleHash
-	DeriveSha     = ethtypes.DeriveSha
+	CalcUncleHash      = ethtypes.CalcUncleHash
+	DeriveSha          = ethtypes.DeriveSha
+	NewBlockWithHeader = ethtypes.NewBlockWithHeader
 )
 
 // Interfaces
@@ -106,9 +107,10 @@ type (
 
 // Additional aliases for missing types
 type (
-	HomesteadSigner = ethtypes.HomesteadSigner
-	FrontierSigner  = ethtypes.FrontierSigner
-	StateAccount    = ethtypes.StateAccount
+	HomesteadSigner    = ethtypes.HomesteadSigner
+	FrontierSigner     = ethtypes.FrontierSigner
+	StateAccount       = ethtypes.StateAccount
+	ReceiptForStorage  = ethtypes.ReceiptForStorage
 )
 
 // Constants for bloom filters
