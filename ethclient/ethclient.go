@@ -265,7 +265,7 @@ func (ec *client) getBlock(ctx context.Context, method string, args ...interface
 		}
 		txs[i] = tx.tx
 	}
-	block := types.NewBlockWithHeader(head).WithBody(types.Body{Transactions: txs, Uncles: uncles})
+	block := types.NewBlockWithHeader(head).WithBody(txs, uncles)
 	if body.BlockExtraData != nil {
 		return types.BlockWithExtData(block, body.Version, *body.BlockExtraData), nil
 	}
