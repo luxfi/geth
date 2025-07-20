@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
@@ -25,7 +25,7 @@ var (
 // calculates the gas limit for the child block.
 func GasLimit(
 	config *params.ChainConfig,
-	parent *types.Header,
+	parent *extheader.Header,
 	timestamp uint64,
 ) (uint64, error) {
 	switch {
@@ -58,8 +58,8 @@ func GasLimit(
 // limit.
 func VerifyGasUsed(
 	config *params.ChainConfig,
-	parent *types.Header,
-	header *types.Header,
+	parent *extheader.Header,
+	header *extheader.Header,
 ) error {
 	gasUsed := header.GasUsed
 	if config.IsFortuna(header.Time) && header.ExtDataGasUsed != nil {
@@ -93,8 +93,8 @@ func VerifyGasUsed(
 // VerifyGasLimit verifies that the gas limit for the header is valid.
 func VerifyGasLimit(
 	config *params.ChainConfig,
-	parent *types.Header,
-	header *types.Header,
+	parent *extheader.Header,
+	header *extheader.Header,
 ) error {
 	switch {
 	case config.IsFortuna(header.Time):
@@ -155,7 +155,7 @@ func VerifyGasLimit(
 // and calculates the available gas that can be consumed in the child block.
 func GasCapacity(
 	config *params.ChainConfig,
-	parent *types.Header,
+	parent *extheader.Header,
 	timestamp uint64,
 ) (uint64, error) {
 	// Prior to the F upgrade, the gas capacity is equal to the gas limit.
@@ -175,8 +175,8 @@ func GasCapacity(
 // consumed gas.
 func RemainingAtomicGasCapacity(
 	config *params.ChainConfig,
-	parent *types.Header,
-	header *types.Header,
+	parent *extheader.Header,
+	header *extheader.Header,
 ) (uint64, error) {
 	// Prior to the F upgrade, the atomic gas limit was a constant independent
 	// of the evm gas used.

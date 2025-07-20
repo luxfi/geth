@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 	"github.com/luxfi/node/vms/components/gas"
@@ -17,7 +17,7 @@ import (
 // block and calculates the fee state before the child block is executed.
 func feeStateBeforeBlock(
 	config *params.ChainConfig,
-	parent *types.Header,
+	parent *extheader.Header,
 	timestamp uint64,
 ) (acp176.State, error) {
 	if timestamp < parent.Time {
@@ -49,8 +49,8 @@ func feeStateBeforeBlock(
 // the execution of the provided child.
 func feeStateAfterBlock(
 	config *params.ChainConfig,
-	parent *types.Header,
-	header *types.Header,
+	parent *extheader.Header,
+	header *extheader.Header,
 	desiredTargetExcess *gas.Gas,
 ) (acp176.State, error) {
 	// Calculate the gas state after the parent block

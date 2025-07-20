@@ -8,7 +8,7 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
@@ -26,7 +26,7 @@ var (
 // Prior to AP4, the returned block gas cost will be nil.
 func BlockGasCost(
 	config *params.ChainConfig,
-	parent *types.Header,
+	parent *extheader.Header,
 	timestamp uint64,
 ) *big.Int {
 	if !config.IsApricotPhase4(timestamp) {
@@ -86,7 +86,7 @@ func BlockGasCostWithStep(
 // This function will return nil for all return values prior to Apricot Phase 4.
 func EstimateRequiredTip(
 	config *params.ChainConfig,
-	header *types.Header,
+	header *extheader.Header,
 ) (*big.Int, error) {
 	switch {
 	case !config.IsApricotPhase4(header.Time):

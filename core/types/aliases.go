@@ -103,3 +103,24 @@ var (
 type (
 	DerivableList = ethtypes.DerivableList
 )
+
+// Additional aliases for missing types
+type (
+	HomesteadSigner = ethtypes.HomesteadSigner
+	FrontierSigner  = ethtypes.FrontierSigner
+	StateAccount    = ethtypes.StateAccount
+)
+
+// Constants for bloom filters
+const (
+	BloomBitLength  = ethtypes.BloomBitLength
+	BloomByteLength = ethtypes.BloomByteLength
+)
+
+// Functions for accounts
+var (
+	NewEmptyStateAccount = ethtypes.NewEmptyStateAccount
+)
+
+// FullAccount is StateAccount in newer versions
+type FullAccount = StateAccount

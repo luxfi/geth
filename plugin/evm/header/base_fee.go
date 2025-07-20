@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/params"
 )
 
@@ -20,7 +20,7 @@ var errEstimateBaseFeeWithoutActivation = errors.New("cannot estimate base fee f
 // Prior to AP3, the returned base fee will be nil.
 func BaseFee(
 	config *params.ChainConfig,
-	parent *types.Header,
+	parent *extheader.Header,
 	timestamp uint64,
 ) (*big.Int, error) {
 	switch {
@@ -49,7 +49,7 @@ func BaseFee(
 // used when calculating the canonical base fee for a block.
 func EstimateNextBaseFee(
 	config *params.ChainConfig,
-	parent *types.Header,
+	parent *extheader.Header,
 	timestamp uint64,
 ) (*big.Int, error) {
 	if config.ApricotPhase3BlockTimestamp == nil {

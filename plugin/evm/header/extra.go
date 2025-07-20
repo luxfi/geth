@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
@@ -27,8 +27,8 @@ var (
 // If the `desiredTargetExcess` is nil, the parent's target excess is used.
 func ExtraPrefix(
 	config *params.ChainConfig,
-	parent *types.Header,
-	header *types.Header,
+	parent *extheader.Header,
+	header *extheader.Header,
 	desiredTargetExcess *gas.Gas,
 ) ([]byte, error) {
 	switch {
@@ -59,8 +59,8 @@ func ExtraPrefix(
 // formatted.
 func VerifyExtraPrefix(
 	config *params.ChainConfig,
-	parent *types.Header,
-	header *types.Header,
+	parent *extheader.Header,
+	header *extheader.Header,
 ) error {
 	switch {
 	case config.IsFortuna(header.Time):

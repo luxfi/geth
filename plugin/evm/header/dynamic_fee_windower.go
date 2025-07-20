@@ -10,7 +10,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	luxcommon "github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap3"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
@@ -36,7 +36,7 @@ var (
 )
 
 // baseFeeFromWindow should only be called if `timestamp` >= `config.ApricotPhase3Timestamp`
-func baseFeeFromWindow(config *params.ChainConfig, parent *types.Header, timestamp uint64) (*big.Int, error) {
+func baseFeeFromWindow(config *params.ChainConfig, parent *extheader.Header, timestamp uint64) (*big.Int, error) {
 	// If the current block is the first EIP-1559 block, or it is the genesis block
 	// return the initial slice and initial base fee.
 	if !config.IsApricotPhase3(parent.Time) || parent.Number.Cmp(common.Big0) == 0 {
@@ -146,7 +146,7 @@ func baseFeeFromWindow(config *params.ChainConfig, parent *types.Header, timesta
 // feeWindow should only be called if timestamp >= config.ApricotPhase3Timestamp
 func feeWindow(
 	config *params.ChainConfig,
-	parent *types.Header,
+	parent *extheader.Header,
 	timestamp uint64,
 ) (ap3.Window, error) {
 	// If the current block is the first EIP-1559 block, or it is the genesis block

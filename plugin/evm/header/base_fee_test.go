@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
@@ -24,7 +25,7 @@ func TestBaseFee(t *testing.T) {
 	tests := []struct {
 		name      string
 		upgrades  params.NetworkUpgrades
-		parent    *types.Header
+		parent    *extheader.Header
 		timestamp uint64
 		want      *big.Int
 		wantErr   error
@@ -406,7 +407,7 @@ func TestEstimateNextBaseFee(t *testing.T) {
 	tests := []struct {
 		name      string
 		upgrades  params.NetworkUpgrades
-		parent    *types.Header
+		parent    *extheader.Header
 		timestamp uint64
 		want      *big.Int
 		wantErr   error

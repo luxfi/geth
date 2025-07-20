@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap4"
@@ -174,7 +175,7 @@ func TestEstimateRequiredTip(t *testing.T) {
 	tests := []struct {
 		name         string
 		ap4Timestamp *uint64
-		header       *types.Header
+		header       *extheader.Header
 		want         *big.Int
 		wantErr      error
 	}{

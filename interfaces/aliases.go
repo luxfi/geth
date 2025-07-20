@@ -25,3 +25,8 @@ type (
 	ContractCaller    = eth.ContractCaller
 	TransactionSender = eth.TransactionSender
 )
+
+// Error values
+var (
+	NotFound = eth.NotFound
+)

@@ -7,6 +7,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
@@ -22,8 +23,8 @@ func TestExtraPrefix(t *testing.T) {
 	tests := []struct {
 		name                string
 		upgrades            params.NetworkUpgrades
-		parent              *types.Header
-		header              *types.Header
+		parent              *extheader.Header
+		header              *extheader.Header
 		desiredTargetExcess *gas.Gas
 		want                []byte
 		wantErr             error
@@ -353,8 +354,8 @@ func TestVerifyExtraPrefix(t *testing.T) {
 	tests := []struct {
 		name     string
 		upgrades params.NetworkUpgrades
-		parent   *types.Header
-		header   *types.Header
+		parent   *extheader.Header
+		header   *extheader.Header
 		wantErr  error
 	}{
 		{

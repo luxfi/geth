@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
@@ -23,7 +24,7 @@ func TestGasLimit(t *testing.T) {
 	tests := []struct {
 		name      string
 		upgrades  params.NetworkUpgrades
-		parent    *types.Header
+		parent    *extheader.Header
 		timestamp uint64
 		want      uint64
 		wantErr   error
@@ -81,8 +82,8 @@ func TestVerifyGasUsed(t *testing.T) {
 	tests := []struct {
 		name     string
 		upgrades params.NetworkUpgrades
-		parent   *types.Header
-		header   *types.Header
+		parent   *extheader.Header
+		header   *extheader.Header
 		want     error
 	}{
 		{
@@ -166,8 +167,8 @@ func TestVerifyGasLimit(t *testing.T) {
 	tests := []struct {
 		name     string
 		upgrades params.NetworkUpgrades
-		parent   *types.Header
-		header   *types.Header
+		parent   *extheader.Header
+		header   *extheader.Header
 		want     error
 	}{
 		{
@@ -289,7 +290,7 @@ func TestGasCapacity(t *testing.T) {
 	tests := []struct {
 		name      string
 		upgrades  params.NetworkUpgrades
-		parent    *types.Header
+		parent    *extheader.Header
 		timestamp uint64
 		want      uint64
 		wantErr   error
@@ -335,8 +336,8 @@ func TestRemainingAtomicGasCapacity(t *testing.T) {
 	tests := []struct {
 		name     string
 		upgrades params.NetworkUpgrades
-		parent   *types.Header
-		header   *types.Header
+		parent   *extheader.Header
+		header   *extheader.Header
 		want     uint64
 		wantErr  error
 	}{
