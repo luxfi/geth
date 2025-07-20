@@ -16,10 +16,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/rlp"
 
 	"github.com/luxfi/geth/constants"
 	"github.com/luxfi/geth/eth/filters"
@@ -28,7 +28,7 @@ import (
 	"github.com/luxfi/geth/plugin/evm/header"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/utils"
 
 	"github.com/stretchr/testify/assert"
@@ -60,11 +60,11 @@ import (
 	constantsEng "github.com/luxfi/node/utils/constants"
 
 	"github.com/luxfi/geth/consensus/dummy"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/eth"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/rpc"
 
 	accountKeystore "github.com/luxfi/geth/accounts/keystore"
 	luxWarp "github.com/luxfi/node/vms/platformvm/warp"

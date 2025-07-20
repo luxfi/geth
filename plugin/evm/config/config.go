@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/plugin/evm/upgrade/etna"
 	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/utils/constants"

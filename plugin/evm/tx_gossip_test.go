@@ -33,7 +33,7 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/geth/plugin/evm/config"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"

@@ -10,13 +10,13 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/plugin/evm/message"
 	syncclient "github.com/luxfi/geth/sync/client"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/utils/wrappers"
 )

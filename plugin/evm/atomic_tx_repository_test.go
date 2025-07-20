@@ -7,7 +7,7 @@ import (
 	"encoding/binary"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/plugin/evm/atomic"
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/database"

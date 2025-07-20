@@ -33,7 +33,7 @@ import (
 	"strings"
 
 	"github.com/luxfi/geth/internal/version"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 	"github.com/mattn/go-isatty"
 	"github.com/urfave/cli/v2"
 )

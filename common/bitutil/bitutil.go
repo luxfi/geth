@@ -7,9 +7,10 @@ import (
 
 // Re-export functions
 var (
-	XORBytes = bitutil.XORBytes
-	ANDBytes = bitutil.ANDBytes
-	ORBytes = bitutil.ORBytes
-	TestBytes = bitutil.TestBytes
-	CompressBytes = bitutil.CompressBytes
+	XORBytes        = bitutil.XORBytes
+	ANDBytes        = bitutil.ANDBytes
+	ORBytes         = bitutil.ORBytes
+	TestBytes       = bitutil.TestBytes
+	CompressBytes   = bitutil.CompressBytes
 	DecompressBytes = bitutil.DecompressBytes
+)

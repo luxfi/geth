@@ -8,8 +8,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/state"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/precompile/testutils"
 	"github.com/luxfi/geth/predicate"

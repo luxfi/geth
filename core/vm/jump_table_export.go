@@ -17,7 +17,7 @@
 package vm
 
 import (
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 )
 
 // LookupInstructionSet returns the instruction set for the fork configured by

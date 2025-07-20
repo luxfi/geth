@@ -34,12 +34,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
-	"github.com/ethereum/go-ethereum/core/state"
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/state"
+	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 )
 
 type account struct{}

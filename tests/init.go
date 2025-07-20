@@ -31,7 +31,7 @@ import (
 	"math/big"
 	"sort"
 
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/utils"
 )
 

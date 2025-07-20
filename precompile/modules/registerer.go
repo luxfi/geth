@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/constants"
 	"github.com/luxfi/geth/utils"
 )

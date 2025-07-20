@@ -34,12 +34,12 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/luxfi/geth/accounts/abi/bind"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/luxfi/geth/rpc"
 
 	// Force-load precompiles to trigger registration
 	_ "github.com/luxfi/geth/precompile/registry"

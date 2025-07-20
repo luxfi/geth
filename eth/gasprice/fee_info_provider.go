@@ -31,9 +31,9 @@ import (
 	"math/big"
 
 	lru "github.com/hashicorp/golang-lru"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/rpc"
 )
 
 // additional slots in the header cache to allow processing queries

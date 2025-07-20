@@ -34,14 +34,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/luxfi/geth/accounts/abi"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/core/vm"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/luxfi/geth/rpc"
 )
 
 const basefeeWiggleMultiplier = 2

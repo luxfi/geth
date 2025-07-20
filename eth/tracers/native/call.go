@@ -32,12 +32,12 @@ import (
 	"math/big"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/accounts/abi"
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/luxfi/geth/accounts/abi"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/vmerrs"
 )
 

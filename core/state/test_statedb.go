@@ -5,8 +5,8 @@ package state
 import (
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/stretchr/testify/require"
 )

@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/geth/log"
 
 	"github.com/luxfi/geth/precompile/contracts/warp"
 	"github.com/luxfi/node/utils/crypto/bls"

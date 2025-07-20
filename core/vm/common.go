@@ -29,8 +29,8 @@ package vm
 import (
 	stdmath "math"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 )
 
 // calcMemSize64 calculates the required memory size, and returns

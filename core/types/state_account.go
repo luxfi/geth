@@ -29,9 +29,9 @@ package types
 import (
 	"bytes"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/rlp"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/rlp"
 )
 
 //go:generate go run github.com/ethereum/go-ethereum/rlp/rlpgen -type StateAccount -out gen_account_rlp.go

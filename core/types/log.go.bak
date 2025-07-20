@@ -27,8 +27,8 @@
 package types
 
 import (
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
 )
 
 //go:generate go run github.com/ethereum/go-ethereum/rlp/rlpgen -type Log -out gen_log_rlp.go

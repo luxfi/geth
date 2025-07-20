@@ -34,16 +34,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/ethdb"
-	"github.com/ethereum/go-ethereum/event"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/core"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/bloombits"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/ethdb"
+	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/rpc"
 )
 
 // Config represents the configuration of the filter system.

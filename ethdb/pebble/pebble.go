@@ -3,18 +3,12 @@ package pebble
 
 import (
 	gopebble "github.com/ethereum/go-ethereum/ethdb/pebble"
-	"github.com/ethereum/go-ethereum/ethdb"
 )
 
-// Database wraps go-ethereum's pebble.Database
+// Database is an alias for go-ethereum's pebble.Database
 type Database = gopebble.Database
 
-// New returns a wrapped Pebble database
-func New(file string, cache int, handles int, namespace string, readonly bool) (ethdb.Database, error) {
-	db, err := gopebble.New(file, cache, handles, namespace, readonly)
-	if err != nil {
-		return nil, err
-	}
-	// Wrap the go-ethereum database with our wrapper
-	return ethdb.NewDatabase(db), nil
+// New returns a Pebble database backend
+func New(file string, cache int, handles int, namespace string, readonly bool) (*Database, error) {
+	return gopebble.New(file, cache, handles, namespace, readonly)
 }

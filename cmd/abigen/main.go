@@ -34,12 +34,12 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common/compiler"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
+	"github.com/luxfi/geth/accounts/abi/bind"
 	"github.com/luxfi/geth/cmd/utils"
+	"github.com/luxfi/geth/common/compiler"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/flags"
+	"github.com/luxfi/geth/log"
 	"github.com/urfave/cli/v2"
 )
 

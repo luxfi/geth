@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/vmerrs"
 )

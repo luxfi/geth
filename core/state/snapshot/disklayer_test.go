@@ -30,10 +30,10 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb/memorydb"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/luxfi/geth/rlp"
 )
 
 // reverse reverses the contents of a byte slice. It's used to update random accs

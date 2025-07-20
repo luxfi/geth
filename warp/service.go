@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/peer"
 	"github.com/luxfi/geth/warp/aggregator"
 	warpValidators "github.com/luxfi/geth/warp/validators"

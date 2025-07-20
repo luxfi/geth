@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/upgrade"

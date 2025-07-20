@@ -14,8 +14,8 @@ import (
 	"github.com/luxfi/node/network/p2p/gossip"
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/plugin/evm/config"
 )
 

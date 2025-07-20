@@ -6,7 +6,7 @@ type LazyQueue[P comparable, V any] struct {
 	queue interface{}
 }
 
-// Prque is a wrapper for go-ethereum's Prque  
+// Prque is a wrapper for go-ethereum's Prque
 type Prque[P comparable, V any] struct {
 	queue interface{}
 }
@@ -42,6 +42,6 @@ func NewLazyQueue[P comparable, V any](setIndexCallback func(data V, index int),
 
 // New creates a new priority queue - simplified version
 func New[P comparable, V any](setIndexCallback func(data V, index int)) *Prque[P, V] {
-	// For now, return a simple wrapper  
+	// For now, return a simple wrapper
 	return &Prque[P, V]{}
 }

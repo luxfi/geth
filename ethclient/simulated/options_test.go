@@ -22,10 +22,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/interfaces"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 )
 

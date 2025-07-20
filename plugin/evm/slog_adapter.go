@@ -5,8 +5,9 @@ package evm
 
 import (
 	"context"
-	"golang.org/x/exp/slog"
 	stdslog "log/slog"
+
+	"golang.org/x/exp/slog"
 )
 
 // slogAdapter adapts between golang.org/x/exp/slog and log/slog

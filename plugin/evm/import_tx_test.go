@@ -7,8 +7,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
 	"github.com/luxfi/geth/utils"

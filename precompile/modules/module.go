@@ -6,7 +6,7 @@ package modules
 import (
 	"bytes"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/precompile/contract"
 )
 

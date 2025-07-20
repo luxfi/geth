@@ -27,8 +27,8 @@
 package state
 
 import (
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 )
 
 // journalEntry is a modification entry in the state change journal that can be

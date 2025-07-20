@@ -12,8 +12,8 @@ import (
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/wrappers"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/trie"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/trie"
 )
 
 const atomicTrieKeyLen = wrappers.LongLen + common.HashLength

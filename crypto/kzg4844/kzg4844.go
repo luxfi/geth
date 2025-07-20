@@ -7,16 +7,17 @@ import (
 
 // Re-export types
 type (
-	Blob = kzg4844.Blob
+	Blob       = kzg4844.Blob
 	Commitment = kzg4844.Commitment
-	Proof = kzg4844.Proof
-	Point = kzg4844.Point
-	Claim = kzg4844.Claim
+	Proof      = kzg4844.Proof
+	Point      = kzg4844.Point
+	Claim      = kzg4844.Claim
 )
 
 // Re-export functions
 var (
 	BlobToCommitment = kzg4844.BlobToCommitment
-	ComputeProof = kzg4844.ComputeProof
-	VerifyProof = kzg4844.VerifyProof
-	CalcBlobHashV1 = kzg4844.CalcBlobHashV1
+	ComputeProof     = kzg4844.ComputeProof
+	VerifyProof      = kzg4844.VerifyProof
+	CalcBlobHashV1   = kzg4844.CalcBlobHashV1
+)

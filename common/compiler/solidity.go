@@ -1,18 +1,22 @@
-// Package compiler provides wrapper types for go-ethereum's compiler implementation
+// Package compiler provides compatibility layer for removed compiler functionality
 package compiler
 
+// Note: Solidity compilation was removed from go-ethereum
+// Use the solc compiler directly or the compat package for stubs
+
 import (
-	"github.com/ethereum/go-ethereum/common/compiler"
+	"github.com/luxfi/geth/compat"
 )
 
-// Re-export types
+// Re-export types from compat
 type (
-	Contract = compiler.Contract
-	ContractInfo = compiler.ContractInfo
+	Contract     = compat.Contract
+	ContractInfo = compat.ContractInfo
 )
 
-// Re-export functions
+// Re-export functions from compat
 var (
-	CompileSolidityString = compiler.CompileSolidityString
-	CompileSolidity = compiler.CompileSolidity
-	ParseCombinedJSON = compiler.ParseCombinedJSON
+	CompileSolidityString = compat.CompileSolidityString
+	CompileSolidity       = compat.CompileSolidity
+	SolidityVersion       = compat.SolidityVersion
+)

@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/rlp"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/sync/handlers"
 	"github.com/luxfi/node/codec"
 	"github.com/luxfi/node/ids"

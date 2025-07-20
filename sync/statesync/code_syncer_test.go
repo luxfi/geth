@@ -8,10 +8,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb/memorydb"
-	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/luxfi/geth/plugin/evm/message"
 	statesyncclient "github.com/luxfi/geth/sync/client"
 	"github.com/luxfi/geth/sync/handlers"

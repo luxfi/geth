@@ -33,7 +33,7 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 )
 
 const ourPath = "github.com/ethereum/go-ethereum" // Path to our module

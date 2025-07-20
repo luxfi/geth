@@ -34,16 +34,17 @@ import (
 	stdmath "math"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/crypto/blake2b"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/crypto/blake2b"
+	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/contract"
 	"github.com/luxfi/geth/precompile/modules"
 	"github.com/luxfi/geth/vmerrs"
-	// "github.com/ethereum/go-ethereum/crypto/bls12381" // TODO: BLS12381 not available in go-ethereum v1.16.1
-	"github.com/ethereum/go-ethereum/crypto/bn256"
-	"github.com/ethereum/go-ethereum/crypto/kzg4844"
+
+	// "github.com/luxfi/geth/crypto/bls12381" // TODO: BLS12381 not available in go-ethereum v1.16.1
+	"github.com/luxfi/geth/crypto/bn256"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"golang.org/x/crypto/ripemd160"
 )
 

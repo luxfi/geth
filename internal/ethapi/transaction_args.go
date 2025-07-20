@@ -35,17 +35,17 @@ import (
 	"math"
 	"math/big"
 
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto/kzg4844"
-	"github.com/ethereum/go-ethereum/log"
 	"github.com/holiman/uint256"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
+	ethcommon "github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/rpc"
 )
 
 var (
@@ -57,12 +57,12 @@ var (
 type TransactionArgs struct {
 	From                 *ethcommon.Address `json:"from"`
 	To                   *ethcommon.Address `json:"to"`
-	Gas                  *hexutil.Uint64 `json:"gas"`
-	GasPrice             *hexutil.Big    `json:"gasPrice"`
-	MaxFeePerGas         *hexutil.Big    `json:"maxFeePerGas"`
-	MaxPriorityFeePerGas *hexutil.Big    `json:"maxPriorityFeePerGas"`
-	Value                *hexutil.Big    `json:"value"`
-	Nonce                *hexutil.Uint64 `json:"nonce"`
+	Gas                  *hexutil.Uint64    `json:"gas"`
+	GasPrice             *hexutil.Big       `json:"gasPrice"`
+	MaxFeePerGas         *hexutil.Big       `json:"maxFeePerGas"`
+	MaxPriorityFeePerGas *hexutil.Big       `json:"maxPriorityFeePerGas"`
+	Value                *hexutil.Big       `json:"value"`
+	Nonce                *hexutil.Uint64    `json:"nonce"`
 
 	// We accept "data" and "input" for backwards-compatibility reasons.
 	// "input" is the newer name and should be preferred by clients.
@@ -75,7 +75,7 @@ type TransactionArgs struct {
 	ChainID    *hexutil.Big      `json:"chainId,omitempty"`
 
 	// For BlobTxType
-	BlobFeeCap *hexutil.Big  `json:"maxFeePerBlobGas"`
+	BlobFeeCap *hexutil.Big     `json:"maxFeePerBlobGas"`
 	BlobHashes []ethcommon.Hash `json:"blobVersionedHashes,omitempty"`
 
 	// For BlobTxType transactions with blob sidecar

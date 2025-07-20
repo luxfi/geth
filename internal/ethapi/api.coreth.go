@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/plugin/evm/upgrade/acp176"
 	"github.com/luxfi/geth/plugin/evm/upgrade/etna"
 )

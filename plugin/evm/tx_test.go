@@ -11,9 +11,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/luxfi/geth/common"
 
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/geth/utils"
 

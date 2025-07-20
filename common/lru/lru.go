@@ -64,3 +64,4 @@ func (c *BasicLRU[K, V]) Len() int {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	return len(c.m)
+}

@@ -7,7 +7,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/ethereum/go-ethereum/log"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/plugin/evm/message"
 	"github.com/luxfi/geth/warp"
 	"github.com/luxfi/node/codec"

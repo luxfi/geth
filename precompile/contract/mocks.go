@@ -13,8 +13,8 @@ import (
 	big "math/big"
 	reflect "reflect"
 
-	common "github.com/ethereum/go-ethereum/common"
 	uint256 "github.com/holiman/uint256"
+	common "github.com/luxfi/geth/common"
 	precompileconfig "github.com/luxfi/geth/precompile/precompileconfig"
 	snow "github.com/luxfi/node/consensus"
 	gomock "go.uber.org/mock/gomock"

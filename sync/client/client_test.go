@@ -15,19 +15,19 @@ import (
 
 	"github.com/luxfi/node/ids"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/dummy"
-	"github.com/ethereum/go-ethereum/core"
-	"github.com/ethereum/go-ethereum/core/rawdb"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/params"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/rawdb"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/plugin/evm/message"
 	clientstats "github.com/luxfi/geth/sync/client/stats"
 	"github.com/luxfi/geth/sync/handlers"
 	handlerstats "github.com/luxfi/geth/sync/handlers/stats"
 	"github.com/luxfi/geth/sync/syncutils"
-	"github.com/ethereum/go-ethereum/triedb"
+	"github.com/luxfi/geth/triedb"
 )
 
 func TestGetCode(t *testing.T) {

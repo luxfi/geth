@@ -10,6 +10,6 @@ type Database = memorydb.Database
 
 // Re-export functions
 var (
-	New = memorydb.New
+	New        = memorydb.New
 	NewWithCap = memorydb.NewWithCap
 )

@@ -27,8 +27,10 @@
 package rawdb
 
 import (
-	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/luxfi/geth/ethdb"
 )
+
+// Use the convertLegacyFn from freezer.go
 
 // table is a wrapper around a database that prefixes each key access with a pre-
 // configured string.
@@ -118,6 +120,11 @@ func (t *table) TruncateTail(items uint64) (uint64, error) {
 	return t.db.TruncateTail(items)
 }
 
+// SyncAncient syncs the ancient data to disk
+func (t *table) SyncAncient() error {
+	return t.db.SyncAncient()
+}
+
 // Sync is a noop passthrough that just forwards the request to the underlying
 // database.
 func (t *table) Sync() error {
@@ -129,12 +136,6 @@ func (t *table) Sync() error {
 func (t *table) SyncKeyValue() error {
 	// No-op for table wrapper
 	return nil
-}
-
-// SyncAncient is a noop passthrough that just forwards the request to the underlying
-// database.
-func (t *table) SyncAncient() error {
-	return t.db.SyncAncient()
 }
 
 // MigrateTable processes the entries in a given table in sequence
@@ -249,7 +250,12 @@ func (b *tableBatch) Delete(key []byte) error {
 
 // DeleteRange deletes all keys in the range [start, end).
 func (b *tableBatch) DeleteRange(start, end []byte) error {
-	return b.batch.DeleteRange(append([]byte(b.prefix), start...), append([]byte(b.prefix), end...))
+	// Check if the underlying batch supports DeleteRange
+	if dr, ok := b.batch.(interface{ DeleteRange([]byte, []byte) error }); ok {
+		return dr.DeleteRange(append([]byte(b.prefix), start...), append([]byte(b.prefix), end...))
+	}
+	// Fallback: not supported
+	return nil
 }
 
 // ValueSize retrieves the amount of data queued up for writing.

@@ -10,9 +10,9 @@ import (
 	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/database"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/core"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/plugin/evm/message"
 )
 

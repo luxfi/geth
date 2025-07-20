@@ -28,3 +28,4 @@ func NewFeed() *Feed {
 // NewSubscription creates a new subscription
 func NewSubscription(fn func(<-chan struct{}) error) Subscription {
 	return event.NewSubscription(fn)
+}
