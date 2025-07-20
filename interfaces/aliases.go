@@ -30,3 +30,10 @@ type (
 var (
 	NotFound = eth.NotFound
 )
+
+// Additional Lux-specific interfaces
+type (
+	AcceptedStateReader    = eth.ChainStateReader
+	AcceptedContractCaller = eth.ContractCaller
+	Subscription           = eth.Subscription
+)
