@@ -113,6 +113,7 @@ type (
 	FrontierSigner     = ethtypes.FrontierSigner
 	StateAccount       = ethtypes.StateAccount
 	ReceiptForStorage  = ethtypes.ReceiptForStorage
+	SlimAccount        = ethtypes.SlimAccount
 )
 
 // Constants for bloom filters
@@ -124,6 +125,8 @@ const (
 // Functions for accounts
 var (
 	NewEmptyStateAccount = ethtypes.NewEmptyStateAccount
+	FullAccountRLP       = ethtypes.FullAccountRLP
+	SlimAccountRLP       = ethtypes.SlimAccountRLP
 )
 
 // TrieRootHash is the hash of a trie root
