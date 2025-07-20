@@ -31,10 +31,10 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/event"
-	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/interfaces"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/event"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/interfaces"
 	"golang.org/x/crypto/sha3"
 )
 

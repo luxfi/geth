@@ -2,12 +2,12 @@
 package ethdb
 
 import (
-	"github.com/ethereum/go-ethereum/ethdb"
+	gethdb "github.com/ethereum/go-ethereum/ethdb"
 )
 
-// databaseWrapper wraps an ethdb.Database to implement our extended Database interface
+// databaseWrapper wraps a gethdb.Database to implement our extended Database interface
 type databaseWrapper struct {
-	ethdb.Database
+	gethdb.Database
 }
 
 // SyncAncient syncs the ancient store
@@ -24,18 +24,18 @@ func (db *databaseWrapper) SyncAncient() error {
 }
 
 // NewBatch creates a write-only database that buffers changes to its host db
-func (db *databaseWrapper) NewBatch() ethdb.Batch {
+func (db *databaseWrapper) NewBatch() gethdb.Batch {
 	return NewBatch(db.Database.NewBatch())
 }
 
 // NewBatchWithSize creates a write-only database batch with pre-allocated buffer
-func (db *databaseWrapper) NewBatchWithSize(size int) ethdb.Batch {
+func (db *databaseWrapper) NewBatchWithSize(size int) gethdb.Batch {
 	return NewBatch(db.Database.NewBatchWithSize(size))
 }
 
-// batchWrapper wraps an ethdb.Batch to implement our extended Batch interface
+// batchWrapper wraps a gethdb.Batch to implement our extended Batch interface
 type batchWrapper struct {
-	ethdb.Batch
+	gethdb.Batch
 }
 
 // DeleteRange deletes all keys in the range [start, end)
@@ -51,8 +51,8 @@ func (b *batchWrapper) DeleteRange(start, end []byte) error {
 	return nil
 }
 
-// NewDatabase creates a new Database that wraps an ethdb.Database
-func NewDatabase(db ethdb.Database) Database {
+// NewDatabase creates a new Database that wraps a gethdb.Database
+func NewDatabase(db gethdb.Database) Database {
 	// If it already implements our interface, return as-is
 	if d, ok := db.(Database); ok {
 		return d
@@ -60,8 +60,8 @@ func NewDatabase(db ethdb.Database) Database {
 	return &databaseWrapper{Database: db}
 }
 
-// NewBatch creates a new Batch that wraps an ethdb.Batch
-func NewBatch(b ethdb.Batch) Batch {
+// NewBatch creates a new Batch that wraps a gethdb.Batch
+func NewBatch(b gethdb.Batch) Batch {
 	// If it already implements our interface, return as-is
 	if batch, ok := b.(Batch); ok {
 		return batch

@@ -30,10 +30,10 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/luxfi/geth/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/holiman/uint256"
-	"github.com/luxfi/geth/params"
-	"github.com/luxfi/geth/vmerrs"
+	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/vmerrs"
 )
 
 var activators = map[int]func(*JumpTable){

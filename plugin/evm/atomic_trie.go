@@ -14,17 +14,17 @@ import (
 	"github.com/luxfi/node/utils/units"
 	"github.com/luxfi/node/utils/wrappers"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
-	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/luxfi/geth/plugin/evm/database"
-	"github.com/luxfi/geth/trie"
-	"github.com/luxfi/geth/trie/trienode"
-	"github.com/luxfi/geth/triedb"
-	"github.com/luxfi/geth/triedb/hashdb"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
+	"github.com/ethereum/go-ethereum/plugin/evm/database"
+	"github.com/ethereum/go-ethereum/trie"
+	"github.com/ethereum/go-ethereum/trie/trienode"
+	"github.com/ethereum/go-ethereum/triedb"
+	"github.com/ethereum/go-ethereum/triedb/hashdb"
 )
 
 const (

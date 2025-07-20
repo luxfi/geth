@@ -16,16 +16,16 @@ import (
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/database/versiondb"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/plugin/evm/config"
-	"github.com/luxfi/geth/plugin/evm/message"
-	syncclient "github.com/luxfi/geth/sync/client"
-	"github.com/luxfi/geth/sync/handlers"
-	handlerstats "github.com/luxfi/geth/sync/handlers/stats"
-	"github.com/luxfi/geth/sync/syncutils"
-	"github.com/luxfi/geth/trie"
-	"github.com/luxfi/geth/triedb"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/plugin/evm/config"
+	"github.com/ethereum/go-ethereum/plugin/evm/message"
+	syncclient "github.com/ethereum/go-ethereum/sync/client"
+	"github.com/ethereum/go-ethereum/sync/handlers"
+	handlerstats "github.com/ethereum/go-ethereum/sync/handlers/stats"
+	"github.com/ethereum/go-ethereum/sync/syncutils"
+	"github.com/ethereum/go-ethereum/trie"
+	"github.com/ethereum/go-ethereum/triedb"
 )
 
 const commitInterval = 1024

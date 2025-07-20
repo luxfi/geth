@@ -31,16 +31,16 @@ import (
 	"math"
 	"math/big"
 
-	ethcommon "github.com/luxfi/geth/common"
-	cmath "github.com/luxfi/geth/common/math"
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/crypto/kzg4844"
+	ethcommon "github.com/ethereum/go-ethereum/common"
+	cmath "github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto/kzg4844"
 	"github.com/holiman/uint256"
-	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/geth/params"
-	"github.com/luxfi/geth/utils"
-	"github.com/luxfi/geth/vmerrs"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/utils"
+	"github.com/ethereum/go-ethereum/vmerrs"
 )
 
 // ExecutionResult includes all output after executing given evm

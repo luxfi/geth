@@ -19,7 +19,7 @@ import (
 
 	commonEng "github.com/luxfi/node/consensus/engine"
 
-	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
 )
 
 // show that a txID discovered from gossip is requested to the same node only if

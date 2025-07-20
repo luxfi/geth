@@ -6,7 +6,7 @@ package evm
 import (
 	"container/heap"
 
-	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
 	"github.com/luxfi/node/ids"
 )
 

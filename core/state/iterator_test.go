@@ -29,9 +29,9 @@ package state
 import (
 	"testing"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/geth/core/rawdb"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/core/rawdb"
 )
 
 // Tests that the node iterator indeed walks over the entire database contents.

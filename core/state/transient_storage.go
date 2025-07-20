@@ -27,7 +27,7 @@
 package state
 
 import (
-	"github.com/luxfi/geth/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // transientStorage is a representation of EIP-1153 "Transient Storage".

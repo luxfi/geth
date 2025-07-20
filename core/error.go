@@ -29,7 +29,7 @@ package core
 import (
 	"errors"
 
-	"github.com/luxfi/geth/core/types"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 var (

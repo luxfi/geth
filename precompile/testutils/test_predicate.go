@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/geth/precompile/precompileconfig"
+	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
 	"github.com/stretchr/testify/require"
 )
 

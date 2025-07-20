@@ -29,7 +29,7 @@ package snapshot
 import (
 	"bytes"
 
-	"github.com/luxfi/geth/common"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 // hashes is a helper to implement sort.Interface.

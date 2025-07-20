@@ -6,7 +6,7 @@ package params
 import (
 	"testing"
 
-	"github.com/luxfi/geth/utils"
+	"github.com/ethereum/go-ethereum/utils"
 	"github.com/stretchr/testify/assert"
 )
 

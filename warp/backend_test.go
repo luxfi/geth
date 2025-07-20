@@ -7,7 +7,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/luxfi/geth/warp/warptest"
+	"github.com/ethereum/go-ethereum/warp/warptest"
 	"github.com/luxfi/node/cache"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/database/memdb"

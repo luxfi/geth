@@ -8,14 +8,14 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/luxfi/geth/params"
+	"github.com/ethereum/go-ethereum/params"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/geth/ethdb/memorydb"
-	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/plugin/evm/message"
-	"github.com/luxfi/geth/sync/handlers/stats"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethdb/memorydb"
+	"github.com/ethereum/go-ethereum/core/rawdb"
+	"github.com/ethereum/go-ethereum/plugin/evm/message"
+	"github.com/ethereum/go-ethereum/sync/handlers/stats"
 	"github.com/luxfi/node/ids"
 	"github.com/stretchr/testify/assert"
 )

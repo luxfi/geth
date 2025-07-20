@@ -30,7 +30,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/luxfi/geth/common/hexutil"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 func TestTextHash(t *testing.T) {

@@ -4,9 +4,9 @@
 package syncutils
 
 import (
-	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/core/state/snapshot"
-	"github.com/luxfi/geth/core/types"
+	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/core/state/snapshot"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 var (

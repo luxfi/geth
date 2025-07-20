@@ -30,7 +30,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/luxfi/geth/metrics"
+	"github.com/ethereum/go-ethereum/metrics"
 )
 
 var (

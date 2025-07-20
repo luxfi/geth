@@ -8,7 +8,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/geth/plugin/evm/atomic"
+	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
 	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/crypto/secp256k1"

@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/log"
-	"github.com/luxfi/geth/internal/luxcache"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/internal/luxcache"
 	"github.com/luxfi/node/cache"
 	"github.com/luxfi/node/consensus/chain"
 	"github.com/luxfi/node/database"

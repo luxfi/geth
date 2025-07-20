@@ -12,11 +12,11 @@ import (
 	"github.com/luxfi/node/database/versiondb"
 	"github.com/luxfi/node/utils/wrappers"
 
-	"github.com/luxfi/geth/common"
+	"github.com/ethereum/go-ethereum/common"
 
-	"github.com/luxfi/geth/plugin/evm/message"
-	syncclient "github.com/luxfi/geth/sync/client"
-	"github.com/luxfi/geth/trie"
+	"github.com/ethereum/go-ethereum/plugin/evm/message"
+	syncclient "github.com/ethereum/go-ethereum/sync/client"
+	"github.com/ethereum/go-ethereum/trie"
 )
 
 var (

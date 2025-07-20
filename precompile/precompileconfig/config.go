@@ -5,7 +5,7 @@
 package precompileconfig
 
 import (
-	"github.com/luxfi/geth/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/vms/platformvm/warp"

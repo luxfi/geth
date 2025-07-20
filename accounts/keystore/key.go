@@ -38,10 +38,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/crypto"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/google/uuid"
-	"github.com/luxfi/geth/accounts"
+	"github.com/ethereum/go-ethereum/accounts"
 )
 
 const (

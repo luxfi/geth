@@ -31,10 +31,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/luxfi/geth/log"
-	"github.com/luxfi/geth/accounts"
-	"github.com/luxfi/geth/accounts/external"
-	"github.com/luxfi/geth/accounts/keystore"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/accounts/external"
+	"github.com/ethereum/go-ethereum/accounts/keystore"
 )
 
 // Config represents a small collection of configuration values to fine tune the

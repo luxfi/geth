@@ -26,7 +26,7 @@
 
 package pathdb
 
-import "github.com/luxfi/geth/metrics"
+import "github.com/ethereum/go-ethereum/metrics"
 
 // nolint: unused
 var (

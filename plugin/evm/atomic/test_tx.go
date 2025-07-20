@@ -11,7 +11,7 @@ import (
 	"github.com/luxfi/node/codec/linearcodec"
 	"github.com/luxfi/node/utils"
 
-	"github.com/luxfi/geth/params"
+	"github.com/ethereum/go-ethereum/params"
 	luxatomic "github.com/luxfi/node/chains/atomic"
 	"github.com/luxfi/node/consensus"
 	"github.com/luxfi/node/ids"

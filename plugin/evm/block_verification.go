@@ -8,19 +8,19 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/luxfi/geth/common"
+	"github.com/ethereum/go-ethereum/common"
 
 	safemath "github.com/luxfi/node/utils/math"
 
-	"github.com/luxfi/geth/constants"
-	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/params"
-	"github.com/luxfi/geth/plugin/evm/header"
-	"github.com/luxfi/geth/plugin/evm/upgrade/ap0"
-	"github.com/luxfi/geth/plugin/evm/upgrade/ap1"
-	"github.com/luxfi/geth/plugin/evm/upgrade/ap5"
-	"github.com/luxfi/geth/trie"
-	"github.com/luxfi/geth/utils"
+	"github.com/ethereum/go-ethereum/constants"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/params"
+	"github.com/ethereum/go-ethereum/plugin/evm/header"
+	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap0"
+	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap1"
+	"github.com/ethereum/go-ethereum/plugin/evm/upgrade/ap5"
+	"github.com/ethereum/go-ethereum/trie"
+	"github.com/ethereum/go-ethereum/utils"
 )
 
 var (

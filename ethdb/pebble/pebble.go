@@ -3,7 +3,7 @@ package pebble
 
 import (
 	gopebble "github.com/ethereum/go-ethereum/ethdb/pebble"
-	"github.com/luxfi/geth/ethdb"
+	"github.com/ethereum/go-ethereum/ethdb"
 )
 
 // Database wraps go-ethereum's pebble.Database

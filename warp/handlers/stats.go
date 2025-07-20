@@ -6,20 +6,20 @@ package handlers
 import (
 	"time"
 
-	"github.com/luxfi/geth/metrics"
+	"github.com/ethereum/go-ethereum/metrics"
 )
 
 type handlerStats struct {
 	// MessageSignatureRequestHandler metrics
-	messageSignatureRequest         *metrics.Counter
-	messageSignatureHit             *metrics.Counter
-	messageSignatureMiss            *metrics.Counter
-	messageSignatureRequestDuration *metrics.Gauge
+	messageSignatureRequest         metrics.Counter
+	messageSignatureHit             metrics.Counter
+	messageSignatureMiss            metrics.Counter
+	messageSignatureRequestDuration metrics.Gauge
 	// BlockSignatureRequestHandler metrics
-	blockSignatureRequest         *metrics.Counter
-	blockSignatureHit             *metrics.Counter
-	blockSignatureMiss            *metrics.Counter
-	blockSignatureRequestDuration *metrics.Gauge
+	blockSignatureRequest         metrics.Counter
+	blockSignatureHit             metrics.Counter
+	blockSignatureMiss            metrics.Counter
+	blockSignatureRequestDuration metrics.Gauge
 }
 
 func newStats() *handlerStats {

@@ -8,12 +8,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/common/math"
-	"github.com/luxfi/geth/log"
-	"github.com/luxfi/geth/precompile/precompileconfig"
-	"github.com/luxfi/geth/predicate"
-	warpValidators "github.com/luxfi/geth/warp/validators"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/math"
+	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
+	"github.com/ethereum/go-ethereum/predicate"
+	warpValidators "github.com/ethereum/go-ethereum/warp/validators"
 	"github.com/luxfi/node/vms/platformvm/warp"
 	"github.com/luxfi/node/vms/platformvm/warp/payload"
 )

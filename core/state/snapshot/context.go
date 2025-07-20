@@ -33,8 +33,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/log"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 // generatorStats is a collection of statistics gathered by the snapshot generator

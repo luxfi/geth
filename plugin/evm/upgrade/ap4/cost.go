@@ -8,7 +8,7 @@ package ap4
 import (
 	"math"
 
-	"github.com/luxfi/geth/utils"
+	"github.com/ethereum/go-ethereum/utils"
 	safemath "github.com/luxfi/node/utils/math"
 )
 

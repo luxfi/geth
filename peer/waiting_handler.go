@@ -6,7 +6,7 @@ package peer
 import (
 	"context"
 
-	"github.com/luxfi/geth/plugin/evm/message"
+	"github.com/ethereum/go-ethereum/plugin/evm/message"
 )
 
 var _ message.ResponseHandler = &waitingResponseHandler{}

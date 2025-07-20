@@ -44,7 +44,7 @@ func getDependencies(packageName string) (map[string]struct{}, error) {
 
 func TestMustNotImport(t *testing.T) {
 	withRepo := func(pkg string) string {
-		const repo = "github.com/luxfi/geth"
+		const repo = "github.com/ethereum/go-ethereum"
 		return fmt.Sprintf("%s/%s", repo, pkg)
 	}
 	mustNotImport := map[string][]string{

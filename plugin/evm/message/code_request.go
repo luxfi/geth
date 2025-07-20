@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/luxfi/geth/common"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/luxfi/node/ids"
 )
 

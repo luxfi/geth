@@ -4,9 +4,9 @@
 package handlers
 
 import (
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/state/snapshot"
-	"github.com/luxfi/geth/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/state/snapshot"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 type BlockProvider interface {

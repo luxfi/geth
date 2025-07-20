@@ -7,11 +7,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/geth/plugin/evm/testutils"
+	"github.com/ethereum/go-ethereum/plugin/evm/testutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/luxfi/geth/metrics"
+	"github.com/ethereum/go-ethereum/metrics"
 )
 
 func TestGatherer_Gather(t *testing.T) {

@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/geth/plugin/evm/testutils"
-	"github.com/luxfi/geth/utils"
-	"github.com/luxfi/geth/warp/warptest"
+	"github.com/ethereum/go-ethereum/plugin/evm/testutils"
+	"github.com/ethereum/go-ethereum/utils"
+	"github.com/ethereum/go-ethereum/warp/warptest"
 	"github.com/luxfi/node/cache"
 	"github.com/luxfi/node/consensus/engine"
 	"github.com/luxfi/node/database/memdb"

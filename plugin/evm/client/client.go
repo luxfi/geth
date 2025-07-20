@@ -10,8 +10,8 @@ import (
 
 	"golang.org/x/exp/slog"
 
-	"github.com/luxfi/geth/plugin/evm/atomic"
-	"github.com/luxfi/geth/plugin/evm/config"
+	"github.com/ethereum/go-ethereum/plugin/evm/atomic"
+	"github.com/ethereum/go-ethereum/plugin/evm/config"
 	"github.com/luxfi/node/api"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/formatting"

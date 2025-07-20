@@ -29,10 +29,10 @@ package keystore
 import (
 	"math/big"
 
-	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/geth/accounts"
-	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/interfaces"
+	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/accounts"
+	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/interfaces"
 )
 
 // keystoreWallet implements the accounts.Wallet interface for the original

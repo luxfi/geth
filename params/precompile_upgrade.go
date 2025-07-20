@@ -8,10 +8,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/precompile/modules"
-	"github.com/luxfi/geth/precompile/precompileconfig"
-	"github.com/luxfi/geth/utils"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/precompile/modules"
+	"github.com/ethereum/go-ethereum/precompile/precompileconfig"
+	"github.com/ethereum/go-ethereum/utils"
 )
 
 var errNoKey = errors.New("PrecompileUpgrade cannot be empty")
