@@ -162,7 +162,8 @@ func updateAccount(ctx *context, loader TrieLoader, addr common.Address) error {
 	defer h.release()
 
 	addrHash := h.hash(addr.Bytes())
-	prev, err := types.FullAccount(ctx.accounts[addr])
+	var prev types.FullAccount
+	err := rlp.DecodeBytes(ctx.accounts[addr], &prev)
 	if err != nil {
 		return err
 	}

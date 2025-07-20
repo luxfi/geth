@@ -39,6 +39,8 @@ import (
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
+	
+	ethparams "github.com/ethereum/go-ethereum/params"
 )
 
 // ReadCanonicalHash retrieves the hash assigned to a canonical block number.
@@ -407,7 +409,10 @@ func ReadReceipts(db ethdb.Reader, hash common.Hash, number uint64, time uint64,
 	if header != nil && header.ExcessBlobGas != nil {
 		blobGasPrice = eip4844.CalcBlobFee(*header.ExcessBlobGas)
 	}
-	if err := receipts.DeriveFields(config, hash, number, time, baseFee, blobGasPrice, body.Transactions); err != nil {
+	// Convert our ChainConfig to ethereum's ChainConfig for DeriveFields
+	// This works because params.ChainConfig embeds ethereum's ChainConfig
+	ethConfig := (*ethparams.ChainConfig)(config)
+	if err := receipts.DeriveFields(ethConfig, hash, number, time, baseFee, blobGasPrice, body.Transactions); err != nil {
 		log.Error("Failed to derive block receipts fields", "hash", hash, "number", number, "err", err)
 		return nil
 	}
@@ -522,13 +527,29 @@ func ReadBlock(db ethdb.Reader, hash common.Hash, number uint64) *types.Block {
 	if body == nil {
 		return nil
 	}
-	block := types.NewBlockWithHeader(header).WithBody(types.Body{Transactions: body.Transactions, Uncles: body.Uncles})
+	// Create ethereum Body for WithBody method
+	ethBody := &struct {
+		Transactions []*types.Transaction
+		Uncles       []*types.Header
+	}{
+		Transactions: body.Transactions,
+		Uncles:       body.Uncles,
+	}
+	block := types.NewBlockWithHeader(header).WithBody(ethBody.Transactions, ethBody.Uncles)
 	return types.BlockWithExtData(block, body.Version, body.ExtData)
 }
 
 // WriteBlock serializes a block into the database, header and body separately.
 func WriteBlock(db ethdb.KeyValueWriter, block *types.Block) {
-	WriteBody(db, block.Hash(), block.NumberU64(), block.Body())
+	// Convert ethereum Body to our Body type
+	ethBody := block.Body()
+	body := &types.Body{
+		Transactions: ethBody.Transactions,
+		Uncles:       ethBody.Uncles,
+		Version:      0, // Default version
+		ExtData:      nil, // No extended data for standard blocks
+	}
+	WriteBody(db, block.Hash(), block.NumberU64(), body)
 	WriteHeader(db, block.Header())
 }
 
