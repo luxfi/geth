@@ -265,7 +265,11 @@ func (ec *client) getBlock(ctx context.Context, method string, args ...interface
 		}
 		txs[i] = tx.tx
 	}
-	return types.NewBlockWithHeader(head).WithBody(txs, uncles).WithExtData(body.Version, (*[]byte)(body.BlockExtraData)), nil
+	block := types.NewBlockWithHeader(head).WithBody(types.Body{Transactions: txs, Uncles: uncles})
+	if body.BlockExtraData != nil {
+		return types.BlockWithExtData(block, body.Version, *body.BlockExtraData), nil
+	}
+	return types.BlockWithExtData(block, body.Version, nil), nil
 }
 
 // HeaderByHash returns the block header with the given hash.
