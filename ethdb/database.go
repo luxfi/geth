@@ -48,3 +48,4 @@ var (
 	// ErrInvalidBatch is returned when batch is invalid.
 	ErrInvalidBatch = errors.New("invalid batch")
 )
+
