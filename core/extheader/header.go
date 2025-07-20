@@ -43,10 +43,15 @@ func (h *Header) Copy() *Header {
 	if h == nil {
 		return nil
 	}
+	
+	// Manual copy since CopyHeader is not available
+	// Create a new ethereum header by copying the fields
+	ethHdr := *h.Header // shallow copy of the struct
 	cpy := &Header{
-		Header: ethTypes.CopyHeader(h.Header),
+		Header:      &ethHdr,
+		ExtDataHash: h.ExtDataHash,
 	}
-	cpy.ExtDataHash = h.ExtDataHash
+	
 	if h.ExtDataGasUsed != nil {
 		cpy.ExtDataGasUsed = new(big.Int).Set(h.ExtDataGasUsed)
 	}

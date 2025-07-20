@@ -66,7 +66,13 @@ var (
 	EmptyReceiptsHash    = ethtypes.EmptyReceiptsHash
 	EmptyWithdrawalsHash = ethtypes.EmptyWithdrawalsHash
 	
-	// Errors - removed duplicates that are in transaction_signing.go
+	// Errors
+	ErrInvalidSig           = ethtypes.ErrInvalidSig
+	ErrUnexpectedProtection = ethtypes.ErrUnexpectedProtection
+	ErrInvalidTxType        = ethtypes.ErrInvalidTxType
+	ErrTxTypeNotSupported   = ethtypes.ErrTxTypeNotSupported
+	ErrGasFeeCapTooLow      = ethtypes.ErrGasFeeCapTooLow
+	ErrInvalidChainId       = ethtypes.ErrInvalidChainId
 )
 
 // Functions
@@ -76,17 +82,27 @@ var (
 	NewTransaction      = ethtypes.NewTransaction
 	NewContractCreation = ethtypes.NewContractCreation
 	
-	// Signing - removed duplicates that are in transaction_signing.go
+	// Signing
+	SignTx                 = ethtypes.SignTx
+	SignNewTx              = ethtypes.SignNewTx
+	MustSignNewTx          = ethtypes.MustSignNewTx
+	Sender                 = ethtypes.Sender
+	LatestSigner           = ethtypes.LatestSigner
+	LatestSignerForChainID = ethtypes.LatestSignerForChainID
 	NewEIP155Signer        = ethtypes.NewEIP155Signer
 	NewLondonSigner        = ethtypes.NewLondonSigner
 	NewCancunSigner        = ethtypes.NewCancunSigner
+	MakeSigner             = ethtypes.MakeSigner
 	
 	// Block functions
 	CalcUncleHash = ethtypes.CalcUncleHash
-	// DeriveSha removed - defined in hashing.go
+	DeriveSha     = ethtypes.DeriveSha
 )
 
-// Interfaces - removed DerivableList which is defined in hashing.go
+// Interfaces
+type (
+	DerivableList = ethtypes.DerivableList
+)
 
 // Additional aliases for missing types
 type (
