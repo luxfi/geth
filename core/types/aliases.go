@@ -128,5 +128,8 @@ var (
 // TrieRootHash is the hash of a trie root
 type TrieRootHash = common.Hash
 
+// TrieHasher is the interface for trie hashing
+type TrieHasher = ethtypes.TrieHasher
+
 // FullAccount is StateAccount in newer versions
 type FullAccount = StateAccount

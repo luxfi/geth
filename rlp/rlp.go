@@ -9,10 +9,11 @@ import (
 
 // Re-export types
 type (
-	Stream   = rlp.Stream
-	Encoder  = rlp.Encoder
-	Decoder  = rlp.Decoder
-	RawValue = rlp.RawValue
+	Stream         = rlp.Stream
+	Encoder        = rlp.Encoder
+	Decoder        = rlp.Decoder
+	RawValue       = rlp.RawValue
+	EncoderBuffer  = rlp.EncoderBuffer
 )
 
 // Re-export functions
@@ -32,6 +33,8 @@ var (
 	BytesSize        = rlp.BytesSize
 	SplitList        = rlp.SplitList
 	Split            = rlp.Split
+	CountValues      = rlp.CountValues
+	SplitString      = rlp.SplitString
 )
 
 // Re-export constants
