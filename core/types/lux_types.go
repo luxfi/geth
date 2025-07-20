@@ -1,6 +1,9 @@
 package types
 
 import (
+	"math/big"
+	
+	"github.com/luxfi/geth/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
@@ -33,3 +36,27 @@ func BlockWithExtData(b *Block, version uint32, extData []byte) *Block {
 	// For now, just return the block unchanged
 	return b
 }
+
+// ExtendedStateAccount is a Lux-specific extension of StateAccount
+type ExtendedStateAccount struct {
+	Nonce       uint64
+	Balance     *big.Int
+	Root        common.Hash
+	CodeHash    []byte
+	IsMultiCoin bool
+}
+
+// StateAccount is our extended state account type
+type StateAccount = ExtendedStateAccount
+
+// ExtendedSlimAccount is a Lux-specific extension of SlimAccount  
+type ExtendedSlimAccount struct {
+	Nonce       uint64
+	Balance     *big.Int
+	Root        []byte
+	CodeHash    []byte
+	IsMultiCoin bool
+}
+
+// SlimAccount is our extended slim account type
+type SlimAccount = ExtendedSlimAccount

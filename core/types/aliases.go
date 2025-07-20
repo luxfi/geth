@@ -17,8 +17,9 @@ type (
 	
 	// Block types
 	Block      = ethtypes.Block
+	Blocks     = []*Block
 	Header     = ethtypes.Header
-	// Body is defined in block_ext.go as ExtendedBody
+	// Body is defined in lux_types.go
 	BlockNonce = ethtypes.BlockNonce
 	
 	// Receipt types
@@ -111,9 +112,9 @@ type (
 type (
 	HomesteadSigner    = ethtypes.HomesteadSigner
 	FrontierSigner     = ethtypes.FrontierSigner
-	StateAccount       = ethtypes.StateAccount
+	// StateAccount is defined in lux_types.go as ExtendedStateAccount
 	ReceiptForStorage  = ethtypes.ReceiptForStorage
-	SlimAccount        = ethtypes.SlimAccount
+	// SlimAccount is defined in lux_types.go as ExtendedSlimAccount
 )
 
 // Constants for bloom filters
