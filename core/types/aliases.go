@@ -3,6 +3,7 @@
 package types
 
 import (
+	"github.com/luxfi/geth/common"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
