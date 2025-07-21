@@ -20,6 +20,7 @@ type (
 	UnprefixedAddress = common.UnprefixedAddress
 	StorageSize = common.StorageSize
 	MixedcaseAddress = common.MixedcaseAddress
+	AddressEIP55 = common.Address // EIP-55 checksum address alias
 )
 
 // Re-export common big integers

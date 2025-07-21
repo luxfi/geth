@@ -97,6 +97,28 @@ type TxPool struct {
 	reorgFeed event.Feed
 }
 
+// multiSubscription implements event.Subscription to handle multiple subscriptions
+type multiSubscription struct {
+	subs []event.Subscription
+	err  chan error
+	once sync.Once
+}
+
+func (m *multiSubscription) Unsubscribe() {
+	m.once.Do(func() {
+		for _, sub := range m.subs {
+			sub.Unsubscribe()
+		}
+	})
+}
+
+func (m *multiSubscription) Err() <-chan error {
+	if m.err == nil {
+		m.err = make(chan error)
+	}
+	return m.err
+}
+
 // New creates a new transaction pool to gather, sort and filter inbound
 // transactions from the network.
 func New(gasTip uint64, chain BlockChain, subpools []SubPool) (*TxPool, error) {
@@ -466,7 +488,9 @@ func (p *TxPool) SubscribeTransactions(ch chan<- core.NewTxsEvent, reorgs bool) 
 		}
 		subs = append(subs, subpool)
 	}
-	return p.subs.Track(event.JoinSubscriptions(subs...))
+	// Create a composite subscription that unsubscribes from all
+	multiSub := &multiSubscription{subs: subs}
+	return p.subs.Track(multiSub)
 }
 
 // SubscribeNewReorgEvent registers a subscription of NewReorgEvent and

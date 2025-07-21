@@ -106,9 +106,8 @@ func (t *VerkleTrie) GetAccount(addr common.Address) (*types.StateAccount, error
 	for i := 0; i < len(balance)/2; i++ {
 		balance[len(balance)-i-1], balance[i] = balance[i], balance[len(balance)-i-1]
 	}
-	// Convert uint256 to big.Int
-	u256Balance := new(uint256.Int).SetBytes32(balance[:])
-	acc.Balance = u256Balance.ToBig()
+	// Set balance directly as uint256
+	acc.Balance = new(uint256.Int).SetBytes32(balance[:])
 
 	// Decode codehash
 	acc.CodeHash = values[utils.CodeKeccakLeafKey]

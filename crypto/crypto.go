@@ -11,6 +11,7 @@ const (
 	SignatureLength = crypto.SignatureLength
 	DigestLength    = crypto.DigestLength
 	HashLength      = 32 // SHA3-256 hash length
+	RecoveryIDOffset = 64 // Offset in signature for recovery ID (v parameter)
 )
 
 // Re-export types

@@ -120,7 +120,7 @@ type Block struct {
 // newBlock returns a new Block wrapping the ethBlock type and implementing the chain.Block interface
 func (vm *VM) newBlock(ethBlock *types.Block) (*Block, error) {
 	isApricotPhase5 := vm.chainConfig.IsApricotPhase5(ethBlock.Time())
-	atomicTxs, err := atomic.ExtractAtomicTxs(ethBlock.ExtData(), isApricotPhase5, atomic.Codec)
+	atomicTxs, err := atomic.ExtractAtomicTxs(types.ExtData(ethBlock), isApricotPhase5, atomic.Codec)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (b *Block) Accept(context.Context) error {
 	// Call Accept for relevant precompile logs. Note we do this prior to
 	// calling Accept on the blockChain so any side effects (eg warp signatures)
 	// take place before the accepted log is emitted to subscribers.
-	rules := b.vm.chainConfig.Rules(b.ethBlock.Number(), b.ethBlock.Timestamp())
+	rules := b.vm.chainConfig.Rules(b.ethBlock.Number(), b.ethBlock.Header().Time)
 	if err := b.handlePrecompileAccept(rules); err != nil {
 		return err
 	}
@@ -279,7 +279,7 @@ func (b *Block) Verify(context.Context) error {
 
 // ShouldVerifyWithContext implements the block.WithVerifyContext interface
 func (b *Block) ShouldVerifyWithContext(context.Context) (bool, error) {
-	predicates := b.vm.chainConfig.Rules(b.ethBlock.Number(), b.ethBlock.Timestamp()).Predicaters
+	predicates := b.vm.chainConfig.Rules(b.ethBlock.Number(), b.ethBlock.Header().Time).Predicaters
 	// Short circuit early if there are no predicates to verify
 	if len(predicates) == 0 {
 		return false, nil
@@ -359,7 +359,7 @@ func (b *Block) verify(predicateContext *precompileconfig.PredicateContext, writ
 
 // verifyPredicates verifies the predicates in the block are valid according to predicateContext.
 func (b *Block) verifyPredicates(predicateContext *precompileconfig.PredicateContext) error {
-	rules := b.vm.chainConfig.Rules(b.ethBlock.Number(), b.ethBlock.Timestamp())
+	rules := b.vm.chainConfig.Rules(b.ethBlock.Number(), b.ethBlock.Header().Time)
 
 	switch {
 	case !rules.IsDurango && rules.PredicatersExist():

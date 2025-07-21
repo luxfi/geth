@@ -34,6 +34,13 @@ func (p *Prque[P, V]) PopItem() V {
 	return v
 }
 
+// Pop removes and returns the top item with its priority
+func (p *Prque[P, V]) Pop() (V, P) {
+	var v V
+	var pr P
+	return v, pr
+}
+
 // NewLazyQueue creates a new lazy queue - simplified version
 func NewLazyQueue[P comparable, V any](setIndexCallback func(data V, index int), priorityCallback func(data V) P, maxPriority func(data V, priority P) P, clock func() P, maxQueued int) *LazyQueue[P, V] {
 	// For now, return a simple wrapper

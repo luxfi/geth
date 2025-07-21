@@ -46,6 +46,7 @@ import (
 	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
@@ -554,10 +555,11 @@ func (s *PersonalAccountAPI) EcRecover(ctx context.Context, data, sig hexutil.By
 	if len(sig) != crypto.SignatureLength {
 		return common.Address{}, fmt.Errorf("signature must be %d bytes long", crypto.SignatureLength)
 	}
-	if sig[crypto.RecoveryIDOffset] != 27 && sig[crypto.RecoveryIDOffset] != 28 {
+	const RecoveryIDOffset = 64 // Recovery ID is the last byte of the signature
+	if sig[RecoveryIDOffset] != 27 && sig[RecoveryIDOffset] != 28 {
 		return common.Address{}, errors.New("invalid Ethereum signature (V is not 27 or 28)")
 	}
-	sig[crypto.RecoveryIDOffset] -= 27 // Transform yellow paper V from 27/28 to 0/1
+	sig[RecoveryIDOffset] -= 27 // Transform yellow paper V from 27/28 to 0/1
 
 	rpk, err := crypto.SigToPub(accounts.TextHash(data), sig)
 	if err != nil {
@@ -934,7 +936,7 @@ func (s *BlockChainAPI) GetBlockReceipts(ctx context.Context, blockNrOrHash rpc.
 	}
 
 	// Derive the sender.
-	signer := types.MakeSigner(s.b.ChainConfig(), block.Number(), block.Time())
+	signer := types.MakeSigner(s.b.ChainConfig().ToEthChainConfig(), block.Number(), block.Time())
 
 	result := make([]map[string]interface{}, len(receipts))
 	for i, receipt := range receipts {
@@ -1250,16 +1252,19 @@ func RPCMarshalHeader(head *types.Header) map[string]interface{} {
 		"timestamp":        hexutil.Uint64(head.Time),
 		"transactionsRoot": head.TxHash,
 		"receiptsRoot":     head.ReceiptHash,
-		"extDataHash":      head.ExtDataHash,
+		// ExtDataHash removed as it's not in the standard ethereum header
 	}
 	if head.BaseFee != nil {
 		result["baseFeePerGas"] = (*hexutil.Big)(head.BaseFee)
 	}
-	if head.ExtDataGasUsed != nil {
-		result["extDataGasUsed"] = (*hexutil.Big)(head.ExtDataGasUsed)
-	}
-	if head.BlockGasCost != nil {
-		result["blockGasCost"] = (*hexutil.Big)(head.BlockGasCost)
+	// Check if this is an extended header
+	if extHead, ok := any(head).(*extheader.Header); ok {
+		if extHead.ExtDataGasUsed != nil {
+			result["extDataGasUsed"] = (*hexutil.Big)(extHead.ExtDataGasUsed)
+		}
+		if extHead.BlockGasCost != nil {
+			result["blockGasCost"] = (*hexutil.Big)(extHead.BlockGasCost)
+		}
 	}
 	if head.BlobGasUsed != nil {
 		result["blobGasUsed"] = hexutil.Uint64(*head.BlobGasUsed)
@@ -1279,7 +1284,7 @@ func RPCMarshalHeader(head *types.Header) map[string]interface{} {
 func RPCMarshalBlock(block *types.Block, inclTx bool, fullTx bool, config *params.ChainConfig) map[string]interface{} {
 	fields := RPCMarshalHeader(block.Header())
 	fields["size"] = hexutil.Uint64(block.Size())
-	fields["blockExtraData"] = hexutil.Bytes(block.ExtData())
+	fields["blockExtraData"] = hexutil.Bytes(types.ExtData(block))
 
 	if inclTx {
 		formatTx := func(idx int, tx *types.Transaction) interface{} {
@@ -1357,7 +1362,7 @@ type RPCTransaction struct {
 // newRPCTransaction returns a transaction that will serialize to the RPC
 // representation, with the given location metadata set (if available).
 func newRPCTransaction(tx *types.Transaction, blockHash common.Hash, blockNumber uint64, blockTime uint64, index uint64, baseFee *big.Int, config *params.ChainConfig) *RPCTransaction {
-	signer := types.MakeSigner(config, new(big.Int).SetUint64(blockNumber), blockTime)
+	signer := types.MakeSigner(config.ToEthChainConfig(), new(big.Int).SetUint64(blockNumber), blockTime)
 	from, _ := types.Sender(signer, tx)
 	v, r, s := tx.RawSignatureValues()
 	result := &RPCTransaction{
@@ -1571,7 +1576,7 @@ type TransactionAPI struct {
 func NewTransactionAPI(b Backend, nonceLock *AddrLocker) *TransactionAPI {
 	// The signer used by the API should always be the 'latest' known one because we expect
 	// signers to be backwards-compatible with old transactions.
-	signer := types.LatestSigner(b.ChainConfig())
+	signer := types.LatestSigner(b.ChainConfig().ToEthChainConfig())
 	return &TransactionAPI{b, nonceLock, signer}
 }
 
@@ -1705,7 +1710,7 @@ func (s *TransactionAPI) GetTransactionReceipt(ctx context.Context, hash common.
 	receipt := receipts[index]
 
 	// Derive the sender.
-	signer := types.MakeSigner(s.b.ChainConfig(), header.Number, header.Time)
+	signer := types.MakeSigner(s.b.ChainConfig().ToEthChainConfig(), header.Number, header.Time)
 	return marshalReceipt(receipt, blockHash, blockNumber, signer, tx, int(index)), nil
 }
 
@@ -1780,7 +1785,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	}
 	// Print a log with full tx details for manual investigations and interventions
 	head := b.CurrentBlock()
-	signer := types.MakeSigner(b.ChainConfig(), head.Number, head.Time)
+	signer := types.MakeSigner(b.ChainConfig().ToEthChainConfig(), head.Number, head.Time)
 	from, err := types.Sender(signer, tx)
 	if err != nil {
 		return common.Hash{}, err

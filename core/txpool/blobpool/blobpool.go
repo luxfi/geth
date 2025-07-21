@@ -44,6 +44,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
@@ -336,7 +337,7 @@ func New(config Config, chain BlockChain) *BlobPool {
 	// Create the transaction pool with its initial settings
 	return &BlobPool{
 		config: config,
-		signer: types.LatestSigner(chain.Config()),
+		signer: types.LatestSigner(chain.Config().ToEthChainConfig()),
 		chain:  chain,
 		lookup: make(map[common.Hash]uint64),
 		index:  make(map[common.Address][]*blobTxMeta),
@@ -412,7 +413,7 @@ func (p *BlobPool) Init(gasTip uint64, head *types.Header, reserve txpool.Addres
 	}
 	baseFee, err := header.EstimateNextBaseFee(
 		p.chain.Config(),
-		p.head,
+		extheader.As(p.head),
 		uint64(time.Now().Unix()),
 	)
 	if err != nil {
@@ -842,7 +843,7 @@ func (p *BlobPool) Reset(oldHead, newHead *types.Header) {
 	}
 	baseFeeBig, err := header.EstimateNextBaseFee(
 		p.chain.Config(),
-		p.head,
+		extheader.As(p.head),
 		uint64(time.Now().Unix()),
 	)
 	if err != nil {

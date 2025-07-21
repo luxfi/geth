@@ -37,6 +37,7 @@ import (
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/bloombits"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
@@ -527,7 +528,7 @@ func (b *EthAPIBackend) StateAtTransaction(ctx context.Context, block *types.Blo
 }
 
 func (b *EthAPIBackend) MinRequiredTip(ctx context.Context, header *types.Header) (*big.Int, error) {
-	return customheader.EstimateRequiredTip(b.ChainConfig(), header)
+	return customheader.EstimateRequiredTip(b.ChainConfig(), extheader.As(header))
 }
 
 func (b *EthAPIBackend) isLatestAndAllowed(number rpc.BlockNumber) bool {

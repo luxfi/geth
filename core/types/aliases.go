@@ -102,6 +102,9 @@ var (
 	CalcUncleHash      = ethtypes.CalcUncleHash
 	DeriveSha          = ethtypes.DeriveSha
 	NewBlockWithHeader = ethtypes.NewBlockWithHeader
+	NewBlock           = ethtypes.NewBlock
+	EncodeNonce        = ethtypes.EncodeNonce
+	
 )
 
 // Interfaces
@@ -126,7 +129,7 @@ const (
 
 // Functions for accounts
 var (
-	NewEmptyStateAccount = ethtypes.NewEmptyStateAccount
+	// NewEmptyStateAccount is defined in lux_types.go to return our extended type
 	FullAccountRLP       = ethtypes.FullAccountRLP
 	// SlimAccountRLP is defined in lux_types.go
 )

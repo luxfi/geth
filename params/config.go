@@ -35,6 +35,7 @@ import (
 	"github.com/luxfi/geth/precompile/modules"
 	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/geth/utils"
+	ethparams "github.com/ethereum/go-ethereum/params"
 )
 
 // Lux ChainIDs
@@ -617,6 +618,29 @@ type ChainConfig struct {
 	LuxContext `json:"-"` // Lux specific context set during VM initialization. Not serialized.
 
 	UpgradeConfig `json:"-"` // Config specified in upgradeBytes (avalanche network upgrades or enable/disabling precompiles). Skip encoding/decoding directly into ChainConfig.
+}
+
+// ToEthChainConfig converts Lux ChainConfig to ethereum ChainConfig
+func (c *ChainConfig) ToEthChainConfig() *ethparams.ChainConfig {
+	return &ethparams.ChainConfig{
+		ChainID:             c.ChainID,
+		HomesteadBlock:      c.HomesteadBlock,
+		DAOForkBlock:        c.DAOForkBlock,
+		DAOForkSupport:      c.DAOForkSupport,
+		EIP150Block:         c.EIP150Block,
+		EIP155Block:         c.EIP155Block,
+		EIP158Block:         c.EIP158Block,
+		ByzantiumBlock:      c.ByzantiumBlock,
+		ConstantinopleBlock: c.ConstantinopleBlock,
+		PetersburgBlock:     c.PetersburgBlock,
+		IstanbulBlock:       c.IstanbulBlock,
+		MuirGlacierBlock:    c.MuirGlacierBlock,
+		BerlinBlock:         c.BerlinBlock,
+		LondonBlock:         c.LondonBlock,
+		ShanghaiTime:        c.ShanghaiTime,
+		CancunTime:          c.CancunTime,
+		VerkleTime:          c.VerkleTime,
+	}
 }
 
 // Description returns a human-readable description of ChainConfig.

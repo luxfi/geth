@@ -28,6 +28,7 @@ import (
 	"github.com/luxfi/geth/consensus/dummy"
 	"github.com/luxfi/geth/constants"
 	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
@@ -776,7 +777,7 @@ func (vm *VM) initChainState(lastAcceptedBlock *types.Block) error {
 	}
 	vm.State = state
 
-	if !metrics.Enabled() {
+	if !metrics.Enabled {
 		return nil
 	}
 
@@ -852,7 +853,7 @@ func (vm *VM) postBatchOnFinalizeAndAssemble(
 		size              int
 	)
 
-	atomicGasLimit, err := customheader.RemainingAtomicGasCapacity(vm.chainConfig, parent, header)
+	atomicGasLimit, err := customheader.RemainingAtomicGasCapacity(vm.chainConfig, extheader.As(parent), extheader.As(header))
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -967,7 +968,7 @@ func (vm *VM) onExtraStateChange(block *types.Block, parent *types.Header, state
 		rules                      = vm.chainConfig.Rules(header.Number, header.Time)
 	)
 
-	txs, err := atomic.ExtractAtomicTxs(block.ExtData(), rules.IsApricotPhase5, atomic.Codec)
+	txs, err := atomic.ExtractAtomicTxs(types.ExtData(block), rules.IsApricotPhase5, atomic.Codec)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -1016,7 +1017,7 @@ func (vm *VM) onExtraStateChange(block *types.Block, parent *types.Header, state
 	// If ApricotPhase5 is enabled, enforce that the atomic gas used does not exceed the
 	// atomic gas limit.
 	if rules.IsApricotPhase5 {
-		atomicGasLimit, err := customheader.RemainingAtomicGasCapacity(vm.chainConfig, parent, header)
+		atomicGasLimit, err := customheader.RemainingAtomicGasCapacity(vm.chainConfig, extheader.As(parent), extheader.As(header))
 		if err != nil {
 			return nil, nil, err
 		}
@@ -1650,7 +1651,7 @@ func (vm *VM) verifyTxAtTip(tx *atomic.Tx) error {
 	var nextBaseFee *big.Int
 	timestamp := uint64(vm.clock.Time().Unix())
 	if vm.chainConfig.IsApricotPhase3(timestamp) {
-		nextBaseFee, err = customheader.EstimateNextBaseFee(vm.chainConfig, parentHeader, timestamp)
+		nextBaseFee, err = customheader.EstimateNextBaseFee(vm.chainConfig, extheader.As(parentHeader), timestamp)
 		if err != nil {
 			// Return extremely detailed error since CalcBaseFee should never encounter an issue here
 			return fmt.Errorf("failed to calculate base fee with parent timestamp (%d), parent ExtraData: (0x%x), and current timestamp (%d): %w", parentHeader.Time, parentHeader.Extra, timestamp, err)

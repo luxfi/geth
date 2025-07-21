@@ -47,6 +47,7 @@ import (
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/pathdb"
+	ethtypes "github.com/ethereum/go-ethereum/core/types"
 )
 
 //go:generate go run github.com/fjl/gencodec -type Genesis -field-override genesisSpecMarshaling -out gen_genesis.go
@@ -247,7 +248,7 @@ func (g *Genesis) toBlock(db ethdb.Database, triedb *triedb.Database) *types.Blo
 	}
 
 	// Configure any stateful precompiles that should be enabled in the genesis.
-	err = ApplyPrecompileActivations(g.Config, nil, types.NewBlockWithHeader(head), statedb)
+	err = ApplyPrecompileActivations(g.Config, nil, types.NewBlockConfigContext(types.NewBlockWithHeader(head)), statedb)
 	if err != nil {
 		panic(fmt.Sprintf("unable to configure precompiles in genesis block: %v", err))
 	}
@@ -307,7 +308,12 @@ func (g *Genesis) toBlock(db ethdb.Database, triedb *triedb.Database) *types.Blo
 			panic(fmt.Sprintf("unable to commit genesis block: %v", err))
 		}
 	}
-	return types.NewBlock(head, nil, nil, nil, trie.NewStackTrie(nil))
+	// Create an empty ethereum Body type for NewBlock
+	body := &ethtypes.Body{
+		Transactions: []*ethtypes.Transaction{},
+		Uncles:       []*ethtypes.Header{},
+	}
+	return types.NewBlock(head, body, nil, trie.NewStackTrie(nil))
 }
 
 // Commit writes the block and state of a genesis specification to the database.

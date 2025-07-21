@@ -32,6 +32,7 @@ import (
 
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/rpc"
 )
@@ -88,14 +89,17 @@ func newFeeInfoProvider(backend OracleBackend, minGasUsed uint64, size int) (*fe
 
 // addHeader processes header into a feeInfo struct and caches the result.
 func (f *feeInfoProvider) addHeader(ctx context.Context, header *types.Header) (*feeInfo, error) {
+	// Convert to extended header to access Lux-specific fields
+	extHeader := extheader.As(header)
+	
 	feeInfo := &feeInfo{
 		timestamp: header.Time,
 		baseFee:   header.BaseFee,
 	}
 
 	totalGasUsed := new(big.Int).SetUint64(header.GasUsed)
-	if header.ExtDataGasUsed != nil {
-		totalGasUsed.Add(totalGasUsed, header.ExtDataGasUsed)
+	if extHeader.ExtDataGasUsed != nil {
+		totalGasUsed.Add(totalGasUsed, extHeader.ExtDataGasUsed)
 	}
 	minGasUsed := new(big.Int).SetUint64(f.minGasUsed)
 

@@ -34,6 +34,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
@@ -202,7 +203,7 @@ func (b *BlockGen) Gas() uint64 {
 
 // Signer returns a valid signer instance for the current block.
 func (b *BlockGen) Signer() types.Signer {
-	return types.MakeSigner(b.cm.config, b.header.Number, b.header.Time)
+	return types.MakeSigner(b.cm.config.ToEthChainConfig(), b.header.Number, b.header.Time)
 }
 
 // AddUncheckedReceipt forcefully adds a receipts to the block without a
@@ -341,7 +342,7 @@ func GenerateChain(config *params.ChainConfig, parent *types.Block, engine conse
 		if block.ExcessBlobGas() != nil {
 			blobGasPrice = eip4844.CalcBlobFee(*block.ExcessBlobGas())
 		}
-		if err := receipts.DeriveFields(config, block.Hash(), block.NumberU64(), block.Time(), block.BaseFee(), blobGasPrice, txs); err != nil {
+		if err := receipts.DeriveFields(config.ToEthChainConfig(), block.Hash(), block.NumberU64(), block.Time(), block.BaseFee(), blobGasPrice, txs); err != nil {
 			panic(err)
 		}
 
@@ -373,11 +374,11 @@ func GenerateChainWithGenesis(genesis *Genesis, engine consensus.Engine, n int, 
 func (cm *chainMaker) makeHeader(parent *types.Block, gap uint64, state *state.StateDB, engine consensus.Engine) *types.Header {
 	time := parent.Time() + gap // block time is fixed at [gap] seconds
 
-	gasLimit, err := header.GasLimit(cm.config, parent.Header(), time)
+	gasLimit, err := header.GasLimit(cm.config, extheader.As(parent.Header()), time)
 	if err != nil {
 		panic(err)
 	}
-	baseFee, err := header.BaseFee(cm.config, parent.Header(), time)
+	baseFee, err := header.BaseFee(cm.config, extheader.As(parent.Header()), time)
 	if err != nil {
 		panic(err)
 	}

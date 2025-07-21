@@ -34,6 +34,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"
@@ -180,7 +181,8 @@ func NewOracle(backend OracleBackend, config Config) (*Oracle, error) {
 		var lastHead common.Hash
 		for ev := range headEvent {
 			if ev.Block.ParentHash() != lastHead {
-				cache.Purge()
+				// Clear the cache by creating a new one
+				cache = lru.NewCache[uint64, *slimBlock](DefaultFeeHistoryCacheSize)
 			}
 			lastHead = ev.Block.Hash()
 		}
@@ -230,7 +232,8 @@ func (oracle *Oracle) estimateNextBaseFee(ctx context.Context) (*big.Int, error)
 	// If the block does have a baseFee, calculate the next base fee
 	// based on the current time and add it to the tip to estimate the
 	// total gas price estimate.
-	return customheader.EstimateNextBaseFee(oracle.backend.ChainConfig(), header, oracle.clock.Unix())
+	extHeader := extheader.As(header)
+	return customheader.EstimateNextBaseFee(oracle.backend.ChainConfig(), extHeader, oracle.clock.Unix())
 }
 
 // SuggestPrice returns an estimated price for legacy transactions.

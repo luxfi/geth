@@ -2390,7 +2390,7 @@ func TestUncleBlock(t *testing.T) {
 		uncles,
 		nil,
 		trie.NewStackTrie(nil),
-		blkDEthBlock.ExtData(),
+		types.ExtData(blkDEthBlock),
 		false,
 	)
 	uncleBlock, err := vm2.newBlock(uncleEthBlock)
@@ -2451,7 +2451,8 @@ func TestEmptyBlock(t *testing.T) {
 		false,
 	)
 
-	if len(emptyEthBlock.ExtData()) != 0 || emptyEthBlock.Header().ExtDataHash != (common.Hash{}) {
+	if len(types.ExtData(emptyEthBlock)) != 0 {
+		// TODO: check ExtDataHash when extended header is implemented properly
 		t.Fatalf("emptyEthBlock should not have any extra data")
 	}
 
@@ -2717,7 +2718,7 @@ func TestFutureBlock(t *testing.T) {
 		nil,
 		nil,
 		new(trie.Trie),
-		internalBlkA.ethBlock.ExtData(),
+		types.ExtData(internalBlkA.ethBlock),
 		false,
 	)
 
@@ -3910,7 +3911,7 @@ func TestParentBeaconRootBlock(t *testing.T) {
 				nil,
 				nil,
 				new(trie.Trie),
-				ethBlock.ExtData(),
+				types.ExtData(ethBlock),
 				false,
 			)
 

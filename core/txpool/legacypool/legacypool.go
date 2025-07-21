@@ -40,6 +40,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/prque"
 	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
@@ -271,7 +272,7 @@ func New(config Config, chain BlockChain) *LegacyPool {
 		config:              config,
 		chain:               chain,
 		chainconfig:         chain.Config(),
-		signer:              types.LatestSigner(chain.Config()),
+		signer:              types.LatestSigner(chain.Config().ToEthChainConfig()),
 		pending:             make(map[common.Address]*list),
 		queue:               make(map[common.Address]*list),
 		beats:               make(map[common.Address]time.Time),
@@ -1816,7 +1817,7 @@ func (pool *LegacyPool) updateBaseFee() {
 
 // assumes lock is already held
 func (pool *LegacyPool) updateBaseFeeAt(head *types.Header) error {
-	baseFeeEstimate, err := header.EstimateNextBaseFee(pool.chainconfig, head, uint64(time.Now().Unix()))
+	baseFeeEstimate, err := header.EstimateNextBaseFee(pool.chainconfig, extheader.As(head), uint64(time.Now().Unix()))
 	if err != nil {
 		return err
 	}

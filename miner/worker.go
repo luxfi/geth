@@ -41,6 +41,7 @@ import (
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
+	"github.com/luxfi/geth/core/extheader"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
@@ -146,11 +147,11 @@ func (w *worker) commitNewWork(predicateContext *precompileconfig.PredicateConte
 		timestamp = parent.Time
 	}
 
-	gasLimit, err := customheader.GasLimit(w.chainConfig, parent, timestamp)
+	gasLimit, err := customheader.GasLimit(w.chainConfig, extheader.As(parent), timestamp)
 	if err != nil {
 		return nil, fmt.Errorf("calculating new gas limit: %w", err)
 	}
-	baseFee, err := customheader.BaseFee(w.chainConfig, parent, timestamp)
+	baseFee, err := customheader.BaseFee(w.chainConfig, extheader.As(parent), timestamp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to calculate new base fee: %w", err)
 	}
@@ -202,7 +203,8 @@ func (w *worker) commitNewWork(predicateContext *precompileconfig.PredicateConte
 		env.state.StopPrefetcher()
 	}()
 	// Configure any upgrades that should go into effect during this block.
-	err = core.ApplyUpgrades(w.chainConfig, &parent.Time, types.NewBlockWithHeader(header), env.state)
+	block := types.NewBlockWithHeader(header)
+	err = core.ApplyUpgrades(w.chainConfig, &parent.Time, types.NewBlockConfigContext(block), env.state)
 	if err != nil {
 		log.Error("failed to configure precompiles mining new block", "parent", parent.Hash(), "number", header.Number, "timestamp", header.Time, "err", err)
 		return nil, err
@@ -259,14 +261,14 @@ func (w *worker) createCurrentEnvironment(predicateContext *precompileconfig.Pre
 	if err != nil {
 		return nil, err
 	}
-	capacity, err := customheader.GasCapacity(w.chainConfig, parent, header.Time)
+	capacity, err := customheader.GasCapacity(w.chainConfig, extheader.As(parent), header.Time)
 	if err != nil {
 		return nil, fmt.Errorf("calculating gas capacity: %w", err)
 	}
 	numPrefetchers := w.chain.CacheConfig().TriePrefetcherParallelism
 	currentState.StartPrefetcher("miner", state.WithConcurrentWorkers(numPrefetchers))
 	return &environment{
-		signer:           types.MakeSigner(w.chainConfig, header.Number, header.Time),
+		signer:           types.MakeSigner(w.chainConfig.ToEthChainConfig(), header.Number, header.Time),
 		state:            currentState,
 		parent:           parent,
 		header:           header,
@@ -534,7 +536,8 @@ func totalFees(block *types.Block, receipts []*types.Receipt) *big.Int {
 		var minerFee *big.Int
 		if baseFee := block.BaseFee(); baseFee != nil {
 			// Note in geth the coinbase payment is (baseFee + effectiveGasTip) * gasUsed
-			minerFee = new(big.Int).Add(baseFee, tx.EffectiveGasTipValue(baseFee))
+			effectiveTip, _ := tx.EffectiveGasTip(baseFee)
+			minerFee = new(big.Int).Add(baseFee, effectiveTip)
 		} else {
 			// Prior to activation of EIP-1559, the coinbase payment was gasPrice * gasUsed
 			minerFee = tx.GasPrice()

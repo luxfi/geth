@@ -97,7 +97,7 @@ func (bc *BlockChain) GetBody(hash common.Hash) *types.Body {
 
 // HasBlock checks if a block is fully present in the database or not.
 func (bc *BlockChain) HasBlock(hash common.Hash, number uint64) bool {
-	if bc.blockCache.Contains(hash) {
+	if _, ok := bc.blockCache.Get(hash); ok {
 		return true
 	}
 	if !bc.HasHeader(hash, number) {
@@ -111,7 +111,7 @@ func (bc *BlockChain) HasFastBlock(hash common.Hash, number uint64) bool {
 	if !bc.HasBlock(hash, number) {
 		return false
 	}
-	if bc.receiptsCache.Contains(hash) {
+	if _, ok := bc.receiptsCache.Get(hash); ok {
 		return true
 	}
 	return rawdb.HasReceipts(bc.db, hash, number)

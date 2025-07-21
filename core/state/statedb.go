@@ -344,7 +344,7 @@ func (s *StateDB) GetBalance(addr common.Address) *uint256.Int {
 	if stateObject != nil {
 		return stateObject.Balance()
 	}
-	return common.U2560
+	return new(uint256.Int)
 }
 
 // Retrieve the balance from the given address or 0 if object not found
