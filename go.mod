@@ -22,7 +22,7 @@ require (
 	github.com/holiman/bloomfilter/v2 v2.0.3
 	github.com/holiman/uint256 v1.3.2
 	github.com/kylelemons/godebug v1.1.0
-	github.com/luxfi/node v1.13.8
+	github.com/luxfi/node v1.13.19
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mattn/go-isatty v0.0.20
 	github.com/olekukonko/tablewriter v0.0.5
