@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/protobuf/proto"
 
-	commonEng "github.com/luxfi/node/consensus/engine"
+	commonEng "github.com/luxfi/node/consensus/engine/core"
 
 	"github.com/luxfi/geth/plugin/evm/atomic"
 )

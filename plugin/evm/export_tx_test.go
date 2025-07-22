@@ -15,7 +15,7 @@ import (
 	"github.com/luxfi/geth/plugin/evm/atomic"
 	"github.com/luxfi/geth/utils"
 	luxatomic "github.com/luxfi/node/chains/atomic"
-	engCommon "github.com/luxfi/node/consensus/engine"
+	engCommon "github.com/luxfi/node/consensus/engine/core"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/utils/constants"
 	"github.com/luxfi/node/utils/crypto/secp256k1"

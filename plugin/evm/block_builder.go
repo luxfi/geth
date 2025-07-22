@@ -16,7 +16,7 @@ import (
 
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/node/consensus"
-	commonEng "github.com/luxfi/node/consensus/engine"
+	commonEng "github.com/luxfi/node/consensus/engine/core"
 )
 
 const (

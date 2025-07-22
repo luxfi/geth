@@ -14,7 +14,7 @@ import (
 	"github.com/luxfi/geth/predicate"
 	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/node/consensus"
-	"github.com/luxfi/node/consensus/engine/chain/block"
+	"github.com/luxfi/node/consensus/engine/linear/block"
 	"github.com/luxfi/node/consensus/validators"
 	"github.com/luxfi/node/consensus/validators/validatorstest"
 	"github.com/luxfi/node/ids"

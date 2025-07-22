@@ -11,7 +11,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/precompile/precompileconfig"
-	"github.com/luxfi/node/consensus/engine/chain/block"
+	"github.com/luxfi/node/consensus/engine/linear/block"
 	"github.com/luxfi/node/utils/set"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/mock/gomock"

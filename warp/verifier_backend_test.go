@@ -12,7 +12,7 @@ import (
 	"github.com/luxfi/geth/utils"
 	"github.com/luxfi/geth/warp/warptest"
 	"github.com/luxfi/node/cache"
-	"github.com/luxfi/node/consensus/engine"
+	"github.com/luxfi/node/consensus/engine/core"
 	"github.com/luxfi/node/database/memdb"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p/acp118"

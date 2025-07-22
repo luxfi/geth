@@ -9,7 +9,7 @@ import (
 	"slices"
 
 	"github.com/luxfi/node/consensus/linear"
-	"github.com/luxfi/node/consensus/linear/chaintest"
+	"github.com/luxfi/node/consensus/linear/lineartest"
 	consensustest "github.com/luxfi/node/consensus/consensustest"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/ids"
