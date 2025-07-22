@@ -137,13 +137,13 @@ type Backend struct {
 }
 
 type BlockFetcher interface {
-	LastAcceptedBlockInternal() chain.Block
-	GetBlockInternal(context.Context, ids.ID) (chain.Block, error)
+	LastAcceptedBlockInternal() linear.Block
+	GetBlockInternal(context.Context, ids.ID) (linear.Block, error)
 }
 
 type AtomicBlockContext interface {
 	AtomicTxs() []*Tx
-	chain.Block
+	linear.Block
 }
 
 type StateDB interface {

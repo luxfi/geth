@@ -80,3 +80,13 @@ func NewSimulatedBackend(alloc types.GenesisAlloc, gasLimit uint64) *SimulatedBa
 		Client:  b.Client(),
 	}
 }
+
+// AcceptedCodeAt returns the code of the given account in the accepted state.
+func (b *SimulatedBackend) AcceptedCodeAt(ctx context.Context, account common.Address) ([]byte, error) {
+	return b.CodeAt(ctx, account, nil)
+}
+
+// AcceptedCallContract executes an Ethereum contract call against the accepted state.
+func (b *SimulatedBackend) AcceptedCallContract(ctx context.Context, msg interfaces.CallMsg) ([]byte, error) {
+	return b.CallContract(ctx, msg, nil)
+}

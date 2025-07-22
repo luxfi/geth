@@ -27,7 +27,7 @@ var (
 )
 
 type BlockClient interface {
-	GetAcceptedBlock(ctx context.Context, blockID ids.ID) (chain.Block, error)
+	GetAcceptedBlock(ctx context.Context, blockID ids.ID) (linear.Block, error)
 }
 
 // Backend tracks signature-eligible warp messages and provides an interface to fetch them.

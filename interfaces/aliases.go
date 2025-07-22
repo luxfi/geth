@@ -24,6 +24,9 @@ type (
 	// Core types that might be referenced
 	ContractCaller    = eth.ContractCaller
 	TransactionSender = eth.TransactionSender
+	BlockNumberReader = eth.BlockNumberReader
+	FeeHistoryReader  = eth.FeeHistoryReader
+	ChainIDReader     = eth.ChainIDReader
 )
 
 // Error values
@@ -34,6 +37,5 @@ var (
 // Additional Lux-specific interfaces
 type (
 	AcceptedStateReader    = eth.ChainStateReader
-	AcceptedContractCaller = eth.ContractCaller
 	Subscription           = eth.Subscription
 )
