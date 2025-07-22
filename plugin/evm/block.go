@@ -23,7 +23,7 @@ import (
 	"github.com/luxfi/geth/precompile/precompileconfig"
 	"github.com/luxfi/geth/predicate"
 
-	"github.com/luxfi/node/consensus/chain"
+	"github.com/luxfi/node/consensus/linear"
 	"github.com/luxfi/node/consensus/engine/chain/block"
 	"github.com/luxfi/node/ids"
 )

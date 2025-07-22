@@ -11,7 +11,7 @@ import (
 	"github.com/luxfi/geth/internal/luxcache"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/node/cache"
-	"github.com/luxfi/node/consensus/chain"
+	"github.com/luxfi/node/consensus/linear"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/ids"
 	"github.com/luxfi/node/network/p2p/acp118"
