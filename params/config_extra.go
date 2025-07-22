@@ -30,7 +30,7 @@ type UpgradeConfig struct {
 
 // LuxContext provides Lux specific context directly into the EVM.
 type LuxContext struct {
-	SnowCtx *consensus.Context
+	ConsensusCtx *consensus.Context
 }
 
 // SetEthUpgrades enables Etheruem network upgrades using the same time as
@@ -50,11 +50,11 @@ func (c *ChainConfig) SetEthUpgrades() {
 	c.MuirGlacierBlock = big.NewInt(0)
 
 	if c.ChainID != nil && LuxTestnetChainID.Cmp(c.ChainID) == 0 {
-		c.BerlinBlock = big.NewInt(184985) // https://testnet.snowtrace.io/block/184985?chainid=43113, AP2 activation block
-		c.LondonBlock = big.NewInt(805078) // https://testnet.snowtrace.io/block/805078?chainid=43113, AP3 activation block
+		c.BerlinBlock = big.NewInt(184985) // https://testnet.consensustrace.io/block/184985?chainid=43113, AP2 activation block
+		c.LondonBlock = big.NewInt(805078) // https://testnet.consensustrace.io/block/805078?chainid=43113, AP3 activation block
 	} else if c.ChainID != nil && LuxMainnetChainID.Cmp(c.ChainID) == 0 {
-		c.BerlinBlock = big.NewInt(1640340) // https://snowtrace.io/block/1640340?chainid=43114, AP2 activation block
-		c.LondonBlock = big.NewInt(3308552) // https://snowtrace.io/block/3308552?chainid=43114, AP3 activation block
+		c.BerlinBlock = big.NewInt(1640340) // https://consensustrace.io/block/1640340?chainid=43114, AP2 activation block
+		c.LondonBlock = big.NewInt(3308552) // https://consensustrace.io/block/3308552?chainid=43114, AP3 activation block
 	} else {
 		// In testing or local networks, we only support enabling Berlin and London prior
 		// to the initially active time. This is likely to correspond to an intended block

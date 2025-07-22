@@ -99,7 +99,7 @@ type Config struct {
 	GasTarget *gas.Gas `json:"gas-target,omitempty"`
 
 	// Geth APIs
-	SnowmanAPIEnabled   bool   `json:"snowman-api-enabled"`
+	LinearConsensusAPIEnabled   bool   `json:"linearconsensus-api-enabled"`
 	AdminAPIEnabled     bool   `json:"admin-api-enabled"`
 	AdminAPIDir         string `json:"admin-api-dir"`
 	GethAdminAPIEnabled bool   `json:"geth-admin-api-enabled"` // Deprecated: use AdminAPIEnabled instead

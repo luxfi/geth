@@ -161,7 +161,7 @@ const (
 var (
 	// Set last accepted key to be longer than the keys used to store accepted block IDs.
 	lastAcceptedKey = []byte("last_accepted_key")
-	acceptedPrefix  = []byte("snowman_accepted")
+	acceptedPrefix  = []byte("linearconsensus_accepted")
 	metadataPrefix  = []byte("metadata")
 	warpPrefix      = []byte("warp")
 	ethDBPrefix     = []byte("ethdb")
@@ -332,7 +332,7 @@ func (vm *VM) Logger() logging.Logger { return vm.ctx.Log }
  ******************************************************************************
  */
 
-// implements SnowmanPlusPlusVM interface
+// implements LinearConsensusPlusPlusVM interface
 func (vm *VM) GetActivationTime() time.Time {
 	return utils.Uint64ToTime(vm.chainConfig.ApricotPhase4BlockTimestamp)
 }
@@ -444,7 +444,7 @@ func (vm *VM) Initialize(
 
 	// Set the Lux Context on the ChainConfig
 	g.Config.LuxContext = params.LuxContext{
-		SnowCtx: chainCtx,
+		ConsensusCtx: chainCtx,
 	}
 	vm.syntacticBlockValidator = NewBlockValidator(extDataHashes)
 
@@ -1345,7 +1345,7 @@ func (vm *VM) buildBlockWithContext(ctx context.Context, proposerVMBlockCtx *blo
 		log.Debug("Building block without context")
 	}
 	predicateCtx := &precompileconfig.PredicateContext{
-		SnowCtx:            vm.ctx,
+		ConsensusCtx:            vm.ctx,
 		ProposerVMBlockCtx: proposerVMBlockCtx,
 	}
 
@@ -1532,11 +1532,11 @@ func (vm *VM) CreateHandlers(context.Context) (map[string]http.Handler, error) {
 	}
 
 	// RPC APIs
-	if vm.config.SnowmanAPIEnabled {
-		if err := handler.RegisterName("snowman", &SnowmanAPI{vm}); err != nil {
+	if vm.config.LinearConsensusAPIEnabled {
+		if err := handler.RegisterName("linearconsensus", &LinearConsensusAPI{vm}); err != nil {
 			return nil, err
 		}
-		enabledAPIs = append(enabledAPIs, "snowman")
+		enabledAPIs = append(enabledAPIs, "linearconsensus")
 	}
 
 	if vm.config.WarpAPIEnabled {

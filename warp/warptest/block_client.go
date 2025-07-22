@@ -10,7 +10,7 @@ import (
 
 	"github.com/luxfi/node/consensus/chain"
 	"github.com/luxfi/node/consensus/chain/chaintest"
-	snowtest "github.com/luxfi/node/consensus/consensustest"
+	consensustest "github.com/luxfi/node/consensus/consensustest"
 	"github.com/luxfi/node/database"
 	"github.com/luxfi/node/ids"
 )
@@ -34,9 +34,9 @@ func MakeBlockClient(blkIDs ...ids.ID) BlockClient {
 		}
 
 		return &chaintest.Block{
-			Decidable: snowtest.Decidable{
+			Decidable: consensustest.Decidable{
 				IDV:    blkID,
-				Status: snowtest.Accepted,
+				Status: consensustest.Accepted,
 			},
 		}, nil
 	}

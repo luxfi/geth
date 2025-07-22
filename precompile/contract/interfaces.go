@@ -49,7 +49,7 @@ type StateDB interface {
 type AccessibleState interface {
 	GetStateDB() StateDB
 	GetBlockContext() BlockContext
-	GetSnowContext() *consensus.Context
+	GetConsensusContext() *consensus.Context
 	GetChainConfig() precompileconfig.ChainConfig
 	NativeAssetCall(caller common.Address, input []byte, suppliedGas uint64, gasCost uint64, readOnly bool) (ret []byte, remainingGas uint64, err error)
 }

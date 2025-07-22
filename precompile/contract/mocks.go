@@ -16,7 +16,7 @@ import (
 	uint256 "github.com/holiman/uint256"
 	common "github.com/luxfi/geth/common"
 	precompileconfig "github.com/luxfi/geth/precompile/precompileconfig"
-	snow "github.com/luxfi/node/consensus"
+	consensus "github.com/luxfi/node/consensus"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -138,18 +138,18 @@ func (mr *MockAccessibleStateMockRecorder) GetChainConfig() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChainConfig", reflect.TypeOf((*MockAccessibleState)(nil).GetChainConfig))
 }
 
-// GetSnowContext mocks base method.
-func (m *MockAccessibleState) GetSnowContext() *snow.Context {
+// GetConsensusContext mocks base method.
+func (m *MockAccessibleState) GetConsensusContext() *consensus.Context {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSnowContext")
-	ret0, _ := ret[0].(*snow.Context)
+	ret := m.ctrl.Call(m, "GetConsensusContext")
+	ret0, _ := ret[0].(*consensus.Context)
 	return ret0
 }
 
-// GetSnowContext indicates an expected call of GetSnowContext.
-func (mr *MockAccessibleStateMockRecorder) GetSnowContext() *gomock.Call {
+// GetConsensusContext indicates an expected call of GetConsensusContext.
+func (mr *MockAccessibleStateMockRecorder) GetConsensusContext() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSnowContext", reflect.TypeOf((*MockAccessibleState)(nil).GetSnowContext))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetConsensusContext", reflect.TypeOf((*MockAccessibleState)(nil).GetConsensusContext))
 }
 
 // GetStateDB mocks base method.

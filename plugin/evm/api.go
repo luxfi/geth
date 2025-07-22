@@ -39,8 +39,8 @@ var (
 	initialBaseFee = big.NewInt(ap3.InitialBaseFee)
 )
 
-// SnowmanAPI introduces snowman specific functionality to the evm
-type SnowmanAPI struct{ vm *VM }
+// LinearConsensusAPI introduces linearconsensus specific functionality to the evm
+type LinearConsensusAPI struct{ vm *VM }
 
 // GetAcceptedFrontReply defines the reply that will be sent from the
 // GetAcceptedFront API call
@@ -50,7 +50,7 @@ type GetAcceptedFrontReply struct {
 }
 
 // GetAcceptedFront returns the last accepted block's hash and height
-func (api *SnowmanAPI) GetAcceptedFront(ctx context.Context) (*GetAcceptedFrontReply, error) {
+func (api *LinearConsensusAPI) GetAcceptedFront(ctx context.Context) (*GetAcceptedFrontReply, error) {
 	blk := api.vm.blockChain.LastConsensusAcceptedBlock()
 	return &GetAcceptedFrontReply{
 		Hash:   blk.Hash(),
@@ -59,7 +59,7 @@ func (api *SnowmanAPI) GetAcceptedFront(ctx context.Context) (*GetAcceptedFrontR
 }
 
 // IssueBlock to the chain
-func (api *SnowmanAPI) IssueBlock(ctx context.Context) error {
+func (api *LinearConsensusAPI) IssueBlock(ctx context.Context) error {
 	log.Info("Issuing a new block")
 
 	api.vm.builder.signalTxsReady()

@@ -24,7 +24,7 @@ var (
 	testChainID  = ids.ID{'t', 'e', 's', 't', 'c', 'h', 'a', 'i', 'n'}
 )
 
-func TestSnowContext() *consensus.Context {
+func TestConsensusContext() *consensus.Context {
 	signer, err := localsigner.New()
 	if err != nil {
 		panic(err)

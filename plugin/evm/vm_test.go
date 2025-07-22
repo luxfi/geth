@@ -199,7 +199,7 @@ func BuildGenesisTest(t *testing.T, genesisJSON string) []byte {
 }
 
 func NewContext() *consensus.Context {
-	ctx := utils.TestSnowContext()
+	ctx := utils.TestConsensusContext()
 	ctx.NodeID = ids.GenerateTestNodeID()
 	ctx.NetworkID = testNetworkID
 	ctx.ChainID = testCChainID

@@ -43,9 +43,9 @@ import (
 func TestEthTxGossip(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
-	snowCtx := utils.TestSnowContext()
+	consensusCtx := utils.TestConsensusContext()
 	validatorState := utils.NewTestValidatorState()
-	snowCtx.ValidatorState = validatorState
+	consensusCtx.ValidatorState = validatorState
 
 	pk, err := secp256k1.NewPrivateKey()
 	require.NoError(err)
@@ -65,7 +65,7 @@ func TestEthTxGossip(t *testing.T) {
 
 	require.NoError(vm.Initialize(
 		ctx,
-		snowCtx,
+		consensusCtx,
 		memdb.New(),
 		genesisBytes,
 		nil,
@@ -134,7 +134,7 @@ func TestEthTxGossip(t *testing.T) {
 	}
 	require.NoError(client.AppRequest(ctx, set.Of(vm.ctx.NodeID), requestBytes, onResponse))
 	require.NoError(vm.AppRequest(ctx, requestingNodeID, 1, time.Time{}, <-peerSender.SentAppRequest))
-	require.NoError(network.AppResponse(ctx, snowCtx.NodeID, 1, <-responseSender.SentAppResponse))
+	require.NoError(network.AppResponse(ctx, consensusCtx.NodeID, 1, <-responseSender.SentAppResponse))
 	wg.Wait()
 
 	// Issue a tx to the VM
@@ -167,19 +167,19 @@ func TestEthTxGossip(t *testing.T) {
 	}
 	require.NoError(client.AppRequest(ctx, set.Of(vm.ctx.NodeID), requestBytes, onResponse))
 	require.NoError(vm.AppRequest(ctx, requestingNodeID, 3, time.Time{}, <-peerSender.SentAppRequest))
-	require.NoError(network.AppResponse(ctx, snowCtx.NodeID, 3, <-responseSender.SentAppResponse))
+	require.NoError(network.AppResponse(ctx, consensusCtx.NodeID, 3, <-responseSender.SentAppResponse))
 	wg.Wait()
 }
 
 func TestAtomicTxGossip(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
-	snowCtx := utils.TestSnowContext()
-	snowCtx.LUXAssetID = ids.GenerateTestID()
+	consensusCtx := utils.TestConsensusContext()
+	consensusCtx.LUXAssetID = ids.GenerateTestID()
 	validatorState := utils.NewTestValidatorState()
-	snowCtx.ValidatorState = validatorState
+	consensusCtx.ValidatorState = validatorState
 	memory := luxatomic.NewMemory(memdb.New())
-	snowCtx.SharedMemory = memory.NewSharedMemory(snowCtx.ChainID)
+	consensusCtx.SharedMemory = memory.NewSharedMemory(consensusCtx.ChainID)
 
 	pk, err := secp256k1.NewPrivateKey()
 	require.NoError(err)
@@ -199,7 +199,7 @@ func TestAtomicTxGossip(t *testing.T) {
 
 	require.NoError(vm.Initialize(
 		ctx,
-		snowCtx,
+		consensusCtx,
 		memdb.New(),
 		genesisBytes,
 		nil,
@@ -267,16 +267,16 @@ func TestAtomicTxGossip(t *testing.T) {
 	}
 	require.NoError(client.AppRequest(ctx, set.Of(vm.ctx.NodeID), requestBytes, onResponse))
 	require.NoError(vm.AppRequest(ctx, requestingNodeID, 1, time.Time{}, <-peerSender.SentAppRequest))
-	require.NoError(network.AppResponse(ctx, snowCtx.NodeID, 1, <-responseSender.SentAppResponse))
+	require.NoError(network.AppResponse(ctx, consensusCtx.NodeID, 1, <-responseSender.SentAppResponse))
 	wg.Wait()
 
 	// Issue a tx to the VM
 	utxo, err := addUTXO(
 		memory,
-		snowCtx,
+		consensusCtx,
 		ids.GenerateTestID(),
 		0,
-		snowCtx.LUXAssetID,
+		consensusCtx.LUXAssetID,
 		100_000_000_000,
 		pk.Address(),
 	)
@@ -307,7 +307,7 @@ func TestAtomicTxGossip(t *testing.T) {
 	}
 	require.NoError(client.AppRequest(ctx, set.Of(vm.ctx.NodeID), requestBytes, onResponse))
 	require.NoError(vm.AppRequest(ctx, requestingNodeID, 3, time.Time{}, <-peerSender.SentAppRequest))
-	require.NoError(network.AppResponse(ctx, snowCtx.NodeID, 3, <-responseSender.SentAppResponse))
+	require.NoError(network.AppResponse(ctx, consensusCtx.NodeID, 3, <-responseSender.SentAppResponse))
 	wg.Wait()
 }
 
@@ -315,7 +315,7 @@ func TestAtomicTxGossip(t *testing.T) {
 func TestEthTxPushGossipOutbound(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
-	snowCtx := utils.TestSnowContext()
+	consensusCtx := utils.TestConsensusContext()
 	sender := &enginetest.SenderStub{
 		SentAppGossip: make(chan []byte, 1),
 	}
@@ -335,7 +335,7 @@ func TestEthTxPushGossipOutbound(t *testing.T) {
 
 	require.NoError(vm.Initialize(
 		ctx,
-		snowCtx,
+		consensusCtx,
 		memdb.New(),
 		genesisBytes,
 		nil,
@@ -377,7 +377,7 @@ func TestEthTxPushGossipOutbound(t *testing.T) {
 func TestEthTxPushGossipInbound(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
-	snowCtx := utils.TestSnowContext()
+	consensusCtx := utils.TestConsensusContext()
 
 	sender := &enginetest.Sender{}
 	vm := &VM{
@@ -395,7 +395,7 @@ func TestEthTxPushGossipInbound(t *testing.T) {
 
 	require.NoError(vm.Initialize(
 		ctx,
-		snowCtx,
+		consensusCtx,
 		memdb.New(),
 		genesisBytes,
 		nil,
@@ -438,12 +438,12 @@ func TestEthTxPushGossipInbound(t *testing.T) {
 func TestAtomicTxPushGossipOutbound(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
-	snowCtx := utils.TestSnowContext()
-	snowCtx.LUXAssetID = ids.GenerateTestID()
+	consensusCtx := utils.TestConsensusContext()
+	consensusCtx.LUXAssetID = ids.GenerateTestID()
 	validatorState := utils.NewTestValidatorState()
-	snowCtx.ValidatorState = validatorState
+	consensusCtx.ValidatorState = validatorState
 	memory := luxatomic.NewMemory(memdb.New())
-	snowCtx.SharedMemory = memory.NewSharedMemory(snowCtx.ChainID)
+	consensusCtx.SharedMemory = memory.NewSharedMemory(consensusCtx.ChainID)
 
 	pk, err := secp256k1.NewPrivateKey()
 	require.NoError(err)
@@ -463,7 +463,7 @@ func TestAtomicTxPushGossipOutbound(t *testing.T) {
 
 	require.NoError(vm.Initialize(
 		ctx,
-		snowCtx,
+		consensusCtx,
 		memdb.New(),
 		genesisBytes,
 		nil,
@@ -481,10 +481,10 @@ func TestAtomicTxPushGossipOutbound(t *testing.T) {
 	// Issue a tx to the VM
 	utxo, err := addUTXO(
 		memory,
-		snowCtx,
+		consensusCtx,
 		ids.GenerateTestID(),
 		0,
-		snowCtx.LUXAssetID,
+		consensusCtx.LUXAssetID,
 		100_000_000_000,
 		pk.Address(),
 	)
@@ -511,12 +511,12 @@ func TestAtomicTxPushGossipOutbound(t *testing.T) {
 func TestAtomicTxPushGossipInbound(t *testing.T) {
 	require := require.New(t)
 	ctx := context.Background()
-	snowCtx := utils.TestSnowContext()
-	snowCtx.LUXAssetID = ids.GenerateTestID()
+	consensusCtx := utils.TestConsensusContext()
+	consensusCtx.LUXAssetID = ids.GenerateTestID()
 	validatorState := utils.NewTestValidatorState()
-	snowCtx.ValidatorState = validatorState
+	consensusCtx.ValidatorState = validatorState
 	memory := luxatomic.NewMemory(memdb.New())
-	snowCtx.SharedMemory = memory.NewSharedMemory(snowCtx.ChainID)
+	consensusCtx.SharedMemory = memory.NewSharedMemory(consensusCtx.ChainID)
 
 	pk, err := secp256k1.NewPrivateKey()
 	require.NoError(err)
@@ -534,7 +534,7 @@ func TestAtomicTxPushGossipInbound(t *testing.T) {
 
 	require.NoError(vm.Initialize(
 		ctx,
-		snowCtx,
+		consensusCtx,
 		memdb.New(),
 		genesisBytes,
 		nil,
@@ -552,10 +552,10 @@ func TestAtomicTxPushGossipInbound(t *testing.T) {
 	// issue a tx to the vm
 	utxo, err := addUTXO(
 		memory,
-		snowCtx,
+		consensusCtx,
 		ids.GenerateTestID(),
 		0,
-		snowCtx.LUXAssetID,
+		consensusCtx.LUXAssetID,
 		100_000_000_000,
 		pk.Address(),
 	)
