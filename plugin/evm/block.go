@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	_ chain.Block             = (*Block)(nil)
+	_ linear.Block            = (*Block)(nil)
 	_ block.WithVerifyContext = (*Block)(nil)
 )
 
