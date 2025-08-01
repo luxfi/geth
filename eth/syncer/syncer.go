@@ -22,13 +22,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/eth"
-	"github.com/ethereum/go-ethereum/eth/ethconfig"
-	"github.com/ethereum/go-ethereum/log"
-	"github.com/ethereum/go-ethereum/node"
-	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/eth"
+	"github.com/luxfi/geth/eth/downloader"
+	"github.com/luxfi/geth/log"
+	"github.com/luxfi/geth/node"
+	"github.com/luxfi/geth/rpc"
 )
 
 type syncReq struct {
@@ -128,7 +128,7 @@ func (s *Syncer) run() {
 				break
 			}
 			if resync {
-				req.errc <- s.backend.Downloader().BeaconDevSync(ethconfig.FullSync, target)
+				req.errc <- s.backend.Downloader().BeaconDevSync(downloader.FullSync, target)
 			}
 
 		case <-ticker.C:

@@ -5,7 +5,6 @@
 package triestate
 
 import (
-	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/triedb"
 )
 
