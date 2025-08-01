@@ -6,8 +6,8 @@ package geth
 import (
 	"math/big"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/vm"
 )
 
 // AddressContext contains address information for contract creation
