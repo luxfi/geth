@@ -22,7 +22,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/eth"
-	"github.com/luxfi/geth/eth/ethconfig"
+	"github.com/luxfi/geth/eth/downloader"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/node"
 )
@@ -71,7 +71,12 @@ func (tester *FullSyncTester) Start() error {
 
 		// Trigger beacon sync with the provided block hash as trusted
 		// chain head.
-		err = tester.backend.Downloader().BeaconDevSync(ethconfig.FullSync, header)
+		header, err := tester.backend.Downloader().GetHeader(tester.target)
+		if err != nil {
+			log.Info("Failed to get header for beacon sync", "err", err)
+			return
+		}
+		err = tester.backend.Downloader().BeaconDevSync(downloader.FullSync, header)
 		if err != nil {
 			log.Info("Failed to trigger beacon sync", "err", err)
 		}

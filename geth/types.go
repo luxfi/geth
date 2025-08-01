@@ -7,8 +7,19 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/vm"
+	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/params"
 )
+
+// Type aliases for convenience
+type Header = types.Header
+type ChainConfig = params.ChainConfig
+
+// Addresses contains common addresses used in precompiles
+type Addresses struct {
+	Coinbase common.Address
+	Caller   common.Address
+}
 
 // AddressContext contains address information for contract creation
 type AddressContext struct {
@@ -45,12 +56,12 @@ type RulesHooks interface {
 
 // PrecompileEnvironment provides the execution environment for precompiled contracts
 type PrecompileEnvironment interface {
-	BlockHeader() (*vm.BlockHeader, error)
+	BlockHeader() (*Header, error)
 	BlockNumber() *big.Int
 	BlockTime() uint64
-	Addresses() *vm.Addresses
+	Addresses() *Addresses
 	ReadOnly() bool
 	ReadOnlyState() StateReader
 	StateDB() StateReader
-	ChainConfig() *vm.ChainConfig
+	ChainConfig() *ChainConfig
 }
