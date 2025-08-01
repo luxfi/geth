@@ -4,7 +4,7 @@
 package legacy
 
 import (
-	"github.com/ethereum/go-ethereum/core/vm"
+	"github.com/luxfi/geth/core/vm"
 )
 
 // PrecompiledStatefulContract represents a stateful precompiled contract for legacy compatibility
