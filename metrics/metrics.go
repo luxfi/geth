@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	metricsEnabled = false
+	metricsEnabled = true
 	// EnabledExpensive is a soft-flag meant for external packages to check if costly
 	// metrics gathering is allowed or not. The goal is to separate standard metrics
 	// for health monitoring and debug metrics that might impact runtime performance.
@@ -23,6 +23,11 @@ var (
 // Enabled is checked by functions that are deemed 'expensive', e.g. if a
 // meter-type does locking and/or non-trivial math operations during update.
 func Enabled() bool {
+	return metricsEnabled
+}
+
+// IsEnabled returns whether metrics collection is enabled.
+func IsEnabled() bool {
 	return metricsEnabled
 }
 

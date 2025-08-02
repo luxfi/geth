@@ -130,7 +130,8 @@ func newPebbleDBDatabase(file string, cache int, handles int, namespace string, 
 // newBadgerDBDatabase creates a persistent key-value database without a freezer
 // moving immutable chain segments into cold storage.
 func newBadgerDBDatabase(file string, cache int, handles int, namespace string, readonly bool) (ethdb.KeyValueStore, error) {
-	db, err := badgerdb.New(file, cache, handles, namespace, readonly)
+	// BadgerDB doesn't use cache/handles parameters like LevelDB
+	db, err := badgerdb.NewBadgerDatabase(file, readonly, false)
 	if err != nil {
 		return nil, err
 	}

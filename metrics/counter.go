@@ -7,17 +7,26 @@ import (
 // GetOrRegisterCounter returns an existing Counter or constructs and registers
 // a new Counter.
 func GetOrRegisterCounter(name string, r Registry) *Counter {
-	return getOrRegister(name, NewCounter, r)
+	return getOrRegister(name, newCounterForRegistry, r)
 }
 
-// NewCounter constructs a new Counter.
-func NewCounter() *Counter {
+// newCounterForRegistry is used internally by the registry system.
+func newCounterForRegistry() *Counter {
 	return new(Counter)
 }
 
+// NewCounter constructs a new Counter.
+func NewCounter() interface{} {
+	if !Enabled() {
+		return NilCounter{}
+	}
+	return new(StandardCounter)
+}
+
+
 // NewRegisteredCounter constructs and registers a new Counter.
 func NewRegisteredCounter(name string, r Registry) *Counter {
-	c := NewCounter()
+	c := newCounterForRegistry()
 	if r == nil {
 		r = DefaultRegistry
 	}
@@ -34,6 +43,9 @@ func (c CounterSnapshot) Count() int64 { return int64(c) }
 // Counter hold an int64 value that can be incremented and decremented.
 type Counter atomic.Int64
 
+// StandardCounter is an alias for Counter to match expected naming.
+type StandardCounter = Counter
+
 // Clear sets the counter to zero.
 func (c *Counter) Clear() {
 	(*atomic.Int64)(c).Store(0)
@@ -44,7 +56,7 @@ func (c *Counter) Dec(i int64) {
 	(*atomic.Int64)(c).Add(-i)
 }
 
-// Inc increments the counter by the given amount.
+// Inc increments the counter by the generated amount.
 func (c *Counter) Inc(i int64) {
 	(*atomic.Int64)(c).Add(i)
 }

@@ -163,6 +163,20 @@ type Config struct {
 
 	// OverrideVerkle (TODO: remove after the fork)
 	OverrideVerkle *uint64 `toml:",omitempty"`
+
+	// BadgerDB dual-database configuration
+	DualDatabase     bool          `toml:",omitempty"` // Enable dual-database mode
+	ArchiveDir       string        `toml:",omitempty"` // Directory for archive database
+	ArchiveShared    bool          `toml:",omitempty"` // Enable shared read-only access
+	ArchiveFinality  uint64        `toml:",omitempty"` // Blocks before considering finalized
+	ArchiveInterval  time.Duration `toml:",omitempty"` // Interval between archive runs
+
+	// Genesis import configuration
+	GenesisImport     string `toml:",omitempty"` // Path to genesis database to import
+	GenesisImportType string `toml:",omitempty"` // Type of genesis database
+	GenesisReplay     bool   `toml:",omitempty"` // Enable idempotent replay
+	GenesisVerify     bool   `toml:",omitempty"` // Verify block hashes during import
+	GenesisBatchSize  uint64 `toml:",omitempty"` // Batch size for genesis import
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain config.

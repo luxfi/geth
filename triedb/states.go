@@ -28,16 +28,51 @@ type StateSet struct {
 	Storages       map[common.Hash]map[common.Hash][]byte    // Mutated storage slots in 'prefix-zero-trimmed' RLP format
 	StoragesOrigin map[common.Address]map[common.Hash][]byte // Original values of mutated storage slots in 'prefix-zero-trimmed' RLP format
 	RawStorageKey  bool                                      // Flag whether the storage set uses the raw slot key or the hash
+	
+	// Additional mappings to track addresses for journal
+	AddressesToHashes map[common.Address]common.Hash         // Maps addresses to their hashes
+	HashesToAddresses map[common.Hash]common.Address         // Maps hashes back to addresses
+	Incomplete        map[common.Address]struct{}            // Tracks incomplete accounts
 }
 
 // NewStateSet initializes an empty state set.
 func NewStateSet() *StateSet {
 	return &StateSet{
-		Accounts:       make(map[common.Hash][]byte),
-		AccountsOrigin: make(map[common.Address][]byte),
-		Storages:       make(map[common.Hash]map[common.Hash][]byte),
-		StoragesOrigin: make(map[common.Address]map[common.Hash][]byte),
+		Accounts:          make(map[common.Hash][]byte),
+		AccountsOrigin:    make(map[common.Address][]byte),
+		Storages:          make(map[common.Hash]map[common.Hash][]byte),
+		StoragesOrigin:    make(map[common.Address]map[common.Hash][]byte),
+		AddressesToHashes: make(map[common.Address]common.Hash),
+		HashesToAddresses: make(map[common.Hash]common.Address),
+		Incomplete:        make(map[common.Address]struct{}),
 	}
+}
+
+// Size returns the approximate memory size of the state set.
+func (set *StateSet) Size() int {
+	if set == nil {
+		return 0
+	}
+	size := 0
+	for _, account := range set.Accounts {
+		size += len(account) + 32 // 32 bytes for hash key
+	}
+	for _, accountOrig := range set.AccountsOrigin {
+		size += len(accountOrig) + 20 // 20 bytes for address key
+	}
+	for _, storage := range set.Storages {
+		size += 32 // outer hash key
+		for _, slot := range storage {
+			size += len(slot) + 32 // 32 bytes for inner hash key
+		}
+	}
+	for _, storageOrig := range set.StoragesOrigin {
+		size += 20 // address key
+		for _, slot := range storageOrig {
+			size += len(slot) + 32 // 32 bytes for hash key
+		}
+	}
+	return size
 }
 
 // internal returns a state set for path database internal usage.

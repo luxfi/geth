@@ -106,6 +106,58 @@ var (
 		Value:    node.DefaultConfig.DBEngine,
 		Category: flags.EthCategory,
 	}
+	// BadgerDB dual-database flags
+	ArchiveDirFlag = &flags.DirectoryFlag{
+		Name:     "archive.dir",
+		Usage:    "Directory for BadgerDB archive database (enables dual-database mode)",
+		Category: flags.EthCategory,
+	}
+	ArchiveSharedFlag = &cli.BoolFlag{
+		Name:     "archive.shared",
+		Usage:    "Enable shared read-only access to archive database (production mode)",
+		Category: flags.EthCategory,
+	}
+	ArchiveFinalityFlag = &cli.Uint64Flag{
+		Name:     "archive.finality",
+		Usage:    "Number of blocks before considering them finalized for archiving",
+		Value:    32,
+		Category: flags.EthCategory,
+	}
+	ArchiveIntervalFlag = &cli.DurationFlag{
+		Name:     "archive.interval",
+		Usage:    "Interval between archive compaction runs",
+		Value:    time.Minute,
+		Category: flags.EthCategory,
+	}
+	// Genesis import flags
+	GenesisImportFlag = &cli.StringFlag{
+		Name:     "genesis.import",
+		Usage:    "Path to genesis database to import (PebbleDB or LevelDB)",
+		Category: flags.EthCategory,
+	}
+	GenesisImportTypeFlag = &cli.StringFlag{
+		Name:     "genesis.import.type",
+		Usage:    "Type of genesis database ('auto', 'leveldb', or 'pebbledb')",
+		Value:    "auto",
+		Category: flags.EthCategory,
+	}
+	GenesisReplayFlag = &cli.BoolFlag{
+		Name:     "genesis.replay",
+		Usage:    "Enable idempotent replay of genesis data",
+		Category: flags.EthCategory,
+	}
+	GenesisVerifyFlag = &cli.BoolFlag{
+		Name:     "genesis.verify",
+		Usage:    "Verify block hashes during genesis import",
+		Value:    true,
+		Category: flags.EthCategory,
+	}
+	GenesisBatchSizeFlag = &cli.Uint64Flag{
+		Name:     "genesis.batchsize",
+		Usage:    "Batch size for genesis import",
+		Value:    1000,
+		Category: flags.EthCategory,
+	}
 	AncientFlag = &flags.DirectoryFlag{
 		Name:     "datadir.ancient",
 		Usage:    "Root directory for ancient data (default = inside chaindata)",
@@ -985,6 +1037,17 @@ var (
 		EraFlag,
 		RemoteDBFlag,
 		DBEngineFlag,
+		// BadgerDB dual-database flags
+		ArchiveDirFlag,
+		ArchiveSharedFlag,
+		ArchiveFinalityFlag,
+		ArchiveIntervalFlag,
+		// Genesis import flags
+		GenesisImportFlag,
+		GenesisImportTypeFlag,
+		GenesisReplayFlag,
+		GenesisVerifyFlag,
+		GenesisBatchSizeFlag,
 		StateSchemeFlag,
 		HttpHeaderFlag,
 	}
@@ -1851,6 +1914,36 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			cfg.VMTrace = name
 			cfg.VMTraceJsonConfig = ctx.String(VMTraceJsonConfigFlag.Name)
 		}
+	}
+
+	// BadgerDB dual-database configuration
+	if ctx.IsSet(ArchiveDirFlag.Name) {
+		cfg.ArchiveDir = ctx.String(ArchiveDirFlag.Name)
+		cfg.DualDatabase = true
+		log.Info("Dual-database mode enabled", "archive", cfg.ArchiveDir)
+	}
+	if ctx.IsSet(ArchiveSharedFlag.Name) {
+		cfg.ArchiveShared = ctx.Bool(ArchiveSharedFlag.Name)
+	}
+	if ctx.IsSet(ArchiveFinalityFlag.Name) {
+		cfg.ArchiveFinality = ctx.Uint64(ArchiveFinalityFlag.Name)
+	}
+	if ctx.IsSet(ArchiveIntervalFlag.Name) {
+		cfg.ArchiveInterval = ctx.Duration(ArchiveIntervalFlag.Name)
+	}
+	// Genesis import configuration
+	if ctx.IsSet(GenesisImportFlag.Name) {
+		cfg.GenesisImport = ctx.String(GenesisImportFlag.Name)
+		cfg.GenesisImportType = ctx.String(GenesisImportTypeFlag.Name)
+		cfg.GenesisReplay = ctx.Bool(GenesisReplayFlag.Name)
+		cfg.GenesisVerify = ctx.Bool(GenesisVerifyFlag.Name)
+		cfg.GenesisBatchSize = ctx.Uint64(GenesisBatchSizeFlag.Name)
+		log.Info("Genesis import configured", 
+			"path", cfg.GenesisImport,
+			"type", cfg.GenesisImportType,
+			"replay", cfg.GenesisReplay,
+			"verify", cfg.GenesisVerify,
+			"batchSize", cfg.GenesisBatchSize)
 	}
 }
 
