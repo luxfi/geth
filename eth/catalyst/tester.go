@@ -62,9 +62,16 @@ func (tester *FullSyncTester) Start() error {
 	go func() {
 		defer tester.wg.Done()
 
+		// First retrieve the header for the target hash
+		header, err := tester.backend.Downloader().GetHeader(tester.target)
+		if err != nil {
+			log.Info("Failed to retrieve sync target header", "hash", tester.target, "err", err)
+			return
+		}
+
 		// Trigger beacon sync with the provided block hash as trusted
 		// chain head.
-		err := tester.backend.Downloader().BeaconDevSync(ethconfig.FullSync, tester.target, tester.closed)
+		err = tester.backend.Downloader().BeaconDevSync(ethconfig.FullSync, header)
 		if err != nil {
 			log.Info("Failed to trigger beacon sync", "err", err)
 		}
