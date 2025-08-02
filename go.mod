@@ -78,8 +78,6 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-replace github.com/tyler-smith/go-bip39 => github.com/luxfi/go-bip39 v1.1.0
-
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.3.0 // indirect
