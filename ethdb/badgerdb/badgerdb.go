@@ -343,7 +343,9 @@ func (i *iterator) Next() bool {
 
 // Error implements ethdb.Iterator
 func (i *iterator) Error() error {
-	return i.it.Error()
+	// BadgerDB iterators don't have an Error method, 
+	// errors are returned from Next() and other operations
+	return nil
 }
 
 // Key implements ethdb.Iterator
