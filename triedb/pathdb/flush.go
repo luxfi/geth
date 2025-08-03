@@ -79,37 +79,37 @@ func writeStates(batch ethdb.Batch, genMarker []byte, accountData map[common.Has
 		accounts int
 		slots    int
 	)
-	for common.Hash(addrHash), blob := range accountData {
+	for addrHash, blob := range accountData {
 		// Skip any account not yet covered by the snapshot. The account
-		// at the generation marker position (common.Hash(addrHash) == genMarker[:common.HashLength])
+		// at the generation marker position (addrHash == genMarker[:common.HashLength])
 		// should still be updated, as it would be skipped in the next
 		// generation cycle.
-		if genMarker != nil && bytes.Compare(common.Hash(addrHash)[:], genMarker) > 0 {
+		if genMarker != nil && bytes.Compare(addrHash[:], genMarker) > 0 {
 			continue
 		}
 		accounts += 1
 		if len(blob) == 0 {
-			rawdb.DeleteAccountSnapshot(batch, common.Hash(addrHash))
+			rawdb.DeleteAccountSnapshot(batch, addrHash)
 			if clean != nil {
-				clean.Set(common.Hash(addrHash)[:], nil)
+				clean.Set(addrHash[:], nil)
 			}
 		} else {
-			rawdb.WriteAccountSnapshot(batch, common.Hash(addrHash), blob)
+			rawdb.WriteAccountSnapshot(batch, addrHash, blob)
 			if clean != nil {
-				clean.Set(common.Hash(addrHash)[:], blob)
+				clean.Set(addrHash[:], blob)
 			}
 		}
 	}
-	for common.Hash(addrHash), storages := range storageData {
+	for addrHash, storages := range storageData {
 		// Skip any account not covered yet by the snapshot
-		if genMarker != nil && bytes.Compare(common.Hash(addrHash)[:], genMarker) > 0 {
+		if genMarker != nil && bytes.Compare(addrHash[:], genMarker) > 0 {
 			continue
 		}
-		midAccount := genMarker != nil && bytes.Equal(common.Hash(addrHash)[:], genMarker[:common.HashLength])
+		midAccount := genMarker != nil && bytes.Equal(addrHash[:], genMarker[:common.HashLength])
 
 		for storageHash, blob := range storages {
 			// Skip any storage slot not yet covered by the snapshot. The storage slot
-			// at the generation marker position (common.Hash(addrHash) == genMarker[:common.HashLength]
+			// at the generation marker position (addrHash == genMarker[:common.HashLength]
 			// and storageHash == genMarker[common.HashLength:]) should still be updated,
 			// as it would be skipped in the next generation cycle.
 			if midAccount && bytes.Compare(storageHash[:], genMarker[common.HashLength:]) > 0 {
@@ -117,14 +117,14 @@ func writeStates(batch ethdb.Batch, genMarker []byte, accountData map[common.Has
 			}
 			slots += 1
 			if len(blob) == 0 {
-				rawdb.DeleteStorageSnapshot(batch, common.Hash(addrHash), storageHash)
+				rawdb.DeleteStorageSnapshot(batch, addrHash, storageHash)
 				if clean != nil {
-					clean.Set(append(common.Hash(addrHash)[:], storageHash[:]...), nil)
+					clean.Set(append(addrHash[:], storageHash[:]...), nil)
 				}
 			} else {
-				rawdb.WriteStorageSnapshot(batch, common.Hash(addrHash), storageHash, blob)
+				rawdb.WriteStorageSnapshot(batch, addrHash, storageHash, blob)
 				if clean != nil {
-					clean.Set(append(common.Hash(addrHash)[:], storageHash[:]...), blob)
+					clean.Set(append(addrHash[:], storageHash[:]...), blob)
 				}
 			}
 		}
