@@ -187,7 +187,7 @@ func MakeReceipt(evm *vm.EVM, result *ExecutionResult, statedb *state.StateDB, b
 
 	// If the transaction created a contract, store the creation address in the receipt.
 	if tx.To() == nil {
-		receipt.ContractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
+		receipt.ContractAddress = common.BytesToAddress(crypto.CreateAddress(crypto.BytesToAddress(evm.TxContext.Origin.Bytes()), tx.Nonce()).Bytes())
 	}
 
 	// Set the receipt logs and create the bloom filter.

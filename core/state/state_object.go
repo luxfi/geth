@@ -99,7 +99,7 @@ func newObject(db *StateDB, address common.Address, acct *types.StateAccount) *s
 	return &stateObject{
 		db:                 db,
 		address:            address,
-		addrHash:           crypto.Keccak256Hash(address[:]),
+		addrHash:           common.BytesToHash(crypto.Keccak256Hash(address[:]).Bytes()),
 		origin:             origin,
 		data:               *acct,
 		originStorage:      make(Storage),
@@ -398,7 +398,7 @@ func (s *stateObject) commitStorage(op *accountUpdate) {
 		if op.storages == nil {
 			op.storages = make(map[common.Hash][]byte)
 		}
-		op.storages[hash] = encode(val)
+		op.storages[common.BytesToHash(hash.Bytes())] = encode(val)
 
 		if op.storagesOriginByKey == nil {
 			op.storagesOriginByKey = make(map[common.Hash][]byte)
@@ -408,7 +408,7 @@ func (s *stateObject) commitStorage(op *accountUpdate) {
 		}
 		origin := encode(s.originStorage[key])
 		op.storagesOriginByKey[key] = origin
-		op.storagesOriginByHash[hash] = origin
+		op.storagesOriginByHash[common.BytesToHash(hash.Bytes())] = origin
 
 		// Overwrite the clean value of storage slots
 		s.originStorage[key] = val
