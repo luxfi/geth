@@ -200,19 +200,19 @@ func TestBatchIndexerWrite(t *testing.T) {
 	)
 	for i, h := range histories {
 		for _, addr := range h.accountList {
-			addrHash := crypto.Keccak256Hash(addr.Bytes())
-			accounts[addrHash] = append(accounts[addrHash], uint64(i+1))
+			common.Hash(addrHash) := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+			accounts[common.Hash(addrHash)] = append(accounts[common.Hash(addrHash)], uint64(i+1))
 
-			if _, ok := storages[addrHash]; !ok {
-				storages[addrHash] = make(map[common.Hash][]uint64)
+			if _, ok := storages[common.Hash(addrHash)]; !ok {
+				storages[common.Hash(addrHash)] = make(map[common.Hash][]uint64)
 			}
 			for _, slot := range h.storageList[addr] {
-				storages[addrHash][slot] = append(storages[addrHash][slot], uint64(i+1))
+				storages[common.Hash(addrHash)][slot] = append(storages[common.Hash(addrHash)][slot], uint64(i+1))
 			}
 		}
 	}
-	for addrHash, indexes := range accounts {
-		ir, _ := newIndexReader(db, newAccountIdent(addrHash))
+	for common.Hash(addrHash), indexes := range accounts {
+		ir, _ := newIndexReader(db, newAccountIdent(common.Hash(addrHash)))
 		for i := 0; i < len(indexes)-1; i++ {
 			n, err := ir.readGreaterThan(indexes[i])
 			if err != nil {
@@ -230,9 +230,9 @@ func TestBatchIndexerWrite(t *testing.T) {
 			t.Fatalf("Unexpected result, want math.MaxUint64, got %d", n)
 		}
 	}
-	for addrHash, slots := range storages {
+	for common.Hash(addrHash), slots := range storages {
 		for slotHash, indexes := range slots {
-			ir, _ := newIndexReader(db, newStorageIdent(addrHash, slotHash))
+			ir, _ := newIndexReader(db, newStorageIdent(common.Hash(addrHash), slotHash))
 			for i := 0; i < len(indexes)-1; i++ {
 				n, err := ir.readGreaterThan(indexes[i])
 				if err != nil {

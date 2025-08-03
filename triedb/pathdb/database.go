@@ -183,7 +183,7 @@ func merkleNodeHasher(blob []byte) (common.Hash, error) {
 	if len(blob) == 0 {
 		return types.EmptyRootHash, nil
 	}
-	return crypto.Keccak256Hash(blob), nil
+	return common.BytesToHash(crypto.Keccak256(blob)), nil
 }
 
 // verkleNodeHasher computes the hash of the given verkle node.
