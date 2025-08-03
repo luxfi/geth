@@ -26,6 +26,7 @@ import (
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/crypto"
+	cryptoCommon "github.com/luxfi/crypto/common"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
 )
@@ -555,7 +556,7 @@ func (evm *EVM) initNewContract(contract *Contract, address common.Address) ([]b
 // Create creates a new contract using code as deployment code.
 func (evm *EVM) Create(caller common.Address, code []byte, gas uint64, value *uint256.Int) (ret []byte, contractAddr common.Address, leftOverGas uint64, err error) {
 	// Convert geth Address to crypto Address for CreateAddress function
-	var callerAddr [20]byte
+	var callerAddr cryptoCommon.Address
 	copy(callerAddr[:], caller[:])
 	createdAddr := crypto.CreateAddress(callerAddr, evm.StateDB.GetNonce(caller))
 	contractAddr = common.BytesToAddress(createdAddr[:])
@@ -569,7 +570,7 @@ func (evm *EVM) Create(caller common.Address, code []byte, gas uint64, value *ui
 func (evm *EVM) Create2(caller common.Address, code []byte, gas uint64, endowment *uint256.Int, salt *uint256.Int) (ret []byte, contractAddr common.Address, leftOverGas uint64, err error) {
 	inithash := crypto.HashData(evm.interpreter.hasher, code)
 	// Convert geth Address to crypto Address for CreateAddress2 function
-	var callerAddr [20]byte
+	var callerAddr cryptoCommon.Address
 	copy(callerAddr[:], caller[:])
 	createdAddr := crypto.CreateAddress2(callerAddr, salt.Bytes32(), inithash[:])
 	contractAddr = common.BytesToAddress(createdAddr[:])
