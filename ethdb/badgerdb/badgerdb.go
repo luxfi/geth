@@ -21,10 +21,8 @@ import (
 	"bytes"
 	"errors"
 
-	db "github.com/luxfi/database"
-	"github.com/luxfi/database/badgerdb"
+	"github.com/dgraph-io/badger/v4"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 var errNotSupported = errors.New("not supported")
@@ -32,17 +30,21 @@ var errNotSupported = errors.New("not supported")
 // New returns a wrapped badgerdb database that implements ethdb.Database
 func New(file string, cache int, handles int, namespace string, readonly bool) (ethdb.Database, error) {
 	// Create badgerdb instance
-	luxDB, err := badgerdb.New(file, nil, namespace, prometheus.DefaultRegisterer)
+	opts := badger.DefaultOptions(file)
+	opts.ReadOnly = readonly
+	opts.Logger = nil // Disable badger's own logging
+	
+	db, err := badger.Open(opts)
 	if err != nil {
 		return nil, err
 	}
 
-	return &database{db: luxDB}, nil
+	return &database{db: db}, nil
 }
 
-// database wraps a luxfi/database to implement ethdb.Database
+// database wraps a badger.DB to implement ethdb.Database
 type database struct {
-	db db.Database
+	db *badger.DB
 }
 
 // Close implements ethdb.Database
@@ -52,56 +54,95 @@ func (d *database) Close() error {
 
 // Has implements ethdb.KeyValueReader
 func (d *database) Has(key []byte) (bool, error) {
-	return d.db.Has(key)
+	err := d.db.View(func(txn *badger.Txn) error {
+		_, err := txn.Get(key)
+		return err
+	})
+	if err == badger.ErrKeyNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Get implements ethdb.KeyValueReader
 func (d *database) Get(key []byte) ([]byte, error) {
-	return d.db.Get(key)
+	var val []byte
+	err := d.db.View(func(txn *badger.Txn) error {
+		item, err := txn.Get(key)
+		if err != nil {
+			return err
+		}
+		val, err = item.ValueCopy(nil)
+		return err
+	})
+	if err == badger.ErrKeyNotFound {
+		return nil, nil
+	}
+	return val, err
 }
 
 // Put implements ethdb.KeyValueWriter
 func (d *database) Put(key []byte, value []byte) error {
-	return d.db.Put(key, value)
+	return d.db.Update(func(txn *badger.Txn) error {
+		return txn.Set(key, value)
+	})
 }
 
 // Delete implements ethdb.KeyValueDeleter
 func (d *database) Delete(key []byte) error {
-	return d.db.Delete(key)
+	return d.db.Update(func(txn *badger.Txn) error {
+		return txn.Delete(key)
+	})
 }
 
 // DeleteRange deletes all keys with prefix (not fully supported)
 func (d *database) DeleteRange(start, end []byte) error {
-	// BadgerDB doesn't have native DeleteRange, so we iterate and delete
-	it := d.db.NewIteratorWithStartAndPrefix(start, nil)
-	defer it.Release()
+	return d.db.Update(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		opts.PrefetchSize = 10
+		it := txn.NewIterator(opts)
+		defer it.Close()
 
-	batch := d.db.NewBatch()
-	for it.Next() {
-		key := it.Key()
-		if end != nil && bytes.Compare(key, end) >= 0 {
-			break
+		for it.Seek(start); it.Valid(); it.Next() {
+			key := it.Item().Key()
+			if end != nil && bytes.Compare(key, end) >= 0 {
+				break
+			}
+			if err := txn.Delete(key); err != nil {
+				return err
+			}
 		}
-		if err := batch.Delete(key); err != nil {
-			return err
-		}
-	}
-	return batch.Write()
+		return nil
+	})
 }
 
 // NewBatch implements ethdb.Batcher
 func (d *database) NewBatch() ethdb.Batch {
-	return &batch{b: d.db.NewBatch()}
+	return &batch{db: d.db, ops: make([]batchOp, 0)}
 }
 
 // NewBatchWithSize implements ethdb.Batcher
 func (d *database) NewBatchWithSize(size int) ethdb.Batch {
-	return &batch{b: d.db.NewBatch()}
+	return &batch{db: d.db, ops: make([]batchOp, 0, size)}
 }
 
 // NewIterator implements ethdb.Iteratee
 func (d *database) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
-	return &iterator{it: d.db.NewIteratorWithStartAndPrefix(start, prefix)}
+	txn := d.db.NewTransaction(false)
+	opts := badger.DefaultIteratorOptions
+	opts.PrefetchSize = 10
+	it := txn.NewIterator(opts)
+	
+	if start != nil {
+		it.Seek(start)
+	} else if prefix != nil {
+		it.Seek(prefix)
+	}
+	
+	return &iterator{txn: txn, it: it, prefix: prefix}
 }
 
 // Stat implements ethdb.Stater
@@ -111,7 +152,8 @@ func (d *database) Stat() (string, error) {
 
 // Compact implements ethdb.Compacter
 func (d *database) Compact(start []byte, limit []byte) error {
-	return d.db.Compact(start, limit)
+	// BadgerDB handles compaction automatically via GC
+	return d.db.RunValueLogGC(0.5)
 }
 
 // SyncKeyValue implements ethdb.Database
@@ -187,22 +229,39 @@ func (d *database) MigrateTable(kind string, convert func([]byte) ([]byte, error
 	return nil
 }
 
-// batch wraps a luxfi/database batch to implement ethdb.Batch
+// batchOp represents a single batch operation
+type batchOp struct {
+	isDelete bool
+	key      []byte
+	value    []byte
+}
+
+// batch wraps badger batch operations to implement ethdb.Batch
 type batch struct {
-	b    db.Batch
+	db   *badger.DB
+	ops  []batchOp
 	size int
 }
 
 // Put implements ethdb.Batch
 func (b *batch) Put(key []byte, value []byte) error {
+	b.ops = append(b.ops, batchOp{
+		isDelete: false,
+		key:      append([]byte(nil), key...),
+		value:    append([]byte(nil), value...),
+	})
 	b.size += len(key) + len(value)
-	return b.b.Put(key, value)
+	return nil
 }
 
 // Delete implements ethdb.Batch
 func (b *batch) Delete(key []byte) error {
+	b.ops = append(b.ops, batchOp{
+		isDelete: true,
+		key:      append([]byte(nil), key...),
+	})
 	b.size += len(key)
-	return b.b.Delete(key)
+	return nil
 }
 
 // DeleteRange deletes all keys with prefix (not supported)
@@ -218,46 +277,68 @@ func (b *batch) ValueSize() int {
 
 // Write implements ethdb.Batch
 func (b *batch) Write() error {
-	return b.b.Write()
+	return b.db.Update(func(txn *badger.Txn) error {
+		for _, op := range b.ops {
+			if op.isDelete {
+				if err := txn.Delete(op.key); err != nil {
+					return err
+				}
+			} else {
+				if err := txn.Set(op.key, op.value); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
 }
 
 // Reset implements ethdb.Batch
 func (b *batch) Reset() {
-	b.b.Reset()
+	b.ops = b.ops[:0]
 	b.size = 0
 }
 
 // Replay implements ethdb.Batch
 func (b *batch) Replay(w ethdb.KeyValueWriter) error {
-	return b.b.Replay(&wrapper{w: w})
-}
-
-// wrapper wraps ethdb.KeyValueWriter to implement db.KeyValueWriterDeleter
-type wrapper struct {
-	w ethdb.KeyValueWriter
-}
-
-func (w *wrapper) Put(key []byte, value []byte) error {
-	return w.w.Put(key, value)
-}
-
-func (w *wrapper) Delete(key []byte) error {
-	// Try to cast to deleter
-	if deleter, ok := w.w.(interface{ Delete([]byte) error }); ok {
-		return deleter.Delete(key)
+	for _, op := range b.ops {
+		if op.isDelete {
+			if deleter, ok := w.(interface{ Delete([]byte) error }); ok {
+				if err := deleter.Delete(op.key); err != nil {
+					return err
+				}
+			}
+		} else {
+			if err := w.Put(op.key, op.value); err != nil {
+				return err
+			}
+		}
 	}
-	// If not a deleter, just put empty value
-	return w.w.Put(key, nil)
+	return nil
 }
 
-// iterator wraps a luxfi/database iterator to implement ethdb.Iterator
+
+// iterator wraps a badger iterator to implement ethdb.Iterator
 type iterator struct {
-	it db.Iterator
+	txn    *badger.Txn
+	it     *badger.Iterator
+	prefix []byte
 }
 
 // Next implements ethdb.Iterator
 func (i *iterator) Next() bool {
-	return i.it.Next()
+	i.it.Next()
+	if !i.it.Valid() {
+		return false
+	}
+	// Check prefix if set
+	if i.prefix != nil {
+		key := i.it.Item().Key()
+		if !bytes.HasPrefix(key, i.prefix) {
+			return false
+		}
+	}
+	return true
 }
 
 // Error implements ethdb.Iterator
@@ -267,15 +348,26 @@ func (i *iterator) Error() error {
 
 // Key implements ethdb.Iterator
 func (i *iterator) Key() []byte {
-	return i.it.Key()
+	if !i.it.Valid() {
+		return nil
+	}
+	return i.it.Item().KeyCopy(nil)
 }
 
 // Value implements ethdb.Iterator
 func (i *iterator) Value() []byte {
-	return i.it.Value()
+	if !i.it.Valid() {
+		return nil
+	}
+	val, err := i.it.Item().ValueCopy(nil)
+	if err != nil {
+		return nil
+	}
+	return val
 }
 
 // Release implements ethdb.Iterator
 func (i *iterator) Release() {
-	i.it.Release()
+	i.it.Close()
+	i.txn.Discard()
 }
