@@ -110,7 +110,7 @@ func accountHistory(freezer ethdb.AncientReader, address common.Address, start, 
 
 // storageHistory inspects the storage history within the range.
 func storageHistory(freezer ethdb.AncientReader, address common.Address, slot common.Hash, start uint64, end uint64) (*HistoryStats, error) {
-	slotHash := crypto.Keccak256Hash(slot.Bytes())
+	slotHash := common.BytesToHash(crypto.Keccak256(slot.Bytes()))
 	return inspectHistory(freezer, start, end, func(h *history, stats *HistoryStats) {
 		slots, exists := h.storages[address]
 		if !exists {

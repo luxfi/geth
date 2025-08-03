@@ -282,7 +282,7 @@ func (h *history) stateSet() (map[common.Hash][]byte, map[common.Hash]map[common
 		storages = make(map[common.Hash]map[common.Hash][]byte)
 	)
 	for addr, blob := range h.accounts {
-		addrHash := crypto.Keccak256Hash(addr.Bytes())
+		addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
 		accounts[addrHash] = blob
 
 		storage, exist := h.storages[addr]
@@ -294,7 +294,7 @@ func (h *history) stateSet() (map[common.Hash][]byte, map[common.Hash]map[common
 		} else {
 			subset := make(map[common.Hash][]byte)
 			for key, slot := range storage {
-				subset[crypto.Keccak256Hash(key.Bytes())] = slot
+				subset[common.BytesToHash(crypto.Keccak256(key.Bytes()))] = slot
 			}
 			storages[addrHash] = subset
 		}
