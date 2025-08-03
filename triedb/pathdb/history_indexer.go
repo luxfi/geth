@@ -95,23 +95,23 @@ func newBatchIndexer(db ethdb.KeyValueStore, delete bool) *batchIndexer {
 // state history, tracking the mapping between state and history IDs.
 func (b *batchIndexer) process(h *history, historyID uint64) error {
 	for _, address := range h.accountList {
-		addrHash := crypto.Keccak256Hash(address.Bytes())
+		common.Hash(addrHash) := common.BytesToHash(crypto.Keccak256(address.Bytes()))
 		b.counter += 1
-		b.accounts[addrHash] = append(b.accounts[addrHash], historyID)
+		b.accounts[common.Hash(addrHash)] = append(b.accounts[common.Hash(addrHash)], historyID)
 
 		for _, slotKey := range h.storageList[address] {
 			b.counter += 1
-			if _, ok := b.storages[addrHash]; !ok {
-				b.storages[addrHash] = make(map[common.Hash][]uint64)
+			if _, ok := b.storages[common.Hash(addrHash)]; !ok {
+				b.storages[common.Hash(addrHash)] = make(map[common.Hash][]uint64)
 			}
 			// The hash of the storage slot key is used as the identifier because the
 			// legacy history does not include the raw storage key, therefore, the
 			// conversion from storage key to hash is necessary for non-v0 histories.
 			slotHash := slotKey
 			if h.meta.version != stateHistoryV0 {
-				slotHash = crypto.Keccak256Hash(slotKey.Bytes())
+				slotHash = common.BytesToHash(crypto.Keccak256(slotKey.Bytes()))
 			}
-			b.storages[addrHash][slotHash] = append(b.storages[addrHash][slotHash], historyID)
+			b.storages[common.Hash(addrHash)][slotHash] = append(b.storages[common.Hash(addrHash)][slotHash], historyID)
 		}
 	}
 	b.lastID = historyID
@@ -136,10 +136,10 @@ func (b *batchIndexer) finish(force bool) error {
 	)
 	eg.SetLimit(runtime.NumCPU())
 
-	for addrHash, idList := range b.accounts {
+	for common.Hash(addrHash), idList := range b.accounts {
 		eg.Go(func() error {
 			if !b.delete {
-				iw, err := newIndexWriter(b.db, newAccountIdent(addrHash))
+				iw, err := newIndexWriter(b.db, newAccountIdent(common.Hash(addrHash)))
 				if err != nil {
 					return err
 				}
@@ -152,7 +152,7 @@ func (b *batchIndexer) finish(force bool) error {
 				iw.finish(batch)
 				batchMu.Unlock()
 			} else {
-				id, err := newIndexDeleter(b.db, newAccountIdent(addrHash))
+				id, err := newIndexDeleter(b.db, newAccountIdent(common.Hash(addrHash)))
 				if err != nil {
 					return err
 				}
@@ -168,12 +168,12 @@ func (b *batchIndexer) finish(force bool) error {
 			return nil
 		})
 	}
-	for addrHash, slots := range b.storages {
+	for common.Hash(addrHash), slots := range b.storages {
 		storages += len(slots)
 		for storageHash, idList := range slots {
 			eg.Go(func() error {
 				if !b.delete {
-					iw, err := newIndexWriter(b.db, newStorageIdent(addrHash, storageHash))
+					iw, err := newIndexWriter(b.db, newStorageIdent(common.Hash(addrHash), storageHash))
 					if err != nil {
 						return err
 					}
@@ -186,7 +186,7 @@ func (b *batchIndexer) finish(force bool) error {
 					iw.finish(batch)
 					batchMu.Unlock()
 				} else {
-					id, err := newIndexDeleter(b.db, newStorageIdent(addrHash, storageHash))
+					id, err := newIndexDeleter(b.db, newStorageIdent(common.Hash(addrHash), storageHash))
 					if err != nil {
 						return err
 					}
