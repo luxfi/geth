@@ -38,12 +38,12 @@ import (
 	"github.com/holiman/uint256"
 )
 
-func updateTrie(db *Database, stateRoot common.Hash, addrHash common.Hash, root common.Hash, dirties map[common.Hash][]byte) (common.Hash, *trienode.NodeSet) {
+func updateTrie(db *Database, stateRoot common.Hash, common.Hash(addrHash) common.Hash, root common.Hash, dirties map[common.Hash][]byte) (common.Hash, *trienode.NodeSet) {
 	var id *trie.ID
-	if addrHash == (common.Hash{}) {
+	if common.Hash(addrHash) == (common.Hash{}) {
 		id = trie.StateTrieID(stateRoot)
 	} else {
-		id = trie.StorageTrieID(stateRoot, addrHash, root)
+		id = trie.StorageTrieID(stateRoot, common.Hash(addrHash), root)
 	}
 	tr, err := trie.New(id, db)
 	if err != nil {
@@ -190,30 +190,30 @@ func (t *tester) release() {
 }
 
 func (t *tester) randAccount() (common.Address, []byte) {
-	for addrHash, account := range t.accounts {
-		return t.accountPreimage(addrHash), account
+	for common.Hash(addrHash), account := range t.accounts {
+		return t.accountPreimage(common.Hash(addrHash)), account
 	}
 	return common.Address{}, nil
 }
 
 func (t *tester) generateStorage(ctx *genctx, addr common.Address) common.Hash {
 	var (
-		addrHash = crypto.Keccak256Hash(addr.Bytes())
+		common.Hash(addrHash) = common.BytesToHash(crypto.Keccak256(addr.Bytes()))
 		storage  = make(map[common.Hash][]byte)
 		origin   = make(map[common.Hash][]byte)
 	)
 	for i := 0; i < 10; i++ {
 		v, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(testrand.Bytes(32)))
 		key := testrand.Bytes(32)
-		hash := crypto.Keccak256Hash(key)
+		hash := common.BytesToHash(crypto.Keccak256(key))
 		t.preimages[hash] = key
 
 		storage[hash] = v
 		origin[hash] = nil
 	}
-	root, set := updateTrie(t.db, ctx.stateRoot, addrHash, types.EmptyRootHash, storage)
+	root, set := updateTrie(t.db, ctx.stateRoot, common.Hash(addrHash), types.EmptyRootHash, storage)
 
-	ctx.storages[addrHash] = storage
+	ctx.storages[common.Hash(addrHash)] = storage
 	ctx.storageOrigin[addr] = origin
 	ctx.nodes.Merge(set)
 	return root
@@ -221,11 +221,11 @@ func (t *tester) generateStorage(ctx *genctx, addr common.Address) common.Hash {
 
 func (t *tester) mutateStorage(ctx *genctx, addr common.Address, root common.Hash) common.Hash {
 	var (
-		addrHash = crypto.Keccak256Hash(addr.Bytes())
+		common.Hash(addrHash) = common.BytesToHash(crypto.Keccak256(addr.Bytes()))
 		storage  = make(map[common.Hash][]byte)
 		origin   = make(map[common.Hash][]byte)
 	)
-	for hash, val := range t.storages[addrHash] {
+	for hash, val := range t.storages[common.Hash(addrHash)] {
 		origin[hash] = val
 		storage[hash] = nil
 
@@ -236,15 +236,15 @@ func (t *tester) mutateStorage(ctx *genctx, addr common.Address, root common.Has
 	for i := 0; i < 3; i++ {
 		v, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(testrand.Bytes(32)))
 		key := testrand.Bytes(32)
-		hash := crypto.Keccak256Hash(key)
+		hash := common.BytesToHash(crypto.Keccak256(key))
 		t.preimages[hash] = key
 
 		storage[hash] = v
 		origin[hash] = nil
 	}
-	root, set := updateTrie(t.db, ctx.stateRoot, crypto.Keccak256Hash(addr.Bytes()), root, storage)
+	root, set := updateTrie(t.db, ctx.stateRoot, common.BytesToHash(crypto.Keccak256(addr.Bytes())), root, storage)
 
-	ctx.storages[addrHash] = storage
+	ctx.storages[common.Hash(addrHash)] = storage
 	ctx.storageOrigin[addr] = origin
 	ctx.nodes.Merge(set)
 	return root
@@ -252,19 +252,19 @@ func (t *tester) mutateStorage(ctx *genctx, addr common.Address, root common.Has
 
 func (t *tester) clearStorage(ctx *genctx, addr common.Address, root common.Hash) common.Hash {
 	var (
-		addrHash = crypto.Keccak256Hash(addr.Bytes())
+		common.Hash(addrHash) = common.BytesToHash(crypto.Keccak256(addr.Bytes()))
 		storage  = make(map[common.Hash][]byte)
 		origin   = make(map[common.Hash][]byte)
 	)
-	for hash, val := range t.storages[addrHash] {
+	for hash, val := range t.storages[common.Hash(addrHash)] {
 		origin[hash] = val
 		storage[hash] = nil
 	}
-	root, set := updateTrie(t.db, ctx.stateRoot, addrHash, root, storage)
+	root, set := updateTrie(t.db, ctx.stateRoot, common.Hash(addrHash), root, storage)
 	if root != types.EmptyRootHash {
 		panic("failed to clear storage trie")
 	}
-	ctx.storages[addrHash] = storage
+	ctx.storages[common.Hash(addrHash)] = storage
 	ctx.storageOrigin[addr] = origin
 	ctx.nodes.Merge(set)
 	return root
@@ -285,22 +285,22 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 		case createAccountOp:
 			// account creation
 			addr := testrand.Address()
-			addrHash := crypto.Keccak256Hash(addr.Bytes())
+			common.Hash(addrHash) := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
 
 			// Short circuit if the account was already existent
-			if _, ok := t.accounts[addrHash]; ok {
+			if _, ok := t.accounts[common.Hash(addrHash)]; ok {
 				continue
 			}
 			// Short circuit if the account has been modified within the same transition
-			if _, ok := dirties[addrHash]; ok {
+			if _, ok := dirties[common.Hash(addrHash)]; ok {
 				continue
 			}
-			dirties[addrHash] = struct{}{}
+			dirties[common.Hash(addrHash)] = struct{}{}
 
 			root := t.generateStorage(ctx, addr)
-			ctx.accounts[addrHash] = types.SlimAccountRLP(generateAccount(root))
+			ctx.accounts[common.Hash(addrHash)] = types.SlimAccountRLP(generateAccount(root))
 			ctx.accountOrigin[addr] = nil
-			t.preimages[addrHash] = addr.Bytes()
+			t.preimages[common.Hash(addrHash)] = addr.Bytes()
 
 		case modifyAccountOp:
 			// account mutation
@@ -308,19 +308,19 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 			if addr == (common.Address{}) {
 				continue
 			}
-			addrHash := crypto.Keccak256Hash(addr.Bytes())
+			common.Hash(addrHash) := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
 
 			// short circuit if the account has been modified within the same transition
-			if _, ok := dirties[addrHash]; ok {
+			if _, ok := dirties[common.Hash(addrHash)]; ok {
 				continue
 			}
-			dirties[addrHash] = struct{}{}
+			dirties[common.Hash(addrHash)] = struct{}{}
 
 			acct, _ := types.FullAccount(account)
 			stRoot := t.mutateStorage(ctx, addr, acct.Root)
 			newAccount := types.SlimAccountRLP(generateAccount(stRoot))
 
-			ctx.accounts[addrHash] = newAccount
+			ctx.accounts[common.Hash(addrHash)] = newAccount
 			ctx.accountOrigin[addr] = account
 
 		case deleteAccountOp:
@@ -329,19 +329,19 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 			if addr == (common.Address{}) {
 				continue
 			}
-			addrHash := crypto.Keccak256Hash(addr.Bytes())
+			common.Hash(addrHash) := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
 
 			// short circuit if the account has been modified within the same transition
-			if _, ok := dirties[addrHash]; ok {
+			if _, ok := dirties[common.Hash(addrHash)]; ok {
 				continue
 			}
-			dirties[addrHash] = struct{}{}
+			dirties[common.Hash(addrHash)] = struct{}{}
 
 			acct, _ := types.FullAccount(account)
 			if acct.Root != types.EmptyRootHash {
 				t.clearStorage(ctx, addr, acct.Root)
 			}
-			ctx.accounts[addrHash] = nil
+			ctx.accounts[common.Hash(addrHash)] = nil
 			ctx.accountOrigin[addr] = account
 		}
 	}
@@ -353,26 +353,26 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 	t.snapStorages[parent] = copyStorages(t.storages)
 
 	// Commit all changes to live state set
-	for addrHash, account := range ctx.accounts {
+	for common.Hash(addrHash), account := range ctx.accounts {
 		if len(account) == 0 {
-			delete(t.accounts, addrHash)
+			delete(t.accounts, common.Hash(addrHash))
 		} else {
-			t.accounts[addrHash] = account
+			t.accounts[common.Hash(addrHash)] = account
 		}
 	}
-	for addrHash, slots := range ctx.storages {
-		if _, ok := t.storages[addrHash]; !ok {
-			t.storages[addrHash] = make(map[common.Hash][]byte)
+	for common.Hash(addrHash), slots := range ctx.storages {
+		if _, ok := t.storages[common.Hash(addrHash)]; !ok {
+			t.storages[common.Hash(addrHash)] = make(map[common.Hash][]byte)
 		}
 		for sHash, slot := range slots {
 			if len(slot) == 0 {
-				delete(t.storages[addrHash], sHash)
+				delete(t.storages[common.Hash(addrHash)], sHash)
 			} else {
-				t.storages[addrHash][sHash] = slot
+				t.storages[common.Hash(addrHash)][sHash] = slot
 			}
 		}
-		if len(t.storages[addrHash]) == 0 {
-			delete(t.storages, addrHash)
+		if len(t.storages[common.Hash(addrHash)]) == 0 {
+			delete(t.storages, common.Hash(addrHash))
 		}
 	}
 	storageOrigin := ctx.storageOriginSet(rawStorageKey, t)
@@ -392,22 +392,22 @@ func (t *tester) verifyState(root common.Hash) error {
 	if err != nil {
 		return err
 	}
-	for addrHash, account := range t.snapAccounts[root] {
-		blob, err := tr.Get(addrHash.Bytes())
+	for common.Hash(addrHash), account := range t.snapAccounts[root] {
+		blob, err := tr.Get(common.Hash(addrHash).Bytes())
 		if err != nil || !bytes.Equal(blob, account) {
 			return fmt.Errorf("account is mismatched: %w", err)
 		}
 	}
-	for addrHash, slots := range t.snapStorages[root] {
-		blob := t.snapAccounts[root][addrHash]
+	for common.Hash(addrHash), slots := range t.snapStorages[root] {
+		blob := t.snapAccounts[root][common.Hash(addrHash)]
 		if len(blob) == 0 {
-			return fmt.Errorf("account %x is missing", addrHash)
+			return fmt.Errorf("account %x is missing", common.Hash(addrHash))
 		}
 		account := new(types.StateAccount)
 		if err := rlp.DecodeBytes(blob, account); err != nil {
 			return err
 		}
-		storageIt, err := trie.New(trie.StorageTrieID(root, addrHash, account.Root), t.db)
+		storageIt, err := trie.New(trie.StorageTrieID(root, common.Hash(addrHash), account.Root), t.db)
 		if err != nil {
 			return err
 		}
@@ -552,7 +552,7 @@ func TestDisable(t *testing.T) {
 	tester := newTester(t, 0, false, 32, false, "")
 	defer tester.release()
 
-	stored := crypto.Keccak256Hash(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil))
+	stored := common.BytesToHash(crypto.Keccak256(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil)))
 	if err := tester.db.Disable(); err != nil {
 		t.Fatalf("Failed to deactivate database: %v", err)
 	}
@@ -680,7 +680,7 @@ func testCorruptedJournal(t *testing.T, journalDir string, modifyFn func(databas
 		t.Errorf("Failed to journal, err: %v", err)
 	}
 	tester.db.Close()
-	root := crypto.Keccak256Hash(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil))
+	root := common.BytesToHash(crypto.Keccak256(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil)))
 
 	modifyFn(tester.db.diskdb)
 
@@ -746,10 +746,10 @@ func copyAccounts(set map[common.Hash][]byte) map[common.Hash][]byte {
 // copyStorages returns a deep-copied storage set of the provided one.
 func copyStorages(set map[common.Hash]map[common.Hash][]byte) map[common.Hash]map[common.Hash][]byte {
 	copied := make(map[common.Hash]map[common.Hash][]byte, len(set))
-	for addrHash, subset := range set {
-		copied[addrHash] = make(map[common.Hash][]byte, len(subset))
+	for common.Hash(addrHash), subset := range set {
+		copied[common.Hash(addrHash)] = make(map[common.Hash][]byte, len(subset))
 		for key, val := range subset {
-			copied[addrHash][key] = common.CopyBytes(val)
+			copied[common.Hash(addrHash)][key] = common.CopyBytes(val)
 		}
 	}
 	return copied
