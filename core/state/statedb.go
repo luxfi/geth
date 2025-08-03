@@ -459,7 +459,7 @@ func (s *StateDB) SetNonce(addr common.Address, nonce uint64, reason tracing.Non
 func (s *StateDB) SetCode(addr common.Address, code []byte) (prev []byte) {
 	stateObject := s.getOrNewStateObject(addr)
 	if stateObject != nil {
-		return stateObject.SetCode(crypto.Keccak256Hash(code), code)
+		return stateObject.SetCode(common.BytesToHash(crypto.Keccak256Hash(code).Bytes()), code)
 	}
 	return nil
 }
@@ -1103,7 +1103,7 @@ func (s *StateDB) handleDestruction(noStorageWiping bool) (map[common.Hash]*acco
 			address: addr,
 			origin:  types.SlimAccountRLP(*prev),
 		}
-		deletes[addrHash] = op
+		deletes[common.BytesToHash(addrHash.Bytes())] = op
 
 		// Short circuit if the origin storage was empty.
 		if prev.Root == types.EmptyRootHash || s.db.TrieDB().IsVerkle() {
@@ -1113,7 +1113,7 @@ func (s *StateDB) handleDestruction(noStorageWiping bool) (map[common.Hash]*acco
 			return nil, nil, fmt.Errorf("unexpected storage wiping, %x", addr)
 		}
 		// Remove storage slots belonging to the account.
-		storages, storagesOrigin, set, err := s.deleteStorage(addr, addrHash, prev.Root)
+		storages, storagesOrigin, set, err := s.deleteStorage(addr, common.BytesToHash(addrHash.Bytes()), prev.Root)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to delete storage, err: %w", err)
 		}
