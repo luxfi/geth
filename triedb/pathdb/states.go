@@ -286,30 +286,30 @@ func (s *stateSet) merge(other *stateSet) {
 // a list of additional storage slots with their original value.
 func (s *stateSet) revertTo(accountOrigin map[common.Hash][]byte, storageOrigin map[common.Hash]map[common.Hash][]byte) {
 	var delta int // size tracking
-	for common.Hash(addrHash), blob := range accountOrigin {
-		data, ok := s.accountData[common.Hash(addrHash)]
+	for addrHash, blob := range accountOrigin {
+		data, ok := s.accountData[addrHash]
 		if !ok {
-			panic(fmt.Sprintf("non-existent account for reverting, %x", common.Hash(addrHash)))
+			panic(fmt.Sprintf("non-existent account for reverting, %x", addrHash))
 		}
 		if len(data) == 0 && len(blob) == 0 {
-			panic(fmt.Sprintf("invalid account mutation (null to null), %x", common.Hash(addrHash)))
+			panic(fmt.Sprintf("invalid account mutation (null to null), %x", addrHash))
 		}
 		delta += len(blob) - len(data)
-		s.accountData[common.Hash(addrHash)] = blob
+		s.accountData[addrHash] = blob
 	}
 	// Overwrite the storage data with original value blindly
-	for common.Hash(addrHash), storage := range storageOrigin {
-		slots := s.storageData[common.Hash(addrHash)]
+	for addrHash, storage := range storageOrigin {
+		slots := s.storageData[addrHash]
 		if len(slots) == 0 {
-			panic(fmt.Sprintf("non-existent storage set for reverting, %x", common.Hash(addrHash)))
+			panic(fmt.Sprintf("non-existent storage set for reverting, %x", addrHash))
 		}
 		for storageHash, blob := range storage {
 			data, ok := slots[storageHash]
 			if !ok {
-				panic(fmt.Sprintf("non-existent storage slot for reverting, %x-%x", common.Hash(addrHash), storageHash))
+				panic(fmt.Sprintf("non-existent storage slot for reverting, %x-%x", addrHash, storageHash))
 			}
 			if len(blob) == 0 && len(data) == 0 {
-				panic(fmt.Sprintf("invalid storage slot mutation (null to null), %x-%x", common.Hash(addrHash), storageHash))
+				panic(fmt.Sprintf("invalid storage slot mutation (null to null), %x-%x", addrHash, storageHash))
 			}
 			delta += len(blob) - len(data)
 			slots[storageHash] = blob
@@ -341,8 +341,8 @@ func (s *stateSet) encode(w io.Writer) error {
 		Accounts   [][]byte
 	}
 	var enc accounts
-	for common.Hash(addrHash), blob := range s.accountData {
-		enc.AddrHashes = append(enc.AddrHashes, common.Hash(addrHash))
+	for addrHash, blob := range s.accountData {
+		enc.AddrHashes = append(enc.AddrHashes, addrHash)
 		enc.Accounts = append(enc.Accounts, blob)
 	}
 	if err := rlp.Encode(w, enc); err != nil {
@@ -355,7 +355,7 @@ func (s *stateSet) encode(w io.Writer) error {
 		Vals     [][]byte
 	}
 	storages := make([]Storage, 0, len(s.storageData))
-	for common.Hash(addrHash), slots := range s.storageData {
+	for addrHash, slots := range s.storageData {
 		keys := make([]common.Hash, 0, len(slots))
 		vals := make([][]byte, 0, len(slots))
 		for key, val := range slots {
@@ -363,7 +363,7 @@ func (s *stateSet) encode(w io.Writer) error {
 			vals = append(vals, val)
 		}
 		storages = append(storages, Storage{
-			AddrHash: common.Hash(addrHash),
+			AddrHash: addrHash,
 			Keys:     keys,
 			Vals:     vals,
 		})

@@ -47,9 +47,9 @@ func checkHistoricState(env *tester, root common.Hash, hr *historyReader) error 
 		accounts = env.snapAccounts[root]
 		storages = env.snapStorages[root]
 	)
-	for common.Hash(addrHash), accountData := range accounts {
-		latest, _ := dl.account(common.Hash(addrHash), 0)
-		blob, err := hr.read(newAccountIdentQuery(env.accountPreimage(common.Hash(addrHash)), common.Hash(addrHash)), *stateID, dl.stateID(), latest)
+	for addrHash, accountData := range accounts {
+		latest, _ := dl.account(addrHash, 0)
+		blob, err := hr.read(newAccountIdentQuery(env.accountPreimage(addrHash), addrHash), *stateID, dl.stateID(), latest)
 		if err != nil {
 			return err
 		}
@@ -62,10 +62,10 @@ func checkHistoricState(env *tester, root common.Hash, hr *historyReader) error 
 			break
 		}
 		// Find all accounts deleted in the past, ensure the associated data is null
-		for common.Hash(addrHash) := range env.snapAccounts[env.roots[i]] {
-			if _, ok := accounts[common.Hash(addrHash)]; !ok {
-				latest, _ := dl.account(common.Hash(addrHash), 0)
-				blob, err := hr.read(newAccountIdentQuery(env.accountPreimage(common.Hash(addrHash)), common.Hash(addrHash)), *stateID, dl.stateID(), latest)
+		for addrHash := range env.snapAccounts[env.roots[i]] {
+			if _, ok := accounts[addrHash]; !ok {
+				latest, _ := dl.account(addrHash, 0)
+				blob, err := hr.read(newAccountIdentQuery(env.accountPreimage(addrHash), addrHash), *stateID, dl.stateID(), latest)
 				if err != nil {
 					return err
 				}
@@ -75,10 +75,10 @@ func checkHistoricState(env *tester, root common.Hash, hr *historyReader) error 
 			}
 		}
 	}
-	for common.Hash(addrHash), slots := range storages {
+	for addrHash, slots := range storages {
 		for slotHash, slotData := range slots {
-			latest, _ := dl.storage(common.Hash(addrHash), slotHash, 0)
-			blob, err := hr.read(newStorageIdentQuery(env.accountPreimage(common.Hash(addrHash)), common.Hash(addrHash), env.hashPreimage(slotHash), slotHash), *stateID, dl.stateID(), latest)
+			latest, _ := dl.storage(addrHash, slotHash, 0)
+			blob, err := hr.read(newStorageIdentQuery(env.accountPreimage(addrHash), addrHash, env.hashPreimage(slotHash), slotHash), *stateID, dl.stateID(), latest)
 			if err != nil {
 				return err
 			}
@@ -92,15 +92,15 @@ func checkHistoricState(env *tester, root common.Hash, hr *historyReader) error 
 			break
 		}
 		// Find all storage slots deleted in the past, ensure the associated data is null
-		for common.Hash(addrHash), slots := range env.snapStorages[env.roots[i]] {
+		for addrHash, slots := range env.snapStorages[env.roots[i]] {
 			for slotHash := range slots {
-				_, ok := storages[common.Hash(addrHash)]
+				_, ok := storages[addrHash]
 				if ok {
-					_, ok = storages[common.Hash(addrHash)][slotHash]
+					_, ok = storages[addrHash][slotHash]
 				}
 				if !ok {
-					latest, _ := dl.storage(common.Hash(addrHash), slotHash, 0)
-					blob, err := hr.read(newStorageIdentQuery(env.accountPreimage(common.Hash(addrHash)), common.Hash(addrHash), env.hashPreimage(slotHash), slotHash), *stateID, dl.stateID(), latest)
+					latest, _ := dl.storage(addrHash, slotHash, 0)
+					blob, err := hr.read(newStorageIdentQuery(env.accountPreimage(addrHash), addrHash, env.hashPreimage(slotHash), slotHash), *stateID, dl.stateID(), latest)
 					if err != nil {
 						return err
 					}
