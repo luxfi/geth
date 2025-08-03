@@ -74,7 +74,7 @@ type (
 
 	// loadStorage is the function to retrieve the storage slot from the associated
 	// layer. An error will be returned if the associated layer is stale.
-	loadStorage func(common.Hash(addrHash) common.Hash, slotHash common.Hash) ([]byte, error)
+	loadStorage func(addrHash common.Hash, slotHash common.Hash) ([]byte, error)
 )
 
 // diffAccountIterator is an account iterator that steps over the accounts (both

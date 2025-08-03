@@ -70,8 +70,8 @@ func (b *buffer) account(hash common.Hash) ([]byte, bool) {
 }
 
 // storage retrieves the storage slot with account address hash and slot key hash.
-func (b *buffer) storage(common.Hash(addrHash) common.Hash, storageHash common.Hash) ([]byte, bool) {
-	return b.states.storage(common.Hash(addrHash), storageHash)
+func (b *buffer) storage(addrHash common.Hash, storageHash common.Hash) ([]byte, bool) {
+	return b.states.storage(addrHash, storageHash)
 }
 
 // node retrieves the trie node with node path and its trie identifier.
