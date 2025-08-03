@@ -162,7 +162,7 @@ func findTxInBlockBody(blockbody rlp.RawValue, target common.Hash) (*types.Trans
 		if kind == rlp.List { // Legacy transaction
 			txHashPayload = txRLP
 		}
-		if crypto.Keccak256Hash(txHashPayload) == crypto.Hash(target) {
+		if common.BytesToHash(crypto.Keccak256(txHashPayload)) == target {
 			var tx types.Transaction
 			if err := rlp.DecodeBytes(txRLP, &tx); err != nil {
 				return nil, 0, err
