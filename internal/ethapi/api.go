@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
@@ -37,8 +38,6 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
-	cryptocommon "github.com/luxfi/crypto/common"
 	"github.com/luxfi/geth/eth/gasestimator"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/internal/ethapi/override"
@@ -1174,7 +1173,7 @@ func AccessList(ctx context.Context, b Backend, blockNrOrHash rpc.BlockNumberOrH
 	if args.To != nil {
 		to = *args.To
 	} else {
-		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(args.from()), uint64(*args.Nonce))
+		cryptoAddr := crypto.CreateAddress(crypto.Address(args.from()), uint64(*args.Nonce))
 		to = common.Address(cryptoAddr)
 	}
 	isPostMerge := header.Difficulty.Sign() == 0
@@ -1473,7 +1472,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	}
 
 	if tx.To() == nil {
-		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(from), tx.Nonce())
+		cryptoAddr := crypto.CreateAddress(crypto.Address(from), tx.Nonce())
 		addr := common.Address(cryptoAddr)
 		log.Info("Submitted contract creation", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "contract", addr.Hex(), "value", tx.Value())
 	} else {
