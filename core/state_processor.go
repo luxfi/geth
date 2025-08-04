@@ -27,7 +27,6 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/crypto"
-	cryptoCommon "github.com/luxfi/crypto/common"
 	"github.com/luxfi/geth/params"
 )
 
@@ -188,11 +187,11 @@ func MakeReceipt(evm *vm.EVM, result *ExecutionResult, statedb *state.StateDB, b
 
 	// If the transaction created a contract, store the creation address in the receipt.
 	if tx.To() == nil {
-		// Convert geth common.Address to crypto common.Address for CreateAddress function
-		var cryptoAddr cryptoCommon.Address
+		// Convert geth common.Address to crypto.Address for CreateAddress function
+		var cryptoAddr [20]byte
 		copy(cryptoAddr[:], evm.TxContext.Origin[:])
 		createdAddr := crypto.CreateAddress(cryptoAddr, tx.Nonce())
-		// Convert crypto common.Address back to geth common.Address
+		// Convert crypto.Address back to geth common.Address
 		receipt.ContractAddress = common.BytesToAddress(createdAddr[:])
 	}
 

@@ -606,7 +606,8 @@ func parseDumpConfig(ctx *cli.Context, db ethdb.Database) (*state.DumpConfig, co
 	case 32:
 		start = common.BytesToHash(startArg)
 	case 20:
-		start = crypto.Keccak256Hash(startArg)
+		cryptoHash := crypto.Keccak256Hash(startArg)
+		start = common.Hash(cryptoHash)
 		log.Info("Converting start-address to hash", "address", common.BytesToAddress(startArg), "hash", start.Hex())
 	default:
 		return nil, common.Hash{}, fmt.Errorf("invalid start argument: %x. 20 or 32 hex-encoded bytes required", startArg)
