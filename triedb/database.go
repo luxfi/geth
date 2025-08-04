@@ -37,6 +37,9 @@ type Config struct {
 	PathDB    *pathdb.Config // Configs for experimental path-based scheme
 }
 
+// DBOverride is a type alias for Database to support config constructors
+type DBOverride = Database
+
 // HashDefaults represents a config for using hash-based scheme with
 // default settings.
 var HashDefaults = &Config{
