@@ -208,7 +208,7 @@ func constructDevModeBanner(ctx *cli.Context, cfg gethConfig) string {
        ------------------
        0x%x (10^49 ETH)
 `, cfg.Eth.Miner.PendingFeeRecipient)
-		if cfg.Eth.Miner.PendingFeeRecipient == utils.DeveloperAddr {
+		if cfg.Eth.Miner.PendingFeeRecipient == common.Address(utils.DeveloperAddr) {
 			devModeBanner += fmt.Sprintf(` 
        Private Key
        ------------------
