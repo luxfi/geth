@@ -25,18 +25,17 @@ import (
 	"sync"
 
 	"github.com/dop251/goja"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/internal"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
-	cryptocommon "github.com/luxfi/crypto/common"
 	jsassets "github.com/luxfi/geth/eth/tracers/js/internal/tracers"
 )
 
@@ -515,7 +514,7 @@ func (t *jsTracer) setBuiltinFunctions() {
 			return nil
 		}
 		addr := common.BytesToAddress(a)
-		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(addr), uint64(nonce))
+		cryptoAddr := crypto.CreateAddress(crypto.Address(addr), uint64(nonce))
 		b := common.Address(cryptoAddr).Bytes()
 		res, err := t.toBuf(vm, b)
 		if err != nil {
@@ -538,7 +537,7 @@ func (t *jsTracer) setBuiltinFunctions() {
 		}
 		code = common.CopyBytes(code)
 		codeHash := crypto.Keccak256(code)
-		cryptoAddr := crypto.CreateAddress2(cryptocommon.Address(addr), common.HexToHash(salt), codeHash)
+		cryptoAddr := crypto.CreateAddress2(crypto.Address(addr), common.HexToHash(salt), codeHash)
 		b := common.Address(cryptoAddr).Bytes()
 		res, err := t.toBuf(vm, b)
 		if err != nil {
