@@ -157,6 +157,13 @@ func WriteTrieJournal(db ethdb.KeyValueWriter, journal []byte) {
 	}
 }
 
+// DeleteTrieJournal deletes the serialized trie journal from database.
+func DeleteTrieJournal(db ethdb.KeyValueWriter) {
+	if err := db.Delete(trieJournalKey); err != nil {
+		log.Crit("Failed to delete tries journal", "err", err)
+	}
+}
+
 // ReadStateHistoryMeta retrieves the metadata corresponding to the specified
 // state history. Compute the position of state history in freezer by minus
 // one since the id of first state history starts from one(zero for initial

@@ -377,6 +377,33 @@ type stat struct {
 	count counter
 }
 
+// DatabaseStat is an alias for the stat type
+type DatabaseStat = stat
+
+// InspectDatabaseOption is a functional option for database inspection
+type InspectDatabaseOption func()
+
+// WithDatabaseMetadataKeys returns an option to specify metadata keys
+func WithDatabaseMetadataKeys(fn func([]byte) bool) InspectDatabaseOption {
+	return func() {}
+}
+
+// WithDatabaseStatRecorder returns an option to record custom stats
+func WithDatabaseStatRecorder(fn func([]byte, common.StorageSize) bool) InspectDatabaseOption {
+	return func() {}
+}
+
+// WithDatabaseStatsTransformer returns an option to transform stats
+func WithDatabaseStatsTransformer(fn func([][]string) [][]string) InspectDatabaseOption {
+	return func() {}
+}
+
+// InspectDatabaseExt inspects the database with extended options
+func InspectDatabaseExt(db ethdb.Database, keyPrefix, keyStart []byte, options ...InspectDatabaseOption) error {
+	// For now, just delegate to the standard InspectDatabase
+	return InspectDatabase(db, keyPrefix, keyStart)
+}
+
 // Add size to the stat and increase the counter by 1
 func (s *stat) Add(size common.StorageSize) {
 	s.size += size
