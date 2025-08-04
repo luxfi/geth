@@ -68,3 +68,9 @@ type StateDatabase interface {
 	// An error will be returned if the specified state is not available.
 	StateReader(stateRoot common.Hash) (StateReader, error)
 }
+
+// Reader combines both NodeReader and StateReader interfaces
+type Reader interface {
+	NodeReader
+	StateReader
+}
