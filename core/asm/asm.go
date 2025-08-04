@@ -105,9 +105,9 @@ func (c *Compiler) addError(lineno int, err string) {
 
 func (c *Compiler) addInstruction(t token) {
 	instruction := vm.StringToOp(t.text)
-	if instruction == vm.PUSH {
-		// Handle variable length push
-		c.binary = append(c.binary, byte(vm.PUSH1))
+	// Check if it's a PUSH instruction (PUSH1 through PUSH32)
+	if instruction >= vm.PUSH1 && instruction <= vm.PUSH32 {
+		c.binary = append(c.binary, byte(instruction))
 		c.pc++
 		return
 	}
