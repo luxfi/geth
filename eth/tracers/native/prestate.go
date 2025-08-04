@@ -23,13 +23,12 @@ import (
 	"math/big"
 	"sync/atomic"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
-	cryptocommon "github.com/luxfi/crypto/common"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/internal"
 	"github.com/luxfi/geth/log"
@@ -145,7 +144,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 		}
 	case op == vm.CREATE:
 		nonce := t.env.StateDB.GetNonce(caller)
-		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(caller), nonce)
+		cryptoAddr := crypto.CreateAddress(crypto.Address(caller), nonce)
 		addr := common.Address(cryptoAddr)
 		t.lookupAccount(addr)
 		t.created[addr] = true
@@ -159,7 +158,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 		}
 		inithash := crypto.Keccak256(init)
 		salt := stackData[stackLen-4]
-		cryptoAddr := crypto.CreateAddress2(cryptocommon.Address(caller), salt.Bytes32(), inithash)
+		cryptoAddr := crypto.CreateAddress2(crypto.Address(caller), salt.Bytes32(), inithash)
 		addr := common.Address(cryptoAddr)
 		t.lookupAccount(addr)
 		t.created[addr] = true
@@ -169,7 +168,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 func (t *prestateTracer) OnTxStart(env *tracing.VMContext, tx *types.Transaction, from common.Address) {
 	t.env = env
 	if tx.To() == nil {
-		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(from), env.StateDB.GetNonce(from))
+		cryptoAddr := crypto.CreateAddress(crypto.Address(from), env.StateDB.GetNonce(from))
 		t.to = common.Address(cryptoAddr)
 		t.created[t.to] = true
 	} else {
