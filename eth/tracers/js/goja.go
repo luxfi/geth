@@ -36,6 +36,7 @@ import (
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/crypto"
+	cryptocommon "github.com/luxfi/crypto/common"
 	jsassets "github.com/luxfi/geth/eth/tracers/js/internal/tracers"
 )
 
@@ -514,7 +515,8 @@ func (t *jsTracer) setBuiltinFunctions() {
 			return nil
 		}
 		addr := common.BytesToAddress(a)
-		b := crypto.CreateAddress(addr, uint64(nonce)).Bytes()
+		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(addr), uint64(nonce))
+		b := common.Address(cryptoAddr).Bytes()
 		res, err := t.toBuf(vm, b)
 		if err != nil {
 			vm.Interrupt(err)
@@ -536,7 +538,8 @@ func (t *jsTracer) setBuiltinFunctions() {
 		}
 		code = common.CopyBytes(code)
 		codeHash := crypto.Keccak256(code)
-		b := crypto.CreateAddress2(addr, common.HexToHash(salt), codeHash).Bytes()
+		cryptoAddr := crypto.CreateAddress2(cryptocommon.Address(addr), common.HexToHash(salt), codeHash)
+		b := common.Address(cryptoAddr).Bytes()
 		res, err := t.toBuf(vm, b)
 		if err != nil {
 			vm.Interrupt(err)

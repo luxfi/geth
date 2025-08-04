@@ -38,6 +38,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/crypto"
+	cryptocommon "github.com/luxfi/crypto/common"
 	"github.com/luxfi/geth/eth/gasestimator"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/internal/ethapi/override"
@@ -387,7 +388,9 @@ func (api *BlockChainAPI) GetProof(ctx context.Context, address common.Address, 
 	if len(keys) > 0 {
 		var storageTrie state.Trie
 		if storageRoot != types.EmptyRootHash && storageRoot != (common.Hash{}) {
-			id := trie.StorageTrieID(header.Root, crypto.Keccak256Hash(address.Bytes()), storageRoot)
+			cryptoHash := crypto.Keccak256Hash(address.Bytes())
+			addressHash := common.Hash(cryptoHash)
+			id := trie.StorageTrieID(header.Root, addressHash, storageRoot)
 			st, err := trie.NewStateTrie(id, statedb.Database().TrieDB())
 			if err != nil {
 				return nil, err
@@ -1171,7 +1174,8 @@ func AccessList(ctx context.Context, b Backend, blockNrOrHash rpc.BlockNumberOrH
 	if args.To != nil {
 		to = *args.To
 	} else {
-		to = crypto.CreateAddress(args.from(), uint64(*args.Nonce))
+		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(args.from()), uint64(*args.Nonce))
+		to = common.Address(cryptoAddr)
 	}
 	isPostMerge := header.Difficulty.Sign() == 0
 	// Retrieve the precompiles since they don't need to be added to the access list
@@ -1469,7 +1473,8 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	}
 
 	if tx.To() == nil {
-		addr := crypto.CreateAddress(from, tx.Nonce())
+		cryptoAddr := crypto.CreateAddress(cryptocommon.Address(from), tx.Nonce())
+		addr := common.Address(cryptoAddr)
 		log.Info("Submitted contract creation", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "contract", addr.Hex(), "value", tx.Value())
 	} else {
 		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", tx.To(), "value", tx.Value())
