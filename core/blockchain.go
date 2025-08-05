@@ -1999,7 +1999,11 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 			// Disable tracing for prefetcher executions.
 			vmCfg := bc.cfg.VmConfig
 			vmCfg.Tracer = nil
-			bc.prefetcher.Prefetch(block, throwaway, vmCfg, &interrupt)
+			var interruptFlag uint32
+			if interrupt.Load() {
+				interruptFlag = 1
+			}
+			bc.prefetcher.Prefetch(block, throwaway, bc.chainConfig, &interruptFlag)
 
 			blockPrefetchExecuteTimer.Update(time.Since(start))
 			if interrupt.Load() {
@@ -2041,7 +2045,7 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 
 	// Process block using the parent state as reference point
 	pstart := time.Now()
-	res, err := bc.processor.Process(block, statedb, bc.cfg.VmConfig)
+	res, err := bc.processor.Process(block, statedb, bc.chainConfig)
 	if err != nil {
 		bc.reportBlock(block, res, err)
 		return nil, err
@@ -2049,7 +2053,7 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 	ptime := time.Since(pstart)
 
 	vstart := time.Now()
-	if err := bc.validator.ValidateState(block, statedb, res, false); err != nil {
+	if err := bc.validator.ValidateState(block, statedb, res.Receipts, res.GasUsed); err != nil {
 		bc.reportBlock(block, res, err)
 		return nil, err
 	}
