@@ -49,13 +49,14 @@ func newStatePrefetcher(config *params.ChainConfig, chain *HeaderChain) *statePr
 // Prefetch processes the state changes according to the Ethereum rules by running
 // the transaction messages using the statedb, but any changes are discarded. The
 // only goal is to warm the state caches.
-func (p *statePrefetcher) Prefetch(block *types.Block, statedb *state.StateDB, cfg vm.Config, interrupt *atomic.Bool) {
+func (p *statePrefetcher) Prefetch(block *types.Block, statedb *state.StateDB, cfg *params.ChainConfig, interrupt *uint32) {
 	var (
 		fails   atomic.Int64
 		header  = block.Header()
-		signer  = types.MakeSigner(p.config, header.Number, header.Time)
+		signer  = types.MakeSigner(cfg, header.Number, header.Time)
 		workers errgroup.Group
 		reader  = statedb.Reader()
+		vmCfg   = vm.Config{} // Use default VM config
 	)
 	workers.SetLimit(max(1, 4*runtime.NumCPU()/5)) // Aggressively run the prefetching
 
@@ -64,7 +65,7 @@ func (p *statePrefetcher) Prefetch(block *types.Block, statedb *state.StateDB, c
 		stateCpy := statedb.Copy() // closure
 		workers.Go(func() error {
 			// If block precaching was interrupted, abort
-			if interrupt != nil && interrupt.Load() {
+			if interrupt != nil && atomic.LoadUint32(interrupt) != 0 {
 				return nil
 			}
 			// Preload the touched accounts and storage slots in advance
@@ -92,7 +93,7 @@ func (p *statePrefetcher) Prefetch(block *types.Block, statedb *state.StateDB, c
 				}
 			}
 			// Execute the message to preload the implicit touched states
-			evm := vm.NewEVM(NewEVMBlockContext(header, p.chain, nil), stateCpy, p.config, cfg)
+			evm := vm.NewEVM(NewEVMBlockContext(header, p.chain, nil), stateCpy, cfg, vmCfg)
 
 			// Convert the transaction into an executable message and pre-cache its sender
 			msg, err := TransactionToMessage(tx, signer, header.BaseFee)
