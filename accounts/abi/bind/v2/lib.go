@@ -225,7 +225,9 @@ func DeployContract(opts *TransactOpts, bytecode []byte, backend ContractBackend
 	if err != nil {
 		return common.Address{}, nil, err
 	}
-	return crypto.CreateAddress(opts.From, tx.Nonce()), tx, nil
+	fromCrypto := crypto.BytesToAddress(opts.From[:])
+	cryptoAddr := crypto.CreateAddress(fromCrypto, tx.Nonce())
+	return common.BytesToAddress(cryptoAddr[:]), tx, nil
 }
 
 // DefaultDeployer returns a DeployFn that signs and submits creation transactions
