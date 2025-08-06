@@ -63,11 +63,12 @@ func NewKeyedTransactor(key *ecdsa.PrivateKey, chainID *big.Int) *TransactOpts {
 		panic("nil chainID")
 	}
 	keyAddr := crypto.PubkeyToAddress(key.PublicKey)
+	keyAddrCommon := common.BytesToAddress(keyAddr[:])
 	signer := types.LatestSignerForChainID(chainID)
 	return &TransactOpts{
-		From: keyAddr,
+		From: keyAddrCommon,
 		Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
-			if address != keyAddr {
+			if address != keyAddrCommon {
 				return nil, ErrNotAuthorized
 			}
 			signature, err := crypto.Sign(signer.Hash(tx).Bytes(), key)
