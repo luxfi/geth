@@ -20,7 +20,6 @@ import (
 	"encoding/binary"
 	"sync"
 
-	"github.com/luxfi/crypto/ipa/bandersnatch/fr"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/metrics"
 	"github.com/ethereum/go-verkle"
@@ -119,7 +118,7 @@ func GetTreeKey(address []byte, treeIndex *uint256.Int, subIndex byte) []byte {
 		address = append(aligned[:32-len(address)], address...)
 	}
 	// poly = [2+256*64, address_le_low, address_le_high, tree_index_le_low, tree_index_le_high]
-	var poly [5]fr.Element
+	var poly [5]verkle.Fr
 
 	// 32-byte address, interpreted as two little endian
 	// 16-byte numbers.
@@ -154,7 +153,7 @@ func GetTreeKey(address []byte, treeIndex *uint256.Int, subIndex byte) []byte {
 // Specifically, poly = [2+256*64, address_le_low, address_le_high] is already
 // evaluated.
 func GetTreeKeyWithEvaluatedAddress(evaluated *verkle.Point, treeIndex *uint256.Int, subIndex byte) []byte {
-	var poly [5]fr.Element
+	var poly [5]verkle.Fr
 
 	// little-endian, 32-byte aligned treeIndex
 	var index [32]byte
@@ -283,7 +282,7 @@ func evaluateAddressPoint(address []byte) *verkle.Point {
 		var aligned [32]byte
 		address = append(aligned[:32-len(address)], address...)
 	}
-	var poly [3]fr.Element
+	var poly [3]verkle.Fr
 
 	// 32-byte address, interpreted as two little endian
 	// 16-byte numbers.
