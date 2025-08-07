@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"os"
 	"strings"
 
 	"github.com/luxfi/geth/common"
@@ -324,6 +325,29 @@ func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *triedb.Database, g
 	// with an existing ancient store.
 	storedCfg := rawdb.ReadChainConfig(db, ghash)
 	if storedCfg == nil {
+		// Special case: If we're in replay mode with a custom genesis already in DB,
+		// don't try to validate against default mainnet genesis
+		if genesis == nil && os.Getenv("LUX_GENESIS") == "1" {
+			log.Info("LUX_GENESIS mode: Using existing genesis without validation", "hash", ghash)
+			// Create a minimal config if not present
+			minimalConfig := &params.ChainConfig{
+				ChainID:                 big.NewInt(96369),
+				HomesteadBlock:          big.NewInt(0),
+				EIP150Block:             big.NewInt(0),
+				EIP155Block:             big.NewInt(0),
+				EIP158Block:             big.NewInt(0),
+				ByzantiumBlock:          big.NewInt(0),
+				ConstantinopleBlock:     big.NewInt(0),
+				PetersburgBlock:         big.NewInt(0),
+				IstanbulBlock:           big.NewInt(0),
+				BerlinBlock:             big.NewInt(0),
+				LondonBlock:             big.NewInt(0),
+				TerminalTotalDifficulty: common.Big0,
+			}
+			rawdb.WriteChainConfig(db, ghash, minimalConfig)
+			return minimalConfig, ghash, nil, nil
+		}
+		
 		// Ensure the stored genesis block matches with the given genesis. Private
 		// networks must explicitly specify the genesis in the config file, mainnet
 		// genesis will be used as default and the initialization will always fail.
