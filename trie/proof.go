@@ -22,6 +22,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 )
@@ -85,16 +86,9 @@ func (t *Trie) Prove(key []byte, proofDb ethdb.KeyValueWriter) error {
 	defer returnHasherToPool(hasher)
 
 	for i, n := range nodes {
-		var hn node
-		n, hn = hasher.proofHash(n)
-		if hash, ok := hn.(hashNode); ok || i == 0 {
-			// If the node's database encoding is a hash (or is the
-			// root node), it becomes a proof element.
-			enc := nodeToBytes(n)
-			if !ok {
-				hash = hasher.hashData(enc)
-			}
-			proofDb.Put(hash, enc)
+		enc := hasher.proofHash(n)
+		if len(enc) >= 32 || i == 0 {
+			proofDb.Put(crypto.Keccak256(enc), enc)
 		}
 	}
 	return nil
