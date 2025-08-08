@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
-	"os"
 	"strings"
 
 	"github.com/luxfi/geth/common"
