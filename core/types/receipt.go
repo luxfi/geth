@@ -296,7 +296,7 @@ func (r *Receipt) DeriveFields(signer Signer, context DeriveReceiptContext) {
 		// Deriving the signer is expensive, only do if it's actually needed
 		from, _ := Sender(signer, context.Tx)
 		// Convert geth Address to crypto Address for CreateAddress function
-		var cryptoAddr [20]byte
+		var cryptoAddr crypto.Address
 		copy(cryptoAddr[:], from[:])
 		createdAddr := crypto.CreateAddress(cryptoAddr, context.Tx.Nonce())
 		// Convert back to geth Address

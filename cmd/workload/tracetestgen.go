@@ -128,7 +128,8 @@ func generateTraceTests(clictx *cli.Context) error {
 		}
 		test.BlockHashes = append(test.BlockHashes, header.Hash())
 		test.TraceConfigs = append(test.TraceConfigs, *config)
-		test.ResultHashes = append(test.ResultHashes, crypto.Keccak256Hash(blob))
+		hash := crypto.Keccak256Hash(blob)
+		test.ResultHashes = append(test.ResultHashes, common.BytesToHash(hash[:]))
 		writeTraceResult(outputDir, header.Hash(), result, configName)
 
 		if time.Since(logged) > time.Second*8 {

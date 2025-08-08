@@ -299,7 +299,10 @@ func (pre *Prestate) Apply(vmConfig vm.Config, chainConfig *params.ChainConfig, 
 
 			// If the transaction created a contract, store the creation address in the receipt.
 			if msg.To == nil {
-				receipt.ContractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
+				var cryptoAddr crypto.Address
+				copy(cryptoAddr[:], evm.TxContext.Origin[:])
+				createdAddr := crypto.CreateAddress(cryptoAddr, tx.Nonce())
+				receipt.ContractAddress = common.BytesToAddress(createdAddr[:])
 			}
 
 			// Set the receipt logs and create the bloom filter.
