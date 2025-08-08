@@ -387,7 +387,8 @@ func (tx *stTransaction) toMessage(ps stPostState, baseFee *big.Int) (*core.Mess
 		if err != nil {
 			return nil, fmt.Errorf("invalid private key: %v", err)
 		}
-		from = crypto.PubkeyToAddress(key.PublicKey)
+		addr := crypto.PubkeyToAddress(key.PublicKey)
+		from = common.BytesToAddress(addr[:])
 	}
 	// Parse recipient if present.
 	var to *common.Address
