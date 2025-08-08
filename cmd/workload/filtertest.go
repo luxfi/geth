@@ -208,7 +208,8 @@ func (fq *filterQuery) calculateHash() common.Hash {
 	if err != nil {
 		exit(fmt.Errorf("Error encoding logs: %v", err))
 	}
-	return crypto.Keccak256Hash(enc)
+	hash := crypto.Keccak256Hash(enc)
+	return common.BytesToHash(hash[:])
 }
 
 func (fq *filterQuery) run(client *client, historyPruneBlock *uint64) {
