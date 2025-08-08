@@ -23,8 +23,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/luxfi/geth/common"
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/internal/utesting"
 	"github.com/luxfi/geth/log"
@@ -98,8 +98,9 @@ func (s *traceTestSuite) traceBlock(t *utesting.T) {
 			t.Fatalf("Transaction %d (hash %v): error %v", i, hash, err)
 			continue
 		}
-		resultHash := crypto.Keccak256Hash(blob)
-		if common.BytesToHash(resultHash[:]) != s.tests.ResultHashes[i] {
+		resultHashCrypto := crypto.Keccak256Hash(blob)
+		resultHash := common.BytesToHash(resultHashCrypto[:])
+		if resultHash != s.tests.ResultHashes[i] {
 			t.Errorf("Transaction %d (hash %v): invalid result", i, hash)
 
 			writeInvalidTraceResult(s.invalidDir, hash, result)
