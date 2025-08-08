@@ -29,7 +29,7 @@ func RandomAddress() common.Address {
 }
 
 // NewTestTrie creates a new trie for testing
-func NewTestTrie(t *testing.T) (*trie.Trie, triedb.Database) {
+func NewTestTrie(t *testing.T) (*trie.Trie, *triedb.Database) {
 	db := rawdb.NewMemoryDatabase()
 	triedb := triedb.NewDatabase(db, &triedb.Config{})
 	tr, err := trie.New(trie.TrieID(common.Hash{}), triedb)

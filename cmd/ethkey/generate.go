@@ -24,6 +24,7 @@ import (
 
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/cmd/utils"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/crypto"
 	"github.com/google/uuid"
 	"github.com/urfave/cli/v2"
@@ -94,9 +95,10 @@ If you want to encrypt an existing private key, it can be specified by setting
 		if err != nil {
 			utils.Fatalf("Failed to generate random uuid: %v", err)
 		}
+		addr := crypto.PubkeyToAddress(privateKey.PublicKey)
 		key := &keystore.Key{
 			Id:         UUID,
-			Address:    crypto.PubkeyToAddress(privateKey.PublicKey),
+			Address:    common.BytesToAddress(addr[:]),
 			PrivateKey: privateKey,
 		}
 

@@ -98,7 +98,8 @@ func (s *traceTestSuite) traceBlock(t *utesting.T) {
 			t.Fatalf("Transaction %d (hash %v): error %v", i, hash, err)
 			continue
 		}
-		if crypto.Keccak256Hash(blob) != s.tests.ResultHashes[i] {
+		resultHash := crypto.Keccak256Hash(blob)
+		if common.BytesToHash(resultHash[:]) != s.tests.ResultHashes[i] {
 			t.Errorf("Transaction %d (hash %v): invalid result", i, hash)
 
 			writeInvalidTraceResult(s.invalidDir, hash, result)
