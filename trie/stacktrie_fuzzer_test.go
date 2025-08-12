@@ -106,7 +106,7 @@ func fuzz(data []byte, debugging bool) {
 	var (
 		nodeset = make(map[string][]byte) // path -> blob
 		trieC   = NewStackTrie(func(path []byte, hash common.Hash, blob []byte) {
-			if crypto.Keccak256Hash(blob) != hash {
+			if common.Hash(crypto.Keccak256Hash(blob)) != hash {
 				panic("invalid node blob")
 			}
 			nodeset[string(path)] = common.CopyBytes(blob)
