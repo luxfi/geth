@@ -70,12 +70,12 @@ func makeTestState(scheme string) (ethdb.Database, Database, *triedb.Database, c
 		acc.nonce = uint64(42 * i)
 
 		if i%3 == 0 {
-			obj.SetCode(crypto.Keccak256Hash([]byte{i, i, i, i, i}), []byte{i, i, i, i, i})
+			obj.SetCode(common.Hash(crypto.Keccak256Hash([]byte{i, i, i, i, i})), []byte{i, i, i, i, i})
 			acc.code = []byte{i, i, i, i, i}
 		}
 		if i%5 == 0 {
 			for j := byte(0); j < 5; j++ {
-				hash := crypto.Keccak256Hash([]byte{i, i, i, i, i, j, j})
+				hash := common.Hash(crypto.Keccak256Hash([]byte{i, i, i, i, i, j, j}))
 				obj.SetState(hash, hash)
 			}
 		}
@@ -631,7 +631,7 @@ func testIncompleteStateSync(t *testing.T, scheme string) {
 	var isCode = make(map[common.Hash]struct{})
 	for _, acc := range srcAccounts {
 		if len(acc.code) > 0 {
-			isCode[crypto.Keccak256Hash(acc.code)] = struct{}{}
+			isCode[common.Hash(crypto.Keccak256Hash(acc.code))] = struct{}{}
 		}
 	}
 	isCode[types.EmptyCodeHash] = struct{}{}
