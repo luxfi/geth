@@ -33,7 +33,7 @@ func TestEIP155Signing(t *testing.T) {
 	addr := crypto.PubkeyToAddress(key.PublicKey)
 
 	signer := NewEIP155Signer(big.NewInt(18))
-	tx, err := SignTx(NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil), signer, key)
+	tx, err := SignTx(NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil), signer, key)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,7 +42,7 @@ func TestEIP155Signing(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if from != addr {
+	if from != common.Address(addr) {
 		t.Errorf("expected from and address to be equal. Got %x want %x", from, addr)
 	}
 }
@@ -52,7 +52,7 @@ func TestEIP155ChainId(t *testing.T) {
 	addr := crypto.PubkeyToAddress(key.PublicKey)
 
 	signer := NewEIP155Signer(big.NewInt(18))
-	tx, err := SignTx(NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil), signer, key)
+	tx, err := SignTx(NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil), signer, key)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +64,7 @@ func TestEIP155ChainId(t *testing.T) {
 		t.Error("expected chainId to be", signer.chainId, "got", tx.ChainId())
 	}
 
-	tx = NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
+	tx = NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil)
 	tx, err = SignTx(tx, HomesteadSigner{}, key)
 	if err != nil {
 		t.Fatal(err)
@@ -111,7 +111,7 @@ func TestEIP155SigningVitalik(t *testing.T) {
 		}
 
 		addr := common.HexToAddress(test.addr)
-		if from != addr {
+		if from != common.Address(addr) {
 			t.Errorf("%d: expected %x got %x", i, addr, from)
 		}
 	}
