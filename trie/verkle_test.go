@@ -110,7 +110,7 @@ func TestVerkleRollBack(t *testing.T) {
 				t.Fatalf("Failed to update account, %v", err)
 			}
 		}
-		hash := crypto.Keccak256Hash(code)
+		hash := common.Hash(crypto.Keccak256Hash(code))
 		if err := tr.UpdateContractCode(addr, hash, code); err != nil {
 			t.Fatalf("Failed to update contract, %v", err)
 		}
