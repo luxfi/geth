@@ -570,7 +570,7 @@ func testIncompleteSync(t *testing.T, scheme string) {
 		batch.Write()
 
 		for _, result := range results {
-			hash := crypto.Keccak256Hash(result.Data)
+			hash := common.Hash(crypto.Keccak256Hash(result.Data))
 			if hash != root {
 				addedKeys = append(addedKeys, result.Path)
 				addedHashes = append(addedHashes, hash)
