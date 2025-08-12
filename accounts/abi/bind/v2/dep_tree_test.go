@@ -178,7 +178,8 @@ func testLinkCase(tcInput linkTestCaseInput) error {
 
 	var testAddrNonce uint64
 	mockDeploy := func(input []byte, deployer []byte) (common.Address, *types.Transaction, error) {
-		contractAddr := crypto.CreateAddress(testAddr, testAddrNonce)
+		contractAddrCrypto := crypto.CreateAddress(testAddr, testAddrNonce)
+		contractAddr := common.Address(contractAddrCrypto)
 		testAddrNonce++
 
 		if len(deployer) >= 20 {

@@ -310,8 +310,8 @@ func TestUnpackIndexedBytesTyLogIntoMap(t *testing.T) {
 	bytes := []byte{1, 2, 3, 4, 5}
 	hash := crypto.Keccak256Hash(bytes)
 	topics := []common.Hash{
-		crypto.Keccak256Hash([]byte("received(bytes,address,uint256,bytes)")),
-		hash,
+		common.Hash(crypto.Keccak256Hash([]byte("received(bytes,address,uint256,bytes)"))),
+		common.Hash(hash),
 	}
 	mockLog := newMockLog(topics, common.HexToHash("0x5c698f13940a2153440c6d19660878bc90219d9298fdcf37365aa8d88d40fc42"))
 
