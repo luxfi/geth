@@ -29,6 +29,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/hexutil"
 	"golang.org/x/crypto/sha3"
 )
@@ -211,6 +212,16 @@ func (h UnprefixedHash) MarshalText() ([]byte, error) {
 
 // Address represents the 20 byte address of an Ethereum account.
 type Address [AddressLength]byte
+
+// ToCryptoAddress converts geth Address to luxfi/crypto.Address
+func (a Address) ToCryptoAddress() crypto.Address {
+	return crypto.Address(a)
+}
+
+// FromCryptoAddress converts luxfi/crypto.Address to geth Address
+func FromCryptoAddress(ca crypto.Address) Address {
+	return Address(ca)
+}
 
 // BytesToAddress returns Address with value b.
 // If b is larger than len(h), b will be cropped from the left.
