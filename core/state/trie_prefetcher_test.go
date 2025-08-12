@@ -93,11 +93,11 @@ func TestVerklePrefetcher(t *testing.T) {
 	fetcher.prefetch(common.Hash{}, root, common.Address{}, []common.Address{addr}, nil, false)
 
 	// Read storage slot
-	fetcher.prefetch(crypto.Keccak256Hash(addr.Bytes()), sRoot, addr, nil, []common.Hash{skey}, false)
+	fetcher.prefetch(common.Hash(crypto.Keccak256Hash(addr.Bytes())), sRoot, addr, nil, []common.Hash{skey}, false)
 
 	fetcher.terminate(false)
 	accountTrie := fetcher.trie(common.Hash{}, root)
-	storageTrie := fetcher.trie(crypto.Keccak256Hash(addr.Bytes()), sRoot)
+	storageTrie := fetcher.trie(common.Hash(crypto.Keccak256Hash(addr.Bytes())), sRoot)
 
 	rootA := accountTrie.Hash()
 	rootB := storageTrie.Hash()

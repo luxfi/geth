@@ -260,7 +260,7 @@ func (test *stateTest) run() bool {
 // - the slots transition is correct
 func (test *stateTest) verifyAccountCreation(next common.Hash, db *triedb.Database, otr, ntr *trie.Trie, addr common.Address, account []byte, storages map[common.Hash][]byte, storagesOrigin map[common.Hash][]byte) error {
 	// Verify account change
-	addrHash := crypto.Keccak256Hash(addr.Bytes())
+	addrHash := common.Hash(crypto.Keccak256Hash(addr.Bytes()))
 	oBlob, err := otr.Get(addrHash.Bytes())
 	if err != nil {
 		return err
@@ -334,7 +334,7 @@ func (test *stateTest) verifyAccountCreation(next common.Hash, db *triedb.Databa
 // - the slots transition is correct
 func (test *stateTest) verifyAccountUpdate(next common.Hash, db *triedb.Database, otr, ntr *trie.Trie, addr common.Address, account []byte, accountOrigin []byte, storages map[common.Hash][]byte, storageOrigin map[common.Hash][]byte) error {
 	// Verify account change
-	addrHash := crypto.Keccak256Hash(addr.Bytes())
+	addrHash := common.Hash(crypto.Keccak256Hash(addr.Bytes()))
 	oBlob, err := otr.Get(addrHash.Bytes())
 	if err != nil {
 		return err
@@ -420,7 +420,7 @@ func (test *stateTest) verify(root common.Hash, next common.Hash, db *triedb.Dat
 	for addr, accountOrigin := range accountsOrigin {
 		var (
 			err      error
-			addrHash = crypto.Keccak256Hash(addr.Bytes())
+			addrHash = common.Hash(crypto.Keccak256Hash(addr.Bytes()))
 		)
 		if len(accountOrigin) == 0 {
 			err = test.verifyAccountCreation(next, db, otr, ntr, addr, accounts[addrHash], storages[addrHash], storagesOrigin[addr])

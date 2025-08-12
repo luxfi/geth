@@ -97,11 +97,11 @@ func isTrieNode(scheme string, key, val []byte) (bool, common.Hash) {
 	} else {
 		ok := rawdb.IsAccountTrieNode(key)
 		if ok {
-			return true, crypto.Keccak256Hash(val)
+			return true, common.Hash(crypto.Keccak256Hash(val))
 		}
 		ok = rawdb.IsStorageTrieNode(key)
 		if ok {
-			return true, crypto.Keccak256Hash(val)
+			return true, common.Hash(crypto.Keccak256Hash(val))
 		}
 	}
 	return false, common.Hash{}
