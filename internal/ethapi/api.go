@@ -1173,8 +1173,8 @@ func AccessList(ctx context.Context, b Backend, blockNrOrHash rpc.BlockNumberOrH
 	if args.To != nil {
 		to = *args.To
 	} else {
-		cryptoAddr := crypto.CreateAddress(args.from(), uint64(*args.Nonce))
-		to = cryptoAddr
+		cryptoAddr := crypto.CreateAddress(crypto.Address(args.from()), uint64(*args.Nonce))
+		to = common.Address(cryptoAddr)
 	}
 	isPostMerge := header.Difficulty.Sign() == 0
 	// Retrieve the precompiles since they don't need to be added to the access list
@@ -1472,7 +1472,7 @@ func SubmitTransaction(ctx context.Context, b Backend, tx *types.Transaction) (c
 	}
 
 	if tx.To() == nil {
-		addr := crypto.CreateAddress(from, tx.Nonce())
+		addr := common.Address(crypto.CreateAddress(crypto.Address(from), tx.Nonce()))
 		log.Info("Submitted contract creation", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "contract", addr.Hex(), "value", tx.Value())
 	} else {
 		log.Info("Submitted transaction", "hash", tx.Hash().Hex(), "from", from, "nonce", tx.Nonce(), "recipient", tx.To(), "value", tx.Value())
