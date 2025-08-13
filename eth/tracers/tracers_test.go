@@ -33,7 +33,7 @@ import (
 
 func BenchmarkTransactionTraceV2(b *testing.B) {
 	key, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	from := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	from := common.Address(crypto.PubkeyToAddress(key.PublicKey)))
 	gas := uint64(1000000) // 1M gas
 	to := common.HexToAddress("0x00000000000000000000000000000000deadbeef")
 	signer := types.LatestSignerForChainID(big.NewInt(1337))
