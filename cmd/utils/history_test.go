@@ -46,7 +46,7 @@ var (
 func TestHistoryImportAndExport(t *testing.T) {
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		address = crypto.PubkeyToAddress(key.PublicKey)
+		address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		genesis = &core.Genesis{
 			Config: params.TestChainConfig,
 			Alloc:  types.GenesisAlloc{address: {Balance: big.NewInt(1000000000000000000)}},
