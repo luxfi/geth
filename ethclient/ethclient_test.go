@@ -59,7 +59,7 @@ var (
 
 var (
 	testKey, _         = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	testAddr           = crypto.PubkeyToAddress(testKey.PublicKey)
+	testAddr           = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
 	testBalance        = big.NewInt(2e15)
 	revertContractAddr = common.HexToAddress("290f1b36649a61e369c6276f6d29463335b4400c")
 	revertCode         = common.FromHex("7f08c379a0000000000000000000000000000000000000000000000000000000006000526020600452600a6024527f75736572206572726f7200000000000000000000000000000000000000000000604452604e6000fd")

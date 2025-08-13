@@ -179,7 +179,7 @@ func TestGraphQLBlockSerializationEIP2718(t *testing.T) {
 	// Account for signing txes
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		address = crypto.PubkeyToAddress(key.PublicKey)
+		address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		funds   = big.NewInt(1000000000000000)
 		dad     = common.HexToAddress("0x0000000000000000000000000000000000000dad")
 	)
@@ -279,7 +279,7 @@ func TestGraphQLHTTPOnSamePort_GQLRequest_Unsuccessful(t *testing.T) {
 func TestGraphQLConcurrentResolvers(t *testing.T) {
 	var (
 		key, _  = crypto.GenerateKey()
-		addr    = crypto.PubkeyToAddress(key.PublicKey)
+		addr    = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		dadStr  = "0x0000000000000000000000000000000000000dad"
 		dad     = common.HexToAddress(dadStr)
 		genesis = &core.Genesis{
@@ -373,7 +373,7 @@ func TestGraphQLConcurrentResolvers(t *testing.T) {
 func TestWithdrawals(t *testing.T) {
 	var (
 		key, _ = crypto.GenerateKey()
-		addr   = crypto.PubkeyToAddress(key.PublicKey)
+		addr   = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 
 		genesis = &core.Genesis{
 			Config:     params.AllEthashProtocolChanges,

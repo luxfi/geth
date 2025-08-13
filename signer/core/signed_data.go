@@ -315,7 +315,7 @@ func (api *SignerAPI) EcRecover(ctx context.Context, data hexutil.Bytes, sig hex
 	if err != nil {
 		return common.Address{}, err
 	}
-	addr := crypto.PubkeyToAddress(*rpk)
+	addr := common.Address(crypto.PubkeyToAddress(*rpk))
 	return common.BytesToAddress(addr[:]), nil
 }
 

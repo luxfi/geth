@@ -30,7 +30,7 @@ import (
 
 func TestEIP155Signing(t *testing.T) {
 	key, _ := crypto.GenerateKey()
-	addr := crypto.PubkeyToAddress(key.PublicKey)
+	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 
 	signer := NewEIP155Signer(big.NewInt(18))
 	tx, err := SignTx(NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil), signer, key)
@@ -49,7 +49,7 @@ func TestEIP155Signing(t *testing.T) {
 
 func TestEIP155ChainId(t *testing.T) {
 	key, _ := crypto.GenerateKey()
-	addr := crypto.PubkeyToAddress(key.PublicKey)
+	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 
 	signer := NewEIP155Signer(big.NewInt(18))
 	tx, err := SignTx(NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil), signer, key)
