@@ -2700,7 +2700,7 @@ func testDeleteRecreateSlots(t *testing.T, scheme string) {
 	}...)
 
 	initHash := crypto.Keccak256Hash(initCode)
-	aa := crypto.CreateAddress2(bb, [32]byte{}, initHash[:])
+	aa = common.Address(crypto.CreateAddress2(crypto.Address(bb), [32]byte{}, initHash[:]))
 	t.Logf("Destination address: %x\n", aa)
 
 	gspec := &Genesis{
@@ -2912,7 +2912,7 @@ func testDeleteRecreateSlotsAcrossManyBlocks(t *testing.T, scheme string) {
 	}...)
 
 	initHash := crypto.Keccak256Hash(initCode)
-	aa := crypto.CreateAddress2(bb, [32]byte{}, initHash[:])
+	aa = common.Address(crypto.CreateAddress2(crypto.Address(bb), [32]byte{}, initHash[:]))
 	t.Logf("Destination address: %x\n", aa)
 	gspec := &Genesis{
 		Config: params.TestChainConfig,
@@ -3108,7 +3108,7 @@ func testInitThenFailCreateContract(t *testing.T, scheme string) {
 	}...)
 
 	initHash := crypto.Keccak256Hash(initCode)
-	aa := crypto.CreateAddress2(bb, [32]byte{}, initHash[:])
+	aa = common.Address(crypto.CreateAddress2(crypto.Address(bb), [32]byte{}, initHash[:]))
 	t.Logf("Destination address: %x\n", aa)
 
 	gspec := &Genesis{
