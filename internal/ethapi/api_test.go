@@ -2562,7 +2562,7 @@ func TestSignTransaction(t *testing.T) {
 	// Initialize test accounts
 	var (
 		key, _  = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
-		to      = crypto.PubkeyToAddress(key.PublicKey)
+		to      = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		genesis = &core.Genesis{
 			Config: params.MergedTestChainConfig,
 			Alloc:  types.GenesisAlloc{},
@@ -2600,7 +2600,7 @@ func TestSignBlobTransaction(t *testing.T) {
 	// Initialize test accounts
 	var (
 		key, _  = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
-		to      = crypto.PubkeyToAddress(key.PublicKey)
+		to      = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		genesis = &core.Genesis{
 			Config: params.MergedTestChainConfig,
 			Alloc:  types.GenesisAlloc{},
@@ -2631,7 +2631,7 @@ func TestSendBlobTransaction(t *testing.T) {
 	// Initialize test accounts
 	var (
 		key, _  = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
-		to      = crypto.PubkeyToAddress(key.PublicKey)
+		to      = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		genesis = &core.Genesis{
 			Config: params.MergedTestChainConfig,
 			Alloc:  types.GenesisAlloc{},
@@ -2664,7 +2664,7 @@ func TestFillBlobTransaction(t *testing.T) {
 	// Initialize test accounts
 	var (
 		key, _  = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
-		to      = crypto.PubkeyToAddress(key.PublicKey)
+		to      = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		genesis = &core.Genesis{
 			Config: params.MergedTestChainConfig,
 			Alloc:  types.GenesisAlloc{},
@@ -2873,7 +2873,7 @@ type account struct {
 func newAccounts(n int) (accounts []account) {
 	for i := 0; i < n; i++ {
 		key, _ := crypto.GenerateKey()
-		addr := crypto.PubkeyToAddress(key.PublicKey)
+		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		accounts = append(accounts, account{key: key, addr: addr})
 	}
 	slices.SortFunc(accounts, func(a, b account) int { return a.addr.Cmp(b.addr) })
@@ -2884,7 +2884,7 @@ func newTestAccount() account {
 	// testKey is a private key to use for funding a tester account.
 	key, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 	// testAddr is the Ethereum address of the tester account.
-	addr := crypto.PubkeyToAddress(key.PublicKey)
+	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 	return account{key: key, addr: addr}
 }
 
@@ -3130,8 +3130,8 @@ func TestRPCGetBlockOrHeader(t *testing.T) {
 	var (
 		acc1Key, _ = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
 		acc2Key, _ = crypto.HexToECDSA("49a7b37aa6f6645917e7b807e9d1c00d4fa71f18343b0d4122a4d2df64dd6fee")
-		acc1Addr   = crypto.PubkeyToAddress(acc1Key.PublicKey)
-		acc2Addr   = crypto.PubkeyToAddress(acc2Key.PublicKey)
+		acc1Addr   = common.Address(crypto.PubkeyToAddress(acc1Key.PublicKey))
+		acc2Addr   = common.Address(crypto.PubkeyToAddress(acc2Key.PublicKey))
 		genesis    = &core.Genesis{
 			Config: params.TestChainConfig,
 			Alloc: types.GenesisAlloc{
@@ -3382,8 +3382,8 @@ func setupReceiptBackend(t *testing.T, genBlocks int) (*testBackend, []common.Ha
 	var (
 		acc1Key, _ = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
 		acc2Key, _ = crypto.HexToECDSA("49a7b37aa6f6645917e7b807e9d1c00d4fa71f18343b0d4122a4d2df64dd6fee")
-		acc1Addr   = crypto.PubkeyToAddress(acc1Key.PublicKey)
-		acc2Addr   = crypto.PubkeyToAddress(acc2Key.PublicKey)
+		acc1Addr   = common.Address(crypto.PubkeyToAddress(acc1Key.PublicKey))
+		acc2Addr   = common.Address(crypto.PubkeyToAddress(acc2Key.PublicKey))
 		contract   = common.HexToAddress("0000000000000000000000000000000000031ec7")
 		genesis    = &core.Genesis{
 			Config:        &config,

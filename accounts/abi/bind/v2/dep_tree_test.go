@@ -153,7 +153,7 @@ func internalLinkDeps(metadata *MetaData, depMap map[string]*MetaData, roots *ma
 
 func testLinkCase(tcInput linkTestCaseInput) error {
 	var (
-		testAddr       = crypto.PubkeyToAddress(testKey.PublicKey)
+		testAddr       = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
 		overridesAddrs = make(map[common.Address]struct{})
 		overrideAddrs  = make(map[rune]common.Address)
 	)

@@ -130,7 +130,7 @@ func newTestBackend(t *testing.T, londonBlock *big.Int, cancunBlock *big.Int, pe
 	}
 	var (
 		key, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr   = crypto.PubkeyToAddress(key.PublicKey)
+		addr   = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		config = *params.TestChainConfig // needs copy because it is modified below
 		gspec  = &core.Genesis{
 			Config: &config,
@@ -168,7 +168,7 @@ func newTestBackend(t *testing.T, londonBlock *big.Int, cancunBlock *big.Int, pe
 		if londonBlock != nil && b.Number().Cmp(londonBlock) >= 0 {
 			txdata = &types.DynamicFeeTx{
 				ChainID:   gspec.Config.ChainID,
-				Nonce:     b.TxNonce(addr),
+				Nonce:     b.TxNonce(common.Address(addr)),
 				To:        &common.Address{},
 				Gas:       30000,
 				GasFeeCap: big.NewInt(100 * params.GWei),
@@ -177,7 +177,7 @@ func newTestBackend(t *testing.T, londonBlock *big.Int, cancunBlock *big.Int, pe
 			}
 		} else {
 			txdata = &types.LegacyTx{
-				Nonce:    b.TxNonce(addr),
+				Nonce:    b.TxNonce(common.Address(addr)),
 				To:       &common.Address{},
 				Gas:      21000,
 				GasPrice: big.NewInt(int64(i+1) * params.GWei),
@@ -194,7 +194,7 @@ func newTestBackend(t *testing.T, londonBlock *big.Int, cancunBlock *big.Int, pe
 			for j := 0; j < i && j < 6; j++ {
 				blobTx := &types.BlobTx{
 					ChainID:    uint256.MustFromBig(gspec.Config.ChainID),
-					Nonce:      b.TxNonce(addr),
+					Nonce:      b.TxNonce(common.Address(addr)),
 					To:         common.Address{},
 					Gas:        30000,
 					GasFeeCap:  uint256.NewInt(100 * params.GWei),

@@ -37,7 +37,7 @@ func TestGeneratePOSChain(t *testing.T) {
 	var (
 		keyHex  = "9c647b8b7c4e7c3490668fb6c11473619db80c93704c70893d3813af4090c39c"
 		key, _  = crypto.HexToECDSA(keyHex)
-		address = crypto.PubkeyToAddress(key.PublicKey) // 658bdf435d810c91414ec09147daa6db62406379
+		address = common.Address(crypto.PubkeyToAddress(key.PublicKey)) // 658bdf435d810c91414ec09147daa6db62406379
 		aa      = common.Address{0xaa}
 		bb      = common.Address{0xbb}
 		funds   = big.NewInt(0).Mul(big.NewInt(1337), big.NewInt(params.Ether))
@@ -82,7 +82,7 @@ func TestGeneratePOSChain(t *testing.T) {
 
 		// Add value transfer tx.
 		tx := types.MustSignNewTx(key, gen.Signer(), &types.LegacyTx{
-			Nonce:    gen.TxNonce(address),
+			Nonce:    gen.TxNonce(common.Address(address)),
 			To:       &address,
 			Value:    big.NewInt(1000),
 			Gas:      params.TxGas,
@@ -186,9 +186,9 @@ func ExampleGenerateChain() {
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		key2, _ = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
 		key3, _ = crypto.HexToECDSA("49a7b37aa6f6645917e7b807e9d1c00d4fa71f18343b0d4122a4d2df64dd6fee")
-		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2   = crypto.PubkeyToAddress(key2.PublicKey)
-		addr3   = crypto.PubkeyToAddress(key3.PublicKey)
+		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr2   = common.Address(crypto.PubkeyToAddress(key2.PublicKey))
+		addr3   = common.Address(crypto.PubkeyToAddress(key3.PublicKey))
 		db      = rawdb.NewMemoryDatabase()
 		genDb   = rawdb.NewMemoryDatabase()
 	)
@@ -208,13 +208,13 @@ func ExampleGenerateChain() {
 		switch i {
 		case 0:
 			// In block 1, addr1 sends addr2 some ether.
-			tx, _ := types.SignTx(types.NewTransaction(gen.TxNonce(addr1), addr2, big.NewInt(10000), params.TxGas, nil, nil), signer, key1)
+			tx, _ := types.SignTx(types.NewTransaction(gen.TxNonce(common.Address(addr1)), addr2, big.NewInt(10000), params.TxGas, nil, nil), signer, key1)
 			gen.AddTx(tx)
 		case 1:
 			// In block 2, addr1 sends some more ether to addr2.
 			// addr2 passes it on to addr3.
-			tx1, _ := types.SignTx(types.NewTransaction(gen.TxNonce(addr1), addr2, big.NewInt(1000), params.TxGas, nil, nil), signer, key1)
-			tx2, _ := types.SignTx(types.NewTransaction(gen.TxNonce(addr2), addr3, big.NewInt(1000), params.TxGas, nil, nil), signer, key2)
+			tx1, _ := types.SignTx(types.NewTransaction(gen.TxNonce(common.Address(addr1)), addr2, big.NewInt(1000), params.TxGas, nil, nil), signer, key1)
+			tx2, _ := types.SignTx(types.NewTransaction(gen.TxNonce(common.Address(addr2)), addr3, big.NewInt(1000), params.TxGas, nil, nil), signer, key2)
 			gen.AddTx(tx1)
 			gen.AddTx(tx2)
 		case 2:

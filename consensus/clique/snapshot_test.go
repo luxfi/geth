@@ -70,7 +70,7 @@ func (ap *testerAccountPool) address(account string) common.Address {
 		ap.accounts[account], _ = crypto.GenerateKey()
 	}
 	// Resolve and return the Ethereum address
-	return crypto.PubkeyToAddress(ap.accounts[account].PublicKey)
+	return common.Address(crypto.PubkeyToAddress(ap.accounts[account].PublicKey))
 }
 
 // sign calculates a Clique digital signature for the given block and embeds it

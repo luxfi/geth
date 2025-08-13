@@ -231,7 +231,7 @@ func TestStateHooks(t *testing.T) {
 	// Initialize test accounts
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		from    = crypto.PubkeyToAddress(key.PublicKey)
+		from    = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		to      = common.HexToAddress("0x00000000000000000000000000000000deadbeef")
 		genesis = &core.Genesis{
 			Config: params.TestChainConfig,
@@ -1048,7 +1048,7 @@ type Account struct {
 func newAccounts(n int) (accounts []Account) {
 	for i := 0; i < n; i++ {
 		key, _ := crypto.GenerateKey()
-		addr := crypto.PubkeyToAddress(key.PublicKey)
+		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		accounts = append(accounts, Account{key: key, addr: addr})
 	}
 	slices.SortFunc(accounts, func(a, b Account) int { return a.addr.Cmp(b.addr) })
@@ -1244,7 +1244,7 @@ func TestStandardTraceBlockToFile(t *testing.T) {
 	var (
 		// A sender who makes transactions, has some funds
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		address = crypto.PubkeyToAddress(key.PublicKey)
+		address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		funds   = big.NewInt(1000000000000000)
 
 		// first contract the sender transacts with
