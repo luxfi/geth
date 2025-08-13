@@ -96,8 +96,8 @@ func TestSupplyGenesisAlloc(t *testing.T) {
 	var (
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		key2, _ = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
-		addr2   = common.Address(crypto.PubkeyToAddress(key2.PublicKey))
+		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey)))
+		addr2   = common.Address(crypto.PubkeyToAddress(key2.PublicKey)))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
 		config = *params.AllEthashProtocolChanges
@@ -165,7 +165,7 @@ func TestSupplyEip1559Burn(t *testing.T) {
 		aa = common.HexToAddress("0x000000000000000000000000000000000000aaaa")
 		// A sender who makes transactions, has some eth1
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey)))
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
@@ -272,7 +272,7 @@ func TestSupplySelfdestruct(t *testing.T) {
 		bb      = common.HexToAddress("0x2222222222222222222222222222222222222222")
 		dad     = common.HexToAddress("0x0000000000000000000000000000000000000dad")
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey)))
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
@@ -412,7 +412,7 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 		cc      = common.HexToAddress("0x3333333333333333333333333333333333333333")
 		dd      = common.HexToAddress("0x4444444444444444444444444444444444444444")
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey)))
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 		eth2    = new(big.Int).Mul(common.Big2, big.NewInt(params.Ether))
