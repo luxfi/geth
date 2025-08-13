@@ -514,7 +514,7 @@ func (t *jsTracer) setBuiltinFunctions() {
 			return nil
 		}
 		addr := common.BytesToAddress(a)
-		cryptoAddr := crypto.CreateAddress(crypto.Address(addr), uint64(nonce))
+		cryptoAddr := common.Address(crypto.CreateAddress(crypto.Address(addr), uint64(nonce)))
 		b := common.Address(cryptoAddr).Bytes()
 		res, err := t.toBuf(vm, b)
 		if err != nil {

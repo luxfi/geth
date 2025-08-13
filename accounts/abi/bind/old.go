@@ -99,7 +99,7 @@ func NewKeyStoreTransactor(keystore *keystore.KeyStore, account accounts.Account
 // Deprecated: Use NewKeyedTransactorWithChainID instead.
 func NewKeyedTransactor(key *ecdsa.PrivateKey) *TransactOpts {
 	log.Warn("WARNING: NewKeyedTransactor has been deprecated in favour of NewKeyedTransactorWithChainID")
-	keyAddr := crypto.PubkeyToAddress(key.PublicKey)
+	keyAddr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 	keyAddrCommon := common.BytesToAddress(keyAddr[:])
 	signer := types.HomesteadSigner{}
 	return &TransactOpts{

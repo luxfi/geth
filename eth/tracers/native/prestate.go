@@ -144,7 +144,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 		}
 	case op == vm.CREATE:
 		nonce := t.env.StateDB.GetNonce(caller)
-		cryptoAddr := crypto.CreateAddress(crypto.Address(caller), nonce)
+		cryptoAddr := common.Address(crypto.CreateAddress(crypto.Address(caller), nonce))
 		addr := common.Address(cryptoAddr)
 		t.lookupAccount(addr)
 		t.created[addr] = true
@@ -168,7 +168,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 func (t *prestateTracer) OnTxStart(env *tracing.VMContext, tx *types.Transaction, from common.Address) {
 	t.env = env
 	if tx.To() == nil {
-		cryptoAddr := crypto.CreateAddress(crypto.Address(from), env.StateDB.GetNonce(from))
+		cryptoAddr := common.Address(crypto.CreateAddress(crypto.Address(from), env.StateDB.GetNonce(from)))
 		t.to = common.Address(cryptoAddr)
 		t.created[t.to] = true
 	} else {

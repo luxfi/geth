@@ -73,7 +73,7 @@ func verifyNoIndex(t *testing.T, db ethdb.Database, blocks []*types.Block) {
 func TestTxIndexer(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
+		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{
@@ -136,7 +136,7 @@ func TestTxIndexer(t *testing.T) {
 func TestTxIndexerRepair(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
+		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{
@@ -261,7 +261,7 @@ func TestTxIndexerRepair(t *testing.T) {
 func TestTxIndexerReport(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
+		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{

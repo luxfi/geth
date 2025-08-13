@@ -993,7 +993,7 @@ var (
 // default account to prefund when running Geth in dev mode
 var (
 	DeveloperKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	DeveloperAddr   = crypto.PubkeyToAddress(DeveloperKey.PublicKey)
+	DeveloperAddr   = common.Address(crypto.PubkeyToAddress(DeveloperKey.PublicKey))
 )
 
 // MakeDataDir retrieves the currently requested data directory, terminating

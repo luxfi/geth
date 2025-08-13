@@ -63,7 +63,7 @@ func benchmarkFilters(b *testing.B, history uint64, noHistory bool) {
 		db           = rawdb.NewMemoryDatabase()
 		backend, sys = newTestFilterSystem(db, Config{})
 		key1, _      = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1        = crypto.PubkeyToAddress(key1.PublicKey)
+		addr1        = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
 		addr2        = common.BytesToAddress([]byte("jeff"))
 		addr3        = common.BytesToAddress([]byte("ethereum"))
 		addr4        = common.BytesToAddress([]byte("random addresses please"))
@@ -140,7 +140,7 @@ func testFilters(t *testing.T, history uint64, noHistory bool) {
 		backend, sys = newTestFilterSystem(db, Config{})
 		// Sender account
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr    = crypto.PubkeyToAddress(key1.PublicKey)
+		addr    = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
 		signer  = types.NewLondonSigner(big.NewInt(1))
 		// Logging contract
 		contract  = common.Address{0xfe}
