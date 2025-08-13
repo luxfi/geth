@@ -81,7 +81,7 @@ func TestSimulatedBeaconSendWithdrawals(t *testing.T) {
 		testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 
 		// testAddr is the Ethereum address of the tester account.
-		testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
+		testAddr = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
 	)
 
 	// short period (1 second) for testing purposes
@@ -153,7 +153,7 @@ func TestOnDemandSpam(t *testing.T) {
 		txCount                = 20000
 		wxCount                = 20
 		testKey, _             = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		testAddr               = crypto.PubkeyToAddress(testKey.PublicKey)
+		testAddr               = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
 		gasLimit        uint64 = 10_000_000
 		genesis                = core.DeveloperGenesisBlock(gasLimit, &testAddr)
 		node, eth, mock        = startSimulatedBeaconEthService(t, genesis, 0)

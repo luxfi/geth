@@ -39,7 +39,7 @@ func TestReimportMirroredState(t *testing.T) {
 	var (
 		db     = rawdb.NewMemoryDatabase()
 		key, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr   = crypto.PubkeyToAddress(key.PublicKey)
+		addr   = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		engine = New(params.AllCliqueProtocolChanges.Clique, db)
 		signer = new(types.HomesteadSigner)
 	)
@@ -47,7 +47,7 @@ func TestReimportMirroredState(t *testing.T) {
 		Config:    params.AllCliqueProtocolChanges,
 		ExtraData: make([]byte, extraVanity+common.AddressLength+extraSeal),
 		Alloc: map[common.Address]types.Account{
-			addr: {Balance: big.NewInt(10000000000000000)},
+			common.Address(addr): {Balance: big.NewInt(10000000000000000)},
 		},
 		BaseFee: big.NewInt(params.InitialBaseFee),
 	}
@@ -65,7 +65,7 @@ func TestReimportMirroredState(t *testing.T) {
 		// We want to simulate an empty middle block, having the same state as the
 		// first one. The last is needs a state change again to force a reorg.
 		if i != 1 {
-			tx, err := types.SignTx(types.NewTransaction(block.TxNonce(addr), common.Address{0x00}, new(big.Int), params.TxGas, block.BaseFee(), nil), signer, key)
+			tx, err := types.SignTx(types.NewTransaction(block.TxNonce(common.Address(addr)), common.Address{0x00}, new(big.Int), params.TxGas, block.BaseFee(), nil), signer, key)
 			if err != nil {
 				panic(err)
 			}

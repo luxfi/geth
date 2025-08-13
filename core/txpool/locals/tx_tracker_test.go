@@ -35,7 +35,7 @@ import (
 
 var (
 	key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	address = crypto.PubkeyToAddress(key.PublicKey)
+	address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 	funds   = big.NewInt(1000000000000000)
 	gspec   = &core.Genesis{
 		Config: params.TestChainConfig,
@@ -56,7 +56,7 @@ type testEnv struct {
 
 func newTestEnv(t *testing.T, n int, gasTip uint64, journal string) *testEnv {
 	genDb, blocks, _ := core.GenerateChainWithGenesis(gspec, ethash.NewFaker(), n, func(i int, gen *core.BlockGen) {
-		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(address), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
+		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(common.Address(address)), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
 		if err != nil {
 			panic(err)
 		}
@@ -126,7 +126,7 @@ func (env *testEnv) commit() {
 	head := env.chain.CurrentBlock()
 	block := env.chain.GetBlock(head.Hash(), head.Number.Uint64())
 	blocks, _ := core.GenerateChain(env.chain.Config(), block, ethash.NewFaker(), env.genDb, 1, func(i int, gen *core.BlockGen) {
-		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(address), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
+		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(common.Address(address)), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
 		if err != nil {
 			panic(err)
 		}

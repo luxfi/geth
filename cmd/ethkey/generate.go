@@ -95,7 +95,7 @@ If you want to encrypt an existing private key, it can be specified by setting
 		if err != nil {
 			utils.Fatalf("Failed to generate random uuid: %v", err)
 		}
-		addr := crypto.PubkeyToAddress(privateKey.PublicKey)
+		addr := common.Address(crypto.PubkeyToAddress(privateKey.PublicKey))
 		key := &keystore.Key{
 			Id:         UUID,
 			Address:    common.BytesToAddress(addr[:]),
