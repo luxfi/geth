@@ -231,7 +231,7 @@ func BenchmarkSearch(b *testing.B) {
 	key := crypto.Keccak256Hash([]byte{0x13, 0x38})
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		layer.AccountRLP(key)
+		layer.AccountRLP(common.Hash(key))
 	}
 }
 
@@ -253,14 +253,14 @@ func BenchmarkSearchSlot(b *testing.B) {
 			accounts = make(map[common.Hash][]byte)
 			storage  = make(map[common.Hash]map[common.Hash][]byte)
 		)
-		accounts[accountKey] = accountRLP
+		accounts[common.Hash(accountKey)] = accountRLP
 
 		accStorage := make(map[common.Hash][]byte)
 		for i := 0; i < 5; i++ {
 			value := make([]byte, 32)
 			crand.Read(value)
 			accStorage[randomHash()] = value
-			storage[accountKey] = accStorage
+			storage[common.Hash(accountKey)] = accStorage
 		}
 		return newDiffLayer(parent, common.Hash{}, accounts, storage)
 	}
@@ -271,7 +271,7 @@ func BenchmarkSearchSlot(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		layer.Storage(accountKey, storageKey)
+		layer.Storage(common.Hash(accountKey), storageKey)
 	}
 }
 
@@ -288,7 +288,7 @@ func BenchmarkFlatten(b *testing.B) {
 		)
 		for i := 0; i < 100; i++ {
 			accountKey := randomHash()
-			accounts[accountKey] = randomAccount()
+			accounts[common.Hash(accountKey)] = randomAccount()
 
 			accStorage := make(map[common.Hash][]byte)
 			for i := 0; i < 20; i++ {
@@ -296,7 +296,7 @@ func BenchmarkFlatten(b *testing.B) {
 				crand.Read(value)
 				accStorage[randomHash()] = value
 			}
-			storage[accountKey] = accStorage
+			storage[common.Hash(accountKey)] = accStorage
 		}
 		return newDiffLayer(parent, common.Hash{}, accounts, storage)
 	}
@@ -336,7 +336,7 @@ func BenchmarkJournal(b *testing.B) {
 		)
 		for i := 0; i < 200; i++ {
 			accountKey := randomHash()
-			accounts[accountKey] = randomAccount()
+			accounts[common.Hash(accountKey)] = randomAccount()
 
 			accStorage := make(map[common.Hash][]byte)
 			for i := 0; i < 200; i++ {
@@ -344,7 +344,7 @@ func BenchmarkJournal(b *testing.B) {
 				crand.Read(value)
 				accStorage[randomHash()] = value
 			}
-			storage[accountKey] = accStorage
+			storage[common.Hash(accountKey)] = accStorage
 		}
 		return newDiffLayer(parent, common.Hash{}, accounts, storage)
 	}
