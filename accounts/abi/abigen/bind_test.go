@@ -1543,7 +1543,7 @@ var bindTests = []struct {
 		`
 		// Initialize test accounts
 		key, _ := crypto.GenerateKey()
-		addr := crypto.PubkeyToAddress(key.PublicKey)
+		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 
 		// Deploy registrar contract
 		sim := backends.NewSimulatedBackend(types.GenesisAlloc{addr: {Balance: big.NewInt(10000000000000000)}}, 10000000)
@@ -1605,7 +1605,7 @@ var bindTests = []struct {
         `,
 		`
 		key, _ := crypto.GenerateKey()
-		addr := crypto.PubkeyToAddress(key.PublicKey)
+		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 
 		// Deploy registrar contract
 		sim := backends.NewSimulatedBackend(types.GenesisAlloc{addr: {Balance: big.NewInt(10000000000000000)}}, 10000000)
@@ -1728,7 +1728,7 @@ var bindTests = []struct {
 	   `,
 		`
 			key, _ := crypto.GenerateKey()
-			addr := crypto.PubkeyToAddress(key.PublicKey)
+			addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 
 			sim := backends.NewSimulatedBackend(types.GenesisAlloc{addr: {Balance: big.NewInt(10000000000000000)}}, 1000000)
 			defer sim.Close()

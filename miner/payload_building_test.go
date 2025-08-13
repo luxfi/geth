@@ -45,11 +45,11 @@ var (
 
 	// Test accounts
 	testBankKey, _  = crypto.GenerateKey()
-	testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
+	testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
 	testBankFunds   = big.NewInt(1000000000000000000)
 
 	testUserKey, _  = crypto.GenerateKey()
-	testUserAddress = crypto.PubkeyToAddress(testUserKey.PublicKey)
+	testUserAddress = common.Address(crypto.PubkeyToAddress(testUserKey.PublicKey))
 
 	// Test transactions
 	pendingTxs []*types.Transaction
