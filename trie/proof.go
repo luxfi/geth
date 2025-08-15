@@ -21,10 +21,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	"github.com/luxfi/log"
 )
 
 // Prove constructs a merkle proof for key. The result contains all encoded nodes
@@ -567,7 +567,12 @@ func VerifyRangeProof(rootHash common.Hash, firstKey []byte, keys [][]byte, valu
 	}
 	// Rebuild the trie with the leaf stream, the shape of trie
 	// should be same with the original one.
-	tr := &Trie{root: root, reader: newEmptyReader(), tracer: newTracer()}
+	tr := &Trie{
+		root:           root,
+		reader:         newEmptyReader(),
+		opTracer:       newOpTracer(),
+		prevalueTracer: newPrevalueTracer(),
+	}
 	if empty {
 		tr.root = nil
 	}

@@ -530,7 +530,7 @@ func TestProcessVerkleExtCodeHashOpcode(t *testing.T) {
 
 		byte(vm.PUSH1), 42,
 	}
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	dummyContractAddr := crypto.CreateAddress(deployer, 0)
 
 	// contract that calls EXTCODEHASH on the dummy contract
@@ -701,7 +701,7 @@ func TestProcessVerkleSelfDestructInSeparateTx(t *testing.T) {
 	},
 		runtimeCode)
 
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 2, func(i int, gen *BlockGen) {
@@ -809,7 +809,7 @@ func TestProcessVerkleSelfDestructInSameTx(t *testing.T) {
 		[]byte{byte(vm.PUSH20)},
 		account2.Bytes(),
 		[]byte{byte(vm.SELFDESTRUCT)})
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 1, func(i int, gen *BlockGen) {
@@ -912,7 +912,7 @@ func TestProcessVerkleSelfDestructInSeparateTxWithSelfBeneficiary(t *testing.T) 
 		byte(vm.ADDRESS),
 		byte(vm.SELFDESTRUCT),
 	}
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 2, func(i int, gen *BlockGen) {
@@ -984,7 +984,7 @@ func TestProcessVerkleSelfDestructInSameTxWithSelfBeneficiary(t *testing.T) {
 		signer     = types.LatestSigner(&config)
 		testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		gspec      = verkleTestGenesis(&config)
-		deployer   = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+		deployer   = crypto.PubkeyToAddress(testKey.PublicKey)
 		contract   = crypto.CreateAddress(deployer, 0)
 	)
 
@@ -1048,7 +1048,7 @@ func TestProcessVerkleSelfDestructInSameTxWithSelfBeneficiaryAndPrefundedAccount
 		signer     = types.LatestSigner(&config)
 		testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		gspec      = verkleTestGenesis(&config)
-		deployer   = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+		deployer   = crypto.PubkeyToAddress(testKey.PublicKey)
 		contract   = crypto.CreateAddress(deployer, 0)
 	)
 	// Prefund the account, at an address that the contract will be deployed at,
