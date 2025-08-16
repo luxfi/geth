@@ -239,8 +239,8 @@ github.com/labstack/echo/v4 v4.2.1/go.mod h1:AA49e0DZ8kk5jTOOCKNuPR6oTnBS0dYiM4F
 github.com/labstack/gommon v0.3.0/go.mod h1:MULnywXg0yavhxWKc+lOruYdAhDwPK9wf0OL7NoOu+k=
 github.com/leanovate/gopter v0.2.11 h1:vRjThO1EKPb/1NsDXuDrzldR28RLkBflWYcU9CvzWu4=
 github.com/leanovate/gopter v0.2.11/go.mod h1:aK3tzZP/C+p1m3SPRE4SYZFGP7jjkuSI4f7Xvpt0S9c=
-github.com/luxfi/crypto v1.2.9 h1:Ecqznogm85AK9IniUL5VRHXehGnlMLO6wE9Tsqhudfo=
-github.com/luxfi/crypto v1.2.9/go.mod h1:XuwNS3m4bJEgxt4myw0woWszz3/aFy5EgZInR7JLu9Q=
+github.com/luxfi/crypto v1.3.2 h1:3qKhhjzFYdT6FzbEuOp+6/vK2qdZ4EVAEd3vW8BRQks=
+github.com/luxfi/crypto v1.3.2/go.mod h1:dhshhrUIuwlrfgYBgYQS6h55EFD3yZex6vlPT1sXKZ4=
 github.com/luxfi/ids v1.0.2 h1:OnbCWBgdmuBPZat1r1vRikk1FFrdHMfSknpfKmX0KBg=
 github.com/luxfi/ids v1.0.2/go.mod h1:cMbto3Q8N3IaBxdz4Lzaq9wYl33coGXUdlr2+YwXeUw=
 github.com/mailru/easyjson v0.0.0-20190614124828-94de47d64c63/go.mod h1:C1wdFJiN94OJF2b5HbByQZoLdCWB1Yqtg26g4irojpc=
