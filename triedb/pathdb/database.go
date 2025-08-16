@@ -33,7 +33,7 @@ import (
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie/trienode"
-	"github.com/ethereum/go-verkle"
+	verkle "github.com/luxfi/crypto/verkle"
 )
 
 const (
