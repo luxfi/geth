@@ -31,7 +31,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/rlp"
-	verkle "github.com/luxfi/crypto/verkle"
+	"github.com/ethereum/go-verkle"
 )
 
 // A BlockNonce is a 64-bit hash which proves (combined with the
