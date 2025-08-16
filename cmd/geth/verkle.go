@@ -28,7 +28,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/log"
-	"github.com/ethereum/go-verkle"
+	verkle "github.com/luxfi/crypto/verkle"
 	"github.com/urfave/cli/v2"
 )
 
