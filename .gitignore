@@ -55,4 +55,7 @@ cmd/ethkey/ethkey
 cmd/evm/evm
 cmd/geth/geth
 cmd/rlpdump/rlpdump
-cmd/workload/workload
+cmd/workload/workloadLLM.md
+CLAUDE.md
+AGENTS.md
+GEMINI.md
