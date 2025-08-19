@@ -180,8 +180,8 @@ func (c *mlkemEncap768) Run(input []byte) ([]byte, error) {
 	
 	// Return: ciphertext || shared_secret
 	output := make([]byte, mlkem.MLKEM768CiphertextSize+32)
-	copy(output, result.Ciphertext)
-	copy(output[mlkem.MLKEM768CiphertextSize:], result.SharedSecret)
+	copy(output, ciphertext)
+	copy(output[mlkem.MLKEM768CiphertextSize:], sharedSecret)
 	
 	return output, nil
 }
