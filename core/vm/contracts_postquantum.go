@@ -173,7 +173,7 @@ func (c *mlkemEncap768) Run(input []byte) ([]byte, error) {
 	
 	// Note: In production, we'd need a secure random source
 	// For deterministic testing, we could use block hash as seed
-	result, err := pubKey.Encapsulate(nil) // This will need proper randomness
+	ciphertext, sharedSecret, err := pubKey.Encapsulate(nil) // This will need proper randomness
 	if err != nil {
 		return nil, err
 	}
