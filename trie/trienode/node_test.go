@@ -35,7 +35,7 @@ func makeTestSet(owner common.Hash, n int, paths [][]byte) *NodeSet {
 	for i := 0; i < n*3/4; i++ {
 		path := testrand.Bytes(10)
 		blob := testrand.Bytes(100)
-		set.AddNode(path, NewNodeWithPrev(crypto.Keccak256Hash(blob), blob, testrand.Bytes(100)))
+		set.AddNode(path, NewNodeWithPrev(common.Hash(crypto.Keccak256Hash(blob)), blob, testrand.Bytes(100)))
 	}
 	for i := 0; i < n/4; i++ {
 		path := testrand.Bytes(10)
@@ -46,7 +46,7 @@ func makeTestSet(owner common.Hash, n int, paths [][]byte) *NodeSet {
 			set.AddNode(paths[i], NewDeletedWithPrev(testrand.Bytes(100)))
 		} else {
 			blob := testrand.Bytes(100)
-			set.AddNode(paths[i], NewNodeWithPrev(crypto.Keccak256Hash(blob), blob, testrand.Bytes(100)))
+			set.AddNode(paths[i], NewNodeWithPrev(common.Hash(crypto.Keccak256Hash(blob)), blob, testrand.Bytes(100)))
 		}
 	}
 	return set
@@ -129,7 +129,7 @@ func benchmarkMerge(b *testing.B, count int) {
 		blob := make([]byte, 32)
 		rand.Read(blob)
 		hash := crypto.Keccak256Hash(blob)
-		s.AddNode(path, NewNodeWithPrev(hash, blob, nil))
+		s.AddNode(path, NewNodeWithPrev(common.Hash(hash), blob, nil))
 	}
 	for i := 0; i < count; i++ {
 		// Random path of 4 nibbles

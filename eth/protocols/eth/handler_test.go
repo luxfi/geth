@@ -50,7 +50,7 @@ var (
 	testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 
 	// testAddr is the Ethereum address of the tester account.
-	testAddr = common.Address(crypto.PubkeyToAddress(testKey.PublicKey)))
+	testAddr = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
 )
 
 func u64(val uint64) *uint64 { return &val }
