@@ -271,7 +271,7 @@ func BenchmarkSearchSlot(b *testing.B) {
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		layer.Storage(common.Hash(accountKey), storageKey)
+		layer.Storage(common.Hash(accountKey), common.Hash(storageKey))
 	}
 }
 
