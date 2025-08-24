@@ -231,7 +231,7 @@ func TestStateHooks(t *testing.T) {
 	// Initialize test accounts
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		from    = common.Address(crypto.PubkeyToAddress(key.PublicKey)))
+		from    = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		to      = common.HexToAddress("0x00000000000000000000000000000000deadbeef")
 		genesis = &core.Genesis{
 			Config: params.TestChainConfig,

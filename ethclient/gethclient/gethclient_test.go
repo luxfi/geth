@@ -46,7 +46,7 @@ var (
 	testContract = common.HexToAddress("0xbeef")
 	testEmpty    = common.HexToAddress("0xeeee")
 	testSlot     = common.HexToHash("0xdeadbeef")
-	testValue    = crypto.Keccak256Hash(testSlot[:])
+	testValue    = common.Hash(crypto.Keccak256Hash(testSlot[:]))
 	testBalance  = big.NewInt(2e15)
 )
 
@@ -301,7 +301,7 @@ func testGetProof(t *testing.T, client *rpc.Client, addr common.Address) {
 	}
 	// test code
 	code, _ := ethcl.CodeAt(context.Background(), addr, nil)
-	if have, want := result.CodeHash, crypto.Keccak256Hash(code); have != want {
+	if have, want := result.CodeHash, common.Hash(crypto.Keccak256Hash(code)); have != want {
 		t.Fatalf("codehash wrong, have %v want %v ", have, want)
 	}
 }
