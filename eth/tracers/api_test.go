@@ -1048,7 +1048,7 @@ type Account struct {
 func newAccounts(n int) (accounts []Account) {
 	for i := 0; i < n; i++ {
 		key, _ := crypto.GenerateKey()
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey)))
+		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
 		accounts = append(accounts, Account{key: key, addr: addr})
 	}
 	slices.SortFunc(accounts, func(a, b Account) int { return a.addr.Cmp(b.addr) })
