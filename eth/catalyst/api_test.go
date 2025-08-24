@@ -257,7 +257,7 @@ func TestInvalidPayloadTimestamp(t *testing.T) {
 		t.Run(fmt.Sprintf("Timestamp test: %v", i), func(t *testing.T) {
 			params := engine.PayloadAttributes{
 				Timestamp:             test.time,
-				Random:                crypto.Keccak256Hash([]byte{byte(123)}),
+				Random:                common.Hash(crypto.Keccak256Hash([]byte{byte(123)})),
 				SuggestedFeeRecipient: parent.Coinbase,
 			}
 			fcState := engine.ForkchoiceStateV1{
@@ -604,7 +604,7 @@ func TestNewPayloadOnInvalidChain(t *testing.T) {
 		var (
 			params = engine.PayloadAttributes{
 				Timestamp:             parent.Time + 1,
-				Random:                crypto.Keccak256Hash([]byte{byte(i)}),
+				Random:                common.Hash(crypto.Keccak256Hash([]byte{byte(i)})),
 				SuggestedFeeRecipient: parent.Coinbase,
 			}
 			fcState = engine.ForkchoiceStateV1{
@@ -745,7 +745,7 @@ func TestEmptyBlocks(t *testing.T) {
 func getNewEnvelope(t *testing.T, api *ConsensusAPI, parent *types.Header, withdrawals []*types.Withdrawal, beaconRoot *common.Hash) *engine.ExecutionPayloadEnvelope {
 	params := engine.PayloadAttributes{
 		Timestamp:             parent.Time + 1,
-		Random:                crypto.Keccak256Hash([]byte{byte(1)}),
+		Random:                common.Hash(crypto.Keccak256Hash([]byte{byte(1)})),
 		SuggestedFeeRecipient: parent.Coinbase,
 		Withdrawals:           withdrawals,
 		BeaconRoot:            beaconRoot,
