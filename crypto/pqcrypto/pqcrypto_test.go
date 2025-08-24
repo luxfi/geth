@@ -4,10 +4,9 @@
 package pqcrypto
 
 import (
-	"bytes"
 	"testing"
 
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
 	"github.com/stretchr/testify/require"
 )
 
