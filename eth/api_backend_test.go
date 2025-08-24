@@ -41,7 +41,7 @@ import (
 
 var (
 	key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	address = common.Address(crypto.PubkeyToAddress(key.PublicKey)))
+	address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
 	funds   = big.NewInt(1000_000_000_000_000)
 	gspec   = &core.Genesis{
 		Config: params.MergedTestChainConfig,
