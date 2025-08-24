@@ -1461,14 +1461,14 @@ func key32(i uint64) []byte {
 
 var (
 	codehashes = []common.Hash{
-		crypto.Keccak256Hash([]byte{0}),
-		crypto.Keccak256Hash([]byte{1}),
-		crypto.Keccak256Hash([]byte{2}),
-		crypto.Keccak256Hash([]byte{3}),
-		crypto.Keccak256Hash([]byte{4}),
-		crypto.Keccak256Hash([]byte{5}),
-		crypto.Keccak256Hash([]byte{6}),
-		crypto.Keccak256Hash([]byte{7}),
+		common.Hash(crypto.Keccak256Hash([]byte{0})),
+		common.Hash(crypto.Keccak256Hash([]byte{1})),
+		common.Hash(crypto.Keccak256Hash([]byte{2})),
+		common.Hash(crypto.Keccak256Hash([]byte{3})),
+		common.Hash(crypto.Keccak256Hash([]byte{4})),
+		common.Hash(crypto.Keccak256Hash([]byte{5})),
+		common.Hash(crypto.Keccak256Hash([]byte{6})),
+		common.Hash(crypto.Keccak256Hash([]byte{7})),
 	}
 )
 

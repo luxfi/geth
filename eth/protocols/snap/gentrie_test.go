@@ -59,7 +59,7 @@ func (r *replayer) decode(key []byte, value []byte) {
 	if len(value) == 0 {
 		r.hashes = append(r.hashes, common.Hash{})
 	} else {
-		r.hashes = append(r.hashes, crypto.Keccak256Hash(value))
+		r.hashes = append(r.hashes, common.Hash(crypto.Keccak256Hash(value)))
 	}
 }
 

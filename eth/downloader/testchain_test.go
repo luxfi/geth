@@ -35,7 +35,7 @@ import (
 // Test chain parameters.
 var (
 	testKey, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	testAddress = common.Address(crypto.PubkeyToAddress(testKey.PublicKey)))
+	testAddress = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
 	testDB      = rawdb.NewMemoryDatabase()
 
 	testGspec = &core.Genesis{
