@@ -3628,7 +3628,7 @@ func testCreateThenDelete(t *testing.T, config *params.ChainConfig) {
 		// A sender who makes transactions, has some funds
 		key, _      = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		address     = common.Address(crypto.PubkeyToAddress(key.PublicKey))
-		destAddress = crypto.CreateAddress(address, 0)
+		destAddress = common.Address(crypto.CreateAddress(crypto.Address(address), 0))
 		funds       = big.NewInt(1000000000000000)
 	)
 
@@ -3699,7 +3699,7 @@ func TestDeleteThenCreate(t *testing.T) {
 		engine      = ethash.NewFaker()
 		key, _      = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		address     = common.Address(crypto.PubkeyToAddress(key.PublicKey))
-		factoryAddr = crypto.CreateAddress(address, 0)
+		factoryAddr = common.Address(crypto.CreateAddress(crypto.Address(address), 0))
 		funds       = big.NewInt(1000000000000000)
 	)
 	/*
@@ -3730,7 +3730,7 @@ func TestDeleteThenCreate(t *testing.T) {
 		}
 	*/
 	contractABI := common.Hex2Bytes("6080604052348015600f57600080fd5b5060646000819055506081806100266000396000f3fe608060405260043610601f5760003560e01c80632b68b9c614602a576025565b36602557005b600080fd5b60306032565b005b3373ffffffffffffffffffffffffffffffffffffffff16fffea2646970667358221220ab749f5ed1fcb87bda03a74d476af3f074bba24d57cb5a355e8162062ad9a4e664736f6c63430008070033")
-	contractAddr := crypto.CreateAddress2(factoryAddr, [32]byte{}, crypto.Keccak256(contractABI))
+	contractAddr := common.Address(crypto.CreateAddress2(crypto.Address(factoryAddr), [32]byte{}, crypto.Keccak256(contractABI)))
 
 	gspec := &Genesis{
 		Config: params.TestChainConfig,
@@ -3811,7 +3811,7 @@ func TestTransientStorageReset(t *testing.T) {
 		engine      = ethash.NewFaker()
 		key, _      = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		address     = common.Address(crypto.PubkeyToAddress(key.PublicKey))
-		destAddress = crypto.CreateAddress(address, 0)
+		destAddress = common.Address(crypto.CreateAddress(crypto.Address(address), 0))
 		funds       = big.NewInt(1000000000000000)
 		vmConfig    = vm.Config{
 			ExtraEips: []int{1153}, // Enable transient storage EIP
