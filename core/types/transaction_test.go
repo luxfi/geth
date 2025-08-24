@@ -31,6 +31,7 @@ import (
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
+	"github.com/holiman/uint256"
 )
 
 // The values in those tests are from the Transaction Tests
@@ -623,9 +624,11 @@ func BenchmarkEffectiveGasTip(b *testing.B) {
 
 	b.Run("IntoMethod", func(b *testing.B) {
 		b.ReportAllocs()
-		dst := new(big.Int)
+		dst := new(uint256.Int)
+		base := new(uint256.Int)
+		base.SetFromBig(baseFee)
 		for i := 0; i < b.N; i++ {
-			err := tx.calcEffectiveGasTip(dst, baseFee)
+			err := tx.calcEffectiveGasTip(dst, base)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -674,16 +677,20 @@ func TestEffectiveGasTipInto(t *testing.T) {
 		orig, origErr := tx.EffectiveGasTip(baseFee)
 
 		// Get result from new method
-		dst := new(big.Int)
-		newErr := tx.calcEffectiveGasTip(dst, baseFee)
+		dst := new(uint256.Int)
+		base := new(uint256.Int)
+		if baseFee != nil {
+			base.SetFromBig(baseFee)
+		}
+		newErr := tx.calcEffectiveGasTip(dst, base)
 
 		// Compare results
 		if (origErr != nil) != (newErr != nil) {
 			t.Fatalf("case %d: error mismatch: orig %v, new %v", i, origErr, newErr)
 		}
 
-		if orig.Cmp(dst) != 0 {
-			t.Fatalf("case %d: result mismatch: orig %v, new %v", i, orig, dst)
+		if orig.Cmp(dst.ToBig()) != 0 {
+			t.Fatalf("case %d: result mismatch: orig %v, new %v", i, orig, dst.ToBig())
 		}
 	}
 }
