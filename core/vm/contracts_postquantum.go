@@ -173,15 +173,15 @@ func (c *mlkemEncap768) Run(input []byte) ([]byte, error) {
 	
 	// Note: In production, we'd need a secure random source
 	// For deterministic testing, we could use block hash as seed
-	ciphertext, sharedSecret, err := pubKey.Encapsulate(nil) // This will need proper randomness
+	result, err := pubKey.Encapsulate(nil) // This will need proper randomness
 	if err != nil {
 		return nil, err
 	}
 	
 	// Return: ciphertext || shared_secret
 	output := make([]byte, mlkem.MLKEM768CiphertextSize+32)
-	copy(output, ciphertext)
-	copy(output[mlkem.MLKEM768CiphertextSize:], sharedSecret)
+	copy(output, result.Ciphertext)
+	copy(output[mlkem.MLKEM768CiphertextSize:], result.SharedSecret)
 	
 	return output, nil
 }
