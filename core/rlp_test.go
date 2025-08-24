@@ -108,7 +108,7 @@ func testRlpIterator(t *testing.T, txs, uncles, datasize int) {
 	var gotHashes []common.Hash
 	var expHashes []common.Hash
 	for txIt.Next() {
-		gotHashes = append(gotHashes, crypto.Keccak256Hash(txIt.Value()))
+		gotHashes = append(gotHashes, common.Hash(crypto.Keccak256Hash(txIt.Value())))
 	}
 
 	var expBody types.Body
