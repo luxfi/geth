@@ -11,7 +11,6 @@ import (
 
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/node"
 )
 
@@ -26,7 +25,7 @@ func main() {
 	}
 	
 	// Open database
-	db, err := node.OpenDatabase(dbConfig, "chaindata", "", false)
+	db, err := rawdb.NewBadgerDatabase(dbPath, 256, 256, "", false)
 	if err != nil {
 		log.Fatal("Failed to open database:", err)
 	}
