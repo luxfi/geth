@@ -112,9 +112,14 @@ func (d *depTreeDeployer) linkAndDeploy(metadata *MetaData) (common.Address, err
 		deployerCode = strings.ReplaceAll(deployerCode, "__$"+dep.ID+"$__", strings.ToLower(addr.String()[2:]))
 	}
 	// Finally, deploy the top-level contract.
-	code, err := hex.DecodeString(deployerCode[2:])
+	// Remove 0x prefix if present
+	hexStr := deployerCode
+	if strings.HasPrefix(hexStr, "0x") || strings.HasPrefix(hexStr, "0X") {
+		hexStr = hexStr[2:]
+	}
+	code, err := hex.DecodeString(hexStr)
 	if err != nil {
-		panic(fmt.Sprintf("error decoding contract deployer hex %s:\n%v", deployerCode[2:], err))
+		panic(fmt.Sprintf("error decoding contract deployer hex %s:\n%v", hexStr, err))
 	}
 	addr, tx, err := d.deployFn(d.inputs[metadata.ID], code)
 	if err != nil {
