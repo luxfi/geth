@@ -65,7 +65,7 @@ type Validator interface {
 
 	// ValidateState validates the given statedb and optionally the receipts and
 	// gas used.
-	ValidateState(block *types.Block, state *state.StateDB, res *ProcessResult, stateless bool) error
+	ValidateState(block *types.Block, state *state.StateDB, receipts types.Receipts, usedGas uint64) error
 
 	// ValidateWitness validates the given block's witness.
 	ValidateWitness(witness *types.ExecutionWitness, receiptRoot common.Hash, stateRoot common.Hash) error
@@ -83,7 +83,7 @@ type Processor interface {
 	// Process processes the state changes according to the Ethereum rules by running
 	// the transaction messages using the statedb and applying any rewards to both
 	// the processor (coinbase) and any included uncles.
-	Process(block *types.Block, statedb *state.StateDB, cfg vm.Config) (*ProcessResult, error)
+	Process(block *types.Block, statedb *state.StateDB, cfg *params.ChainConfig) (*ProcessResult, error)
 }
 
 // ProcessResult contains the result of processing a block
