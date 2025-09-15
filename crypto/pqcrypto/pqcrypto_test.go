@@ -114,7 +114,7 @@ func TestAddressGeneration(t *testing.T) {
 
 		addr := signer.Address().Hex()
 		require.NotEmpty(addr)
-		
+
 		// Check uniqueness
 		require.False(addresses[addr], "Duplicate address generated")
 		addresses[addr] = true
@@ -153,7 +153,7 @@ func BenchmarkKEM(b *testing.B) {
 			signer1, _ := NewPQSigner(algo)
 			signer2, _ := NewPQSigner(algo)
 			pubKey := signer2.mlkemPriv.PublicKey.Bytes()
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				_, _, _ = signer1.Encapsulate(pubKey)
