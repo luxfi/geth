@@ -29,9 +29,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/holiman/billy"
-	"github.com/holiman/uint256"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip1559"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
@@ -39,11 +36,14 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
+	"github.com/holiman/billy"
+	"github.com/holiman/uint256"
 )
 
 const (
@@ -1326,20 +1326,17 @@ func (p *BlobPool) GetBlobs(vhashes []common.Hash, version byte) ([]*kzg4844.Blo
 		}
 		data, err := p.store.Get(txID)
 		if err != nil {
-			log.Error("Tracked blob transaction missing from store", "id", txID, "err", err)
-			continue
+			return nil, nil, nil, err
 		}
 
 		// Decode the blob transaction
 		tx := new(types.Transaction)
 		if err := rlp.DecodeBytes(data, tx); err != nil {
-			log.Error("Blobs corrupted for traced transaction", "id", txID, "err", err)
-			continue
+			return nil, nil, nil, err
 		}
 		sidecar := tx.BlobTxSidecar()
 		if sidecar == nil {
-			log.Error("Blob tx without sidecar", "hash", tx.Hash(), "id", txID)
-			continue
+			return nil, nil, nil, fmt.Errorf("blob tx without sidecar %x", tx.Hash())
 		}
 		// Traverse the blobs in the transaction
 		for i, hash := range tx.BlobHashes() {

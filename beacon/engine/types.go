@@ -101,12 +101,6 @@ type StatelessPayloadStatusV1 struct {
 	ValidationError *string     `json:"validationError"`
 }
 
-// PayloadStatusWithWitness is the result of a payload execution with witness.
-type PayloadStatusWithWitness struct {
-	PayloadStatus PayloadStatusV1 `json:"payloadStatus"`
-	Witness       *hexutil.Bytes  `json:"witness"`
-}
-
 //go:generate go run github.com/fjl/gencodec -type ExecutionPayloadEnvelope -field-override executionPayloadEnvelopeMarshaling -out gen_epe.go
 
 type ExecutionPayloadEnvelope struct {
