@@ -25,6 +25,7 @@ import (
 
 	"github.com/luxfi/geth/accounts/abi/abigen"
 	"github.com/luxfi/geth/cmd/utils"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/compiler"
 	"github.com/luxfi/crypto"
 )
@@ -83,7 +84,7 @@ func TestBindingGeneration(t *testing.T) {
 			// hex encoding of the keccak256 hash of the fully qualified library name.
 			// Note that the fully qualified library name is the path of its source
 			// file and the library name separated by ":".
-			libPattern := crypto.Keccak256Hash([]byte(name)).String()[2:36] // the first 2 chars are 0x
+			libPattern := common.Hash(crypto.Keccak256Hash([]byte(name))).String()[2:36] // the first 2 chars are 0x
 			libs[libPattern] = typeName
 		}
 		code, err := abigen.BindV2(types, abis, bins, dir, libs, make(map[string]string))

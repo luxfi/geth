@@ -195,6 +195,7 @@ func (api *ConsensusAPI) ExecuteStatelessPayloadV2(params engine.ExecutableData,
 // ExecuteStatelessPayloadV3 is analogous to NewPayloadV3, only it operates in
 // a stateless mode on top of a provided witness instead of the local database.
 func (api *ConsensusAPI) ExecuteStatelessPayloadV3(params engine.ExecutableData, versionedHashes []common.Hash, beaconRoot *common.Hash, opaqueWitness hexutil.Bytes) (engine.StatelessPayloadStatusV1, error) {
+	
 	switch {
 	case params.Withdrawals == nil:
 		return engine.StatelessPayloadStatusV1{Status: engine.INVALID}, paramsErr("nil withdrawals post-shanghai")
@@ -240,6 +241,7 @@ func (api *ConsensusAPI) ExecuteStatelessPayloadV4(params engine.ExecutableData,
 
 func (api *ConsensusAPI) executeStatelessPayload(params engine.ExecutableData, versionedHashes []common.Hash, beaconRoot *common.Hash, requests [][]byte, opaqueWitness hexutil.Bytes) (engine.StatelessPayloadStatusV1, error) {
 	log.Trace("Engine API request received", "method", "ExecuteStatelessPayload", "number", params.Number, "hash", params.BlockHash)
+	
 	block, err := engine.ExecutableDataToBlockNoHash(params, versionedHashes, beaconRoot, requests)
 	if err != nil {
 		bgu := "nil"
