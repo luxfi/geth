@@ -18,15 +18,15 @@
 package bn256
 
 import (
-	"github.com/luxfi/geth/crypto/bn256/cloudflare"
+	bn256cf "github.com/luxfi/geth/crypto/bn256/cloudflare"
 )
 
 // Re-export the cloudflare implementation as the default
-type G1 = cloudflare.G1
-type G2 = cloudflare.G2
-type GT = cloudflare.GT
+type G1 = bn256cf.G1
+type G2 = bn256cf.G2
+type GT = bn256cf.GT
 
 // PairingCheck calculates the Optimal Ate pairing for a set of points.
 func PairingCheck(a []*G1, b []*G2) bool {
-	return cloudflare.PairingCheck(a, b)
+	return bn256cf.PairingCheck(a, b)
 }
