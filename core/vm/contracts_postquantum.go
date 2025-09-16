@@ -1,6 +1,9 @@
 // Copyright (C) 2025, Lux Industries Inc. All rights reserved.
 // Post-quantum cryptography precompiled contracts
 
+//go:build postquantum
+// +build postquantum
+
 package vm
 
 import (
