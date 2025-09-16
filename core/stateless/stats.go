@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/metrics"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/metrics"
 )
 
 var accountTrieLeavesAtDepth [16]*metrics.Counter
