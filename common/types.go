@@ -29,7 +29,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/common/hexutil"
 	"golang.org/x/crypto/sha3"
 )

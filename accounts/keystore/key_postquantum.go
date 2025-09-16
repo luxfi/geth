@@ -12,7 +12,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/google/uuid"
 	"github.com/luxfi/crypto/mldsa"
 	"github.com/luxfi/crypto/mlkem"
