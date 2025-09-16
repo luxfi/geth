@@ -1,9 +1,6 @@
 // Copyright (C) 2025, Lux Industries Inc. All rights reserved.
 // Post-quantum cryptography precompiled contracts
 
-//go:build postquantum
-// +build postquantum
-
 package vm
 
 import (
@@ -73,6 +70,10 @@ func (c *mldsaVerify44) RequiredGas(input []byte) uint64 {
 	return mldsaVerify44Gas
 }
 
+func (c *mldsaVerify44) Name() string {
+	return "mldsaVerify44"
+}
+
 func (c *mldsaVerify44) Run(input []byte) ([]byte, error) {
 	// Input format: [pubkey(1312) || message(variable) || signature(2420)]
 	if len(input) < mldsa.MLDSA44PublicKeySize + 1 + mldsa.MLDSA44SignatureSize {
@@ -101,6 +102,10 @@ type mldsaVerify65 struct{}
 
 func (c *mldsaVerify65) RequiredGas(input []byte) uint64 {
 	return mldsaVerify65Gas
+}
+
+func (c *mldsaVerify65) Name() string {
+	return "mldsaVerify65"
 }
 
 func (c *mldsaVerify65) Run(input []byte) ([]byte, error) {
@@ -133,6 +138,10 @@ func (c *mldsaVerify87) RequiredGas(input []byte) uint64 {
 	return mldsaVerify87Gas
 }
 
+func (c *mldsaVerify87) Name() string {
+	return "mldsaVerify87"
+}
+
 func (c *mldsaVerify87) Run(input []byte) ([]byte, error) {
 	// Input format: [pubkey(2592) || message(variable) || signature(4595)]
 	if len(input) < mldsa.MLDSA87PublicKeySize + 1 + mldsa.MLDSA87SignatureSize {
@@ -161,6 +170,10 @@ type mlkemEncap768 struct{}
 
 func (c *mlkemEncap768) RequiredGas(input []byte) uint64 {
 	return mlkemEncap768Gas
+}
+
+func (c *mlkemEncap768) Name() string {
+	return "mlkemEncap768"
 }
 
 func (c *mlkemEncap768) Run(input []byte) ([]byte, error) {
@@ -194,6 +207,10 @@ type slhdsaVerify128f struct{}
 
 func (c *slhdsaVerify128f) RequiredGas(input []byte) uint64 {
 	return slhdsaVerify128fGas
+}
+
+func (c *slhdsaVerify128f) Name() string {
+	return "slhdsaVerify128f"
 }
 
 func (c *slhdsaVerify128f) Run(input []byte) ([]byte, error) {
