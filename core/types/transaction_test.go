@@ -28,7 +28,7 @@ import (
 	"testing"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/holiman/uint256"
@@ -118,7 +118,7 @@ func TestEIP2718TransactionSigHash(t *testing.T) {
 func TestEIP2930Signer(t *testing.T) {
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		keyAddr = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		keyAddr = crypto.PubkeyToAddress(key.PublicKey)
 		signer1 = NewEIP2930Signer(big.NewInt(1))
 		signer2 = NewEIP2930Signer(big.NewInt(2))
 		tx0     = NewTx(&AccessListTx{Nonce: 1})
@@ -175,7 +175,7 @@ func TestEIP2930Signer(t *testing.T) {
 		if !errors.Is(err, test.wantSenderErr) {
 			t.Errorf("test %d: wrong Sender error %q", i, err)
 		}
-		if err == nil && sender != common.Address(keyAddr) {
+		if err == nil && sender != keyAddr {
 			t.Errorf("test %d: wrong sender address %x", i, sender)
 		}
 		signedTx, err := SignTx(test.tx, test.signer, key)
@@ -223,8 +223,8 @@ func decodeTx(data []byte) (*Transaction, error) {
 
 func defaultTestKey() (*ecdsa.PrivateKey, common.Address) {
 	key, _ := crypto.HexToECDSA("45a915e4d060149eb4365960e6a7a45f334393093061116b197e3240065ff2d8")
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
-	return key, common.Address(addr)
+	addr := crypto.PubkeyToAddress(key.PublicKey)
+	return key, addr
 }
 
 func TestRecipientEmpty(t *testing.T) {
@@ -610,12 +610,12 @@ func BenchmarkEffectiveGasTip(b *testing.B) {
 		Data:      nil,
 	}
 	tx, _ := SignNewTx(key, signer, txdata)
-	baseFee := big.NewInt(1000000000) // 1 gwei
+	baseFee := uint256.NewInt(1000000000) // 1 gwei
 
 	b.Run("Original", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			_, err := tx.EffectiveGasTip(baseFee)
+			_, err := tx.EffectiveGasTip(baseFee.ToBig())
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -625,10 +625,8 @@ func BenchmarkEffectiveGasTip(b *testing.B) {
 	b.Run("IntoMethod", func(b *testing.B) {
 		b.ReportAllocs()
 		dst := new(uint256.Int)
-		base := new(uint256.Int)
-		base.SetFromBig(baseFee)
 		for i := 0; i < b.N; i++ {
-			err := tx.calcEffectiveGasTip(dst, base)
+			err := tx.calcEffectiveGasTip(dst, baseFee)
 			if err != nil {
 				b.Fatal(err)
 			}
@@ -637,9 +635,6 @@ func BenchmarkEffectiveGasTip(b *testing.B) {
 }
 
 func TestEffectiveGasTipInto(t *testing.T) {
-	signer := LatestSigner(params.TestChainConfig)
-	key, _ := crypto.GenerateKey()
-
 	testCases := []struct {
 		tipCap  int64
 		feeCap  int64
@@ -655,8 +650,26 @@ func TestEffectiveGasTipInto(t *testing.T) {
 		{tipCap: 50, feeCap: 100, baseFee: nil}, // nil base fee
 	}
 
+	// original, non-allocation golfed version
+	orig := func(tx *Transaction, baseFee *big.Int) (*big.Int, error) {
+		if baseFee == nil {
+			return tx.GasTipCap(), nil
+		}
+		var err error
+		gasFeeCap := tx.GasFeeCap()
+		if gasFeeCap.Cmp(baseFee) < 0 {
+			err = ErrGasFeeCapTooLow
+		}
+		gasFeeCap = gasFeeCap.Sub(gasFeeCap, baseFee)
+		gasTipCap := tx.GasTipCap()
+		if gasTipCap.Cmp(gasFeeCap) < 0 {
+			return gasTipCap, err
+		}
+		return gasFeeCap, err
+	}
+
 	for i, tc := range testCases {
-		txdata := &DynamicFeeTx{
+		tx := NewTx(&DynamicFeeTx{
 			ChainID:   big.NewInt(1),
 			Nonce:     0,
 			GasTipCap: big.NewInt(tc.tipCap),
@@ -665,32 +678,29 @@ func TestEffectiveGasTipInto(t *testing.T) {
 			To:        &common.Address{},
 			Value:     big.NewInt(0),
 			Data:      nil,
-		}
-		tx, _ := SignNewTx(key, signer, txdata)
+		})
 
 		var baseFee *big.Int
+		var baseFee2 *uint256.Int
 		if tc.baseFee != nil {
 			baseFee = big.NewInt(*tc.baseFee)
+			baseFee2 = uint256.NewInt(uint64(*tc.baseFee))
 		}
 
 		// Get result from original method
-		orig, origErr := tx.EffectiveGasTip(baseFee)
+		orig, origErr := orig(tx, baseFee)
 
 		// Get result from new method
 		dst := new(uint256.Int)
-		base := new(uint256.Int)
-		if baseFee != nil {
-			base.SetFromBig(baseFee)
-		}
-		newErr := tx.calcEffectiveGasTip(dst, base)
+		newErr := tx.calcEffectiveGasTip(dst, baseFee2)
 
 		// Compare results
 		if (origErr != nil) != (newErr != nil) {
 			t.Fatalf("case %d: error mismatch: orig %v, new %v", i, origErr, newErr)
 		}
 
-		if orig.Cmp(dst.ToBig()) != 0 {
-			t.Fatalf("case %d: result mismatch: orig %v, new %v", i, orig, dst.ToBig())
+		if origErr == nil && orig.Cmp(dst.ToBig()) != 0 {
+			t.Fatalf("case %d: result mismatch: orig %v, new %v", i, orig, dst)
 		}
 	}
 }
@@ -698,4 +708,29 @@ func TestEffectiveGasTipInto(t *testing.T) {
 // Helper function to create integer pointer
 func intPtr(i int64) *int64 {
 	return &i
+}
+
+func BenchmarkEffectiveGasTipCmp(b *testing.B) {
+	signer := LatestSigner(params.TestChainConfig)
+	key, _ := crypto.GenerateKey()
+	txdata := &DynamicFeeTx{
+		ChainID:   big.NewInt(1),
+		Nonce:     0,
+		GasTipCap: big.NewInt(2000000000),
+		GasFeeCap: big.NewInt(3000000000),
+		Gas:       21000,
+		To:        &common.Address{},
+		Value:     big.NewInt(0),
+		Data:      nil,
+	}
+	tx, _ := SignNewTx(key, signer, txdata)
+	other, _ := SignNewTx(key, signer, txdata)
+	baseFee := uint256.NewInt(1000000000) // 1 gwei
+
+	b.Run("Original", func(b *testing.B) {
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			tx.EffectiveGasTipCmp(other, baseFee)
+		}
+	})
 }
