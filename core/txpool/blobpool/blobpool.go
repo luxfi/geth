@@ -55,6 +55,12 @@ const (
 	// tiny overflows causing all txs to move a shelf higher, wasting disk space.
 	txAvgSize = 4 * 1024
 
+	// txBlobOverhead is an approximation of the overhead that an additional blob
+	// has on transaction size. This is added to the slotter to avoid tiny
+	// overflows causing all txs to move a shelf higher, wasting disk space. A
+	// small buffer is added to the proof overhead.
+	txBlobOverhead = uint32(kzg4844.CellProofsPerBlob*len(kzg4844.Proof{}) + 64)
+
 	// txMaxSize is the maximum size a single transaction can have, outside
 	// the included blobs. Since blob transactions are pulled instead of pushed,
 	// and only a small metadata is kept in ram, the rest is on disk, there is
@@ -83,6 +89,10 @@ const (
 	// limboedTransactionStore is the subfolder containing the currently included
 	// but not yet finalized transaction blobs.
 	limboedTransactionStore = "limbo"
+
+	// storeVersion is the current slotter layout used for the billy.Database
+	// store.
+	storeVersion = 1
 )
 
 // blobTxMeta is the minimal subset of types.BlobTx necessary to validate and
@@ -92,6 +102,7 @@ const (
 type blobTxMeta struct {
 	hash    common.Hash   // Transaction hash to maintain the lookup table
 	vhashes []common.Hash // Blob versioned hashes to maintain the lookup table
+	version byte          // Blob transaction version to determine proof type
 
 	id          uint64 // Storage ID in the pool's persistent store
 	storageSize uint32 // Byte size in the pool's persistent store
@@ -115,10 +126,16 @@ type blobTxMeta struct {
 
 // newBlobTxMeta retrieves the indexed metadata fields from a blob transaction
 // and assembles a helper struct to track in memory.
+// Requires the transaction to have a sidecar (or that we introduce a special version tag for no-sidecar).
 func newBlobTxMeta(id uint64, size uint64, storageSize uint32, tx *types.Transaction) *blobTxMeta {
+	if tx.BlobTxSidecar() == nil {
+		// This should never happen, as the pool only admits blob transactions with a sidecar
+		panic("missing blob tx sidecar")
+	}
 	meta := &blobTxMeta{
 		hash:        tx.Hash(),
 		vhashes:     tx.BlobHashes(),
+		version:     tx.BlobTxSidecar().Version,
 		id:          id,
 		storageSize: storageSize,
 		size:        size,
@@ -385,6 +402,14 @@ func (p *BlobPool) Init(gasTip uint64, head *types.Header, reserver txpool.Reser
 	}
 	p.head, p.state = head, state
 
+	// Create new slotter for pre-Osaka blob configuration.
+	slotter := newSlotter(eip4844.LatestMaxBlobsPerBlock(p.chain.Config()))
+
+	// See if we need to migrate the queue blob store after fusaka
+	slotter, err = tryMigrate(p.chain.Config(), slotter, queuedir)
+	if err != nil {
+		return err
+	}
 	// Index all transactions on disk and delete anything unprocessable
 	var fails []uint64
 	index := func(id uint64, size uint32, blob []byte) {
@@ -392,7 +417,6 @@ func (p *BlobPool) Init(gasTip uint64, head *types.Header, reserver txpool.Reser
 			fails = append(fails, id)
 		}
 	}
-	slotter := newSlotter(eip4844.LatestMaxBlobsPerBlock(p.chain.Config()))
 	store, err := billy.Open(billy.Options{Path: queuedir, Repair: true}, slotter, index)
 	if err != nil {
 		return err
@@ -426,7 +450,7 @@ func (p *BlobPool) Init(gasTip uint64, head *types.Header, reserver txpool.Reser
 
 	// Pool initialized, attach the blob limbo to it to track blobs included
 	// recently but not yet finalized
-	p.limbo, err = newLimbo(limbodir, eip4844.LatestMaxBlobsPerBlock(p.chain.Config()))
+	p.limbo, err = newLimbo(p.chain.Config(), limbodir)
 	if err != nil {
 		p.Close()
 		return err
@@ -1298,6 +1322,13 @@ func (p *BlobPool) GetMetadata(hash common.Hash) *txpool.TxMetadata {
 }
 
 // GetBlobs returns a number of blobs and proofs for the given versioned hashes.
+// Blobpool must place responses in the order given in the request, using null
+// for any missing blobs.
+//
+// For instance, if the request is [A_versioned_hash, B_versioned_hash,
+// C_versioned_hash] and blobpool has data for blobs A and C, but doesn't have
+// data for B, the response MUST be [A, null, C].
+//
 // This is a utility method for the engine API, enabling consensus clients to
 // retrieve blobs from the pools directly instead of the network.
 func (p *BlobPool) GetBlobs(vhashes []common.Hash, version byte) ([]*kzg4844.Blob, []kzg4844.Commitment, [][]kzg4844.Proof, error) {
@@ -1317,26 +1348,30 @@ func (p *BlobPool) GetBlobs(vhashes []common.Hash, version byte) ([]*kzg4844.Blo
 		if _, ok := filled[vhash]; ok {
 			continue
 		}
-		// Retrieve the corresponding blob tx with the vhash
+		// Retrieve the corresponding blob tx with the vhash, skip blob resolution
+		// if it's not found locally and place the null instead.
 		p.lock.RLock()
 		txID, exists := p.lookup.storeidOfBlob(vhash)
 		p.lock.RUnlock()
 		if !exists {
-			return nil, nil, nil, fmt.Errorf("blob with vhash %x is not found", vhash)
+			continue
 		}
 		data, err := p.store.Get(txID)
 		if err != nil {
-			return nil, nil, nil, err
+			log.Error("Tracked blob transaction missing from store", "id", txID, "err", err)
+			continue
 		}
 
 		// Decode the blob transaction
 		tx := new(types.Transaction)
 		if err := rlp.DecodeBytes(data, tx); err != nil {
-			return nil, nil, nil, err
+			log.Error("Blobs corrupted for traced transaction", "id", txID, "err", err)
+			continue
 		}
 		sidecar := tx.BlobTxSidecar()
 		if sidecar == nil {
-			return nil, nil, nil, fmt.Errorf("blob tx without sidecar %x", tx.Hash())
+			log.Error("Blob tx without sidecar", "hash", tx.Hash(), "id", txID)
+			continue
 		}
 		// Traverse the blobs in the transaction
 		for i, hash := range tx.BlobHashes() {
@@ -1404,8 +1439,8 @@ func (p *BlobPool) AvailableBlobs(vhashes []common.Hash) int {
 // related to the add is finished. Only use this during tests for determinism.
 func (p *BlobPool) Add(txs []*types.Transaction, sync bool) []error {
 	var (
-		adds = make([]*types.Transaction, 0, len(txs))
 		errs = make([]error, len(txs))
+		adds = make([]*types.Transaction, 0, len(txs))
 	)
 	for i, tx := range txs {
 		errs[i] = p.add(tx)
@@ -1649,7 +1684,7 @@ func (p *BlobPool) drop() {
 func (p *BlobPool) Pending(filter txpool.PendingFilter) map[common.Address][]*txpool.LazyTransaction {
 	// If only plain transactions are requested, this pool is unsuitable as it
 	// contains none, don't even bother.
-	if filter.OnlyPlainTxs {
+	if !filter.BlobTxs {
 		return nil
 	}
 	// Track the amount of time waiting to retrieve the list of pending blob txs
@@ -1670,6 +1705,11 @@ func (p *BlobPool) Pending(filter txpool.PendingFilter) map[common.Address][]*tx
 	for addr, txs := range p.index {
 		lazies := make([]*txpool.LazyTransaction, 0, len(txs))
 		for _, tx := range txs {
+			// Skip v0 or v1 blob transactions depending on the filter
+			if tx.version != filter.BlobVersion {
+				break // skip the rest because of nonce ordering
+			}
+
 			// If transaction filtering was requested, discard badly priced ones
 			if filter.MinTip != nil && filter.BaseFee != nil {
 				if tx.execFeeCap.Lt(filter.BaseFee) {
