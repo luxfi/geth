@@ -290,7 +290,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -346,7 +346,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -392,7 +392,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -450,7 +450,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/common"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -498,7 +498,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -565,7 +565,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -697,7 +697,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -747,7 +747,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/common"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -822,7 +822,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -916,7 +916,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/common"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -1107,7 +1107,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -1242,7 +1242,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 
 		`
@@ -1384,7 +1384,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -1450,7 +1450,7 @@ var bindTests = []struct {
 		"github.com/luxfi/geth/accounts/abi/bind"
 		"github.com/luxfi/geth/accounts/abi/bind/backends"
 		"github.com/luxfi/geth/core/types"
-		"github.com/luxfi/crypto"
+		"github.com/luxfi/geth/crypto"
 		`,
 		`
 		// Initialize test accounts
@@ -1538,7 +1538,7 @@ var bindTests = []struct {
 		"github.com/luxfi/geth/accounts/abi/bind"
 		"github.com/luxfi/geth/accounts/abi/bind/backends"
 		"github.com/luxfi/geth/common"
-		"github.com/luxfi/crypto"
+		"github.com/luxfi/geth/crypto"
 		"github.com/luxfi/geth/core/types"
 		`,
 		`
@@ -1602,7 +1602,7 @@ var bindTests = []struct {
 		"github.com/luxfi/geth/accounts/abi/bind"
 		"github.com/luxfi/geth/accounts/abi/bind/backends"
 		"github.com/luxfi/geth/common"
-		"github.com/luxfi/crypto"
+		"github.com/luxfi/geth/crypto"
 		"github.com/luxfi/geth/core/types"
         `,
 		`
@@ -1665,7 +1665,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 		`,
 		`
 			// Generate a new random account and a funded simulator
@@ -1727,7 +1727,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/common"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 	   `,
 		`
 			key, _ := crypto.GenerateKey()
@@ -1817,7 +1817,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 			"github.com/luxfi/geth/eth/ethconfig"
 	   `,
 		`
@@ -1899,7 +1899,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 			"github.com/luxfi/geth/eth/ethconfig"
 	   `,
 		`
@@ -1952,7 +1952,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 			"github.com/luxfi/geth/eth/ethconfig"
 		`,
 		tester: `
@@ -2001,7 +2001,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 			"github.com/luxfi/geth/eth/ethconfig"
 		`,
 		tester: `
@@ -2042,7 +2042,7 @@ var bindTests = []struct {
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
 			"github.com/luxfi/geth/core/types"
-			"github.com/luxfi/crypto"
+			"github.com/luxfi/geth/crypto"
 			"github.com/luxfi/geth/eth/ethconfig"
 		`,
 		tester: `
