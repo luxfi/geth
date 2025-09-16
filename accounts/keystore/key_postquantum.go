@@ -1,6 +1,9 @@
 // Copyright (C) 2025, Lux Industries Inc. All rights reserved.
 // Post-quantum key support for keystore
 
+//go:build postquantum
+// +build postquantum
+
 package keystore
 
 import (
