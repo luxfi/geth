@@ -1,9 +1,6 @@
 // Copyright (C) 2025, Lux Industries Inc. All rights reserved.
 // Post-quantum key support for keystore
 
-//go:build postquantum
-// +build postquantum
-
 package keystore
 
 import (
@@ -15,7 +12,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/crypto"
 	"github.com/google/uuid"
 	"github.com/luxfi/crypto/mldsa"
 	"github.com/luxfi/crypto/mlkem"

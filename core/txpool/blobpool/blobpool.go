@@ -59,7 +59,8 @@ const (
 	// has on transaction size. This is added to the slotter to avoid tiny
 	// overflows causing all txs to move a shelf higher, wasting disk space. A
 	// small buffer is added to the proof overhead.
-	txBlobOverhead = uint32(kzg4844.CellProofsPerBlob*len(kzg4844.Proof{}) + 64)
+	// CellProofsPerBlob=128, Proof size=48 bytes, so 128*48+64 = 6208
+	txBlobOverhead = uint32(6208)
 
 	// txMaxSize is the maximum size a single transaction can have, outside
 	// the included blobs. Since blob transactions are pulled instead of pushed,

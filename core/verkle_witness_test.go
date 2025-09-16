@@ -325,11 +325,11 @@ func TestProcessVerkleInvalidContractCreation(t *testing.T) {
 		}
 	})
 
-	tx1ContractAddress := crypto.CreateAddress(crypto.Address(account1), 0)
+	tx1ContractAddress := crypto.CreateAddress(account1, 0)
 	tx1ContractStem := utils.GetTreeKey(tx1ContractAddress[:], uint256.NewInt(0), 105)
 	tx1ContractStem = tx1ContractStem[:31]
 
-	tx2ContractAddress := crypto.CreateAddress(crypto.Address(account2), 1)
+	tx2ContractAddress := crypto.CreateAddress(account2, 1)
 	tx2SlotKey := [32]byte{}
 	tx2SlotKey[31] = 133
 	tx2ContractStem := utils.StorageSlotKey(tx2ContractAddress[:], tx2SlotKey[:])
@@ -531,7 +531,7 @@ func TestProcessVerkleExtCodeHashOpcode(t *testing.T) {
 		byte(vm.PUSH1), 42,
 	}
 	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
-	dummyContractAddr := crypto.CreateAddress(crypto.Address(deployer), 0)
+	dummyContractAddr := crypto.CreateAddress(deployer, 0)
 
 	// contract that calls EXTCODEHASH on the dummy contract
 	extCodeHashContract := []byte{
@@ -548,7 +548,7 @@ func TestProcessVerkleExtCodeHashOpcode(t *testing.T) {
 		0x3a, 0x22, 0x0f, 0x35, 0x12, 0x52, 0x08, 0x9d, 0x38, 0x5b, 0x29, 0xbe, 0xca, 0x14, 0xe2, 0x7f, 0x20, 0x4c, 0x29, 0x6a,
 		byte(vm.EXTCODEHASH),
 	}
-	extCodeHashContractAddr := crypto.CreateAddress(crypto.Address(deployer), 1)
+	extCodeHashContractAddr := crypto.CreateAddress(deployer, 1)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 2, func(i int, gen *BlockGen) {
 		gen.SetPoS()
@@ -702,7 +702,7 @@ func TestProcessVerkleSelfDestructInSeparateTx(t *testing.T) {
 		runtimeCode)
 
 	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
-	contract := crypto.CreateAddress(crypto.Address(deployer), 0)
+	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 2, func(i int, gen *BlockGen) {
 		gen.SetPoS()
@@ -810,7 +810,7 @@ func TestProcessVerkleSelfDestructInSameTx(t *testing.T) {
 		account2.Bytes(),
 		[]byte{byte(vm.SELFDESTRUCT)})
 	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
-	contract := crypto.CreateAddress(crypto.Address(deployer), 0)
+	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 1, func(i int, gen *BlockGen) {
 		gen.SetPoS()
@@ -913,7 +913,7 @@ func TestProcessVerkleSelfDestructInSeparateTxWithSelfBeneficiary(t *testing.T) 
 		byte(vm.SELFDESTRUCT),
 	}
 	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
-	contract := crypto.CreateAddress(crypto.Address(deployer), 0)
+	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 2, func(i int, gen *BlockGen) {
 		gen.SetPoS()
@@ -985,7 +985,7 @@ func TestProcessVerkleSelfDestructInSameTxWithSelfBeneficiary(t *testing.T) {
 		testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		gspec      = verkleTestGenesis(&config)
 		deployer   = crypto.PubkeyToAddress(testKey.PublicKey)
-		contract   = crypto.CreateAddress(crypto.Address(deployer), 0)
+		contract   = crypto.CreateAddress(deployer, 0)
 	)
 
 	// The goal of this test is to test SELFDESTRUCT that happens while executing
@@ -1049,7 +1049,7 @@ func TestProcessVerkleSelfDestructInSameTxWithSelfBeneficiaryAndPrefundedAccount
 		testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		gspec      = verkleTestGenesis(&config)
 		deployer   = crypto.PubkeyToAddress(testKey.PublicKey)
-		contract   = crypto.CreateAddress(crypto.Address(deployer), 0)
+		contract   = crypto.CreateAddress(deployer, 0)
 	)
 	// Prefund the account, at an address that the contract will be deployed at,
 	// before it selfdestrucs. We can therefore check that the account itseld is
