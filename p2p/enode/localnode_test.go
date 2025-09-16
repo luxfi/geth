@@ -23,7 +23,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/p2p/netutil"
 	"github.com/stretchr/testify/assert"

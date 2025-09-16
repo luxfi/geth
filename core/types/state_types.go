@@ -1,8 +1,4 @@
-<<<<<<<< HEAD:core/types/state_types.go
 // Copyright 2020-2025 The go-ethereum Authors
-========
-// Copyright 2025 The go-ethereum Authors
->>>>>>>> upstream/master:core/rawdb/database_tablewriter_unix.go
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -18,29 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
-<<<<<<<< HEAD:core/types/state_types.go
 package types
 
 import "github.com/luxfi/geth/common"
 
 // TrieRootHash represents the hash of a trie root
 type TrieRootHash = common.Hash
-========
-//go:build !tinygo
-// +build !tinygo
-
-package rawdb
-
-import (
-	"io"
-
-	"github.com/olekukonko/tablewriter"
-)
-
-// Re-export the real tablewriter types and functions
-type Table = tablewriter.Table
-
-func newTableWriter(w io.Writer) *Table {
-	return tablewriter.NewWriter(w)
-}
->>>>>>>> upstream/master:core/rawdb/database_tablewriter_unix.go
