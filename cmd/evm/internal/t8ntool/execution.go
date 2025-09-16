@@ -33,7 +33,6 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
@@ -152,7 +151,6 @@ func (pre *Prestate) Apply(vmConfig vm.Config, chainConfig *params.ChainConfig, 
 		gasUsed     = uint64(0)
 		blobGasUsed = uint64(0)
 		receipts    = make(types.Receipts, 0)
-		txIndex     = 0
 	)
 	gaspool.AddGas(pre.Env.GasLimit)
 	vmContext := vm.BlockContext{
@@ -250,24 +248,17 @@ func (pre *Prestate) Apply(vmConfig vm.Config, chainConfig *params.ChainConfig, 
 				continue
 			}
 		}
-		statedb.SetTxContext(tx.Hash(), txIndex)
+		statedb.SetTxContext(tx.Hash(), len(receipts))
 		var (
 			snapshot = statedb.Snapshot()
 			prevGas  = gaspool.Gas()
 		)
-		if evm.Config.Tracer != nil && evm.Config.Tracer.OnTxStart != nil {
-			evm.Config.Tracer.OnTxStart(evm.GetVMContext(), tx, msg.From)
-		}
-		// (ret []byte, usedGas uint64, failed bool, err error)
-		msgResult, err := core.ApplyMessage(evm, msg, gaspool)
+		receipt, err := core.ApplyTransactionWithEVM(msg, gaspool, statedb, vmContext.BlockNumber, blockHash, pre.Env.Timestamp, tx, &gasUsed, evm)
 		if err != nil {
 			statedb.RevertToSnapshot(snapshot)
 			log.Info("rejected tx", "index", i, "hash", tx.Hash(), "from", msg.From, "error", err)
 			rejectedTxs = append(rejectedTxs, &rejectedTx{i, err.Error()})
 			gaspool.SetGas(prevGas)
-			if evm.Config.Tracer != nil && evm.Config.Tracer.OnTxEnd != nil {
-				evm.Config.Tracer.OnTxEnd(nil, err)
-			}
 			continue
 		}
 		includedTxs = append(includedTxs, tx)
@@ -275,53 +266,11 @@ func (pre *Prestate) Apply(vmConfig vm.Config, chainConfig *params.ChainConfig, 
 			return nil, nil, nil, NewError(ErrorMissingBlockhash, hashError)
 		}
 		blobGasUsed += txBlobGas
-		gasUsed += msgResult.UsedGas
-
-		// Receipt:
-		{
-			var root []byte
-			if chainConfig.IsByzantium(vmContext.BlockNumber) {
-				statedb.Finalise(true)
-			} else {
-				root = statedb.IntermediateRoot(chainConfig.IsEIP158(vmContext.BlockNumber)).Bytes()
-			}
-
-			// Create a new receipt for the transaction, storing the intermediate root and
-			// gas used by the tx.
-			receipt := &types.Receipt{Type: tx.Type(), PostState: root, CumulativeGasUsed: gasUsed}
-			if msgResult.Failed() {
-				receipt.Status = types.ReceiptStatusFailed
-			} else {
-				receipt.Status = types.ReceiptStatusSuccessful
-			}
-			receipt.TxHash = tx.Hash()
-			receipt.GasUsed = msgResult.UsedGas
-
-			// If the transaction created a contract, store the creation address in the receipt.
-			if msg.To == nil {
-				var cryptoAddr crypto.Address
-				copy(cryptoAddr[:], evm.TxContext.Origin[:])
-				createdAddr := crypto.CreateAddress(cryptoAddr, tx.Nonce())
-				receipt.ContractAddress = common.BytesToAddress(createdAddr[:])
-			}
-
-			// Set the receipt logs and create the bloom filter.
-			receipt.Logs = statedb.GetLogs(tx.Hash(), vmContext.BlockNumber.Uint64(), blockHash, vmContext.Time)
-			receipt.Bloom = types.CreateBloom(receipt)
-
-			// These three are non-consensus fields:
-			//receipt.BlockHash
-			//receipt.BlockNumber
-			receipt.TransactionIndex = uint(txIndex)
-			receipts = append(receipts, receipt)
-			if evm.Config.Tracer != nil && evm.Config.Tracer.OnTxEnd != nil {
-				evm.Config.Tracer.OnTxEnd(receipt, nil)
-			}
-		}
-
-		txIndex++
+		receipts = append(receipts, receipt)
 	}
+
 	statedb.IntermediateRoot(chainConfig.IsEIP158(vmContext.BlockNumber))
+
 	// Add mining reward? (-1 means rewards are disabled)
 	if miningReward >= 0 {
 		// Add mining reward. The mining reward may be `0`, which only makes a difference in the cases
@@ -426,7 +375,7 @@ func MakePreState(db ethdb.Database, accounts types.GenesisAlloc) *state.StateDB
 	sdb := state.NewDatabase(tdb, nil)
 	statedb, _ := state.New(types.EmptyRootHash, sdb)
 	for addr, a := range accounts {
-		statedb.SetCode(addr, a.Code)
+		statedb.SetCode(addr, a.Code, tracing.CodeChangeUnspecified)
 		statedb.SetNonce(addr, a.Nonce, tracing.NonceChangeGenesis)
 		statedb.SetBalance(addr, uint256.MustFromBig(a.Balance), tracing.BalanceIncreaseGenesisBalance)
 		for k, v := range a.Storage {
