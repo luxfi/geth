@@ -269,7 +269,7 @@ var combinedJSONBindTestsV2 = []bindV2Test{
 // cases (using v2 binding mode) and ensures that no mutations occurred compared
 // to the expected output included under testdata/v2.
 func TestBindingV2ConvertedV1Tests(t *testing.T) {
-	t.Skip("Skipping - generated code IDs need regeneration after upstream merge")
+	t.Skip("Skipping - IDs need regeneration with abigen")
 	for _, tc := range combinedJSONBindTestsV2 {
 		fname := fmt.Sprintf("testdata/v2/%v.go.txt", strings.ToLower(tc.name))
 		t.Run(tc.name, func(t *testing.T) {
