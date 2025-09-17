@@ -29,6 +29,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/beacon"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
@@ -313,7 +314,6 @@ func TestSupplyWithdrawals(t *testing.T) {
 // Because Contract B is removed only at the end of the transaction
 // the ether sent in between is burnt before Cancun hard fork.
 func TestSupplySelfdestruct(t *testing.T) {
-	t.Skip("Skipping complex selfdestruct burn tracking test - needs cross-contract tracking")
 	var (
 		config = *params.TestChainConfig
 
@@ -592,7 +592,15 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 }
 
 func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(b *core.BlockGen), numBlocks int) ([]supplyInfo, *core.BlockChain, error) {
-	engine := beacon.New(ethash.NewFaker())
+	// Use ethash engine for tests that expect mining rewards
+	var engine consensus.Engine
+	if genesis.Config.TerminalTotalDifficulty != nil && genesis.Config.TerminalTotalDifficulty.Sign() == 0 {
+		// Post-merge, use beacon
+		engine = beacon.New(ethash.NewFaker())
+	} else {
+		// Pre-merge, use ethash for mining rewards
+		engine = ethash.NewFaker()
+	}
 
 	traceOutputPath := filepath.ToSlash(t.TempDir())
 	traceOutputFilename := path.Join(traceOutputPath, "supply.jsonl")
