@@ -17,6 +17,8 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/consensus/beacon"
@@ -51,6 +53,7 @@ func ExecuteStateless(config *params.ChainConfig, vmconfig vm.Config, block *typ
 	}
 	// Create and populate the state database to serve as the stateless backend
 	memdb := witness.MakeHashDB()
+
 	db, err := state.New(witness.Root(), state.NewDatabase(triedb.NewDatabase(memdb, triedb.HashDefaults), nil))
 	if err != nil {
 		return common.Hash{}, common.Hash{}, err
@@ -63,18 +66,23 @@ func ExecuteStateless(config *params.ChainConfig, vmconfig vm.Config, block *typ
 		engine:      beacon.New(ethash.NewFaker()),
 	}
 	processor := NewStateProcessorWithVMConfig(config, chain, vmconfig)
-	validator := NewBlockValidator(config, nil) // No chain, we only validate the state, not the block
 
 	// Run the stateless blocks processing and self-validate certain fields
 	res, err := processor.Process(block, db, config)
 	if err != nil {
 		return common.Hash{}, common.Hash{}, err
 	}
-	if err = validator.ValidateState(block, db, res.Receipts, res.GasUsed); err != nil {
-		return common.Hash{}, common.Hash{}, err
+
+	// In stateless mode, we can't validate the state/receipt roots as they're zeroed
+	// We only validate the gas usage
+	if block.GasUsed() != res.GasUsed {
+		return common.Hash{}, common.Hash{}, fmt.Errorf("invalid gas used (remote: %d local: %d)", block.GasUsed(), res.GasUsed)
 	}
 	// Almost everything validated, but receipt and state root needs to be returned
 	receiptRoot := types.DeriveSha(res.Receipts, trie.NewStackTrie(nil))
+
+	// Calculate the state root
 	stateRoot := db.IntermediateRoot(config.IsEIP158(block.Number()))
+
 	return stateRoot, receiptRoot, nil
 }

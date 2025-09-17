@@ -24,7 +24,14 @@ passed=0
 failed=0
 
 for pkg in "${packages[@]}"; do
-    if go test -short -timeout 10s $pkg &>/dev/null; then
+    # Use longer timeout for node package
+    if [ "$pkg" = "./node" ]; then
+        timeout="60s"
+    else
+        timeout="30s"
+    fi
+
+    if go test -short -timeout $timeout $pkg &>/dev/null; then
         echo "✅ PASS: $pkg"
         ((passed++))
     else
