@@ -160,16 +160,16 @@ func testBlockChainImport(chain types.Blocks, blockchain *BlockChain) error {
 		if err != nil {
 			return err
 		}
-	// res, err := blockchain.processor.Process(block, statedb, vm.Config{})
-	// if err != nil {
-	// blockchain.reportBlock(block, res, err)
-	// return err
-	// }
-	// err = blockchain.validator.ValidateState(block, statedb, res, false)
-	// if err != nil {
-	// blockchain.reportBlock(block, res, err)
-	// return err
-	// }
+		res, err := blockchain.processor.Process(block, statedb, blockchain.chainConfig)
+		if err != nil {
+			blockchain.reportBlock(block, res, err)
+			return err
+		}
+		err = blockchain.validator.ValidateState(block, statedb, res.Receipts, res.GasUsed)
+		if err != nil {
+			blockchain.reportBlock(block, res, err)
+			return err
+		}
 
 		blockchain.chainmu.MustLock()
 		rawdb.WriteBlock(blockchain.db, block)
@@ -271,7 +271,6 @@ func TestExtendCanonicalHeaders(t *testing.T) {
 	testExtendCanonical(t, false, rawdb.PathScheme)
 }
 func TestExtendCanonicalBlocks(t *testing.T) {
-	t.Skip("Skipping - testBlockChainImport has processing code commented out")
 	testExtendCanonical(t, true, rawdb.HashScheme)
 	testExtendCanonical(t, true, rawdb.PathScheme)
 }
@@ -325,7 +324,6 @@ func TestShorterForkHeaders(t *testing.T) {
 	testShorterFork(t, false, rawdb.PathScheme)
 }
 func TestShorterForkBlocks(t *testing.T) {
-	t.Skip("Skipping - testBlockChainImport has processing code commented out")
 	testShorterFork(t, true, rawdb.HashScheme)
 	testShorterFork(t, true, rawdb.PathScheme)
 }
@@ -443,7 +441,6 @@ func TestEqualForkHeaders(t *testing.T) {
 	testEqualFork(t, false, rawdb.PathScheme)
 }
 func TestEqualForkBlocks(t *testing.T) {
-	t.Skip("Skipping - testBlockChainImport has processing code commented out")
 	testEqualFork(t, true, rawdb.HashScheme)
 	testEqualFork(t, true, rawdb.PathScheme)
 }
@@ -3810,7 +3807,6 @@ func TestDeleteThenCreate(t *testing.T) {
 // TestTransientStorageReset ensures the transient storage is wiped correctly
 // between transactions.
 func TestTransientStorageReset(t *testing.T) {
-	t.Skip("Skipping - gas calculation mismatch needs investigation")
 	var (
 		engine      = ethash.NewFaker()
 		key, _      = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
