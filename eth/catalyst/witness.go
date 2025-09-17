@@ -26,7 +26,6 @@ import (
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/stateless"
-	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params/forks"
 	"github.com/luxfi/geth/rlp"
@@ -283,7 +282,7 @@ func (api *ConsensusAPI) executeStatelessPayload(params engine.ExecutableData, v
 	api.lastNewPayloadUpdate.Store(time.Now().Unix())
 
 	log.Trace("Executing block statelessly", "number", block.Number(), "hash", params.BlockHash)
-	stateRoot, receiptRoot, err := core.ExecuteStateless(api.config(), vm.Config{}, block, witness)
+	stateRoot, receiptRoot, err := core.ExecuteStateless(api.config(), *api.eth.BlockChain().GetVMConfig(), block, witness)
 	if err != nil {
 		log.Warn("ExecuteStatelessPayload: execution failed", "err", err)
 		errorMsg := err.Error()
