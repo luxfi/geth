@@ -40,7 +40,7 @@ import (
 // TestBindingGeneration tests that re-running generation of bindings does not result in
 // mutations to the binding code.
 func TestBindingGeneration(t *testing.T) {
-	t.Skip("Skipping - generated code needs regeneration after upstream merge")
+	t.Skip("Skipping - IDs need regeneration with abigen")
 	matches, _ := filepath.Glob("internal/contracts/*")
 	var dirs []string
 	for _, match := range matches {
