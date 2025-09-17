@@ -149,9 +149,20 @@ func TestSupplyRewards(t *testing.T) {
 		ParentHash: common.HexToHash("0xadeda0a83e337b6c073e3f0e9a17531a04009b397a9588c093b628f21b8bc5a3"),
 	}
 
-	out, _, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc, 1)
+	out, chain, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
+	}
+
+	// Debug: Check the actual coinbase balance
+	block := chain.GetBlockByNumber(1)
+	if block != nil {
+		state, err := chain.StateAt(block.Root())
+		if err == nil {
+			coinbase := block.Coinbase()
+			balance := state.GetBalance(coinbase)
+			t.Logf("Block 1 coinbase %s balance: %s", coinbase, balance.String())
+		}
 	}
 
 	actual := out[expected.Number]
@@ -592,13 +603,13 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 }
 
 func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(b *core.BlockGen), numBlocks int) ([]supplyInfo, *core.BlockChain, error) {
-	// Use ethash engine for tests that expect mining rewards
+	// Use appropriate consensus engine based on genesis config
 	var engine consensus.Engine
 	if genesis.Config.TerminalTotalDifficulty != nil && genesis.Config.TerminalTotalDifficulty.Sign() == 0 {
-		// Post-merge, use beacon
+		// Post-merge (PoS), use beacon
 		engine = beacon.New(ethash.NewFaker())
 	} else {
-		// Pre-merge, use ethash for mining rewards
+		// Pre-merge (PoW), use ethash for mining rewards
 		engine = ethash.NewFaker()
 	}
 
@@ -611,19 +622,26 @@ func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(b *core.Bloc
 		return nil, nil, fmt.Errorf("failed to create call tracer: %v", err)
 	}
 
-	options := core.DefaultConfig().WithStateScheme(rawdb.PathScheme)
-	options.VmConfig = vm.Config{Tracer: tracer}
-	chain, err := core.NewBlockChain(rawdb.NewMemoryDatabase(), genesis, engine, options)
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to create tester chain: %v", err)
-	}
-	defer chain.Stop()
-
+	// Generate blocks without the chain first
+	db := rawdb.NewMemoryDatabase()
 	_, blocks, _ := core.GenerateChainWithGenesis(genesis, engine, numBlocks, func(i int, b *core.BlockGen) {
 		b.SetCoinbase(common.Address{1})
 		gen(b)
 	})
 
+	// Now create the chain with the tracer and import blocks
+	// This way, when blocks are processed/imported, the tracer will be active
+	options := core.DefaultConfig().WithStateScheme(rawdb.PathScheme)
+	options.VmConfig = vm.Config{Tracer: tracer}
+
+	// Create chain from the same genesis with the tracer enabled
+	chain, err := core.NewBlockChain(db, genesis, engine, options)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to create tester chain: %v", err)
+	}
+	defer chain.Stop()
+
+	// Import the pre-generated blocks - the chain will re-execute them with tracing
 	if n, err := chain.InsertChain(blocks); err != nil {
 		return nil, chain, fmt.Errorf("block %d: failed to insert into chain: %v", n, err)
 	}
