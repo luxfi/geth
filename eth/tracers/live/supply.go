@@ -119,7 +119,6 @@ func newSupplyTracer(cfg json.RawMessage) (*tracing.Hooks, error) {
 		OnBlockEnd:       t.onBlockEnd,
 		OnGenesisBlock:   t.onGenesisBlock,
 		OnTxStart:        t.onTxStart,
-		OnTxEnd:          t.onTxEnd,
 		OnBalanceChange:  t.onBalanceChange,
 		OnEnter:          t.onEnter,
 		OnExit:           t.onExit,
@@ -217,9 +216,6 @@ func (s *supplyTracer) onTxStart(vm *tracing.VMContext, tx *types.Transaction, f
 	s.txCallstack = make([]supplyTxCallstack, 0, 1)
 }
 
-func (s *supplyTracer) onTxEnd(receipt *types.Receipt, err error) {
-	// Transaction end handling - burns are already handled in onExit when depth is 0
-}
 
 // internalTxsHandler handles internal transactions burned amount
 func (s *supplyTracer) internalTxsHandler(call *supplyTxCallstack) {
