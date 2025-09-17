@@ -33,7 +33,6 @@ func TestVerification(t *testing.T) {
 	t.Parallel()
 	// Signatures generated with `minisign`. Legacy format, not pre-hashed file.
 	t.Run("minisig-legacy", func(t *testing.T) {
-		t.Skip("Skipping ethereum-specific signature verification")
 		t.Parallel()
 		// For this test, the pubkey is in testdata/vcheck/minisign.pub
 		// (the privkey is `minisign.sec`, if we want to expand this test. Password 'test' )
@@ -44,7 +43,6 @@ func TestVerification(t *testing.T) {
 		testVerification(t, pub, "./testdata/vcheck/minisig-sigs/")
 	})
 	t.Run("minisig-new", func(t *testing.T) {
-		t.Skip("Skipping ethereum-specific signature verification")
 		t.Parallel()
 		// For this test, the pubkey is in testdata/vcheck/minisign.pub
 		// (the privkey is `minisign.sec`, if we want to expand this test. Password 'test' )
@@ -85,7 +83,7 @@ func testVerification(t *testing.T, pubkey, sigdir string) {
 		}
 		err = verifySignature([]string{pubkey}, data, sig)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("signature verification failed for %s: %v", f.Name(), err)
 		}
 	}
 }
