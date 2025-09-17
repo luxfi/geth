@@ -86,8 +86,14 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 	)
 
 	// Apply pre-execution system calls.
-	var tracingStateDB = vm.StateDB(statedb)
 	vmCfg := p.vmConfig // Use the processor's VM config
+
+	// Wrap the state with hooks if a tracer is configured
+	var tracingStateDB vm.StateDB = statedb
+	if vmCfg.Tracer != nil {
+		tracingStateDB = state.NewHookedState(statedb, vmCfg.Tracer)
+	}
+
 	context = NewEVMBlockContext(header, p.chain, nil)
 	evm := vm.NewEVM(context, tracingStateDB, cfg, vmCfg)
 
