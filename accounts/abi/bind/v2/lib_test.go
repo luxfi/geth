@@ -76,7 +76,6 @@ func makeTestDeployerWithNonceAssignment(backend simulated.Client) func(input, d
 // test that deploying a contract with library dependencies works,
 // verifying by calling method on the deployed contract.
 func TestDeploymentLibraries(t *testing.T) {
-	t.Skip("Skipping - contracts contain PUSH0 opcode (0x5f) from Solidity 0.8.28")
 	bindBackend, err := testSetup()
 	if err != nil {
 		t.Fatalf("err setting up test: %v", err)
@@ -121,7 +120,6 @@ func TestDeploymentLibraries(t *testing.T) {
 // Same as TestDeployment.  However, stagger the deployments with overrides:
 // first deploy the library deps and then the contract.
 func TestDeploymentWithOverrides(t *testing.T) {
-	t.Skip("Skipping - contracts contain PUSH0 opcode (0x5f) from Solidity 0.8.28")
 	bindBackend, err := testSetup()
 	if err != nil {
 		t.Fatalf("err setting up test: %v", err)

@@ -35,15 +35,26 @@ import (
 //
 // StateProcessor implements Processor.
 type StateProcessor struct {
-	config *params.ChainConfig // Chain configuration options
-	chain  *HeaderChain        // Canonical header chain
+	config   *params.ChainConfig // Chain configuration options
+	chain    *HeaderChain        // Canonical header chain
+	vmConfig vm.Config           // VM configuration options
 }
 
 // NewStateProcessor initialises a new StateProcessor.
 func NewStateProcessor(config *params.ChainConfig, chain *HeaderChain) *StateProcessor {
 	return &StateProcessor{
-		config: config,
-		chain:  chain,
+		config:   config,
+		chain:    chain,
+		vmConfig: vm.Config{},
+	}
+}
+
+// NewStateProcessorWithVMConfig initialises a new StateProcessor with a custom VM config.
+func NewStateProcessorWithVMConfig(config *params.ChainConfig, chain *HeaderChain, vmConfig vm.Config) *StateProcessor {
+	return &StateProcessor{
+		config:   config,
+		chain:    chain,
+		vmConfig: vmConfig,
 	}
 }
 
@@ -75,8 +86,14 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 	)
 
 	// Apply pre-execution system calls.
-	var tracingStateDB = vm.StateDB(statedb)
-	vmCfg := vm.Config{} // Use default VM config
+	vmCfg := p.vmConfig // Use the processor's VM config
+
+	// Wrap the state with hooks if a tracer is configured
+	var tracingStateDB vm.StateDB = statedb
+	if vmCfg.Tracer != nil {
+		tracingStateDB = state.NewHookedState(statedb, vmCfg.Tracer)
+	}
+
 	context = NewEVMBlockContext(header, p.chain, nil)
 	evm := vm.NewEVM(context, tracingStateDB, cfg, vmCfg)
 
