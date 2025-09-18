@@ -600,6 +600,12 @@ var (
 		Value:    ethconfig.Defaults.RPCTxFeeCap,
 		Category: flags.APICategory,
 	}
+	RPCGlobalLogQueryLimit = &cli.IntFlag{
+		Name:     "rpc.logquerylimit",
+		Usage:    "Maximum number of alternative addresses or topics allowed per search position in eth_getLogs filter criteria (0 = no cap)",
+		Value:    ethconfig.Defaults.LogQueryLimit,
+		Category: flags.APICategory,
+	}
 	// Authenticated RPC HTTP settings
 	AuthListenFlag = &cli.StringFlag{
 		Name:     "authrpc.addr",
@@ -1699,6 +1705,9 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	if ctx.IsSet(CacheLogSizeFlag.Name) {
 		cfg.FilterLogCacheSize = ctx.Int(CacheLogSizeFlag.Name)
 	}
+	if ctx.IsSet(RPCGlobalLogQueryLimit.Name) {
+		cfg.LogQueryLimit = ctx.Int(RPCGlobalLogQueryLimit.Name)
+	}
 	if !ctx.Bool(SnapshotFlag.Name) || cfg.SnapshotCache == 0 {
 		// If snap-sync is requested, this flag is also required
 		if cfg.SyncMode == ethconfig.SnapSync {
@@ -1922,11 +1931,15 @@ func MakeBeaconLightConfig(ctx *cli.Context) bparams.ClientConfig {
 		} else {
 			Fatalf("Could not parse --%s: %v", BeaconGenesisRootFlag.Name, err)
 		}
-		configFile := ctx.String(BeaconConfigFlag.Name)
-		if err := config.ChainConfig.LoadForks(configFile); err != nil {
-			Fatalf("Could not load beacon chain config '%s': %v", configFile, err)
+		configPath := ctx.String(BeaconConfigFlag.Name)
+		file, err := os.ReadFile(configPath)
+		if err != nil {
+			Fatalf("failed to read beacon chain config file '%s': %v", configPath, err)
 		}
-		log.Info("Using custom beacon chain config", "file", configFile)
+		if err := config.ChainConfig.LoadForks(file); err != nil {
+			Fatalf("Could not load beacon chain config '%s': %v", configPath, err)
+		}
+		log.Info("Using custom beacon chain config", "file", configPath)
 	} else {
 		if ctx.IsSet(BeaconGenesisRootFlag.Name) {
 			Fatalf("Genesis root is specified but custom beacon chain config is missing")
@@ -2017,7 +2030,8 @@ func RegisterGraphQLService(stack *node.Node, backend ethapi.Backend, filterSyst
 // RegisterFilterAPI adds the eth log filtering RPC API to the node.
 func RegisterFilterAPI(stack *node.Node, backend ethapi.Backend, ethcfg *ethconfig.Config) *filters.FilterSystem {
 	filterSystem := filters.NewFilterSystem(backend, filters.Config{
-		LogCacheSize: ethcfg.FilterLogCacheSize,
+		LogCacheSize:  ethcfg.FilterLogCacheSize,
+		LogQueryLimit: ethcfg.LogQueryLimit,
 	})
 	stack.RegisterAPIs([]rpc.API{{
 		Namespace: "eth",
