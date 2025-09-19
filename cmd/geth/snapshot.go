@@ -25,6 +25,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
@@ -32,7 +33,6 @@ import (
 	"github.com/luxfi/geth/core/state/pruner"
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"

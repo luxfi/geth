@@ -22,12 +22,12 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/external"
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 )
 
 // ErrNotAuthorized is returned when an account is not properly unlocked.

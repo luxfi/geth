@@ -24,10 +24,10 @@ import (
 	"os"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/internal/utesting"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"

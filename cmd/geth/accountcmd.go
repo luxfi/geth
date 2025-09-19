@@ -22,11 +22,11 @@ import (
 	"os"
 	"strings"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
 	"github.com/urfave/cli/v2"
 )
 
