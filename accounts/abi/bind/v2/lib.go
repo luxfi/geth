@@ -30,11 +30,11 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/event"
 )
 

@@ -1752,6 +1752,9 @@ func TestLowDiffLongChain(t *testing.T) {
 }
 
 func testLowDiffLongChain(t *testing.T, scheme string) {
+	if testing.Short() {
+		t.Skip("skipping long chain test in short mode")
+	}
 	// Generate a canonical chain to act as the main dataset
 	engine := ethash.NewFaker()
 	genesis := &Genesis{

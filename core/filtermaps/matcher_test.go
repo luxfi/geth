@@ -26,6 +26,10 @@ import (
 )
 
 func TestMatcher(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping long-running test in short mode")
+	}
+	t.Parallel()
 	ts := newTestSetup(t)
 	defer ts.close()
 

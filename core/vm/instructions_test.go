@@ -230,9 +230,10 @@ func TestAddMod(t *testing.T) {
 }
 
 // utility function to fill the json-file with testcases
-// Enable this test to generate the 'testcases_xx.json' files
+// This test generates testcase files to a temporary directory to verify functionality
 func TestWriteExpectedValues(t *testing.T) {
-	t.Skip("Enable this test to create json test cases.")
+	// Create a temporary directory for test files
+	tmpDir := t.TempDir()
 
 	// getResult is a convenience function to generate the expected values
 	getResult := func(args []*twoOperandParams, opFn executionFunc) []TwoOperandTestcase {
@@ -259,7 +260,7 @@ func TestWriteExpectedValues(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		_ = os.WriteFile(fmt.Sprintf("testdata/testcases_%v.json", name), data, 0644)
+		err = os.WriteFile(fmt.Sprintf("%s/testcases_%v.json", tmpDir, name), data, 0644)
 		if err != nil {
 			t.Fatal(err)
 		}

@@ -25,13 +25,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/karalabe/hid"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/log"
-	"github.com/karalabe/hid"
 )
 
 // Maximum time between wallet health checks to detect USB unplugs.

@@ -43,8 +43,9 @@ func TestShortRepairWithSnapshots(t *testing.T) { testShortRepair(t, true) }
 
 func testShortRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//
@@ -86,8 +87,9 @@ func TestShortSnapSyncedRepairWithSnapshots(t *testing.T) { testShortSnapSyncedR
 
 func testShortSnapSyncedRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//
@@ -129,8 +131,9 @@ func TestShortSnapSyncingRepairWithSnapshots(t *testing.T) { testShortSnapSyncin
 
 func testShortSnapSyncingRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//
@@ -173,8 +176,9 @@ func TestShortOldForkedRepairWithSnapshots(t *testing.T) { testShortOldForkedRep
 
 func testShortOldForkedRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3
@@ -223,8 +227,9 @@ func TestShortOldForkedSnapSyncedRepairWithSnapshots(t *testing.T) {
 
 func testShortOldForkedSnapSyncedRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3
@@ -273,8 +278,9 @@ func TestShortOldForkedSnapSyncingRepairWithSnapshots(t *testing.T) {
 
 func testShortOldForkedSnapSyncingRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3
@@ -319,8 +325,9 @@ func TestShortNewlyForkedRepairWithSnapshots(t *testing.T) { testShortNewlyForke
 
 func testShortNewlyForkedRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6
@@ -369,8 +376,9 @@ func TestShortNewlyForkedSnapSyncedRepairWithSnapshots(t *testing.T) {
 
 func testShortNewlyForkedSnapSyncedRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6
@@ -419,8 +427,9 @@ func TestShortNewlyForkedSnapSyncingRepairWithSnapshots(t *testing.T) {
 
 func testShortNewlyForkedSnapSyncingRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6
@@ -464,8 +473,9 @@ func TestShortReorgedRepairWithSnapshots(t *testing.T) { testShortReorgedRepair(
 
 func testShortReorgedRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10
@@ -513,8 +523,9 @@ func TestShortReorgedSnapSyncedRepairWithSnapshots(t *testing.T) {
 
 func testShortReorgedSnapSyncedRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10
@@ -562,8 +573,9 @@ func TestShortReorgedSnapSyncingRepairWithSnapshots(t *testing.T) {
 
 func testShortReorgedSnapSyncingRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10
@@ -607,8 +619,9 @@ func TestLongShallowRepairWithSnapshots(t *testing.T) { testLongShallowRepair(t,
 
 func testLongShallowRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//
@@ -655,8 +668,9 @@ func TestLongDeepRepairWithSnapshots(t *testing.T) { testLongDeepRepair(t, true)
 
 func testLongDeepRepair(t *testing.T, snapshots bool) {
 	if testing.Short() {
-		t.Skip("Skipping repair test in short mode")
+		t.Skip("skipping repair test in short mode")
 	}
+	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//

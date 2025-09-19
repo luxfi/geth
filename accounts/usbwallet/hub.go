@@ -23,10 +23,10 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/karalabe/hid"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"
-	"github.com/karalabe/hid"
 )
 
 // LedgerScheme is the protocol scheme prefixing account and wallet URLs.
