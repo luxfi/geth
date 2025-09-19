@@ -25,16 +25,16 @@ import (
 	"sync"
 	"time"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/internal/utesting"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/p2p/enode"
-	"github.com/holiman/uint256"
 )
 
 // Suite represents a structure used to test a node's conformance

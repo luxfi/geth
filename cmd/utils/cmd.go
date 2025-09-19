@@ -34,12 +34,12 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/debug"
