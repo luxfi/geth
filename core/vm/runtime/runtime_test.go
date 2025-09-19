@@ -18,9 +18,8 @@ package runtime
 
 import (
 	"encoding/binary"
-	"fmt"
+	"io"
 	"math/big"
-	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -504,15 +503,15 @@ func BenchmarkSimpleLoop(b *testing.B) {
 // TestEip2929Cases contains various testcases that are used for
 // EIP-2929 about gas repricings
 func TestEip2929Cases(t *testing.T) {
-	t.Skip("Test only useful for generating documentation")
+	// Execute tests but discard output to avoid cluttering test logs
 	id := 1
 	prettyPrint := func(comment string, code []byte) {
-		fmt.Printf("### Case %d\n\n", id)
+		// Discard documentation output but still execute the tests
+		devNull := io.Discard
 		id++
-		fmt.Printf("%v\n\nBytecode: \n```\n%#x\n```\n", comment, code)
 		Execute(code, nil, &Config{
 			EVMConfig: vm.Config{
-				Tracer:    logger.NewMarkdownLogger(nil, os.Stdout).Hooks(),
+				Tracer:    logger.NewMarkdownLogger(nil, devNull).Hooks(),
 				ExtraEips: []int{2929},
 			},
 		})

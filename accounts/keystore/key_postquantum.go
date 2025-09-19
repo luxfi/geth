@@ -11,12 +11,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
 	"github.com/google/uuid"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/crypto/mldsa"
 	"github.com/luxfi/crypto/mlkem"
 	"github.com/luxfi/crypto/slhdsa"
+	"github.com/luxfi/geth/common"
 )
 
 // SignatureAlgorithm represents the type of signature algorithm
@@ -38,21 +38,21 @@ const (
 
 // PostQuantumKey represents a key that can use different signature algorithms
 type PostQuantumKey struct {
-	Id              uuid.UUID          `json:"id"`
-	Address         common.Address     `json:"address"`
-	Algorithm       SignatureAlgorithm `json:"algorithm"`
-	
+	Id        uuid.UUID          `json:"id"`
+	Address   common.Address     `json:"address"`
+	Algorithm SignatureAlgorithm `json:"algorithm"`
+
 	// Traditional ECDSA (optional, for backward compatibility)
-	ECDSAPrivateKey *ecdsa.PrivateKey  `json:"-"`
-	
+	ECDSAPrivateKey *ecdsa.PrivateKey `json:"-"`
+
 	// Post-quantum keys (one of these will be set based on Algorithm)
-	MLDSAPrivateKey *mldsa.PrivateKey  `json:"-"`
+	MLDSAPrivateKey  *mldsa.PrivateKey  `json:"-"`
 	SLHDSAPrivateKey *slhdsa.PrivateKey `json:"-"`
-	MLKEMPrivateKey *mlkem.PrivateKey  `json:"-"`
-	
+	MLKEMPrivateKey  *mlkem.PrivateKey  `json:"-"`
+
 	// Serialized form for storage
-	PrivateKeyBytes []byte             `json:"-"`
-	PublicKeyBytes  []byte             `json:"-"`
+	PrivateKeyBytes []byte `json:"-"`
+	PublicKeyBytes  []byte `json:"-"`
 }
 
 // PostQuantumKeyJSON is the JSON representation
@@ -71,7 +71,7 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		Id:        uuid.New(),
 		Algorithm: algorithm,
 	}
-	
+
 	switch algorithm {
 	case SignatureECDSA:
 		// Generate ECDSA key as before
@@ -81,7 +81,7 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		}
 		key.ECDSAPrivateKey = privateKeyECDSA
 		key.Address = common.BytesToAddress(crypto.PubkeyToAddress(privateKeyECDSA.PublicKey).Bytes())
-		
+
 	case SignatureMLDSA44:
 		privKey, err := mldsa.GenerateKey(rand.Reader, mldsa.MLDSA44)
 		if err != nil {
@@ -92,7 +92,7 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		key.PublicKeyBytes = privKey.PublicKey.Bytes()
 		// Derive address from public key hash
 		key.Address = common.BytesToAddress(crypto.Keccak256(key.PublicKeyBytes)[:20])
-		
+
 	case SignatureMLDSA65:
 		privKey, err := mldsa.GenerateKey(rand.Reader, mldsa.MLDSA65)
 		if err != nil {
@@ -102,7 +102,7 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		key.PrivateKeyBytes = privKey.Bytes()
 		key.PublicKeyBytes = privKey.PublicKey.Bytes()
 		key.Address = common.BytesToAddress(crypto.Keccak256(key.PublicKeyBytes)[:20])
-		
+
 	case SignatureMLDSA87:
 		privKey, err := mldsa.GenerateKey(rand.Reader, mldsa.MLDSA87)
 		if err != nil {
@@ -112,7 +112,7 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		key.PrivateKeyBytes = privKey.Bytes()
 		key.PublicKeyBytes = privKey.PublicKey.Bytes()
 		key.Address = common.BytesToAddress(crypto.Keccak256(key.PublicKeyBytes)[:20])
-		
+
 	case SignatureSLHDSA128f:
 		privKey, err := slhdsa.GenerateKey(rand.Reader, slhdsa.SLHDSA128f)
 		if err != nil {
@@ -122,7 +122,7 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		key.PrivateKeyBytes = privKey.Bytes()
 		key.PublicKeyBytes = privKey.PublicKey.Bytes()
 		key.Address = common.BytesToAddress(crypto.Keccak256(key.PublicKeyBytes)[:20])
-		
+
 	case SignatureSLHDSA192f:
 		privKey, err := slhdsa.GenerateKey(rand.Reader, slhdsa.SLHDSA192f)
 		if err != nil {
@@ -132,7 +132,7 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		key.PrivateKeyBytes = privKey.Bytes()
 		key.PublicKeyBytes = privKey.PublicKey.Bytes()
 		key.Address = common.BytesToAddress(crypto.Keccak256(key.PublicKeyBytes)[:20])
-		
+
 	case SignatureSLHDSA256f:
 		privKey, err := slhdsa.GenerateKey(rand.Reader, slhdsa.SLHDSA256f)
 		if err != nil {
@@ -142,11 +142,11 @@ func NewPostQuantumKey(algorithm SignatureAlgorithm) (*PostQuantumKey, error) {
 		key.PrivateKeyBytes = privKey.Bytes()
 		key.PublicKeyBytes = privKey.PublicKey.Bytes()
 		key.Address = common.BytesToAddress(crypto.Keccak256(key.PublicKeyBytes)[:20])
-		
+
 	default:
 		return nil, fmt.Errorf("unsupported signature algorithm: %d", algorithm)
 	}
-	
+
 	return key, nil
 }
 
@@ -159,19 +159,19 @@ func (k *PostQuantumKey) Sign(message []byte) ([]byte, error) {
 		}
 		hash := crypto.Keccak256(message)
 		return crypto.Sign(hash, k.ECDSAPrivateKey)
-		
+
 	case SignatureMLDSA44, SignatureMLDSA65, SignatureMLDSA87:
 		if k.MLDSAPrivateKey == nil {
 			return nil, errors.New("ML-DSA private key not set")
 		}
 		return k.MLDSAPrivateKey.Sign(rand.Reader, message, nil)
-		
+
 	case SignatureSLHDSA128f, SignatureSLHDSA192f, SignatureSLHDSA256f:
 		if k.SLHDSAPrivateKey == nil {
 			return nil, errors.New("SLH-DSA private key not set")
 		}
 		return k.SLHDSAPrivateKey.Sign(rand.Reader, message, nil)
-		
+
 	default:
 		return nil, fmt.Errorf("unsupported signature algorithm: %d", k.Algorithm)
 	}
@@ -181,7 +181,7 @@ func (k *PostQuantumKey) Sign(message []byte) ([]byte, error) {
 func (k *PostQuantumKey) MarshalJSON() ([]byte, error) {
 	var privKeyHex string
 	var pubKeyHex string
-	
+
 	switch k.Algorithm {
 	case SignatureECDSA:
 		if k.ECDSAPrivateKey != nil {
@@ -192,7 +192,7 @@ func (k *PostQuantumKey) MarshalJSON() ([]byte, error) {
 		privKeyHex = hex.EncodeToString(k.PrivateKeyBytes)
 		pubKeyHex = hex.EncodeToString(k.PublicKeyBytes)
 	}
-	
+
 	return json.Marshal(&postQuantumKeyJSON{
 		Address:    k.Address.Hex(),
 		Algorithm:  uint8(k.Algorithm),
@@ -209,24 +209,24 @@ func (k *PostQuantumKey) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &keyJSON); err != nil {
 		return err
 	}
-	
+
 	k.Id, _ = uuid.Parse(keyJSON.Id)
 	k.Address = common.HexToAddress(keyJSON.Address)
 	k.Algorithm = SignatureAlgorithm(keyJSON.Algorithm)
-	
+
 	privKeyBytes, err := hex.DecodeString(keyJSON.PrivateKey)
 	if err != nil {
 		return err
 	}
-	
+
 	pubKeyBytes, err := hex.DecodeString(keyJSON.PublicKey)
 	if err != nil {
 		return err
 	}
-	
+
 	k.PrivateKeyBytes = privKeyBytes
 	k.PublicKeyBytes = pubKeyBytes
-	
+
 	// Reconstruct the actual key objects based on algorithm
 	switch k.Algorithm {
 	case SignatureECDSA:
@@ -235,42 +235,42 @@ func (k *PostQuantumKey) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		k.ECDSAPrivateKey = key
-		
+
 	case SignatureMLDSA44:
 		key, err := mldsa.PrivateKeyFromBytes(privKeyBytes, mldsa.MLDSA44)
 		if err != nil {
 			return err
 		}
 		k.MLDSAPrivateKey = key
-		
+
 	case SignatureMLDSA65:
 		key, err := mldsa.PrivateKeyFromBytes(privKeyBytes, mldsa.MLDSA65)
 		if err != nil {
 			return err
 		}
 		k.MLDSAPrivateKey = key
-		
+
 	case SignatureMLDSA87:
 		key, err := mldsa.PrivateKeyFromBytes(privKeyBytes, mldsa.MLDSA87)
 		if err != nil {
 			return err
 		}
 		k.MLDSAPrivateKey = key
-		
+
 	case SignatureSLHDSA128f:
 		key, err := slhdsa.PrivateKeyFromBytes(privKeyBytes, slhdsa.SLHDSA128f)
 		if err != nil {
 			return err
 		}
 		k.SLHDSAPrivateKey = key
-		
+
 	case SignatureSLHDSA192f:
 		key, err := slhdsa.PrivateKeyFromBytes(privKeyBytes, slhdsa.SLHDSA192f)
 		if err != nil {
 			return err
 		}
 		k.SLHDSAPrivateKey = key
-		
+
 	case SignatureSLHDSA256f:
 		key, err := slhdsa.PrivateKeyFromBytes(privKeyBytes, slhdsa.SLHDSA256f)
 		if err != nil {
@@ -278,7 +278,7 @@ func (k *PostQuantumKey) UnmarshalJSON(data []byte) error {
 		}
 		k.SLHDSAPrivateKey = key
 	}
-	
+
 	return nil
 }
 

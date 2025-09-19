@@ -39,6 +39,9 @@ func TestHeaderVerification(t *testing.T) {
 }
 
 func testHeaderVerification(t *testing.T, scheme string) {
+	if testing.Short() {
+		t.Skip("skipping blockchain test in short mode")
+	}
 	// Create a simple chain to verify
 	var (
 		gspec        = &Genesis{Config: params.TestChainConfig}
@@ -92,6 +95,9 @@ func TestHeaderVerificationForMergingEthash(t *testing.T) { testHeaderVerificati
 
 // Tests the verification for eth1/2 merging, including pre-merge and post-merge
 func testHeaderVerificationForMerging(t *testing.T, isClique bool) {
+	if testing.Short() {
+		t.Skip("skipping blockchain test in short mode")
+	}
 	var (
 		gspec      *Genesis
 		preBlocks  []*types.Block

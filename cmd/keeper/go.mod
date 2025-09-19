@@ -1,6 +1,6 @@
 module github.com/ethereum/go-ethereum/cmd/keeper
 
-go 1.24.0
+go 1.22
 
 require (
 	github.com/ethereum/go-ethereum v0.0.0-00010101000000-000000000000

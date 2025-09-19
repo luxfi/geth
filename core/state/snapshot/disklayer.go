@@ -49,6 +49,20 @@ type diskLayer struct {
 // Reset() in order to not leak memory.
 // OBS: It does not invoke Close on the diskdb
 func (dl *diskLayer) Release() error {
+	// Abort any ongoing generation to prevent goroutine leaks
+	dl.lock.RLock()
+	genAbort := dl.genAbort
+	dl.lock.RUnlock()
+
+	if genAbort != nil {
+		abort := make(chan *generatorStats)
+		select {
+		case genAbort <- abort:
+			<-abort
+		default:
+			// Generation already finished or not running
+		}
+	}
 	if dl.cache != nil {
 		dl.cache.Reset()
 	}
