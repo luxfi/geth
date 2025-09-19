@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/common/math"
@@ -38,7 +39,6 @@ import (
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
-	"github.com/holiman/uint256"
 	"golang.org/x/crypto/sha3"
 )
 

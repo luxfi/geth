@@ -27,6 +27,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/external"
 	"github.com/luxfi/geth/accounts/keystore"
@@ -36,7 +37,6 @@ import (
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth/catalyst"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/internal/flags"

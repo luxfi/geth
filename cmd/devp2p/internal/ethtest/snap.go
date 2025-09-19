@@ -24,10 +24,10 @@ import (
 	"math/rand"
 	"reflect"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth/protocols/snap"
 	"github.com/luxfi/geth/internal/utesting"
 	"github.com/luxfi/geth/trie"
