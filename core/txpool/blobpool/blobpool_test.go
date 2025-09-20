@@ -2092,8 +2092,6 @@ var _ billy.Database = (*fakeBilly)(nil)
 func BenchmarkPoolPending100Mb(b *testing.B) { benchmarkPoolPending(b, 100_000_000) }
 func BenchmarkPoolPending1GB(b *testing.B)   { benchmarkPoolPending(b, 1_000_000_000) }
 func BenchmarkPoolPending10GB(b *testing.B) {
-	if testing.Short() {
-		b.Skip("Skipping in short-mode")
 	}
 	benchmarkPoolPending(b, 10_000_000_000)
 }
