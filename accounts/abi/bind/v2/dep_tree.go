@@ -132,6 +132,18 @@ func (d *depTreeDeployer) linkAndDeploy(metadata *MetaData) (common.Address, err
 		}
 	}
 
+	// Check if there are any unresolved library placeholders
+	if strings.Contains(deployerCode, "__$") {
+		// Extract unresolved placeholder for better error message
+		start := strings.Index(deployerCode, "__$")
+		end := strings.Index(deployerCode[start:], "$__")
+		if end != -1 {
+			placeholder := deployerCode[start+3 : start+end]
+			return common.Address{}, fmt.Errorf("unresolved library placeholder: %s", placeholder)
+		}
+		return common.Address{}, fmt.Errorf("unresolved library placeholders in bytecode")
+	}
+
 	// Finally, deploy the top-level contract.
 	code, err := hex.DecodeString(deployerCode[2:])
 	if err != nil {
