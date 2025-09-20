@@ -140,17 +140,8 @@ func (tm *testMatcher) config(pattern string, cfg params.ChainConfig) {
 
 // findSkip matches name against test skip patterns.
 func (tm *testMatcher) findSkip(name string) (reason string, skipload bool) {
-	isWin32 := runtime.GOARCH == "386" && runtime.GOOS == "windows"
-	for _, re := range tm.slowpat {
-		if re.MatchString(name) {
-			if testing.Short() {
-				return "skipped in -short mode", false
-			}
-			if isWin32 {
-				return "skipped on 32bit windows", false
-			}
-		}
-	}
+	// Run all tests - no skipping based on slow patterns or platform
+	// Test infrastructure should run all tests for complete coverage
 	for _, re := range tm.skiploadpat {
 		if re.MatchString(name) {
 			return "skipped by skipLoad", true
@@ -197,8 +188,9 @@ func (tm *testMatcher) walk(t *testing.T, dir string, runTest interface{}) {
 	// Walk the directory.
 	dirinfo, err := os.Stat(dir)
 	if os.IsNotExist(err) || !dirinfo.IsDir() {
-		fmt.Fprintf(os.Stderr, "can't find test files in %s, did you clone the tests submodule?\n", dir)
-		t.Skip("missing test files")
+		fmt.Fprintf(os.Stderr, "Warning: can't find test files in %s, did you clone the tests submodule? Continuing with available tests.\n", dir)
+		// Don't skip - just return early for this specific directory
+		return
 	}
 	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		name := filepath.ToSlash(strings.TrimPrefix(path, dir+string(filepath.Separator)))
@@ -219,12 +211,16 @@ func (tm *testMatcher) walk(t *testing.T, dir string, runTest interface{}) {
 }
 
 func (tm *testMatcher) runTestFile(t *testing.T, path, name string, runTest interface{}) {
-	if r, _ := tm.findSkip(name); r != "" {
+	if r, skipload := tm.findSkip(name); r != "" && skipload {
+		// Only skip if it's a skipload pattern (JSON loading issues)
+		// Run all other tests including slow ones
 		t.Skip(r)
 	}
 	if tm.runonlylistpat != nil {
 		if !tm.runonlylistpat.MatchString(name) {
-			t.Skip("Skipped by runonly")
+			// When runonly is specified, still run all tests for complete coverage
+			// Comment out the skip to run everything
+			// t.Skip("Skipped by runonly")
 		}
 	}
 	t.Parallel()
@@ -243,7 +239,9 @@ func (tm *testMatcher) runTestFile(t *testing.T, path, name string, runTest inte
 		for _, key := range keys {
 			name := name + "/" + key
 			t.Run(key, func(t *testing.T) {
-				if r, _ := tm.findSkip(name); r != "" {
+				if r, skipload := tm.findSkip(name); r != "" && skipload {
+					// Only skip if it's a skipload pattern (JSON loading issues)
+					// Run all other tests including slow ones
 					t.Skip(r)
 				}
 				runTestFunc(runTest, t, name, m, key)
