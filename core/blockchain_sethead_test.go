@@ -747,9 +747,6 @@ func TestLongShallowSetHead(t *testing.T)              { testLongShallowSetHead(
 func TestLongShallowSetHeadWithSnapshots(t *testing.T) { testLongShallowSetHead(t, true) }
 
 func testLongShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//
@@ -797,9 +794,6 @@ func TestLongDeepSetHead(t *testing.T)              { testLongDeepSetHead(t, fal
 func TestLongDeepSetHeadWithSnapshots(t *testing.T) { testLongDeepSetHead(t, true) }
 
 func testLongDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//
@@ -851,9 +845,6 @@ func TestLongSnapSyncedShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongSnapSyncedShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//
@@ -901,9 +892,6 @@ func TestLongSnapSyncedDeepSetHead(t *testing.T)              { testLongSnapSync
 func TestLongSnapSyncedDeepSetHeadWithSnapshots(t *testing.T) { testLongSnapSyncedDeepSetHead(t, true) }
 
 func testLongSnapSyncedDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//
@@ -954,9 +942,6 @@ func TestLongSnapSyncingShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongSnapSyncingShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//
@@ -1008,9 +993,6 @@ func TestLongSnapSyncingDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongSnapSyncingDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//
@@ -1063,9 +1045,6 @@ func TestLongOldForkedShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongOldForkedShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3
@@ -1115,9 +1094,6 @@ func TestLongOldForkedDeepSetHead(t *testing.T)              { testLongOldForked
 func TestLongOldForkedDeepSetHeadWithSnapshots(t *testing.T) { testLongOldForkedDeepSetHead(t, true) }
 
 func testLongOldForkedDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3
@@ -1172,9 +1148,6 @@ func TestLongOldForkedSnapSyncedShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongOldForkedSnapSyncedShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3
@@ -1229,9 +1202,6 @@ func TestLongOldForkedSnapSyncedDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongOldForkedSnapSyncedDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3
@@ -1285,9 +1255,6 @@ func TestLongOldForkedSnapSyncingShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongOldForkedSnapSyncingShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3
@@ -1342,9 +1309,6 @@ func TestLongOldForkedSnapSyncingDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongOldForkedSnapSyncingDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3
@@ -1396,9 +1360,6 @@ func TestLongNewerForkedShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongNewerForkedShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12
@@ -1451,9 +1412,6 @@ func TestLongNewerForkedDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongNewerForkedDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12
@@ -1505,9 +1463,6 @@ func TestLongNewerForkedSnapSyncedShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongNewerForkedSnapSyncedShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12
@@ -1560,12 +1515,6 @@ func TestLongNewerForkedSnapSyncedDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongNewerForkedSnapSyncedDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12
@@ -1617,9 +1566,6 @@ func TestLongNewerForkedSnapSyncingShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongNewerForkedSnapSyncingShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12
@@ -1672,9 +1618,6 @@ func TestLongNewerForkedSnapSyncingDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongNewerForkedSnapSyncingDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12
@@ -1721,9 +1664,6 @@ func TestLongReorgedShallowSetHead(t *testing.T)              { testLongReorgedS
 func TestLongReorgedShallowSetHeadWithSnapshots(t *testing.T) { testLongReorgedShallowSetHead(t, true) }
 
 func testLongReorgedShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12->S13->S14->S15->S16->S17->S18->S19->S20->S21->S22->S23->S24->S25->S26
@@ -1771,9 +1711,6 @@ func TestLongReorgedDeepSetHead(t *testing.T)              { testLongReorgedDeep
 func TestLongReorgedDeepSetHeadWithSnapshots(t *testing.T) { testLongReorgedDeepSetHead(t, true) }
 
 func testLongReorgedDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12->S13->S14->S15->S16->S17->S18->S19->S20->S21->S22->S23->S24->S25->S26
@@ -1825,9 +1762,6 @@ func TestLongReorgedSnapSyncedShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongReorgedSnapSyncedShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12->S13->S14->S15->S16->S17->S18->S19->S20->S21->S22->S23->S24->S25->S26
@@ -1880,9 +1814,6 @@ func TestLongReorgedSnapSyncedDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongReorgedSnapSyncedDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12->S13->S14->S15->S16->S17->S18->S19->S20->S21->S22->S23->S24->S25->S26
@@ -1935,9 +1866,6 @@ func TestLongReorgedSnapSyncingShallowSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongReorgedSnapSyncingShallowSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12->S13->S14->S15->S16->S17->S18->S19->S20->S21->S22->S23->S24->S25->S26
@@ -1991,9 +1919,6 @@ func TestLongReorgedSnapSyncingDeepSetHeadWithSnapshots(t *testing.T) {
 }
 
 func testLongReorgedSnapSyncingDeepSetHead(t *testing.T, snapshots bool) {
-	if testing.Short() {
-		t.Skip("skipping long test in short mode")
-	}
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10->C11->C12->C13->C14->C15->C16->C17->C18->C19->C20->C21->C22->C23->C24 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10->S11->S12->S13->S14->S15->S16->S17->S18->S19->S20->S21->S22->S23->S24->S25->S26

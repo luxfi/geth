@@ -484,9 +484,7 @@ func verifyBlobRetrievals(t *testing.T, pool *BlobPool) {
 //   - 8. Fully duplicate transactions (matching hash) must be dropped
 //   - 9. Duplicate nonces from the same account must be dropped
 func TestOpenDrops(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping disk-based test in short mode")
-	}
+	// Run all tests - no skipping disk-based tests
 	t.Parallel()
 	//log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelTrace, true)))
 
@@ -810,9 +808,7 @@ func TestOpenDrops(t *testing.T) {
 //   - 2. Eviction thresholds are calculated correctly for the sequences
 //   - 3. Balance usage of an account is totals across all transactions
 func TestOpenIndex(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping disk-based test in short mode")
-	}
+	// Run all tests - no skipping disk-based tests
 	t.Parallel()
 	//log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelTrace, true)))
 
@@ -902,9 +898,7 @@ func TestOpenIndex(t *testing.T) {
 // Tests that after indexing all the loaded transactions from disk, a price heap
 // is correctly constructed based on the head basefee and blobfee.
 func TestOpenHeap(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping disk-based test in short mode")
-	}
+	// Run all tests - no skipping disk-based tests
 	t.Parallel()
 	//log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelTrace, true)))
 
@@ -992,9 +986,7 @@ func TestOpenHeap(t *testing.T) {
 // Tests that after the pool's previous state is loaded back, any transactions
 // over the new storage cap will get dropped.
 func TestOpenCap(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping disk-based test in short mode")
-	}
+	// Run all tests - no skipping disk-based tests
 	t.Parallel()
 	//log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelTrace, true)))
 
@@ -1085,9 +1077,7 @@ func TestOpenCap(t *testing.T) {
 // new fork is added with a max blob count higher than the previous fork. We
 // want to make sure transactions a persisted between those runs.
 func TestChangingSlotterSize(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping disk-based test in short mode")
-	}
+	// Run all tests - no skipping disk-based tests
 	t.Parallel()
 	//log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelTrace, true)))
 
@@ -1360,9 +1350,7 @@ func TestBlobCountLimit(t *testing.T) {
 // specific to the blob pool. It does not do an exhaustive transaction validity
 // check.
 func TestAdd(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping long-running test in short mode")
-	}
+	// Run all tests - no skipping long-running tests
 	//log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelTrace, true)))
 
 	// seed is a helper tuple to seed an initial state db and pool
@@ -1866,9 +1854,7 @@ func TestAddLegacyBlobTx(t *testing.T) {
 }
 
 func TestGetBlobs(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping long-running BLS cryptography test in short mode")
-	}
+	// Run all tests - no skipping BLS cryptography tests
 	//log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(os.Stderr, log.LevelTrace, true)))
 
 	// Create a temporary folder for the persistent backend

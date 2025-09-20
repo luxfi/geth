@@ -81,8 +81,15 @@ func (h *bufHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	}
 }
 
-func (h *bufHandler) WithGroup(_ string) slog.Handler {
-	panic("not implemented")
+func (h *bufHandler) WithGroup(name string) slog.Handler {
+	// Create a new handler with the group as an attribute
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	return &bufHandler{
+		buf:   h.buf, // Share the same buffer
+		attrs: append(h.attrs, slog.String("group", name)),
+		level: h.level,
+	}
 }
 
 // Logger returns a logger which logs to the unit test log of t.

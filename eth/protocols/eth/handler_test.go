@@ -159,7 +159,7 @@ func (b *testBackend) RunPeer(peer *Peer, handler Handler) error {
 	// is omitted and we will just give control back to the handler.
 	return handler(peer)
 }
-func (b *testBackend) PeerInfo(enode.ID) interface{} { panic("not implemented") }
+func (b *testBackend) PeerInfo(enode.ID) interface{} { return nil }
 
 func (b *testBackend) AcceptTxs() bool {
 	return true
