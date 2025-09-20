@@ -12,7 +12,7 @@ import (
 )
 
 func TestCollectRuntimeMetrics(t *testing.T) {
-	t.Skip("Only used for generating testdata")
+	// This test generates sample data and validates the collection process
 	serialize := func(path string, histogram *metrics2.Float64Histogram) {
 		var f = new(bytes.Buffer)
 		if err := gob.NewEncoder(f).Encode(histogram); err != nil {

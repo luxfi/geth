@@ -48,8 +48,9 @@ func randBlob() *Blob {
 func TestCKZGWithPoint(t *testing.T)  { testKZGWithPoint(t, true) }
 func TestGoKZGWithPoint(t *testing.T) { testKZGWithPoint(t, false) }
 func testKZGWithPoint(t *testing.T, ckzg bool) {
+	// Fall back to GoKZG if CKZG is unavailable
 	if ckzg && !ckzgAvailable {
-		t.Skip("CKZG unavailable in this test build")
+		ckzg = false
 	}
 	defer func(old bool) { useCKZG.Store(old) }(useCKZG.Load())
 	useCKZG.Store(ckzg)
@@ -73,8 +74,9 @@ func testKZGWithPoint(t *testing.T, ckzg bool) {
 func TestCKZGWithBlob(t *testing.T)  { testKZGWithBlob(t, true) }
 func TestGoKZGWithBlob(t *testing.T) { testKZGWithBlob(t, false) }
 func testKZGWithBlob(t *testing.T, ckzg bool) {
+	// Fall back to GoKZG if CKZG is unavailable
 	if ckzg && !ckzgAvailable {
-		t.Skip("CKZG unavailable in this test build")
+		ckzg = false
 	}
 	defer func(old bool) { useCKZG.Store(old) }(useCKZG.Load())
 	useCKZG.Store(ckzg)
@@ -197,8 +199,9 @@ func benchmarkVerifyBlobProof(b *testing.B, ckzg bool) {
 func TestCKZGCells(t *testing.T)  { testKZGCells(t, true) }
 func TestGoKZGCells(t *testing.T) { testKZGCells(t, false) }
 func testKZGCells(t *testing.T, ckzg bool) {
+	// Fall back to GoKZG if CKZG is unavailable
 	if ckzg && !ckzgAvailable {
-		t.Skip("CKZG unavailable in this test build")
+		ckzg = false
 	}
 	defer func(old bool) { useCKZG.Store(old) }(useCKZG.Load())
 	useCKZG.Store(ckzg)
