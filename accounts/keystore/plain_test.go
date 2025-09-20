@@ -140,7 +140,7 @@ var testsSubmodule = filepath.Join("..", "..", "tests", "testdata", "KeyStoreTes
 
 func skipIfSubmoduleMissing(t *testing.T) {
 	if !common.FileExist(testsSubmodule) {
-		t.Skipf("can't find JSON tests from submodule at %s", testsSubmodule)
+
 	}
 }
 
