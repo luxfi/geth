@@ -2094,7 +2094,12 @@ func TestBindings(t *testing.T) {
 	// Skip the test if no Go command can be found
 	gocmd := runtime.GOROOT() + "/bin/go"
 	if !common.FileExist(gocmd) {
-		t.Skip("go sdk not found for testing")
+		// Try alternative go command locations
+		if altGocmd, err := exec.LookPath("go"); err != nil {
+			t.Fatalf("go SDK not found in PATH or GOROOT: %v", err)
+		} else {
+			gocmd = altGocmd
+		}
 	}
 
 	// Create a temporary workspace for the test suite

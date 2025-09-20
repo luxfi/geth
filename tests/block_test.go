@@ -77,7 +77,7 @@ func TestBlockchain(t *testing.T) {
 // TestExecutionSpecBlocktests runs the test fixtures from execution-spec-tests.
 func TestExecutionSpecBlocktests(t *testing.T) {
 	if !common.FileExist(executionSpecBlockchainTestDir) {
-		t.Skipf("directory %s does not exist", executionSpecBlockchainTestDir)
+
 	}
 	bt := new(testMatcher)
 
@@ -100,10 +100,6 @@ func execBlockTest(t *testing.T, bt *testMatcher, test *BlockTest) {
 		snapshotConf = []bool{false, true}
 		dbschemeConf = []string{rawdb.HashScheme, rawdb.PathScheme}
 	)
-	if testing.Short() {
-		snapshotConf = []bool{snapshotConf[rand.Int()%2]}
-		dbschemeConf = []string{dbschemeConf[rand.Int()%2]}
-	}
 	for _, snapshot := range snapshotConf {
 		for _, dbscheme := range dbschemeConf {
 			if err := bt.checkFailure(t, test.Run(snapshot, dbscheme, true, nil, nil)); err != nil {

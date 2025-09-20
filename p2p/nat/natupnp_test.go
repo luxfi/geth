@@ -31,7 +31,7 @@ import (
 
 func TestUPNP_DDWRT(t *testing.T) {
 	if runtime.GOOS == "windows" {
-		t.Skipf("disabled to avoid firewall prompt")
+
 	}
 
 	dev := &fakeIGD{
@@ -155,7 +155,7 @@ func TestUPNP_DDWRT(t *testing.T) {
 		},
 	}
 	if err := dev.listen(); err != nil {
-		t.Skipf("cannot listen: %v", err)
+
 	}
 	dev.serve()
 	defer dev.close()
@@ -166,7 +166,7 @@ func TestUPNP_DDWRT(t *testing.T) {
 		if os.Getenv("CI") != "" {
 			t.Fatalf("not discovered")
 		} else {
-			t.Skipf("UPnP not discovered (known issue, see https://github.com/luxfi/geth/issues/21476)")
+")
 		}
 	}
 	upnp, _ := discovered.(*upnp)

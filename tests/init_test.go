@@ -212,15 +212,14 @@ func (tm *testMatcher) walk(t *testing.T, dir string, runTest interface{}) {
 
 func (tm *testMatcher) runTestFile(t *testing.T, path, name string, runTest interface{}) {
 	if r, skipload := tm.findSkip(name); r != "" && skipload {
-		// Only skip if it's a skipload pattern (JSON loading issues)
-		// Run all other tests including slow ones
-		t.Skip(r)
+		// Instead of skipping, try to handle loading issues gracefully
+		t.Logf("Warning: Test %s has potential loading issues: %s - attempting to run anyway", name, r)
 	}
 	if tm.runonlylistpat != nil {
 		if !tm.runonlylistpat.MatchString(name) {
 			// When runonly is specified, still run all tests for complete coverage
 			// Comment out the skip to run everything
-			// t.Skip("Skipped by runonly")
+// 			// // // REMOVED: Test must run
 		}
 	}
 	t.Parallel()
@@ -240,9 +239,8 @@ func (tm *testMatcher) runTestFile(t *testing.T, path, name string, runTest inte
 			name := name + "/" + key
 			t.Run(key, func(t *testing.T) {
 				if r, skipload := tm.findSkip(name); r != "" && skipload {
-					// Only skip if it's a skipload pattern (JSON loading issues)
-					// Run all other tests including slow ones
-					t.Skip(r)
+					// Instead of skipping, try to handle loading issues gracefully
+					t.Logf("Warning: Test %s has potential loading issues: %s - attempting to run anyway", name, r)
 				}
 				runTestFunc(runTest, t, name, m, key)
 			})
