@@ -670,7 +670,13 @@ func (it *differenceIterator) NodeBlob() []byte {
 }
 
 func (it *differenceIterator) AddResolver(resolver NodeResolver) {
-	panic("not implemented")
+	// Propagate the resolver to both underlying iterators
+	if resolverA, ok := it.a.(interface{ AddResolver(NodeResolver) }); ok {
+		resolverA.AddResolver(resolver)
+	}
+	if resolverB, ok := it.b.(interface{ AddResolver(NodeResolver) }); ok {
+		resolverB.AddResolver(resolver)
+	}
 }
 
 func (it *differenceIterator) Next(bool) bool {
@@ -785,7 +791,12 @@ func (it *unionIterator) NodeBlob() []byte {
 }
 
 func (it *unionIterator) AddResolver(resolver NodeResolver) {
-	panic("not implemented")
+	// Propagate the resolver to all underlying iterators
+	for _, item := range *it.items {
+		if resolverItem, ok := item.(interface{ AddResolver(NodeResolver) }); ok {
+			resolverItem.AddResolver(resolver)
+		}
+	}
 }
 
 // Next returns the next node in the union of tries being iterated over.

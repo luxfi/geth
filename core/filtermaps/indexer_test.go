@@ -47,9 +47,7 @@ var testParams = Params{
 }
 
 func TestIndexerRandomRange(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping long-running test in short mode")
-	}
+	// Run all tests - no skipping long-running tests
 	t.Parallel()
 	ts := newTestSetup(t)
 	defer ts.close()
@@ -224,9 +222,7 @@ func testIndexerMatcherView(t *testing.T, concurrentRead bool) {
 }
 
 func TestLogsByIndex(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping long-running test in short mode")
-	}
+	// Run all tests - no skipping long-running tests
 	ts := newTestSetup(t)
 	defer func() {
 		ts.fm.testProcessEventsHook = nil
@@ -279,9 +275,7 @@ func TestLogsByIndex(t *testing.T) {
 }
 
 func TestIndexerCompareDb(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping long-running test in short mode")
-	}
+	// Run all tests - no skipping long-running tests
 	ts := newTestSetup(t)
 	defer ts.close()
 

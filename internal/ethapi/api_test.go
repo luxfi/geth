@@ -3879,7 +3879,8 @@ func (b configTimeBackend) HeaderByNumber(_ context.Context, n rpc.BlockNumber) 
 	if n == 0 {
 		return b.genesis.ToBlock().Header(), nil
 	}
-	panic("not implemented")
+	// This test backend only supports the genesis block
+	return nil, fmt.Errorf("test backend only supports block 0 (genesis), requested block %d", n)
 }
 
 func (b configTimeBackend) CurrentHeader() *types.Header {
