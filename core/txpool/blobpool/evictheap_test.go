@@ -241,15 +241,12 @@ func BenchmarkPriceHeapOverflow1GB(b *testing.B)   { benchmarkPriceHeapOverflow(
 func BenchmarkPriceHeapOverflow10GB(b *testing.B)  { benchmarkPriceHeapOverflow(b, 10*1024*1024*1024) }
 
 func BenchmarkPriceHeapOverflow25GB(b *testing.B) {
-	}
 	benchmarkPriceHeapOverflow(b, 25*1024*1024*1024)
 }
 func BenchmarkPriceHeapOverflow50GB(b *testing.B) {
-	}
 	benchmarkPriceHeapOverflow(b, 50*1024*1024*1024)
 }
 func BenchmarkPriceHeapOverflow100GB(b *testing.B) {
-	}
 	benchmarkPriceHeapOverflow(b, 100*1024*1024*1024)
 }
 
