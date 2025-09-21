@@ -1,6 +1,6 @@
 module github.com/luxfi/geth
 
-go 1.24.5
+go 1.25.1
 
 toolchain go1.24.6
 
