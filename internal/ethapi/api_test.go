@@ -543,7 +543,7 @@ func (b testBackend) GetBody(ctx context.Context, hash common.Hash, number rpc.B
 }
 func (b testBackend) StateAndHeaderByNumber(ctx context.Context, number rpc.BlockNumber) (*state.StateDB, *types.Header, error) {
 	if number == rpc.PendingBlockNumber {
-		return nil, fmt.Errorf("pending state not implemented")
+		return nil, nil, fmt.Errorf("pending state not implemented")
 	}
 	header, err := b.HeaderByNumber(ctx, number)
 	if err != nil {
