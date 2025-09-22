@@ -2,8 +2,6 @@ module github.com/luxfi/geth
 
 go 1.25.1
 
-toolchain go1.24.6
-
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.2.0
 	github.com/Microsoft/go-winio v0.6.2
