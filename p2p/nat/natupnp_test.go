@@ -166,7 +166,7 @@ func TestUPNP_DDWRT(t *testing.T) {
 		if os.Getenv("CI") != "" {
 			t.Fatalf("not discovered")
 		} else {
-")
+			t.Skip("UPnP not discovered (expected in non-CI environment)")
 		}
 	}
 	upnp, _ := discovered.(*upnp)

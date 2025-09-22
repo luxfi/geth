@@ -17,7 +17,6 @@
 package tests
 
 import (
-	"math/rand"
 	"testing"
 
 	"github.com/luxfi/geth/common"
