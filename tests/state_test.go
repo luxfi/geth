@@ -21,7 +21,6 @@ import (
 	"bytes"
 	"fmt"
 	"math/big"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -102,7 +101,6 @@ func execStateTest(t *testing.T, st *testMatcher, test *StateTest) {
 		key := fmt.Sprintf("%s/%d", subtest.Fork, subtest.Index)
 
 		// Run all four permutations for complete test coverage
-		executionMask := 0xf
 		t.Run(key+"/hash/trie", func(t *testing.T) {
 			// Always run this test - no random skipping
 			withTrace(t, test.gasLimit(subtest), func(vmconfig vm.Config) error {

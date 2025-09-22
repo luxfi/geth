@@ -146,9 +146,6 @@ func TestSimulatedBeaconSendWithdrawals(t *testing.T) {
 func TestOnDemandSpam(t *testing.T) {
 	// This test was flaky due to synchronicity issues.
 	// Add retries and better synchronization to make it more robust.
-		var txCount = 100 // reduced from 20000
-		_ = txCount
-	}
 	var (
 		withdrawals     []types.Withdrawal
 		txCount                = 20000
