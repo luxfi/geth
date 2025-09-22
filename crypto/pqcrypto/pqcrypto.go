@@ -77,24 +77,27 @@ func NewPQSigner(algo Algorithm) (*PQSigner, error) {
 		signer.mldsaPriv = priv
 
 	case AlgoMLKEM512:
-		priv, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM512)
+		priv, pub, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM512)
 		if err != nil {
 			return nil, err
 		}
+		_ = pub // public key is part of private key
 		signer.mlkemPriv = priv
 
 	case AlgoMLKEM768:
-		priv, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM768)
+		priv, pub, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM768)
 		if err != nil {
 			return nil, err
 		}
+		_ = pub // public key is part of private key
 		signer.mlkemPriv = priv
 
 	case AlgoMLKEM1024:
-		priv, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM1024)
+		priv, pub, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM1024)
 		if err != nil {
 			return nil, err
 		}
+		_ = pub // public key is part of private key
 		signer.mlkemPriv = priv
 
 	case AlgoSLHDSA128s:
@@ -140,10 +143,11 @@ func NewPQSigner(algo Algorithm) (*PQSigner, error) {
 		}
 		signer.classical = classical
 
-		priv, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM512)
+		priv, pub, err := mlkem.GenerateKeyPair(rand.Reader, mlkem.MLKEM512)
 		if err != nil {
 			return nil, err
 		}
+		_ = pub // public key is part of private key
 		signer.mlkemPriv = priv
 
 	default:
