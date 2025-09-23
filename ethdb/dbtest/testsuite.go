@@ -126,7 +126,7 @@ func TestDatabaseSuite(t *testing.T, New func() ethdb.KeyValueStore) {
 			if idx != len(tt.order) {
 				t.Errorf("test %d: iteration terminated prematurely: have %d, want %d", i, idx, len(tt.order))
 			}
-			_ = db.Close()
+			db.Close()
 		}
 	})
 
@@ -322,7 +322,7 @@ func TestDatabaseSuite(t *testing.T, New func() ethdb.KeyValueStore) {
 	t.Run("OperationsAfterClose", func(t *testing.T) {
 		db := New()
 		db.Put([]byte("key"), []byte("value"))
-		_ = db.Close()
+		db.Close()
 		if _, err := db.Get([]byte("key")); err == nil {
 			t.Fatalf("expected error on Get after Close")
 		}

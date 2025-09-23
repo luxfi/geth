@@ -170,7 +170,7 @@ func TestFairMixRemoveSource(t *testing.T) {
 
 	sig <- nil
 	runtime.Gosched()
-	_ = source.Close()
+	source.Close()
 
 	wantNode := testNode(0, 0)
 	mix.AddSource(CycleNodes([]*Node{wantNode}))
@@ -268,7 +268,7 @@ func testMixerClose(t *testing.T) {
 	// actually executing by the time we call Close.
 	runtime.Gosched()
 
-	_ = mix.Close()
+	mix.Close()
 	select {
 	case <-done:
 	case <-time.After(3 * time.Second):

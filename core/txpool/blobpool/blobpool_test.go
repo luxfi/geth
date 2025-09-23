@@ -710,7 +710,7 @@ func TestOpenDrops(t *testing.T) {
 			}
 		}
 	}
-	_ = store.Close()
+	store.Close()
 
 	// Create a blob pool out of the pre-seeded data
 	statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
@@ -842,7 +842,7 @@ func TestOpenIndex(t *testing.T) {
 		blob, _ := rlp.EncodeToBytes(tx)
 		store.Put(blob)
 	}
-	_ = store.Close()
+	store.Close()
 
 	// Create a blob pool out of the pre-seeded data
 	statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
@@ -943,7 +943,7 @@ func TestOpenHeap(t *testing.T) {
 	store.Put(blob1)
 	store.Put(blob2)
 	store.Put(blob3)
-	_ = store.Close()
+	store.Close()
 
 	// Create a blob pool out of the pre-seeded data
 	statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
@@ -1021,7 +1021,7 @@ func TestOpenCap(t *testing.T) {
 	store.Put(blob1)
 	store.Put(blob2)
 	store.Put(blob3)
-	_ = store.Close()
+	store.Close()
 
 	// Verify pool capping twice: first by reducing the data cap, then restarting
 	// with a high cap to ensure everything was persisted previously
@@ -1068,7 +1068,7 @@ func TestOpenCap(t *testing.T) {
 		// Do not remove this, nor alter the above to be generic.
 		verifyPoolInternals(t, pool)
 
-		_ = pool.Close()
+		pool.Close()
 	}
 }
 
@@ -1111,7 +1111,7 @@ func TestChangingSlotterSize(t *testing.T) {
 	// available.
 	store.Put(blob1)
 	store.Put(blob2)
-	_ = store.Close()
+	store.Close()
 
 	// Mimic a blobpool with max blob count of 6 upgrading to a max blob count of 24.
 	for _, maxBlobs := range []int{6, 24} {
@@ -1171,7 +1171,7 @@ func TestChangingSlotterSize(t *testing.T) {
 		// Do not remove this, nor alter the above to be generic.
 		verifyPoolInternals(t, pool)
 
-		_ = pool.Close()
+		pool.Close()
 	}
 }
 
@@ -1214,7 +1214,7 @@ func TestBillyMigration(t *testing.T) {
 	// available.
 	store.Put(blob1)
 	store.Put(blob2)
-	_ = store.Close()
+	store.Close()
 
 	// Mimic a blobpool with max blob count of 6 upgrading to a max blob count of 24.
 	for _, maxBlobs := range []int{6, 24} {
@@ -1280,7 +1280,7 @@ func TestBillyMigration(t *testing.T) {
 		// Do not remove this, nor alter the above to be generic.
 		verifyPoolInternals(t, pool)
 
-		_ = pool.Close()
+		pool.Close()
 	}
 }
 
@@ -1340,7 +1340,7 @@ func TestBlobCountLimit(t *testing.T) {
 	}
 
 	verifyPoolInternals(t, pool)
-	_ = pool.Close()
+	pool.Close()
 }
 
 // Tests that adding transaction will correctly store it in the persistent store
@@ -1745,7 +1745,7 @@ func TestAdd(t *testing.T) {
 			}
 		}
 		statedb.Commit(0, true, false)
-		_ = store.Close()
+		store.Close()
 
 		// Create a blob pool out of the pre-seeded dats
 		chain := &testBlockChain{
@@ -1807,7 +1807,7 @@ func TestAdd(t *testing.T) {
 			verifyPoolInternals(t, pool)
 		}
 		// Close down the test
-		_ = pool.Close()
+		pool.Close()
 	}
 }
 
@@ -1850,7 +1850,7 @@ func TestAddLegacyBlobTx(t *testing.T) {
 		}
 	}
 	verifyPoolInternals(t, pool)
-	_ = pool.Close()
+	pool.Close()
 }
 
 func TestGetBlobs(t *testing.T) {
@@ -1889,7 +1889,7 @@ func TestGetBlobs(t *testing.T) {
 	store.Put(blob1)
 	store.Put(blob2)
 	store.Put(blob3)
-	_ = store.Close()
+	store.Close()
 
 	// Mimic a blobpool with max blob count of 6 upgrading to a max blob count of 24.
 	statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
@@ -2071,7 +2071,7 @@ func TestGetBlobs(t *testing.T) {
 			}
 		}
 	}
-	_ = pool.Close()
+	pool.Close()
 }
 
 // fakeBilly is a billy.Database implementation which just drops data on the floor.

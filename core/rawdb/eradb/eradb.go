@@ -260,7 +260,7 @@ func (db *Store) fileOpened(epoch uint64, entry *fileCacheEntry, file *era.Era) 
 	// need to close the file here, since it isn't tracked by the LRU yet.
 	if db.closing {
 		entry.err = errClosed
-		_ = file.Close()
+		file.Close()
 		return
 	}
 

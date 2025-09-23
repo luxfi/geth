@@ -831,7 +831,7 @@ func (api *API) standardTraceBlockToFile(ctx context.Context, block *types.Block
 			writer.Flush()
 		}
 		if dump != nil {
-			_ = dump.Close()
+			dump.Close()
 			log.Info("Wrote standard trace", "file", dump.Name())
 		}
 		if err != nil {

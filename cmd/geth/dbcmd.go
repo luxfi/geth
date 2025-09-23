@@ -601,7 +601,7 @@ func freezerInspect(ctx *cli.Context) error {
 	}
 	stack, _ := makeConfigNode(ctx)
 	ancient := stack.ResolveAncient("chaindata", ctx.String(utils.AncientFlag.Name))
-	_ = stack.Close()
+	stack.Close()
 	return rawdb.InspectFreezerTable(ancient, freezer, table, start, end)
 }
 

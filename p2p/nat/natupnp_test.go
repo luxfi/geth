@@ -232,7 +232,7 @@ func (dev *fakeIGD) listen() (err error) {
 	}
 	laddr := &net.UDPAddr{IP: net.ParseIP("239.255.255.250"), Port: 1900}
 	if dev.mcastListener, err = net.ListenMulticastUDP("udp", nil, laddr); err != nil {
-		_ = dev.listener.Close()
+		dev.listener.Close()
 		return err
 	}
 	return nil
@@ -244,6 +244,6 @@ func (dev *fakeIGD) serve() {
 }
 
 func (dev *fakeIGD) close() {
-	_ = dev.mcastListener.Close()
-	_ = dev.listener.Close()
+	dev.mcastListener.Close()
+	dev.listener.Close()
 }

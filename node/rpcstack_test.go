@@ -267,7 +267,7 @@ func wsRequest(t *testing.T, url string, extraHeaders ...string) error {
 	}
 	conn, _, err := websocket.DefaultDialer.Dial(url, headers)
 	if conn != nil {
-		_ = conn.Close()
+		conn.Close()
 	}
 	return err
 }

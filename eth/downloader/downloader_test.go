@@ -60,7 +60,7 @@ func newTesterWithNotification(t *testing.T, success func()) *downloadTester {
 		panic(err)
 	}
 	t.Cleanup(func() {
-		_ = db.Close()
+		db.Close()
 	})
 	gspec := &core.Genesis{
 		Config:  params.TestChainConfig,
