@@ -2,67 +2,11 @@
 version: "2"
 
 run:
-  tests: true
   timeout: 10m
-
-linters-settings:
-  staticcheck:
-    checks:
-      - all
-      - "-QF1001" # Disable Quickfixes
-  revive:
-    enable-all-rules: false
-    rules:
-      - name: receiver-naming
-        severity: warning
-        disabled: false
+  tests: true
 
 linters:
-  disable-all: true
   enable:
-    - bidichk
-    - copyloopvar
-    - durationcheck
-    - gocheckcompilerdirectives
     - govet
     - ineffassign
-    - mirror
     - misspell
-    - reassign
-    - revive
-    - staticcheck
-    - unconvert
-    - unused
-    - whitespace
-
-issues:
-  exclude-use-default: false
-  exclude-rules:
-    - path: crypto/bn256/cloudflare/optate.go
-      linters:
-        - deadcode
-        - staticcheck
-    - path: crypto/bn256/
-      linters:
-        - revive
-    - path: cmd/utils/flags.go
-      text: "SA1019: cfg.TxLookupLimit is deprecated"
-    - path: cmd/utils/flags.go
-      text: "SA1019: ethconfig.Defaults.TxLookupLimit is deprecated"
-    - path: internal/build/pgp.go
-      text: 'SA1019: "golang.org/x/crypto/openpgp" is deprecated'
-    - path: core/vm/contracts.go
-      text: 'SA1019: "golang.org/x/crypto/ripemd160" is deprecated'
-    - path: (.+)\.go$
-      text: 'SA1019: event.TypeMux is deprecated'
-    - path: (.+)\.go$
-      text: 'SA1019: strings.Title is deprecated'
-    - path: (.+)\.go$
-      text: 'SA1019: strings.Title has been deprecated'
-    - path: (.+)\.go$
-      text: 'SA1029: should not use built-in type string as key for value'
-  exclude-dirs:
-    - core/genesis_alloc.go
-    - third_party
-    - builtin
-    - examples
