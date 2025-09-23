@@ -267,7 +267,7 @@ func wsRequest(t *testing.T, url string, extraHeaders ...string) error {
 	}
 	conn, _, err := websocket.DefaultDialer.Dial(url, headers)
 	if conn != nil {
-		conn.Close()
+		_ = conn.Close()
 	}
 	return err
 }
@@ -461,7 +461,7 @@ func TestGzipHandler(t *testing.T) {
 		{
 			name: "Write",
 			handler: func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("response"))
+				_, _ = w.Write([]byte("response"))
 			},
 			isGzip: true,
 			status: 200,
@@ -471,7 +471,7 @@ func TestGzipHandler(t *testing.T) {
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("x-foo", "bar")
 				w.WriteHeader(205)
-				w.Write([]byte("response"))
+				_, _ = w.Write([]byte("response"))
 			},
 			isGzip: true,
 			status: 205,
@@ -481,7 +481,7 @@ func TestGzipHandler(t *testing.T) {
 			name: "WriteContentLength",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("content-length", "8")
-				w.Write([]byte("response"))
+				_, _ = w.Write([]byte("response"))
 			},
 			isGzip: true,
 			status: 200,
@@ -489,9 +489,9 @@ func TestGzipHandler(t *testing.T) {
 		{
 			name: "Flush",
 			handler: func(w http.ResponseWriter, r *http.Request) {
-				w.Write([]byte("res"))
+				_, _ = w.Write([]byte("res"))
 				w.(http.Flusher).Flush()
-				w.Write([]byte("ponse"))
+				_, _ = w.Write([]byte("ponse"))
 			},
 			isGzip: true,
 			status: 200,
@@ -501,7 +501,7 @@ func TestGzipHandler(t *testing.T) {
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("transfer-encoding", "identity")
 				w.Header().Set("x-foo", "bar")
-				w.Write([]byte("response"))
+				_, _ = w.Write([]byte("response"))
 			},
 			isGzip: false,
 			status: 200,
@@ -513,7 +513,7 @@ func TestGzipHandler(t *testing.T) {
 				w.Header().Set("transfer-encoding", "identity")
 				w.Header().Set("x-foo", "bar")
 				w.WriteHeader(205)
-				w.Write([]byte("response"))
+				_, _ = w.Write([]byte("response"))
 			},
 			isGzip: false,
 			status: 205,

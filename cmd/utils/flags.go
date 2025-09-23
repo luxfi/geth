@@ -1859,7 +1859,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 					Fatalf("Bad developer-mode genesis configuration: difficulty must be 0")
 				}
 			}
-			chaindb.Close()
+			_ = chaindb.Close()
 		}
 		if !ctx.IsSet(MinerGasPriceFlag.Name) {
 			cfg.Miner.GasPrice = big.NewInt(1)
@@ -1936,7 +1936,7 @@ func MakeBeaconLightConfig(ctx *cli.Context) bparams.ClientConfig {
 		if err != nil {
 			Fatalf("failed to read beacon chain config file '%s': %v", configPath, err)
 		}
-		if err := config.ChainConfig.LoadForks(file); err != nil {
+		if err := config.LoadForks(file); err != nil {
 			Fatalf("Could not load beacon chain config '%s': %v", configPath, err)
 		}
 		log.Info("Using custom beacon chain config", "file", configPath)
@@ -2154,10 +2154,8 @@ func MakeChainDatabase(ctx *cli.Context, stack *node.Node, readonly bool) ethdb.
 func tryMakeReadOnlyDatabase(ctx *cli.Context, stack *node.Node) ethdb.Database {
 	// If the database doesn't exist we need to open it in write-mode to allow
 	// the engine to create files.
-	readonly := true
-	if rawdb.PreexistingDatabase(stack.ResolvePath("chaindata")) == "" {
-		readonly = false
-	}
+	readonly := !(rawdb.PreexistingDatabase(stack.ResolvePath("chaindata")) == "")
+
 	return MakeChainDatabase(ctx, stack, readonly)
 }
 

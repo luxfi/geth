@@ -360,7 +360,7 @@ func (op bigIntOp) genWrite(ctx *genContext, v string) string {
 		code := b.String()
 		b.Reset()
 		fmt.Fprintf(&b, "if %s == nil {\n", v)
-		fmt.Fprintf(&b, "  w.Write(rlp.EmptyString)")
+		_, _ = fmt.Fprintf(&b, "  w.Write(rlp.EmptyString)")
 		fmt.Fprintf(&b, "} else {\n")
 		fmt.Fprint(&b, code)
 		fmt.Fprintf(&b, "}\n")
@@ -402,7 +402,7 @@ func (op uint256Op) genWrite(ctx *genContext, v string) string {
 		code := b.String()
 		b.Reset()
 		fmt.Fprintf(&b, "if %s == nil {\n", v)
-		fmt.Fprintf(&b, "  w.Write(rlp.EmptyString)")
+		_, _ = fmt.Fprintf(&b, "  w.Write(rlp.EmptyString)")
 		fmt.Fprintf(&b, "} else {\n")
 		fmt.Fprint(&b, code)
 		fmt.Fprintf(&b, "}\n")
@@ -493,7 +493,7 @@ func (op ptrOp) genWrite(ctx *genContext, v string) string {
 
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "if %s == nil {\n", v)
-	fmt.Fprintf(&b, "  w.Write([]byte{0x%X})\n", op.nilValue)
+	_, _ = fmt.Fprintf(&b, "  w.Write([]byte{0x%X})\n", op.nilValue)
 	fmt.Fprintf(&b, "} else {\n")
 	fmt.Fprintf(&b, "  %s", op.elem.genWrite(ctx, vv))
 	fmt.Fprintf(&b, "}\n")
@@ -840,11 +840,11 @@ func (bctx *buildContext) generate(typ *types.Named, encoder, decoder bool) ([]b
 	}
 	if encoder {
 		fmt.Fprintln(&b)
-		b.Write(encSource)
+		_, _ = b.Write(encSource)
 	}
 	if decoder {
 		fmt.Fprintln(&b)
-		b.Write(decSource)
+		_, _ = b.Write(decSource)
 	}
 
 	source := b.Bytes()

@@ -47,6 +47,6 @@ func Handler(reg metrics.Registry) http.Handler {
 		}
 		w.Header().Add("Content-Type", "text/plain")
 		w.Header().Add("Content-Length", fmt.Sprint(c.buff.Len()))
-		w.Write(c.buff.Bytes())
+		_, _ = w.Write(c.buff.Bytes())
 	})
 }

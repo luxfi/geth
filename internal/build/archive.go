@@ -83,7 +83,7 @@ func WriteArchive(name string, files []string) (err error) {
 	}
 
 	defer func() {
-		archfd.Close()
+		_ = archfd.Close()
 		// Remove the half-written archive on failure.
 		if err != nil {
 			os.Remove(name)
@@ -256,7 +256,7 @@ func extractZip(ar *os.File, dest string) error {
 			return err
 		}
 		err = extractFile(zf.Name, zf.Mode(), data, dest)
-		data.Close()
+		_ = data.Close()
 		if err != nil {
 			return fmt.Errorf("extract %s: %v", zf.Name, err)
 		}
@@ -288,7 +288,7 @@ func extractFile(arpath string, armode os.FileMode, data io.Reader, dest string)
 		return err
 	}
 	if _, err = io.Copy(file, data); err != nil {
-		file.Close()
+		_ = file.Close()
 		os.Remove(target)
 		return err
 	}

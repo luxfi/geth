@@ -37,7 +37,7 @@ func tryMigrate(config *params.ChainConfig, slotter billy.SlotSizeFn, datadir st
 		if err != nil {
 			return nil, err
 		}
-		store.Close()
+		_ = store.Close()
 
 		// If the version found is less than the currently configured store version,
 		// perform a migration then write the updated version of the store.
@@ -51,7 +51,7 @@ func tryMigrate(config *params.ChainConfig, slotter billy.SlotSizeFn, datadir st
 				return nil, err
 			}
 			writeSlotterVersion(store, storeVersion)
-			store.Close()
+			_ = store.Close()
 		}
 		// Set the slotter to the format now that the Osaka is active.
 		slotter = newSlotterEIP7594(eip4844.LatestMaxBlobsPerBlock(config))

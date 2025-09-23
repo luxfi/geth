@@ -173,7 +173,7 @@ func (db *Database) loadLayers() layer {
 	// journal is not matched(or missing) with the persistent state, discard
 	// it. Display log for discarding journal, but try to avoid showing
 	// useless information when the db is created from scratch.
-	if !(root == types.EmptyRootHash && errors.Is(err, errMissJournal)) {
+	if root != types.EmptyRootHash || !errors.Is(err, errMissJournal) {
 		log.Info("Failed to load journal, discard it", "err", err)
 	}
 	// Return single layer with persistent state.
@@ -362,7 +362,7 @@ func (db *Database) Journal(root common.Hash) error {
 		}
 		defer func() {
 			if file != nil {
-				file.Close()
+				_ = file.Close()
 				os.Remove(tmp) // Clean up temp file if we didn't successfully rename it
 				log.Warn("Removed leftover temporary journal file", "path", tmp)
 			}

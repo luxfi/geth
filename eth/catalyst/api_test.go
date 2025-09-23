@@ -455,7 +455,7 @@ func startEthService(t *testing.T, genesis *core.Genesis, blocks []*types.Block)
 		t.Fatal("can't start node:", err)
 	}
 	if _, err := ethservice.BlockChain().InsertChain(blocks); err != nil {
-		n.Close()
+		_ = n.Close()
 		t.Fatal("can't import test blocks:", err)
 	}
 	if err := ethservice.TxPool().Sync(); err != nil {

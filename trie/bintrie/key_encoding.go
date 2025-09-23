@@ -39,9 +39,9 @@ var (
 
 func GetBinaryTreeKey(addr common.Address, key []byte) []byte {
 	hasher := sha256.New()
-	hasher.Write(zeroHash[:12])
-	hasher.Write(addr[:])
-	hasher.Write(key[:31])
+	_, _ = hasher.Write(zeroHash[:12])
+	_, _ = hasher.Write(addr[:])
+	_, _ = hasher.Write(key[:31])
 	k := hasher.Sum(nil)
 	k[31] = key[31]
 	return k

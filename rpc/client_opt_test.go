@@ -37,5 +37,5 @@ func ExampleDialOptions() {
 	if err != nil {
 		panic(err)
 	}
-	c.Close()
+	_ = c.Close()
 }
