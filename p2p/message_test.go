@@ -30,7 +30,7 @@ func ExampleMsgPipe() {
 	go func() {
 		Send(rw1, 8, [][]byte{{0, 0}})
 		Send(rw1, 5, [][]byte{{1, 1}})
-		_ = rw1.Close()
+		rw1.Close()
 	}()
 
 	for {
@@ -67,7 +67,7 @@ loop:
 		// all the cases.
 		runtime.Gosched()
 
-		_ = rw2.Close()
+		rw2.Close()
 		select {
 		case <-done:
 		case <-time.After(200 * time.Millisecond):

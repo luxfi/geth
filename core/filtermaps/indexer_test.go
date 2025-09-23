@@ -463,8 +463,8 @@ func (ts *testSetup) close() {
 	if ts.fm != nil {
 		ts.fm.Stop()
 	}
-	_ = ts.db.Close()
-	_ = ts.chain.db.Close()
+	ts.db.Close()
+	ts.chain.db.Close()
 }
 
 type testChain struct {

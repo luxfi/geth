@@ -204,7 +204,7 @@ func (p *Peer) LocalAddr() net.Addr {
 // It returns immediately and does not wait until the connection is closed.
 func (p *Peer) Disconnect(reason DiscReason) {
 	if p.testPipe != nil {
-		_ = p.testPipe.Close()
+		p.testPipe.Close()
 	}
 
 	select {

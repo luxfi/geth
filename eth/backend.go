@@ -573,14 +573,14 @@ func (s *Ethereum) Stop() error {
 	s.closeFilterMaps <- ch
 	<-ch
 	s.filterMaps.Stop()
-	_ = s.txPool.Close()
+	s.txPool.Close()
 	s.blockchain.Stop()
-	_ = s.engine.Close()
+	s.engine.Close()
 
 	// Clean shutdown marker as the last thing before closing db
 	s.shutdownTracker.Stop()
 
-	_ = s.chainDb.Close()
+	s.chainDb.Close()
 	s.eventMux.Stop()
 
 	return nil

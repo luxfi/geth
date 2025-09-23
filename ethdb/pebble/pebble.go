@@ -773,7 +773,7 @@ func (iter *pebbleIterator) Value() []byte {
 // be called multiple times without causing error.
 func (iter *pebbleIterator) Release() {
 	if !iter.released {
-		_ = iter.iter.Close()
+		iter.iter.Close()
 		iter.released = true
 	}
 }

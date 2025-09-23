@@ -147,13 +147,13 @@ func (journal *journal) rotate(all map[common.Address]types.Transactions) error 
 	for _, txs := range all {
 		for _, tx := range txs {
 			if err = rlp.Encode(replacement, tx); err != nil {
-				_ = replacement.Close()
+				replacement.Close()
 				return err
 			}
 		}
 		journaled += len(txs)
 	}
-	_ = replacement.Close()
+	replacement.Close()
 
 	// Replace the live journal with the newly generated one
 	if err = os.Rename(journal.path+".new", journal.path); err != nil {

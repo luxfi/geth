@@ -65,7 +65,7 @@ func openDatabase(o internalOpenOptions) (ethdb.Database, error) {
 	}
 	frdb, err := rawdb.Open(kvdb, opts)
 	if err != nil {
-		_ = kvdb.Close()
+		kvdb.Close()
 		return nil, err
 	}
 	return frdb, nil
