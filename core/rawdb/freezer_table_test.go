@@ -96,7 +96,7 @@ func TestFreezerBasicsClosing(t *testing.T) {
 		batch := f.newBatch()
 		require.NoError(t, batch.AppendRaw(uint64(x), data))
 		require.NoError(t, batch.commit())
-		f.Close()
+		_ = f.Close()
 
 		f, err = newTable(os.TempDir(), fname, rm, wm, sg, 50, freezerTableConfig{noSnappy: true}, false)
 		if err != nil {
@@ -114,7 +114,7 @@ func TestFreezerBasicsClosing(t *testing.T) {
 		if !bytes.Equal(got, exp) {
 			t.Fatalf("test %d, got \n%x != \n%x", y, got, exp)
 		}
-		f.Close()
+		_ = f.Close()
 		f, err = newTable(os.TempDir(), fname, rm, wm, sg, 50, freezerTableConfig{noSnappy: true}, false)
 		if err != nil {
 			t.Fatal(err)
@@ -141,7 +141,7 @@ func TestFreezerRepairDanglingHead(t *testing.T) {
 		if _, err = f.Retrieve(0xfe); err != nil {
 			t.Fatal(err)
 		}
-		f.Close()
+		_ = f.Close()
 	}
 
 	// open the index
@@ -155,7 +155,7 @@ func TestFreezerRepairDanglingHead(t *testing.T) {
 		t.Fatalf("Failed to stat index file: %v", err)
 	}
 	idxFile.Truncate(stat.Size() - 4)
-	idxFile.Close()
+	_ = idxFile.Close()
 
 	// Now open it again
 	{
@@ -193,7 +193,7 @@ func TestFreezerRepairDanglingHeadLarge(t *testing.T) {
 		if _, err = f.Retrieve(f.items.Load() - 1); err != nil {
 			t.Fatal(err)
 		}
-		f.Close()
+		_ = f.Close()
 	}
 
 	// open the index
@@ -204,7 +204,7 @@ func TestFreezerRepairDanglingHeadLarge(t *testing.T) {
 	// Remove everything but the first item, and leave data unaligned
 	// 0-indexEntry, 1-indexEntry, corrupt-indexEntry
 	idxFile.Truncate(2*indexEntrySize + indexEntrySize/2)
-	idxFile.Close()
+	_ = idxFile.Close()
 
 	// Now open it again
 	{
@@ -226,7 +226,7 @@ func TestFreezerRepairDanglingHeadLarge(t *testing.T) {
 			require.NoError(t, batch.AppendRaw(uint64(x), getChunk(15, ^x)))
 		}
 		require.NoError(t, batch.commit())
-		f.Close()
+		_ = f.Close()
 	}
 
 	// And if we open it, we should now be able to read all of them (new values)
@@ -259,7 +259,7 @@ func TestSnappyDetection(t *testing.T) {
 		}
 		// Write 15 bytes 255 times
 		writeChunks(t, f, 255, 15)
-		f.Close()
+		_ = f.Close()
 	}
 
 	// Open with snappy
@@ -270,7 +270,7 @@ func TestSnappyDetection(t *testing.T) {
 		}
 		// There should be 255 items
 		if _, err = f.Retrieve(0xfe); err != nil {
-			f.Close()
+			_ = f.Close()
 			t.Fatalf("expected no error, got %v", err)
 		}
 	}
@@ -282,7 +282,7 @@ func TestSnappyDetection(t *testing.T) {
 			t.Fatal(err)
 		}
 		if _, err = f.Retrieve(0); err == nil {
-			f.Close()
+			_ = f.Close()
 			t.Fatalf("expected empty table")
 		}
 	}
@@ -317,10 +317,10 @@ func TestFreezerRepairDanglingIndex(t *testing.T) {
 
 		// The last item should be there
 		if _, err = f.Retrieve(f.items.Load() - 1); err != nil {
-			f.Close()
+			_ = f.Close()
 			t.Fatal(err)
 		}
-		f.Close()
+		_ = f.Close()
 		// File sizes should be 45, 45, 45 : items[3, 3, 3)
 	}
 
@@ -336,7 +336,7 @@ func TestFreezerRepairDanglingIndex(t *testing.T) {
 			t.Fatal(err)
 		}
 		file.Truncate(20)
-		file.Close()
+		_ = file.Close()
 	}
 
 	// Open db it again
@@ -376,7 +376,7 @@ func TestFreezerTruncate(t *testing.T) {
 		if _, err = f.Retrieve(f.items.Load() - 1); err != nil {
 			t.Fatal(err)
 		}
-		f.Close()
+		_ = f.Close()
 	}
 
 	// Reopen, truncate
@@ -420,7 +420,7 @@ func TestFreezerRepairFirstFile(t *testing.T) {
 		if _, err = f.Retrieve(1); err != nil {
 			t.Fatal(err)
 		}
-		f.Close()
+		_ = f.Close()
 	}
 
 	// Truncate the file in half
@@ -434,7 +434,7 @@ func TestFreezerRepairFirstFile(t *testing.T) {
 			t.Fatal(err)
 		}
 		file.Truncate(20)
-		file.Close()
+		_ = file.Close()
 	}
 
 	// Reopen
@@ -444,7 +444,7 @@ func TestFreezerRepairFirstFile(t *testing.T) {
 			t.Fatal(err)
 		}
 		if f.items.Load() != 1 {
-			f.Close()
+			_ = f.Close()
 			t.Fatalf("expected %d items, got %d", 0, f.items.Load())
 		}
 
@@ -453,7 +453,7 @@ func TestFreezerRepairFirstFile(t *testing.T) {
 		require.NoError(t, batch.AppendRaw(1, getChunk(40, 0xDD)))
 		require.NoError(t, batch.commit())
 
-		f.Close()
+		_ = f.Close()
 
 		// Should have been truncated down to zero and then 40 written
 		if err := assertFileSize(fileToCrop, 40); err != nil {
@@ -485,7 +485,7 @@ func TestFreezerReadAndTruncate(t *testing.T) {
 		if _, err = f.Retrieve(f.items.Load() - 1); err != nil {
 			t.Fatal(err)
 		}
-		f.Close()
+		_ = f.Close()
 	}
 
 	// Reopen and read all files
@@ -495,7 +495,7 @@ func TestFreezerReadAndTruncate(t *testing.T) {
 			t.Fatal(err)
 		}
 		if f.items.Load() != 30 {
-			f.Close()
+			_ = f.Close()
 			t.Fatalf("expected %d items, got %d", 0, f.items.Load())
 		}
 		for y := byte(0); y < 30; y++ {
@@ -511,7 +511,7 @@ func TestFreezerReadAndTruncate(t *testing.T) {
 			require.NoError(t, batch.AppendRaw(uint64(x), getChunk(15, ^x)))
 		}
 		require.NoError(t, batch.commit())
-		f.Close()
+		_ = f.Close()
 	}
 }
 
@@ -542,7 +542,7 @@ func TestFreezerOffset(t *testing.T) {
 
 	// Now crop it.
 	f.truncateTail(4)
-	f.Close()
+	_ = f.Close()
 
 	// Now open again
 	f, err = newTable(os.TempDir(), fname, rm, wm, sg, 40, freezerTableConfig{noSnappy: true}, false)
@@ -567,7 +567,7 @@ func TestFreezerOffset(t *testing.T) {
 		5: getChunk(20, 0xaa),
 		6: getChunk(20, 0x99),
 	})
-	f.Close()
+	_ = f.Close()
 
 	// Edit the index again, with a much larger initial offset of 1M.
 	{
@@ -592,7 +592,7 @@ func TestFreezerOffset(t *testing.T) {
 		// Overwrite index zero
 		copy(indexBuf, buf)
 		indexFile.WriteAt(indexBuf, 0)
-		indexFile.Close()
+		_ = indexFile.Close()
 	}
 
 	// Check that existing items have been moved to index 1M.
@@ -681,7 +681,7 @@ func TestTruncateTail(t *testing.T) {
 	assertTableSize(t, f, expected)
 
 	// Reopen the table, the deletion information should be persisted as well
-	f.Close()
+	_ = f.Close()
 	f, err = newTable(os.TempDir(), fname, rm, wm, sg, 40, freezerTableConfig{noSnappy: true}, false)
 	if err != nil {
 		t.Fatal(err)
@@ -715,7 +715,7 @@ func TestTruncateTail(t *testing.T) {
 	assertTableSize(t, f, expected)
 
 	// Reopen the table, the above testing should still pass
-	f.Close()
+	_ = f.Close()
 	f, err = newTable(os.TempDir(), fname, rm, wm, sg, 40, freezerTableConfig{noSnappy: true}, false)
 	if err != nil {
 		t.Fatal(err)
@@ -890,7 +890,7 @@ func TestSequentialRead(t *testing.T) {
 		// Write 15 bytes 30 times
 		writeChunks(t, f, 30, 15)
 		f.dumpIndexStdout(0, 30)
-		f.Close()
+		_ = f.Close()
 	}
 	{ // Open it, iterate, verify iteration
 		f, err := newTable(os.TempDir(), fname, rm, wm, sg, 50, freezerTableConfig{noSnappy: true}, false)
@@ -910,7 +910,7 @@ func TestSequentialRead(t *testing.T) {
 				t.Fatalf("data corruption: have\n%x\n, want \n%x\n", have, want)
 			}
 		}
-		f.Close()
+		_ = f.Close()
 	}
 	{ // Open it, iterate, verify byte limit. The byte limit is less than item
 		// size, so each lookup should only return one item
@@ -931,7 +931,7 @@ func TestSequentialRead(t *testing.T) {
 				t.Fatalf("data corruption: have\n%x\n, want \n%x\n", have, want)
 			}
 		}
-		f.Close()
+		_ = f.Close()
 	}
 }
 
@@ -950,7 +950,7 @@ func TestSequentialReadByteLimit(t *testing.T) {
 		// Write 10 bytes 30 times,
 		// Splitting it at every 100 bytes (10 items)
 		writeChunks(t, f, 30, 10)
-		f.Close()
+		_ = f.Close()
 	}
 	for i, tc := range []struct {
 		items uint64
@@ -982,7 +982,7 @@ func TestSequentialReadByteLimit(t *testing.T) {
 					t.Fatalf("test %d: data corruption item %d: have\n%x\n, want \n%x\n", i, ii, have, want)
 				}
 			}
-			f.Close()
+			_ = f.Close()
 		}
 	}
 }
@@ -1000,7 +1000,7 @@ func TestSequentialReadNoByteLimit(t *testing.T) {
 		// Write 10 bytes 30 times,
 		// Splitting it at every 100 bytes (10 items)
 		writeChunks(t, f, 30, 10)
-		f.Close()
+		_ = f.Close()
 	}
 	for i, tc := range []struct {
 		items uint64
@@ -1028,7 +1028,7 @@ func TestSequentialReadNoByteLimit(t *testing.T) {
 					t.Fatalf("test %d: data corruption item %d: have\n%x\n, want \n%x\n", i, ii, have, want)
 				}
 			}
-			f.Close()
+			_ = f.Close()
 		}
 	}
 }
@@ -1050,8 +1050,8 @@ func TestFreezerReadonly(t *testing.T) {
 		t.Errorf("Failed to open index file: %v\n", err)
 	}
 	// size should not be a multiple of indexEntrySize.
-	idxFile.Write(make([]byte, 17))
-	idxFile.Close()
+	_, _ = idxFile.Write(make([]byte, 17))
+	_ = idxFile.Close()
 	_, err = newTable(tmpdir, fname,
 		metrics.NewMeter(), metrics.NewMeter(), metrics.NewGauge(), 50, freezerTableConfig{noSnappy: true}, true)
 	if err == nil {
@@ -1242,7 +1242,7 @@ func runRandTest(rt randTest) bool {
 	for i, step := range rt {
 		switch step.op {
 		case opReload:
-			f.Close()
+			_ = f.Close()
 			f, err = newTable(os.TempDir(), fname, metrics.NewMeter(), metrics.NewMeter(), metrics.NewGauge(), 50, freezerTableConfig{noSnappy: true}, false)
 			if err != nil {
 				rt[i].err = fmt.Errorf("failed to reload table %v", err)
@@ -1315,7 +1315,7 @@ func runRandTest(rt randTest) bool {
 			return false
 		}
 	}
-	f.Close()
+	_ = f.Close()
 	return true
 }
 
@@ -1389,7 +1389,7 @@ func TestIndexValidation(t *testing.T) {
 
 		// write corrupted data
 		f.index.WriteAt(c.data, c.offset)
-		f.Close()
+		_ = f.Close()
 
 		// reopen the table, corruption should be truncated
 		f, err = newTable(os.TempDir(), fn, metrics.NewMeter(), metrics.NewMeter(), metrics.NewGauge(), 100, freezerTableConfig{noSnappy: true}, false)

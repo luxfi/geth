@@ -144,7 +144,7 @@ func Bloom9(data []byte) []byte {
 func bloomValues(data []byte, hashbuf *[6]byte) (uint, byte, uint, byte, uint, byte) {
 	sha := hasherPool.Get().(crypto.KeccakState)
 	sha.Reset()
-	sha.Write(data)
+	_, _ = sha.Write(data)
 	sha.Read(hashbuf[:])
 	hasherPool.Put(sha)
 	// The actual bits to flip

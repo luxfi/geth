@@ -62,7 +62,7 @@ func (s *Suite) dialAs(key *ecdsa.PrivateKey) (*Conn, error) {
 	conn.ourKey = key
 	_, err = conn.Handshake(conn.ourKey)
 	if err != nil {
-		conn.Close()
+		_ = conn.Close()
 		return nil, err
 	}
 	conn.caps = []p2p.Cap{
@@ -143,7 +143,7 @@ func (c *Conn) ReadEth() (any, error) {
 			return nil, err
 		}
 		if code == pingMsg {
-			c.Write(baseProto, pongMsg, []byte{})
+			_ =c.Write(baseProto, pongMsg, []byte{})
 			continue
 		}
 		if getProto(code) != ethProto {
@@ -235,7 +235,7 @@ func (s *Suite) dialAndPeer(status *eth.StatusPacket69) (*Conn, error) {
 		return nil, err
 	}
 	if err = c.peer(s.chain, status); err != nil {
-		c.Close()
+		_ = c.Close()
 	}
 	return c, err
 }
@@ -352,7 +352,7 @@ loop:
 		case pingMsg:
 			// TODO (renaynay): in the future, this should be an error
 			// (PINGs should not be a response upon fresh connection)
-			c.Write(baseProto, pongMsg, nil)
+			_ =c.Write(baseProto, pongMsg, nil)
 		default:
 			return fmt.Errorf("bad status message: code %d", code)
 		}

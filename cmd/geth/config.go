@@ -327,7 +327,7 @@ func dumpConfig(ctx *cli.Context) error {
 		defer dump.Close()
 	}
 	dump.WriteString(comment)
-	dump.Write(out)
+	_, _ = dump.Write(out)
 
 	return nil
 }

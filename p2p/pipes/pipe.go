@@ -40,7 +40,7 @@ func TCPPipe() (net.Conn, net.Conn, error) {
 		return nil, nil, err
 	}
 	if err := <-aerr; err != nil {
-		dconn.Close()
+		_ = dconn.Close()
 		return nil, nil, err
 	}
 	return aconn, dconn, nil

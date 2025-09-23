@@ -471,8 +471,8 @@ func CalcRequestsHash(requests [][]byte) common.Hash {
 	for _, item := range requests {
 		if len(item) > 1 { // skip items with only requestType and no data.
 			h1.Reset()
-			h1.Write(item)
-			h2.Write(h1.Sum(buf[:0]))
+			_, _ = h1.Write(item)
+			_, _ = h2.Write(h1.Sum(buf[:0]))
 		}
 	}
 	h2.Sum(buf[:0])

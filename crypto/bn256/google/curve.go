@@ -240,8 +240,8 @@ func (c *curvePoint) Mul(a *curvePoint, scalar *big.Int, pool *bnPool) *curvePoi
 	}
 
 	c.Set(sum)
-	sum.Put(pool)
-	t.Put(pool)
+sum.Put(pool)
+t.Put(pool)
 	return c
 }
 

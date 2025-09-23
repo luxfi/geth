@@ -234,7 +234,7 @@ func opKeccak256(pc *uint64, evm *EVM, scope *ScopeContext) ([]byte, error) {
 	data := scope.Memory.GetPtr(offset.Uint64(), size.Uint64())
 
 	evm.hasher.Reset()
-	evm.hasher.Write(data)
+	_, _ = evm.hasher.Write(data)
 	evm.hasher.Read(evm.hasherBuf[:])
 
 	if evm.Config.EnablePreimageRecording {

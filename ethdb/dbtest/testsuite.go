@@ -126,7 +126,7 @@ func TestDatabaseSuite(t *testing.T, New func() ethdb.KeyValueStore) {
 			if idx != len(tt.order) {
 				t.Errorf("test %d: iteration terminated prematurely: have %d, want %d", i, idx, len(tt.order))
 			}
-			db.Close()
+			_ = db.Close()
 		}
 	})
 
@@ -322,7 +322,7 @@ func TestDatabaseSuite(t *testing.T, New func() ethdb.KeyValueStore) {
 	t.Run("OperationsAfterClose", func(t *testing.T) {
 		db := New()
 		db.Put([]byte("key"), []byte("value"))
-		db.Close()
+		_ = db.Close()
 		if _, err := db.Get([]byte("key")); err == nil {
 			t.Fatalf("expected error on Get after Close")
 		}
@@ -790,7 +790,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			for i := 0; i < len(keys); i++ {
 				batch.Put(keys[i], vals[i])
 			}
-			batch.Write()
+			_ = batch.Write()
 		}
 		b.Run("BenchWriteSorted", func(b *testing.B) {
 			benchBatchWrite(b, sKeys, sVals)
@@ -838,7 +838,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			// Create batch and delete range
 			batch := db.NewBatch()
 			batch.DeleteRange([]byte("0"), []byte("999999999"))
-			batch.Write()
+			_ = batch.Write()
 		}
 
 		b.Run("BatchDeleteRange100", func(b *testing.B) {
@@ -884,7 +884,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			batch.DeleteRange([]byte(strconv.Itoa(rangeStart)), []byte(strconv.Itoa(rangeEnd)))
 
 			// Write the batch
-			batch.Write()
+			_ = batch.Write()
 		}
 
 		b.Run("BatchMixedOps100", func(b *testing.B) {

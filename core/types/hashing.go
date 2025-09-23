@@ -69,7 +69,7 @@ func prefixedRlpHash(prefix byte, x interface{}) (h common.Hash) {
 	sha := hasherPool.Get().(crypto.KeccakState)
 	defer hasherPool.Put(sha)
 	sha.Reset()
-	sha.Write([]byte{prefix})
+	_, _ = sha.Write([]byte{prefix})
 	rlp.Encode(sha, x)
 	sha.Read(h[:])
 	return h

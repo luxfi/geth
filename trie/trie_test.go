@@ -846,8 +846,8 @@ func (s *spongeDb) Put(key []byte, value []byte) error {
 	s.journal = append(s.journal, fmt.Sprintf("%v: PUT([%x...], [%d bytes] %x...)\n", s.id, keybrief, len(value), valbrief))
 
 	if s.values == nil {
-		s.sponge.Write(key)
-		s.sponge.Write(value)
+		_, _ = s.sponge.Write(key)
+		_, _ = s.sponge.Write(value)
 	} else {
 		s.keys = append(s.keys, string(key))
 		s.values[string(key)] = string(value)
@@ -860,8 +860,8 @@ func (s *spongeDb) Flush() {
 	// Bottom-up, the longest path first
 	sort.Sort(sort.Reverse(sort.StringSlice(s.keys)))
 	for _, key := range s.keys {
-		s.sponge.Write([]byte(key))
-		s.sponge.Write([]byte(s.values[key]))
+		_, _ = s.sponge.Write([]byte(key))
+		_, _ = s.sponge.Write([]byte(s.values[key]))
 	}
 }
 

@@ -45,7 +45,7 @@ func TestExampleV1(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		haveB, _ := io.ReadAll(r.Body)
 		have = string(haveB)
-		r.Body.Close()
+		_ = r.Body.Close()
 	}))
 	defer ts.Close()
 	u, _ := url.Parse(ts.URL)
@@ -95,7 +95,7 @@ func TestExampleV2(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		haveB, _ := io.ReadAll(r.Body)
 		have = string(haveB)
-		r.Body.Close()
+		_ = r.Body.Close()
 	}))
 	defer ts.Close()
 
