@@ -120,10 +120,10 @@ func (t *rlpxTransport) close(err error) {
 			// Connection supports write deadline.
 			t.wbuf.Reset()
 			rlp.Encode(&t.wbuf, []any{reason})
-			t.conn.Write(discMsg, t.wbuf.Bytes())
+			_, _ = t.conn.Write(discMsg, t.wbuf.Bytes())
 		}
 	}
-	t.conn.Close()
+	_ = t.conn.Close()
 }
 
 func (t *rlpxTransport) doEncHandshake(prv *ecdsa.PrivateKey) (*ecdsa.PublicKey, error) {

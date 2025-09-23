@@ -179,7 +179,7 @@ func CalcBlobHashV1(hasher hash.Hash, commit *Commitment) (vh [32]byte) {
 		panic("wrong hash size")
 	}
 	hasher.Reset()
-	hasher.Write(commit[:])
+	_, _ = hasher.Write(commit[:])
 	hasher.Sum(vh[:0])
 	vh[0] = 0x01 // version
 	return vh

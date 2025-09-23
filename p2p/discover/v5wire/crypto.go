@@ -66,10 +66,10 @@ func DecodePubkey(curve elliptic.Curve, e []byte) (*ecdsa.PublicKey, error) {
 // idNonceHash computes the ID signature hash used in the handshake.
 func idNonceHash(h hash.Hash, challenge, ephkey []byte, destID enode.ID) []byte {
 	h.Reset()
-	h.Write([]byte("discovery v5 identity proof"))
-	h.Write(challenge)
-	h.Write(ephkey)
-	h.Write(destID[:])
+	_, _ = h.Write([]byte("discovery v5 identity proof"))
+	_, _ = h.Write(challenge)
+	_, _ = h.Write(ephkey)
+	_, _ = h.Write(destID[:])
 	return h.Sum(nil)
 }
 

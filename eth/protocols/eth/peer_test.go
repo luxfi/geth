@@ -60,8 +60,8 @@ func newTestPeer(name string, version uint, backend Backend) (*testPeer, <-chan 
 // close terminates the local side of the peer, notifying the remote protocol
 // manager of termination.
 func (p *testPeer) close() {
-	p.Peer.Close()
-	p.app.Close()
+	_ = p.Close()
+	_ = p.app.Close()
 }
 
 func TestPeerSet(t *testing.T) {

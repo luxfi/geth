@@ -352,7 +352,7 @@ func (s *filterTestGen) writeQueries() {
 		return
 	}
 	json.NewEncoder(file).Encode(&s.queries)
-	file.Close()
+	_ = file.Close()
 }
 
 func mustGetFinalizedBlock(client *client) int64 {

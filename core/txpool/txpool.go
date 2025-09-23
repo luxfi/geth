@@ -108,7 +108,7 @@ func New(gasTip uint64, chain BlockChain, subpools []SubPool) (*TxPool, error) {
 	for i, subpool := range subpools {
 		if err := subpool.Init(gasTip, head, reserver.NewHandle(i)); err != nil {
 			for j := i - 1; j >= 0; j-- {
-				subpools[j].Close()
+				_ = subpools[j].Close()
 			}
 			return nil, err
 		}

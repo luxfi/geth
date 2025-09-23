@@ -78,7 +78,7 @@ func (s *App) SubscribeResults(op byte, ch chan<- int) event.Subscription {
 
 // Stop stops the App, closing all subscriptions created through SubscribeResults.
 func (s *App) Stop() {
-	s.scope.Close()
+	_ = s.scope.Close()
 }
 
 func ExampleSubscriptionScope() {

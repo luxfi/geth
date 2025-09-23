@@ -94,12 +94,12 @@ func TestFreezerCleanup(t *testing.T) {
 		}
 		return nil
 	})
-	f.Close()
+	_ = f.Close()
 	os.Rename(datadir, tmpName(datadir))
 
 	// Open the freezer again, trigger cleanup operation
 	f, _ = newResettableFreezer(datadir, "", false, 2048, freezerTestTableDef)
-	f.Close()
+	_ = f.Close()
 
 	if _, err := os.Lstat(tmpName(datadir)); !os.IsNotExist(err) {
 		t.Fatal("Failed to cleanup leftover directory")

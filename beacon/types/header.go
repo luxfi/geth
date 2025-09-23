@@ -87,8 +87,8 @@ func (h *Header) Hash() common.Hash {
 	hasher := sha256.New()
 	for i := 7; i > 0; i-- {
 		hasher.Reset()
-		hasher.Write(values[i*2][:])
-		hasher.Write(values[i*2+1][:])
+		_, _ = hasher.Write(values[i*2][:])
+		_, _ = hasher.Write(values[i*2+1][:])
 		hasher.Sum(values[i][:0])
 	}
 	return common.Hash(values[1])

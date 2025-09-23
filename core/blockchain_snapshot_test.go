@@ -212,8 +212,8 @@ func (basic *snapshotTestBasic) dump() string {
 }
 
 func (basic *snapshotTestBasic) teardown() {
-	basic.db.Close()
-	basic.genDb.Close()
+	_ = basic.db.Close()
+	_ = basic.genDb.Close()
 	os.RemoveAll(basic.datadir)
 	os.RemoveAll(basic.ancient)
 }
@@ -255,9 +255,9 @@ func (snaptest *crashSnapshotTest) test(t *testing.T) {
 
 	// Pull the plug on the database, simulating a hard crash
 	db := chain.db
-	db.Close()
+	_ = db.Close()
 	chain.stopWithoutSaving()
-	chain.triedb.Close()
+	_ = chain.triedb.Close()
 
 	// Start a new blockchain back up and see where the repair leads us
 	pdb, err := pebble.New(snaptest.datadir, 0, 0, "", false)
@@ -416,7 +416,7 @@ func (snaptest *wipeCrashSnapshotTest) test(t *testing.T) {
 	}
 
 	// Simulate the blockchain crash.
-	tmp.triedb.Close()
+	_ = tmp.triedb.Close()
 	tmp.stopWithoutSaving()
 
 	newchain, err = NewBlockChain(snaptest.db, snaptest.gspec, snaptest.engine, DefaultConfig().WithStateScheme(snaptest.scheme))

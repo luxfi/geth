@@ -125,7 +125,7 @@ func NewFreezer(datadir string, namespace string, readonly bool, maxTableSize ui
 		table, err := newTable(datadir, name, readMeter, writeMeter, sizeGauge, maxTableSize, config, readonly)
 		if err != nil {
 			for _, table := range freezer.tables {
-				table.Close()
+				_ = table.Close()
 			}
 			lock.Unlock()
 			return nil, err
@@ -143,7 +143,7 @@ func NewFreezer(datadir string, namespace string, readonly bool, maxTableSize ui
 	}
 	if err != nil {
 		for _, table := range freezer.tables {
-			table.Close()
+			_ = table.Close()
 		}
 		lock.Unlock()
 		return nil, err

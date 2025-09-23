@@ -109,7 +109,7 @@ func (s *Suite) TestStatus(t *utesting.T) {
 	if err != nil {
 		t.Fatal("peering failed:", err)
 	}
-	conn.Close()
+	_ = conn.Close()
 }
 
 // headersMatch returns whether the received headers match the given request
@@ -527,7 +527,7 @@ func (s *Suite) TestBlockRangeUpdateInvalid(t *utesting.T) {
 	}
 	defer conn.Close()
 
-	conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
+	_ = conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
 		EarliestBlock:   10,
 		LatestBlock:     8,
 		LatestBlockHash: s.chain.GetBlock(8).Hash(),
@@ -552,7 +552,7 @@ The node should accept the update and should not disonnect.`)
 	head := s.chain.Head().NumberU64()
 	var hash common.Hash
 	rand.Read(hash[:])
-	conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
+	_ = conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
 		EarliestBlock:   head + 10,
 		LatestBlock:     head + 50,
 		LatestBlockHash: hash,
@@ -586,7 +586,7 @@ The node should accept the update and should not disonnect.`)
 	defer conn.Close()
 
 	head := s.chain.Head()
-	conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
+	_ = conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
 		EarliestBlock:   head.NumberU64() - 10,
 		LatestBlock:     head.NumberU64(),
 		LatestBlockHash: head.Hash(),
@@ -977,7 +977,7 @@ func (s *Suite) TestBlobViolations(t *utesting.T) {
 				t.Fatalf("expected disconnect on blob violation, got msg code: %d", code)
 			}
 		}
-		conn.Close()
+		_ = conn.Close()
 	}
 }
 

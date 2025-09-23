@@ -43,7 +43,7 @@ func Fuzz(data []byte) int {
 
 	testSecKey, testPubKey := createKeyPair()
 	// Create message
-	tmpFile.Write(data)
+	_, _ = tmpFile.Write(data)
 	if err = tmpFile.Close(); err != nil {
 		panic(err)
 	}

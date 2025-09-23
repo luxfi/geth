@@ -27,8 +27,8 @@ func (e *gfP12) String() string {
 }
 
 func (e *gfP12) Put(pool *bnPool) {
-	e.x.Put(pool)
-	e.y.Put(pool)
+e.x.Put(pool)
+e.y.Put(pool)
 }
 
 func (e *gfP12) Set(a *gfP12) *gfP12 {
@@ -118,9 +118,9 @@ func (e *gfP12) Mul(a, b *gfP12, pool *bnPool) *gfP12 {
 	e.y.Add(ty, t)
 	e.x.Set(tx)
 
-	tx.Put(pool)
-	ty.Put(pool)
-	t.Put(pool)
+tx.Put(pool)
+ty.Put(pool)
+t.Put(pool)
 	return e
 }
 
@@ -146,8 +146,8 @@ func (c *gfP12) Exp(a *gfP12, power *big.Int, pool *bnPool) *gfP12 {
 
 	c.Set(sum)
 
-	sum.Put(pool)
-	t.Put(pool)
+sum.Put(pool)
+t.Put(pool)
 
 	return c
 }
@@ -170,9 +170,9 @@ func (e *gfP12) Square(a *gfP12, pool *bnPool) *gfP12 {
 	e.y.Set(ty)
 	e.x.Double(v0)
 
-	v0.Put(pool)
-	t.Put(pool)
-	ty.Put(pool)
+v0.Put(pool)
+t.Put(pool)
+ty.Put(pool)
 
 	return e
 }
@@ -193,8 +193,8 @@ func (e *gfP12) Invert(a *gfP12, pool *bnPool) *gfP12 {
 	e.y.Set(a.y)
 	e.MulScalar(e, t2, pool)
 
-	t1.Put(pool)
-	t2.Put(pool)
+t1.Put(pool)
+t2.Put(pool)
 
 	return e
 }

@@ -49,7 +49,7 @@ func TestCopyFrom(t *testing.T) {
 			if !c.writePrefix {
 				return nil
 			}
-			f.Write(prefix)
+			_, _ = f.Write(prefix)
 			return nil
 		}); err != nil {
 			os.Remove(c.src)

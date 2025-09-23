@@ -74,8 +74,8 @@ func newTestEnv(remote string, listen1, listen2 string) *testenv {
 }
 
 func (te *testenv) close() {
-	te.l1.Close()
-	te.l2.Close()
+	_ = te.l1.Close()
+	_ = te.l2.Close()
 }
 
 func (te *testenv) send(c net.PacketConn, req v4wire.Packet) []byte {

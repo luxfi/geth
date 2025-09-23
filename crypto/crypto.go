@@ -83,7 +83,7 @@ var hasherPool = sync.Pool{
 // HashData hashes the provided data using the KeccakState and returns a 32 byte hash
 func HashData(kh KeccakState, data []byte) (h common.Hash) {
 	kh.Reset()
-	kh.Write(data)
+	_, _ = kh.Write(data)
 	kh.Read(h[:])
 	return h
 }
@@ -94,7 +94,7 @@ func Keccak256(data ...[]byte) []byte {
 	d := hasherPool.Get().(KeccakState)
 	d.Reset()
 	for _, b := range data {
-		d.Write(b)
+		_, _ = d.Write(b)
 	}
 	d.Read(b)
 	hasherPool.Put(d)
@@ -107,7 +107,7 @@ func Keccak256Hash(data ...[]byte) (h common.Hash) {
 	d := hasherPool.Get().(KeccakState)
 	d.Reset()
 	for _, b := range data {
-		d.Write(b)
+		_, _ = d.Write(b)
 	}
 	d.Read(h[:])
 	hasherPool.Put(d)
@@ -118,7 +118,7 @@ func Keccak256Hash(data ...[]byte) (h common.Hash) {
 func Keccak512(data ...[]byte) []byte {
 	d := sha3.NewLegacyKeccak512()
 	for _, b := range data {
-		d.Write(b)
+		_, _ = d.Write(b)
 	}
 	return d.Sum(nil)
 }
@@ -153,7 +153,7 @@ func ToECDSAUnsafe(d []byte) *ecdsa.PrivateKey {
 // it can also accept legacy encodings (0 prefixes).
 func toECDSA(d []byte, strict bool) (*ecdsa.PrivateKey, error) {
 	priv := new(ecdsa.PrivateKey)
-	priv.PublicKey.Curve = S256()
+	priv.Curve = S256()
 	if strict && 8*len(d) != priv.Params().BitSize {
 		return nil, fmt.Errorf("invalid length, need %d bits", priv.Params().BitSize)
 	}
@@ -168,8 +168,8 @@ func toECDSA(d []byte, strict bool) (*ecdsa.PrivateKey, error) {
 		return nil, errors.New("invalid private key, zero or negative")
 	}
 
-	priv.PublicKey.X, priv.PublicKey.Y = S256().ScalarBaseMult(d)
-	if priv.PublicKey.X == nil {
+	priv.X, priv.Y = S256().ScalarBaseMult(d)
+	if priv.X == nil {
 		return nil, errors.New("invalid private key")
 	}
 	return priv, nil

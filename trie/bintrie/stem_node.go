@@ -120,16 +120,16 @@ func (bt *StemNode) Hash() common.Hash {
 				continue
 			}
 
-			h.Write(data[i*2][:])
-			h.Write(data[i*2+1][:])
+			_, _ = h.Write(data[i*2][:])
+			_, _ = h.Write(data[i*2+1][:])
 			data[i] = common.Hash(h.Sum(nil))
 		}
 	}
 
 	h.Reset()
-	h.Write(bt.Stem)
-	h.Write([]byte{0})
-	h.Write(data[0][:])
+	_, _ = h.Write(bt.Stem)
+	_, _ = h.Write([]byte{0})
+	_, _ = h.Write(data[0][:])
 	return common.BytesToHash(h.Sum(nil))
 }
 

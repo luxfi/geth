@@ -207,7 +207,7 @@ func (db *ChecksumDB) DownloadFile(url, dstPath string) error {
 	}
 	dst := newDownloadWriter(fd, resp.ContentLength)
 	_, err = io.Copy(dst, resp.Body)
-	dst.Close()
+	_ = dst.Close()
 	if err != nil {
 		os.Remove(tmpfile)
 		return err
