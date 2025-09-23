@@ -226,7 +226,7 @@ func (hub *Hub) refreshWallets() {
 			if err := wallet.ping(); err == nil {
 				continue
 			}
-			_ = wallet.Close()
+			wallet.Close()
 			events = append(events, accounts.WalletEvent{Wallet: wallet, Kind: accounts.WalletDropped})
 			delete(hub.wallets, reader)
 		}
@@ -249,7 +249,7 @@ func (hub *Hub) refreshWallets() {
 	// Remove any wallets no longer present
 	for reader, wallet := range hub.wallets {
 		if _, ok := seen[reader]; !ok {
-			_ = wallet.Close()
+			wallet.Close()
 			events = append(events, accounts.WalletEvent{Wallet: wallet, Kind: accounts.WalletDropped})
 			delete(hub.wallets, reader)
 		}

@@ -148,7 +148,7 @@ func (am *Manager) update() {
 		case errc := <-am.quit:
 			// Close all owned wallets
 			for _, w := range am.wallets {
-				_ = w.Close()
+				w.Close()
 			}
 			// Manager terminating, return
 			errc <- nil

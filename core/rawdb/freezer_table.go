@@ -192,13 +192,13 @@ func newTable(path string, name string, readMeter, writeMeter *metrics.Meter, si
 		maxFileSize: maxFilesize,
 	}
 	if err := tab.repair(); err != nil {
-		_ = tab.Close()
+		tab.Close()
 		return nil, err
 	}
 	// Initialize the starting size counter
 	size, err := tab.sizeNolock()
 	if err != nil {
-		_ = tab.Close()
+		tab.Close()
 		return nil, err
 	}
 	tab.sizeGauge.Inc(int64(size))
@@ -891,7 +891,7 @@ func (t *freezerTable) openFile(num uint32, opener func(string) (*os.File, error
 func (t *freezerTable) releaseFile(num uint32) {
 	if f, exist := t.files[num]; exist {
 		delete(t.files, num)
-		_ = f.Close()
+		f.Close()
 	}
 }
 
@@ -900,7 +900,7 @@ func (t *freezerTable) releaseFilesAfter(num uint32, remove bool) {
 	for fnum, f := range t.files {
 		if fnum > num {
 			delete(t.files, fnum)
-			_ = f.Close()
+			f.Close()
 			if remove {
 				os.Remove(f.Name())
 			}
@@ -913,7 +913,7 @@ func (t *freezerTable) releaseFilesBefore(num uint32, remove bool) {
 	for fnum, f := range t.files {
 		if fnum < num {
 			delete(t.files, fnum)
-			_ = f.Close()
+			f.Close()
 			if remove {
 				os.Remove(f.Name())
 			}

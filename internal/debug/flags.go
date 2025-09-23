@@ -324,7 +324,7 @@ func Exit() {
 	Handler.StopCPUProfile()
 	Handler.StopGoTrace()
 	if logOutputFile != nil {
-		_ = logOutputFile.Close()
+		logOutputFile.Close()
 	}
 }
 
@@ -337,7 +337,7 @@ func validateLogLocation(path string) error {
 	if f, err := os.Create(tmp); err != nil {
 		return err
 	} else {
-		_ = f.Close()
+		f.Close()
 	}
 	return os.Remove(tmp)
 }

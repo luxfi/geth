@@ -87,7 +87,7 @@ func (d *Downloader) concurrentFetch(queue typedQueue) error {
 		// be fulfilled by the remote side, but the dispatcher will not wait to
 		// deliver them since nobody's going to be listening.
 		for _, req := range pending {
-			_ = req.Close()
+			req.Close()
 		}
 	}()
 	ordering := make(map[*eth.Request]int)
@@ -112,7 +112,7 @@ func (d *Downloader) concurrentFetch(queue typedQueue) error {
 		// be fulfilled by the remote side, but the dispatcher will not wait to
 		// deliver them since nobody's going to be listening.
 		for _, req := range stales {
-			_ = req.Close()
+			req.Close()
 		}
 	}()
 	// Subscribe to peer lifecycle events to schedule tasks to new joiners and
@@ -226,7 +226,7 @@ func (d *Downloader) concurrentFetch(queue typedQueue) error {
 			if req, ok := pending[peerid]; ok {
 				queue.unreserve(peerid) // TODO(karalabe): This needs a non-expiration method
 				delete(pending, peerid)
-				_ = req.Close()
+				req.Close()
 
 				if index, live := ordering[req]; live {
 					timeouts.Remove(index)
@@ -244,7 +244,7 @@ func (d *Downloader) concurrentFetch(queue typedQueue) error {
 			}
 			if req, ok := stales[peerid]; ok {
 				delete(stales, peerid)
-				_ = req.Close()
+				req.Close()
 			}
 
 		case <-timeout.C:
@@ -326,7 +326,7 @@ func (d *Downloader) concurrentFetch(queue typedQueue) error {
 			// Signal the dispatcher that the round trip is done. We'll drop the
 			// peer if the data turns out to be junk.
 			res.Done <- nil
-			_ = res.Req.Close()
+			res.Req.Close()
 
 			// If the peer was previously banned and failed to deliver its pack
 			// in a reasonable time frame, ignore its message.

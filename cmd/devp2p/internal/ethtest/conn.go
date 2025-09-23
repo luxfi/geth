@@ -62,7 +62,7 @@ func (s *Suite) dialAs(key *ecdsa.PrivateKey) (*Conn, error) {
 	conn.ourKey = key
 	_, err = conn.Handshake(conn.ourKey)
 	if err != nil {
-		_ = conn.Close()
+		conn.Close()
 		return nil, err
 	}
 	conn.caps = []p2p.Cap{
@@ -235,7 +235,7 @@ func (s *Suite) dialAndPeer(status *eth.StatusPacket69) (*Conn, error) {
 		return nil, err
 	}
 	if err = c.peer(s.chain, status); err != nil {
-		_ = c.Close()
+		c.Close()
 	}
 	return c, err
 }

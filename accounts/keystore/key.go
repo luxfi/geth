@@ -201,11 +201,11 @@ func writeTemporaryKeyFile(file string, content []byte) (string, error) {
 		return "", err
 	}
 	if _, err := f.Write(content); err != nil {
-		_ = f.Close()
+		f.Close()
 		os.Remove(f.Name())
 		return "", err
 	}
-	_ = f.Close()
+	f.Close()
 	return f.Name(), nil
 }
 

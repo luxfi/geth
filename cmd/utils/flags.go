@@ -1859,7 +1859,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 					Fatalf("Bad developer-mode genesis configuration: difficulty must be 0")
 				}
 			}
-			_ = chaindb.Close()
+			chaindb.Close()
 		}
 		if !ctx.IsSet(MinerGasPriceFlag.Name) {
 			cfg.Miner.GasPrice = big.NewInt(1)

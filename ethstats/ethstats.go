@@ -297,7 +297,7 @@ func (s *Service) loop(chainHeadCh chan core.ChainHeadEvent, txEventCh chan core
 			// Authenticate the client with the server
 			if err = s.login(conn); err != nil {
 				log.Warn("Stats login failed", "err", err)
-				_ = conn.Close()
+				conn.Close()
 				errTimer.Reset(10 * time.Second)
 				continue
 			}
@@ -306,7 +306,7 @@ func (s *Service) loop(chainHeadCh chan core.ChainHeadEvent, txEventCh chan core
 			// Send the initial stats so our node looks decent from the get go
 			if err = s.report(conn); err != nil {
 				log.Warn("Initial stats report failed", "err", err)
-				_ = conn.Close()
+				conn.Close()
 				errTimer.Reset(0)
 				continue
 			}
@@ -318,7 +318,7 @@ func (s *Service) loop(chainHeadCh chan core.ChainHeadEvent, txEventCh chan core
 				case <-quitCh:
 					fullReport.Stop()
 					// Make sure the connection is closed
-					_ = conn.Close()
+					conn.Close()
 					return
 
 				case <-fullReport.C:
@@ -345,7 +345,7 @@ func (s *Service) loop(chainHeadCh chan core.ChainHeadEvent, txEventCh chan core
 			fullReport.Stop()
 
 			// Close the current connection and establish a new one
-			_ = conn.Close()
+			conn.Close()
 			errTimer.Reset(0)
 		}
 	}

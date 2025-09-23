@@ -281,10 +281,10 @@ func (h *httpServer) doStop() {
 	err := h.server.Shutdown(ctx)
 	if err != nil && err == ctx.Err() {
 		h.log.Warn("HTTP server graceful shutdown timed out")
-		_ = h.server.Close()
+		h.server.Close()
 	}
 
-	_ = h.listener.Close()
+	h.listener.Close()
 	h.log.Info("HTTP server stopped", "endpoint", h.listener.Addr())
 
 	// Clear out everything to allow re-configuring it later.
@@ -565,7 +565,7 @@ func (w *gzipResponseWriter) close() {
 	if w.gz == nil {
 		return
 	}
-	_ = w.gz.Close()
+	w.gz.Close()
 	gzPool.Put(w.gz)
 	w.gz = nil
 }

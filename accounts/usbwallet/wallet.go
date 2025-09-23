@@ -272,7 +272,7 @@ func (w *wallet) close() error {
 		return nil
 	}
 	// Close the device, clear everything, then return
-	_ = w.device.Close()
+	w.device.Close()
 	w.device = nil
 
 	w.accounts, w.paths = nil, nil

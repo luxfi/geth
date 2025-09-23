@@ -539,8 +539,8 @@ func newHandshakeTest() *handshakeTest {
 }
 
 func (t *handshakeTest) close() {
-	_ = t.nodeA.ln.Database().Close()
-	_ = t.nodeB.ln.Database().Close()
+	t.nodeA.ln.Database().Close()
+	t.nodeB.ln.Database().Close()
 }
 
 func (n *handshakeTestNode) init(key *ecdsa.PrivateKey, ip net.IP, clock mclock.Clock, protocolID [6]byte) {

@@ -129,7 +129,7 @@ func TestTxIndexer(t *testing.T) {
 			indexer.run(chainHead, make(chan struct{}), make(chan struct{}))
 			verify(t, db, blocks, c.tails[i])
 		}
-		_ = db.Close()
+		db.Close()
 	}
 }
 
@@ -254,7 +254,7 @@ func TestTxIndexerRepair(t *testing.T) {
 		} else {
 			verify(t, db, blocks, *c.expTail)
 		}
-		_ = db.Close()
+		db.Close()
 	}
 }
 
@@ -443,6 +443,6 @@ func TestTxIndexerReport(t *testing.T) {
 		if p.Remaining != c.expRemaining {
 			t.Fatalf("Unexpected remaining: %d, expected: %d", p.Remaining, c.expRemaining)
 		}
-		_ = db.Close()
+		db.Close()
 	}
 }

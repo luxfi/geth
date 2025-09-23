@@ -2037,7 +2037,7 @@ func testSetHeadWithScheme(t *testing.T, tt *rewindTest, snapshots bool, scheme 
 		t.Fatalf("Failed to import canonical chain tail: %v", err)
 	}
 	// Reopen the trie database without persisting in-memory dirty nodes.
-	_ = chain.triedb.Close()
+	chain.triedb.Close()
 	dbconfig := &triedb.Config{}
 	if scheme == rawdb.PathScheme {
 		dbconfig.PathDB = pathdb.Defaults

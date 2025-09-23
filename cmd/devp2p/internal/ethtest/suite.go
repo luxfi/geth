@@ -109,7 +109,7 @@ func (s *Suite) TestStatus(t *utesting.T) {
 	if err != nil {
 		t.Fatal("peering failed:", err)
 	}
-	_ = conn.Close()
+	conn.Close()
 }
 
 // headersMatch returns whether the received headers match the given request
@@ -977,7 +977,7 @@ func (s *Suite) TestBlobViolations(t *utesting.T) {
 				t.Fatalf("expected disconnect on blob violation, got msg code: %d", code)
 			}
 		}
-		_ = conn.Close()
+		conn.Close()
 	}
 }
 
