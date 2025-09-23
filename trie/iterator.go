@@ -929,7 +929,7 @@ func (it *subtreeIterator) Next(descend bool) bool {
 		it.exhausted = true
 		return false
 	}
-	if it.stopPath != nil && reachedPath(it.NodeIterator.Path(), it.stopPath) {
+	if it.stopPath != nil && reachedPath(it.Path(), it.stopPath) {
 		it.exhausted = true
 		return false
 	}

@@ -174,7 +174,7 @@ func convertReceipts(input []byte) ([]byte, error) {
 			if field == 2 {
 				continue // skip bloom
 			}
-			enc.Write(dataIter.Value())
+			_, _ = enc.Write(dataIter.Value())
 		}
 		enc.ListEnd(innerList)
 		if dataIter.Err() != nil {
@@ -260,7 +260,7 @@ func (db *Store) fileOpened(epoch uint64, entry *fileCacheEntry, file *era.Era) 
 	// need to close the file here, since it isn't tracked by the LRU yet.
 	if db.closing {
 		entry.err = errClosed
-		file.Close()
+		_ = file.Close()
 		return
 	}
 

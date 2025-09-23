@@ -147,7 +147,7 @@ func newTestBackendWithGenerator(blocks int, shanghai bool, cancun bool, generat
 
 // close tears down the transaction pool and chain behind the mock backend.
 func (b *testBackend) close() {
-	b.txpool.Close()
+	_ = b.txpool.Close()
 	b.chain.Stop()
 }
 

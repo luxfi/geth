@@ -45,7 +45,7 @@ func TestIsPacketTooBig(t *testing.T) {
 			for i := range buf {
 				buf[i] = byte(i)
 			}
-			sender.Write(buf)
+			_, _ = sender.Write(buf)
 		}()
 
 		buf := make([]byte, recvN)

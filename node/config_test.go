@@ -58,7 +58,7 @@ func TestDatadirCreation(t *testing.T) {
 		t.Fatalf("failed to create temporary file: %v", err)
 	}
 	defer func() {
-		file.Close()
+		_ = file.Close()
 	}()
 
 	dir = filepath.Join(file.Name(), "invalid/path")

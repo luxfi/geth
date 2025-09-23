@@ -48,7 +48,7 @@ func (w *Witness) MakeHashDB() ethdb.Database {
 		blob := []byte(code)
 
 		hasher.Reset()
-		hasher.Write(blob)
+		_, _ = hasher.Write(blob)
 		hasher.Read(hash)
 
 		rawdb.WriteCode(memdb, common.BytesToHash(hash), blob)
@@ -58,7 +58,7 @@ func (w *Witness) MakeHashDB() ethdb.Database {
 		blob := []byte(node)
 
 		hasher.Reset()
-		hasher.Write(blob)
+		_, _ = hasher.Write(blob)
 		hasher.Read(hash)
 
 		rawdb.WriteLegacyTrieNode(memdb, common.BytesToHash(hash), blob)

@@ -130,7 +130,7 @@ func TestIteratorCloseWithoutNext(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	it.Close()
+	_ = it.Close()
 	ok := it.Next()
 	if ok {
 		t.Fatal("Next returned true after Close")
@@ -160,7 +160,7 @@ func TestIteratorClose(t *testing.T) {
 	}()
 
 	time.Sleep(50 * time.Millisecond)
-	it.Close()
+	_ = it.Close()
 	<-done
 }
 

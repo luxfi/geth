@@ -263,7 +263,7 @@ func (c *jsonCodec) writeJSON(ctx context.Context, v interface{}, isErrorRespons
 func (c *jsonCodec) close() {
 	c.closer.Do(func() {
 		close(c.closeCh)
-		c.conn.Close()
+		_ = c.conn.Close()
 	})
 }
 

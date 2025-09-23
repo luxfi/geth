@@ -188,7 +188,7 @@ func TestLoadECDSA(t *testing.T) {
 		}
 		filename := f.Name()
 		f.WriteString(test.input)
-		f.Close()
+		_ = f.Close()
 
 		_, err = LoadECDSA(filename)
 		switch {
@@ -208,7 +208,7 @@ func TestSaveECDSA(t *testing.T) {
 		t.Fatal(err)
 	}
 	file := f.Name()
-	f.Close()
+	_ = f.Close()
 	defer os.Remove(file)
 
 	key, _ := HexToECDSA(testPrivHex)

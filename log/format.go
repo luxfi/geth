@@ -70,7 +70,7 @@ func (h *TerminalHandler) format(buf []byte, r slog.Record, usecolor bool) []byt
 	//length := utf8.RuneCountInString(msg)
 	length := len(msg)
 	if (r.NumAttrs()+len(h.attrs)) > 0 && length < termMsgJust {
-		b.Write(spaces[:termMsgJust-length])
+		_, _ = b.Write(spaces[:termMsgJust-length])
 	}
 	// print the attributes
 	h.formatAttributes(b, r, color)
@@ -84,10 +84,10 @@ func (h *TerminalHandler) formatAttributes(buf *bytes.Buffer, r slog.Record, col
 
 		if color != "" {
 			buf.WriteString(color)
-			buf.Write(appendEscapeString(buf.AvailableBuffer(), attr.Key))
+			_, _ = buf.Write(appendEscapeString(buf.AvailableBuffer(), attr.Key))
 			buf.WriteString("\x1b[0m=")
 		} else {
-			buf.Write(appendEscapeString(buf.AvailableBuffer(), attr.Key))
+			_, _ = buf.Write(appendEscapeString(buf.AvailableBuffer(), attr.Key))
 			buf.WriteByte('=')
 		}
 		val := FormatSlogValue(attr.Value, buf.AvailableBuffer())
@@ -99,9 +99,9 @@ func (h *TerminalHandler) formatAttributes(buf *bytes.Buffer, r slog.Record, col
 			padding = length
 			h.fieldPadding[attr.Key] = padding
 		}
-		buf.Write(val)
+		_, _ = buf.Write(val)
 		if !last && padding > length {
-			buf.Write(spaces[:padding-length])
+			_, _ = buf.Write(spaces[:padding-length])
 		}
 	}
 	var n = 0
@@ -359,5 +359,5 @@ func writePosIntWidth(b *bytes.Buffer, i, width int) {
 	}
 	// i < 10
 	bb[bp] = byte('0' + i)
-	b.Write(bb[bp:])
+	_, _ = b.Write(bb[bp:])
 }

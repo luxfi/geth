@@ -110,7 +110,7 @@ func (tc *conn) listen(ip string) net.PacketConn {
 // close shuts down all listeners and the local node.
 func (tc *conn) close() {
 	for _, l := range tc.listeners {
-		l.Close()
+		_ = l.Close()
 	}
 	tc.localNode.Database().Close()
 }

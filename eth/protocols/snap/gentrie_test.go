@@ -414,14 +414,14 @@ func TestFlushPartialTree(t *testing.T) {
 				tr.commit(false)
 
 				batch.Replay(combined)
-				batch.Write()
+				_, _ = batch.Write()
 				batch.Reset()
 			}
 		}
 		tr.commit(c.last == len(entries)-1)
 
 		batch.Replay(combined)
-		batch.Write()
+		_, _ = batch.Write()
 		batch.Reset()
 
 		r := newBatchReplay()
@@ -469,10 +469,8 @@ func TestBoundSplit(t *testing.T) {
 
 			lastRightRoot []byte
 		)
-		for {
-			if next == len(entries) {
-				break
-			}
+		for next != len(entries) {
+
 			last = rand.Intn(len(entries)-next) + next
 
 			r := buildPartial(common.Hash{}, db, db.NewBatch(), entries, next, last)
@@ -616,7 +614,7 @@ func TestTrieDelete(t *testing.T) {
 
 		r := newBatchReplay()
 		batch.Replay(r)
-		batch.Write()
+		_, _ = batch.Write()
 
 		for _, path := range injects {
 			if rawdb.HasAccountTrieNode(db, []byte(path)) {

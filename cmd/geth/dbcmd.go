@@ -366,7 +366,7 @@ func checkStateContent(ctx *cli.Context) error {
 		k := it.Key()
 		v := it.Value()
 		hasher.Reset()
-		hasher.Write(v)
+		_, _ = hasher.Write(v)
 		hasher.Read(got)
 		if !bytes.Equal(k, got) {
 			errs++
@@ -601,7 +601,7 @@ func freezerInspect(ctx *cli.Context) error {
 	}
 	stack, _ := makeConfigNode(ctx)
 	ancient := stack.ResolveAncient("chaindata", ctx.String(utils.AncientFlag.Name))
-	stack.Close()
+	_ = stack.Close()
 	return rawdb.InspectFreezerTable(ancient, freezer, table, start, end)
 }
 

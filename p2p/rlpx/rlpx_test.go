@@ -44,8 +44,8 @@ type message struct {
 
 func TestHandshake(t *testing.T) {
 	p1, p2 := createPeers(t)
-	p1.Close()
-	p2.Close()
+	_ = p1.Close()
+	_ = p2.Close()
 }
 
 // This test checks that messages can be sent and received through WriteMsg/ReadMsg.

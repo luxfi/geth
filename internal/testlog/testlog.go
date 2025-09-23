@@ -197,7 +197,7 @@ func (h *bufHandler) terminalFormat(r slog.Record) string {
 
 	fmt.Fprintf(buf, "%s[%s] %s ", lvl, r.Time.Format(termTimeFormat), r.Message)
 	if length := len(r.Message); length < 40 {
-		buf.Write(bytes.Repeat([]byte{' '}, 40-length))
+		_, _ = buf.Write(bytes.Repeat([]byte{' '}, 40-length))
 	}
 
 	for _, attr := range attrs {

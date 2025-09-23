@@ -40,7 +40,7 @@ type GraphiQL struct{}
 func respOk(w http.ResponseWriter, body []byte, ctype string) {
 	w.Header().Set("Content-Type", ctype)
 	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.Write(body)
+	_, _ = w.Write(body)
 }
 
 func respErr(w http.ResponseWriter, msg string, code int) {
@@ -49,7 +49,7 @@ func respErr(w http.ResponseWriter, msg string, code int) {
 	errMsg, _ := json.Marshal(struct {
 		Error string
 	}{Error: msg})
-	w.Write(errMsg)
+	_, _ = w.Write(errMsg)
 }
 
 func (h GraphiQL) ServeHTTP(w http.ResponseWriter, r *http.Request) {

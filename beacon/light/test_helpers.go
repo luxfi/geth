@@ -90,11 +90,11 @@ func makeTestHeaderWithMerkleProof(slot, index uint64, value merkle.Value) (type
 		rand.Read(proofHash[:])
 		hasher.Reset()
 		if index&1 == 0 {
-			hasher.Write(value[:])
-			hasher.Write(proofHash[:])
+			_, _ = hasher.Write(value[:])
+			_, _ = hasher.Write(proofHash[:])
 		} else {
-			hasher.Write(proofHash[:])
-			hasher.Write(value[:])
+			_, _ = hasher.Write(proofHash[:])
+			_, _ = hasher.Write(value[:])
 		}
 		hasher.Sum(value[:0])
 		index >>= 1
