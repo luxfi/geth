@@ -97,7 +97,7 @@ func TestEraDatabaseConcurrentOpenClose(t *testing.T) {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		_ = db.Close()
+		db.Close()
 	}()
 	wg.Wait()
 }

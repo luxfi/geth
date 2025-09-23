@@ -38,7 +38,7 @@ func copyFrom(srcPath, destPath string, offset uint64, before func(f *os.File) e
 	// Clean up the leftover file
 	defer func() {
 		if f != nil {
-			_ = f.Close()
+			f.Close()
 		}
 		os.Remove(fname)
 	}()
@@ -55,19 +55,19 @@ func copyFrom(srcPath, destPath string, offset uint64, before func(f *os.File) e
 		return err
 	}
 	if _, err = src.Seek(int64(offset), 0); err != nil {
-		_ = src.Close()
+		src.Close()
 		return err
 	}
 	// io.Copy uses 32K buffer internally.
 	_, err = io.Copy(f, src)
 	if err != nil {
-		_ = src.Close()
+		src.Close()
 		return err
 	}
 	// Rename the temporary file to the specified dest name.
 	// src may be same as dest, so needs to be closed before
 	// we do the final move.
-	_ = src.Close()
+	src.Close()
 
 	if err := f.Close(); err != nil {
 		return err

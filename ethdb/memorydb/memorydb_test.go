@@ -45,6 +45,6 @@ func BenchmarkBatchAllocs(b *testing.B) {
 			binary.BigEndian.PutUint64(val, j)
 			batch.Put(key, val)
 		}
-		_, _ = batch.Write()
+		_ = batch.Write()
 	}
 }

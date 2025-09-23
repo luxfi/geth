@@ -1020,11 +1020,11 @@ func (test *udpV5Test) waitPacketOut(validate interface{}) (closed bool) {
 func (test *udpV5Test) close() {
 	test.t.Helper()
 
-	_ = test.udp.Close()
-	_ = test.db.Close()
+	test.udp.Close()
+	test.db.Close()
 	for id, n := range test.nodesByID {
 		if id != test.udp.Self().ID() {
-			_ = n.Database().Close()
+			n.Database().Close()
 		}
 	}
 	if len(test.pipe.queue) != 0 {

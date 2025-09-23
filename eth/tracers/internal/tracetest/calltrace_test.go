@@ -115,7 +115,7 @@ func testCallTracer(tracerName string, dirPath string, t *testing.T) {
 				context = test.Context.toBlockContext(test.Genesis)
 				st      = tests.MakePreState(rawdb.NewMemoryDatabase(), test.Genesis.Alloc, false, rawdb.HashScheme)
 			)
-			_ = st.Close()
+			st.Close()
 
 			tracer, err := tracers.DefaultDirectory.New(tracerName, new(tracers.Context), test.TracerConfig, test.Genesis.Config)
 			if err != nil {

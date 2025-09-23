@@ -316,7 +316,7 @@ func TestDBPersistency(t *testing.T) {
 	if err := db.storeInt64(testKey, testInt); err != nil {
 		t.Fatalf("failed to store value: %v.", err)
 	}
-	_ = db.Close()
+	db.Close()
 
 	// Reopen the database and check the value
 	db, err = OpenDB(filepath.Join(root, "database"))
@@ -326,7 +326,7 @@ func TestDBPersistency(t *testing.T) {
 	if val := db.fetchInt64(testKey); val != testInt {
 		t.Fatalf("value mismatch: have %v, want %v", val, testInt)
 	}
-	_ = db.Close()
+	db.Close()
 }
 
 var nodeDBExpirationNodes = []struct {

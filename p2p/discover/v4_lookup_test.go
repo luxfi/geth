@@ -92,7 +92,7 @@ func TestUDPv4_LookupIterator(t *testing.T) {
 	for limit := lookupTestnet.len(); iter.Next() && len(seen) < limit; {
 		seen[iter.Node().ID()] = iter.Node()
 	}
-	_ = iter.Close()
+	iter.Close()
 
 	// Check that all nodes in lookupTestnet were seen by the iterator.
 	results := make([]*enode.Node, 0, len(seen))
@@ -135,7 +135,7 @@ func TestUDPv4_LookupIteratorClose(t *testing.T) {
 		t.Fatalf("iterator didn't return any node")
 	}
 
-	_ = it.Close()
+	it.Close()
 
 	ncalls := 0
 	for ; ncalls < 100 && it.Next(); ncalls++ {

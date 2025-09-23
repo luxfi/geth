@@ -96,7 +96,7 @@ func TestStartRPC(t *testing.T) {
 				}
 
 				// Try again after unblocking the port. It should work this time.
-				_ = listener.Close()
+				listener.Close()
 				_, err = api.StartHTTP(sp("127.0.0.1"), ip(port), nil, nil, nil)
 				assert.NoError(t, err)
 			},
@@ -308,7 +308,7 @@ func checkReachable(rawurl string) bool {
 	if err != nil {
 		return false
 	}
-	_ = conn.Close()
+	conn.Close()
 	return true
 }
 

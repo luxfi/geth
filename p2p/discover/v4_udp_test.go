@@ -83,8 +83,8 @@ func newUDPTest(t *testing.T) *udpTest {
 }
 
 func (test *udpTest) close() {
-	_ = test.udp.Close()
-	_ = test.db.Close()
+	test.udp.Close()
+	test.db.Close()
 }
 
 // handles a packet as if it had been sent to the transport.
@@ -541,7 +541,7 @@ func TestUDPv4_smallNetConvergence(t *testing.T) {
 		select {
 		case <-timeout.C:
 			for _, node := range nodes {
-				_ = node.Close()
+				node.Close()
 			}
 		case err := <-status:
 			received++

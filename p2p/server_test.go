@@ -64,7 +64,7 @@ func (c *testTransport) doProtoHandshake(our *protoHandshake) (*protoHandshake, 
 }
 
 func (c *testTransport) close(err error) {
-	_ = c.conn.Close()
+	c.conn.Close()
 	c.closeErr = err
 }
 
@@ -348,7 +348,7 @@ func TestServerPeerLimits(t *testing.T) {
 	if tp.closeErr != DiscTooManyPeers {
 		t.Errorf("unexpected close error: %q", tp.closeErr)
 	}
-	_ = conn.Close()
+	conn.Close()
 
 	srv.AddTrustedPeer(clientnode)
 
@@ -362,7 +362,7 @@ func TestServerPeerLimits(t *testing.T) {
 	if tp.closeErr != DiscUselessPeer {
 		t.Errorf("unexpected close error: %q", tp.closeErr)
 	}
-	_ = conn.Close()
+	conn.Close()
 
 	srv.RemoveTrustedPeer(clientnode)
 
@@ -372,7 +372,7 @@ func TestServerPeerLimits(t *testing.T) {
 	if tp.closeErr != DiscTooManyPeers {
 		t.Errorf("unexpected close error: %q", tp.closeErr)
 	}
-	_ = conn.Close()
+	conn.Close()
 }
 
 func TestServerSetupConn(t *testing.T) {
@@ -552,7 +552,7 @@ func TestServerInboundThrottle(t *testing.T) {
 	case <-time.After(timeout):
 		t.Error("newTransport not called")
 	}
-	_ = conn.Close()
+	conn.Close()
 
 	// Dial again. This time the server should close the connection immediately.
 	connClosed := make(chan struct{}, 1)

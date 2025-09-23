@@ -378,7 +378,7 @@ func startNode(ctx *cli.Context, stack *node.Node, isConsole bool) {
 
 			case accounts.WalletDropped:
 				log.Info("Old wallet dropped", "url", event.Wallet.URL())
-				_ = event.Wallet.Close()
+				event.Wallet.Close()
 			}
 		}
 	}()
@@ -401,7 +401,7 @@ func startNode(ctx *cli.Context, stack *node.Node, isConsole bool) {
 				if timestamp := time.Unix(int64(done.Latest.Time), 0); time.Since(timestamp) < 10*time.Minute {
 					log.Info("Synchronisation completed", "latestnum", done.Latest.Number, "latesthash", done.Latest.Hash(),
 						"age", common.PrettyAge(timestamp))
-					_ = stack.Close()
+					stack.Close()
 				}
 			}
 		}()

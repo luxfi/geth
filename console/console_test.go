@@ -112,7 +112,7 @@ func newTester(t *testing.T, confOverride func(*ethconfig.Config)) *tester {
 	}
 	client := stack.Attach()
 	t.Cleanup(func() {
-		_ = client.Close()
+		client.Close()
 	})
 
 	prompter := &hookedPrompter{scheduler: make(chan string)}

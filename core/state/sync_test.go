@@ -275,7 +275,7 @@ func testIterativeStateSync(t *testing.T, count int, commit bool, bypath bool, s
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_, _ = batch.Write()
+		_ = batch.Write()
 
 		paths, nodes, codes = sched.Missing(count)
 		nodeElements = nodeElements[:0]
@@ -380,7 +380,7 @@ func testIterativeDelayedStateSync(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_, _ = batch.Write()
+		_ = batch.Write()
 
 		paths, nodes, codes = sched.Missing(0)
 		nodeElements = nodeElements[nodeProcessed:]
@@ -484,7 +484,7 @@ func testIterativeRandomStateSync(t *testing.T, count int, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_, _ = batch.Write()
+		_ = batch.Write()
 
 		nodeQueue = make(map[string]stateElement)
 		codeQueue = make(map[common.Hash]struct{})
@@ -594,7 +594,7 @@ func testIterativeRandomDelayedStateSync(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_, _ = batch.Write()
+		_ = batch.Write()
 
 		paths, nodes, codes := sched.Missing(0)
 		for i, path := range paths {
@@ -711,7 +711,7 @@ func testIncompleteStateSync(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_, _ = batch.Write()
+		_ = batch.Write()
 
 		// Fetch the next batch to retrieve
 		nodeQueue = make(map[string]stateElement)

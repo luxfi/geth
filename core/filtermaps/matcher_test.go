@@ -71,7 +71,7 @@ func TestMatcher(t *testing.T) {
 		}
 		mb := ts.fm.NewMatcherBackend()
 		logs, err := GetPotentialMatches(context.Background(), mb, 0, 1000, addresses, topics)
-		_ = mb.Close()
+		mb.Close()
 		if err != nil {
 			t.Fatalf("Log search error: %v", err)
 		}
