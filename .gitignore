@@ -67,3 +67,7 @@ cmd/workload/workloadLLM.md
 CLAUDE.md
 AGENTS.md
 GEMINI.md
+
+# Go workspace files
+go.work
+go.work.sum
