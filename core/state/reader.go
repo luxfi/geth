@@ -541,7 +541,7 @@ func newReaderWithCacheStats(reader *readerWithCache) *readerWithCacheStats {
 //
 // An error will be returned if the state is corrupted in the underlying reader.
 func (r *readerWithCacheStats) Account(addr common.Address) (*types.StateAccount, error) {
-	account, incache, err := r.readerWithCache.account(addr)
+	account, incache, err := r.account(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -559,7 +559,7 @@ func (r *readerWithCacheStats) Account(addr common.Address) (*types.StateAccount
 //
 // An error will be returned if the state is corrupted in the underlying reader.
 func (r *readerWithCacheStats) Storage(addr common.Address, slot common.Hash) (common.Hash, error) {
-	value, incache, err := r.readerWithCache.storage(addr, slot)
+	value, incache, err := r.storage(addr, slot)
 	if err != nil {
 		return common.Hash{}, err
 	}

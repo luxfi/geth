@@ -399,8 +399,8 @@ func (ts *testSetup) fmDbHash() common.Hash {
 	hasher := sha256.New()
 	it := ts.db.NewIterator(nil, nil)
 	for it.Next() {
-		hasher.Write(it.Key())
-		hasher.Write(it.Value())
+		_, _ = hasher.Write(it.Key())
+		_, _ = hasher.Write(it.Value())
 	}
 	it.Release()
 	var result common.Hash
@@ -423,7 +423,7 @@ func (ts *testSetup) matcherViewHash() common.Hash {
 		}
 		var enc [8]byte
 		binary.LittleEndian.PutUint64(enc[:], lvptr)
-		hasher.Write(enc[:])
+		_, _ = hasher.Write(enc[:])
 		headPtr = lvptr
 	}
 	headMap := uint32(headPtr >> params.logValuesPerMap)
@@ -436,7 +436,7 @@ func (ts *testSetup) matcherViewHash() common.Hash {
 			for _, row := range rows {
 				for _, v := range row {
 					binary.LittleEndian.PutUint32(enc[8:], v)
-					hasher.Write(enc[:])
+					_, _ = hasher.Write(enc[:])
 				}
 			}
 		}
@@ -445,14 +445,14 @@ func (ts *testSetup) matcherViewHash() common.Hash {
 	hasher.Sum(hash[:0])
 	for i := 0; i < 50; i++ {
 		hasher.Reset()
-		hasher.Write(hash[:])
+		_, _ = hasher.Write(hash[:])
 		lvptr := binary.LittleEndian.Uint64(hash[:8]) % headPtr
 		if log, _ := mb.GetLogByLvIndex(ctx, lvptr); log != nil {
 			enc, err := rlp.EncodeToBytes(log)
 			if err != nil {
 				panic(err)
 			}
-			hasher.Write(enc)
+			_, _ = hasher.Write(enc)
 		}
 		hasher.Sum(hash[:0])
 	}
@@ -463,8 +463,8 @@ func (ts *testSetup) close() {
 	if ts.fm != nil {
 		ts.fm.Stop()
 	}
-	ts.db.Close()
-	ts.chain.db.Close()
+	_ = ts.db.Close()
+	_ = ts.chain.db.Close()
 }
 
 type testChain struct {

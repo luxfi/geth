@@ -108,7 +108,7 @@ func TestFreezerModifyRollback(t *testing.T) {
 		t.Errorf("ModifyAncients returned wrong error %q", err)
 	}
 	checkAncientCount(t, f, "test", 0)
-	f.Close()
+	_ = f.Close()
 
 	// Reopen and check that the rolled-back data doesn't reappear.
 	tables := map[string]freezerTableConfig{"test": {noSnappy: true}}
@@ -241,7 +241,7 @@ func TestFreezerConcurrentModifyTruncate(t *testing.T) {
 		if truncateErr != nil {
 			t.Fatal("concurrent truncate failed:", truncateErr)
 		}
-		if !(errors.Is(modifyErr, nil) || errors.Is(modifyErr, errOutOrderInsertion)) {
+		if !errors.Is(modifyErr, nil) && !errors.Is(modifyErr, errOutOrderInsertion) {
 			t.Fatal("wrong error from concurrent modify:", modifyErr)
 		}
 		checkAncientCount(t, f, "test", 10)

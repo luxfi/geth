@@ -88,10 +88,10 @@ func (bloom *stateBloom) Commit(filename, tempname string) error {
 		return err
 	}
 	if err := f.Sync(); err != nil {
-		f.Close()
+		_ = f.Close()
 		return err
 	}
-	f.Close()
+	_ = f.Close()
 
 	// Move the temporary file into it's final location
 	return os.Rename(tempname, filename)

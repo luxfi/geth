@@ -52,7 +52,7 @@ func TestNodeCloseMultipleTimes(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create protocol stack: %v", err)
 	}
-	stack.Close()
+	_ = stack.Close()
 
 	// Ensure that a stopped node can be stopped again
 	for i := 0; i < 3; i++ {
@@ -161,7 +161,7 @@ func TestNodeCloseClosesDB(t *testing.T) {
 		t.Fatal("can't Put on open DB:", err)
 	}
 
-	stack.Close()
+	_ = stack.Close()
 	if err = db.Put([]byte{}, []byte{}); err == nil {
 		t.Fatal("Put succeeded after node is closed")
 	}
@@ -182,12 +182,12 @@ func TestNodeOpenDatabaseFromLifecycleStart(t *testing.T) {
 			}
 		},
 		stopHook: func() {
-			db.Close()
+			_ = db.Close()
 		},
 	})
 
 	stack.Start()
-	stack.Close()
+	_ = stack.Close()
 }
 
 // This test checks that OpenDatabase can be used from within a Lifecycle Stop method.
@@ -201,12 +201,12 @@ func TestNodeOpenDatabaseFromLifecycleStop(t *testing.T) {
 			if err != nil {
 				t.Fatal("can't open DB:", err)
 			}
-			db.Close()
+			_ = db.Close()
 		},
 	})
 
 	stack.Start()
-	stack.Close()
+	_ = stack.Close()
 }
 
 // Tests that registered Lifecycles get started and stopped correctly.
@@ -360,7 +360,7 @@ func TestLifecycleTerminationGuarantee(t *testing.T) {
 		}
 	}
 	// Stop the stack, verify failure and check all terminations
-	err = stack.Close()
+	_ = err = stack.Close()
 	if err, ok := err.(*StopError); !ok {
 		t.Fatalf("termination failure mismatch: have %v, want StopError", err)
 	} else {
@@ -391,7 +391,7 @@ func TestRegisterHandler_Successful(t *testing.T) {
 	defer node.Close()
 	// create and mount handler
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("success"))
+		_, _ = w.Write([]byte("success"))
 	})
 	node.RegisterHandler("test", "/test", handler)
 
@@ -441,7 +441,7 @@ func TestWebsocketHTTPOnSeparatePort_WSRequest(t *testing.T) {
 		t.Fatal("can't listen:", err)
 	}
 	port := listener.Addr().(*net.TCPAddr).Port
-	listener.Close()
+	_ = listener.Close()
 
 	node := startHTTP(t, 0, port)
 	defer node.Close()

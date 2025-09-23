@@ -290,7 +290,7 @@ func benchWriteChain(b *testing.B, full bool, count uint64) {
 		}
 		db := rawdb.NewDatabase(pdb)
 		makeChainForBench(db, genesis, full, count)
-		db.Close()
+		_ = db.Close()
 	}
 }
 
@@ -305,7 +305,7 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 
 	genesis := &Genesis{Config: params.AllEthashProtocolChanges}
 	makeChainForBench(db, genesis, full, count)
-	db.Close()
+	_ = db.Close()
 	options := DefaultConfig().WithArchive(true)
 	b.ReportAllocs()
 	b.ResetTimer()
@@ -330,6 +330,6 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 			}
 		}
 		chain.Stop()
-		db.Close()
+		_ = db.Close()
 	}
 }

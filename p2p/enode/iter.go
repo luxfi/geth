@@ -294,7 +294,7 @@ func (b *bufferIter) NodeSource() string {
 
 func (b *bufferIter) Close() {
 	b.closeOnce.Do(func() {
-		b.it.Close()
+b.it.Close()
 		// Drain buffer and wait for the goroutine to end.
 		for range b.buffer {
 		}
@@ -372,7 +372,7 @@ func (m *FairMix) Close() {
 		return
 	}
 	for _, s := range m.sources {
-		s.it.Close()
+s.it.Close()
 	}
 	close(m.closed)
 	m.wg.Wait()

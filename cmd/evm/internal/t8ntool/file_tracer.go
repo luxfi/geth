@@ -108,7 +108,7 @@ func (l *fileWritingTracer) OnTxEnd(receipt *types.Receipt, err error) {
 		} else {
 			log.Warn("Error obtaining tracer result", "err", err)
 		}
-		l.destination.Close()
+		_ = l.destination.Close()
 		l.destination = nil
 	}
 	l.txIndex++

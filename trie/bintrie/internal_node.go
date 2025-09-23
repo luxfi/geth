@@ -103,14 +103,14 @@ func (bt *InternalNode) Copy() BinaryNode {
 func (bt *InternalNode) Hash() common.Hash {
 	h := sha256.New()
 	if bt.left != nil {
-		h.Write(bt.left.Hash().Bytes())
+		_, _ = h.Write(bt.left.Hash().Bytes())
 	} else {
-		h.Write(zero[:])
+		_, _ = h.Write(zero[:])
 	}
 	if bt.right != nil {
-		h.Write(bt.right.Hash().Bytes())
+		_, _ = h.Write(bt.right.Hash().Bytes())
 	} else {
-		h.Write(zero[:])
+		_, _ = h.Write(zero[:])
 	}
 	return common.BytesToHash(h.Sum(nil))
 }

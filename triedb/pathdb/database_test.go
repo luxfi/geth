@@ -236,8 +236,8 @@ func (t *tester) extend(layers int) {
 }
 
 func (t *tester) release() {
-	t.db.Close()
-	t.db.diskdb.Close()
+	_ = t.db.Close()
+	_ = t.db.diskdb.Close()
 }
 
 func (t *tester) randAccount() (common.Address, []byte) {
@@ -795,7 +795,7 @@ func testJournal(t *testing.T, journalDir string) {
 	if err := tester.db.Journal(tester.lastHash()); err != nil {
 		t.Errorf("Failed to journal, err: %v", err)
 	}
-	tester.db.Close()
+	_ = tester.db.Close()
 	tester.db = New(tester.db.diskdb, tester.db.config, false)
 
 	// Verify states including disk layer and all diff on top.
@@ -825,7 +825,7 @@ func TestCorruptedJournal(t *testing.T) {
 		f, _ := os.OpenFile(filepath.Join(directory, "merkle.journal"), os.O_WRONLY, 0644)
 		f.WriteAt([]byte{0xa}, 0)
 		f.Sync()
-		f.Close()
+		_ = f.Close()
 	})
 }
 
@@ -842,7 +842,7 @@ func testCorruptedJournal(t *testing.T, journalDir string, modifyFn func(databas
 	if err := tester.db.Journal(tester.lastHash()); err != nil {
 		t.Errorf("Failed to journal, err: %v", err)
 	}
-	tester.db.Close()
+	_ = tester.db.Close()
 	root := common.BytesToHash(crypto.Keccak256(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil)))
 
 	modifyFn(tester.db.diskdb)
@@ -884,7 +884,7 @@ func TestTailTruncateHistory(t *testing.T) {
 	tester := newTester(t, &testerConfig{layers: 12, stateHistory: 10})
 	defer tester.release()
 
-	tester.db.Close()
+	_ = tester.db.Close()
 	tester.db = New(tester.db.diskdb, &Config{StateHistory: 10}, false)
 
 	head, err := tester.db.stateFreezer.Ancients()
@@ -967,7 +967,7 @@ func TestDatabaseIndexRecovery(t *testing.T) {
 	// Terminate the database and mutate the journal, it's for simulating
 	// the unclean shutdown
 	env.db.Journal(env.lastHash())
-	env.db.Close()
+	_ = env.db.Close()
 
 	// Mutate the journal in disk, it should be regarded as invalid
 	blob := rawdb.ReadTrieJournal(env.db.diskdb)

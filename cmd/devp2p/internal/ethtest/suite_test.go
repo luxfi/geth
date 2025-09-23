@@ -118,11 +118,11 @@ func runGeth(dir string, jwtPath string) (*node.Node, error) {
 
 	err = setupGeth(stack, dir)
 	if err != nil {
-		stack.Close()
+		_ = stack.Close()
 		return nil, err
 	}
 	if err = stack.Start(); err != nil {
-		stack.Close()
+		_ = stack.Close()
 		return nil, err
 	}
 	return stack, nil

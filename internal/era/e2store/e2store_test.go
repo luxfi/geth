@@ -144,7 +144,7 @@ func FuzzCodec(f *testing.F) {
 			b = bytes.NewBuffer(nil)
 			w = NewWriter(b)
 		)
-		w.Write(entry.Type, entry.Value)
+		_, _ = w.Write(entry.Type, entry.Value)
 		output := b.Bytes()
 		// Only care about the input that was actually consumed
 		input = input[:r.offset]

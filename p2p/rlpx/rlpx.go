@@ -242,12 +242,12 @@ func (h *sessionState) writeFrame(conn io.Writer, code uint64, data []byte) erro
 	h.enc.XORKeyStream(header, header)
 
 	// Write header MAC.
-	h.wbuf.Write(h.egressMAC.computeHeader(header))
+	_, _ = h.wbuf.Write(h.egressMAC.computeHeader(header))
 
 	// Encode and encrypt the frame data.
 	offset := len(h.wbuf.data)
 	h.wbuf.data = rlp.AppendUint64(h.wbuf.data, code)
-	h.wbuf.Write(data)
+	_, _ = h.wbuf.Write(data)
 	if padding := fsize % 16; padding > 0 {
 		h.wbuf.appendZero(16 - padding)
 	}
@@ -255,7 +255,7 @@ func (h *sessionState) writeFrame(conn io.Writer, code uint64, data []byte) erro
 	h.enc.XORKeyStream(framedata, framedata)
 
 	// Write frame MAC.
-	h.wbuf.Write(h.egressMAC.computeFrame(framedata))
+	_, _ = h.wbuf.Write(h.egressMAC.computeFrame(framedata))
 
 	_, err := conn.Write(h.wbuf.data)
 	return err
@@ -269,7 +269,7 @@ func (m *hashMAC) computeHeader(header []byte) []byte {
 
 // computeFrame computes the MAC of framedata.
 func (m *hashMAC) computeFrame(framedata []byte) []byte {
-	m.hash.Write(framedata)
+	_, _ = m.hash.Write(framedata)
 	seed := m.hash.Sum(m.seedBuffer[:0])
 	return m.compute(seed, seed[:16])
 }
@@ -290,7 +290,7 @@ func (m *hashMAC) compute(sum1, seed []byte) []byte {
 	for i := range m.aesBuffer {
 		m.aesBuffer[i] ^= seed[i]
 	}
-	m.hash.Write(m.aesBuffer[:])
+	_, _ = m.hash.Write(m.aesBuffer[:])
 	sum2 := m.hash.Sum(m.hashBuffer[:0])
 	return sum2[:16]
 }
@@ -487,11 +487,11 @@ func (h *handshakeState) secrets(auth, authResp []byte) (Secrets, error) {
 
 	// setup sha3 instances for the MACs
 	mac1 := sha3.NewLegacyKeccak256()
-	mac1.Write(xor(s.MAC, h.respNonce))
-	mac1.Write(auth)
+	_, _ = mac1.Write(xor(s.MAC, h.respNonce))
+	_, _ = mac1.Write(auth)
 	mac2 := sha3.NewLegacyKeccak256()
-	mac2.Write(xor(s.MAC, h.initNonce))
-	mac2.Write(authResp)
+	_, _ = mac2.Write(xor(s.MAC, h.initNonce))
+	_, _ = mac2.Write(authResp)
 	if h.initiator {
 		s.EgressMAC, s.IngressMAC = mac1, mac2
 	} else {

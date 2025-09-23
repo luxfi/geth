@@ -430,7 +430,7 @@ func (p *BlobPool) Init(gasTip uint64, head *types.Header, reserver txpool.Reser
 
 		for _, id := range fails {
 			if err := p.store.Delete(id); err != nil {
-				p.Close()
+				_ = p.Close()
 				return err
 			}
 		}
@@ -453,7 +453,7 @@ func (p *BlobPool) Init(gasTip uint64, head *types.Header, reserver txpool.Reser
 	// recently but not yet finalized
 	p.limbo, err = newLimbo(p.chain.Config(), limbodir)
 	if err != nil {
-		p.Close()
+		_ = p.Close()
 		return err
 	}
 	// Set the configured gas tip, triggering a filtering of anything just loaded

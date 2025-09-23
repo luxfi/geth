@@ -1066,24 +1066,24 @@ func (c *ChainConfig) ActiveSystemContracts(time uint64) map[string]common.Addre
 // Timestamp returns the timestamp associated with the fork or returns nil if
 // the fork isn't defined or isn't a time-based fork.
 func (c *ChainConfig) Timestamp(fork forks.Fork) *uint64 {
-	switch {
-	case fork == forks.BPO5:
+	switch fork {
+	case forks.BPO5:
 		return c.BPO5Time
-	case fork == forks.BPO4:
+	case forks.BPO4:
 		return c.BPO4Time
-	case fork == forks.BPO3:
+	case forks.BPO3:
 		return c.BPO3Time
-	case fork == forks.BPO2:
+	case forks.BPO2:
 		return c.BPO2Time
-	case fork == forks.BPO1:
+	case forks.BPO1:
 		return c.BPO1Time
-	case fork == forks.Osaka:
+	case forks.Osaka:
 		return c.OsakaTime
-	case fork == forks.Prague:
+	case forks.Prague:
 		return c.PragueTime
-	case fork == forks.Cancun:
+	case forks.Cancun:
 		return c.CancunTime
-	case fork == forks.Shanghai:
+	case forks.Shanghai:
 		return c.ShanghaiTime
 	default:
 		return nil

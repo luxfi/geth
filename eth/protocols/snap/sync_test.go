@@ -58,7 +58,7 @@ func TestHashing(t *testing.T) {
 		hasher := sha3.NewLegacyKeccak256()
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			hasher.Write(bytecodes[i])
+			_, _ = hasher.Write(bytecodes[i])
 			hash := hasher.Sum(nil)
 			got = fmt.Sprintf("%v\n%v", got, hash)
 		}
@@ -68,7 +68,7 @@ func TestHashing(t *testing.T) {
 		var hash = make([]byte, 32)
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			hasher.Write(bytecodes[i])
+			_, _ = hasher.Write(bytecodes[i])
 			hasher.Read(hash)
 			want = fmt.Sprintf("%v\n%v", want, hash)
 		}
@@ -91,7 +91,7 @@ func BenchmarkHashing(b *testing.B) {
 		hasher := sha3.NewLegacyKeccak256()
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			hasher.Write(bytecodes[i])
+			_, _ = hasher.Write(bytecodes[i])
 			hasher.Sum(nil)
 		}
 	}
@@ -100,7 +100,7 @@ func BenchmarkHashing(b *testing.B) {
 		var hash = make([]byte, 32)
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			hasher.Write(bytecodes[i])
+			_, _ = hasher.Write(bytecodes[i])
 			hasher.Read(hash)
 		}
 	}

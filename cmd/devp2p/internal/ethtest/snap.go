@@ -908,7 +908,7 @@ func (s *Suite) snapGetByteCodes(t *utesting.T, tc *byteCodesTest) error {
 	for i, j := 0, 0; i < len(bytecodes); i++ {
 		// Find the next hash that we've been served, leaving misses with nils
 		hasher.Reset()
-		hasher.Write(bytecodes[i])
+		_, _ = hasher.Write(bytecodes[i])
 		hasher.Read(hash)
 
 		for j < len(req.Hashes) && !bytes.Equal(hash, req.Hashes[j][:]) {
@@ -967,7 +967,7 @@ func (s *Suite) snapGetTrieNodes(t *utesting.T, tc *trieNodesTest) error {
 	}
 	for i, trienode := range trienodes {
 		hasher.Reset()
-		hasher.Write(trienode)
+		_, _ = hasher.Write(trienode)
 		hasher.Read(hash)
 		if got, want := hash, tc.expHashes[i]; !bytes.Equal(got, want[:]) {
 			t.Logf("  hash %d wrong, got %#x, want %#x\n", i, got, want)

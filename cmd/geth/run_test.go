@@ -102,7 +102,7 @@ func waitForEndpoint(t *testing.T, endpoint string, timeout time.Duration) {
 		c, err := rpc.DialContext(ctx, endpoint)
 		if c != nil {
 			_, err = c.SupportedModules()
-			c.Close()
+			_ = c.Close()
 		}
 		return err == nil
 	}

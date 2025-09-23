@@ -61,7 +61,7 @@ func TestWebsocketOriginCheck(t *testing.T) {
 
 	client, err := DialWebsocket(context.Background(), wsURL, "http://ekzample.com")
 	if err == nil {
-		client.Close()
+		_ = client.Close()
 		t.Fatal("no error for wrong origin")
 	}
 	wantErr := wsHandshakeError{websocket.ErrBadHandshake, "403 Forbidden"}
@@ -74,7 +74,7 @@ func TestWebsocketOriginCheck(t *testing.T) {
 	if err != nil {
 		t.Fatalf("error for empty origin: %v", err)
 	}
-	client.Close()
+	_ = client.Close()
 }
 
 // This test checks whether calls exceeding the request size limit are rejected.
@@ -379,7 +379,7 @@ func wsPingTestHandler(t *testing.T, conn *websocket.Conn, shutdown, sendPing <-
 			t.Logf("server sending response")
 			conn.WriteMessage(websocket.TextMessage, []byte(subNotify))
 		case <-shutdown:
-			conn.Close()
+			_ = conn.Close()
 			return
 		}
 	}

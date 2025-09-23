@@ -80,7 +80,7 @@ func (dl *diffLayer) initBinaryAccountIterator(seek common.Hash) *binaryIterator
 	if !ok {
 		// The state set in diff layer is immutable and will never be stale,
 		// so the read lock protection is unnecessary.
-		accountList := dl.states.stateSet.accountList()
+		accountList := dl.states.accountList()
 		l := &binaryIterator{
 			// The account loader function is unnecessary; the account key list
 			// produced by the supplied state set alone is sufficient for iteration.
@@ -97,7 +97,7 @@ func (dl *diffLayer) initBinaryAccountIterator(seek common.Hash) *binaryIterator
 	}
 	// The state set in diff layer is immutable and will never be stale,
 	// so the read lock protection is unnecessary.
-	accountList := dl.states.stateSet.accountList()
+	accountList := dl.states.accountList()
 	l := &binaryIterator{
 		// The account loader function is unnecessary; the account key list
 		// produced by the supplied state set alone is sufficient for iteration.
@@ -152,7 +152,7 @@ func (dl *diffLayer) initBinaryStorageIterator(account common.Hash, seek common.
 	if !ok {
 		// The state set in diff layer is immutable and will never be stale,
 		// so the read lock protection is unnecessary.
-		storageList := dl.states.stateSet.storageList(account)
+		storageList := dl.states.storageList(account)
 		l := &binaryIterator{
 			// The storage loader function is unnecessary; the storage key list
 			// produced by the supplied state set alone is sufficient for iteration.
@@ -169,7 +169,7 @@ func (dl *diffLayer) initBinaryStorageIterator(account common.Hash, seek common.
 	}
 	// The state set in diff layer is immutable and will never be stale,
 	// so the read lock protection is unnecessary.
-	storageList := dl.states.stateSet.storageList(account)
+	storageList := dl.states.storageList(account)
 	l := &binaryIterator{
 		// The storage loader function is unnecessary; the storage key list
 		// produced by the supplied state set alone is sufficient for iteration.

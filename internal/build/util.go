@@ -199,7 +199,7 @@ func UploadSFTP(identityFile, host, dir string, files []string) error {
 			}
 		}
 	}()
-	stdin.Close()
+	_ = stdin.Close()
 	err = sftp.Wait()
 	if aborted {
 		return nil
