@@ -108,7 +108,7 @@ func TestFreezerModifyRollback(t *testing.T) {
 		t.Errorf("ModifyAncients returned wrong error %q", err)
 	}
 	checkAncientCount(t, f, "test", 0)
-	_ = f.Close()
+	f.Close()
 
 	// Reopen and check that the rolled-back data doesn't reappear.
 	tables := map[string]freezerTableConfig{"test": {noSnappy: true}}

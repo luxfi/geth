@@ -314,6 +314,6 @@ func createTestPeers(rand *rand.Rand, n int) []*ethPeer {
 
 func closePeers(peers []*ethPeer) {
 	for _, p := range peers {
-		_ = p.Close()
+		p.Close()
 	}
 }

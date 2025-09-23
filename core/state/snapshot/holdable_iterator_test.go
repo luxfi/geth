@@ -83,7 +83,7 @@ func TestIteratorHold(t *testing.T) {
 	if idx != len(order) {
 		t.Errorf("iteration terminated prematurely: have %d, want %d", idx, len(order))
 	}
-	_ = db.Close()
+	db.Close()
 }
 
 func TestReopenIterator(t *testing.T) {

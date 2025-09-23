@@ -770,7 +770,7 @@ func signer(c *cli.Context) error {
 		}
 		log.Info("IPC endpoint opened", "url", ipcapiURL)
 		defer func() {
-			_ = listener.Close()
+			listener.Close()
 			log.Info("IPC endpoint closed", "url", ipcapiURL)
 		}()
 	}

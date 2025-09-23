@@ -123,7 +123,7 @@ func (t *rlpxTransport) close(err error) {
 			_, _ = t.conn.Write(discMsg, t.wbuf.Bytes())
 		}
 	}
-	_ = t.conn.Close()
+	t.conn.Close()
 }
 
 func (t *rlpxTransport) doEncHandshake(prv *ecdsa.PrivateKey) (*ecdsa.PublicKey, error) {

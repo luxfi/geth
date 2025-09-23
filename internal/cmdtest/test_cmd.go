@@ -226,7 +226,7 @@ func (tt *TestCmd) StderrText() string {
 }
 
 func (tt *TestCmd) CloseStdin() {
-	_ = tt.stdin.Close()
+	tt.stdin.Close()
 }
 
 func (tt *TestCmd) Kill() {

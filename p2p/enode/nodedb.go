@@ -115,14 +115,14 @@ func newPersistentDB(path string) (*DB, error) {
 	case leveldb.ErrNotFound:
 		// Version not found (i.e. empty cache), insert it
 		if err := db.Put([]byte(dbVersionKey), currentVer, nil); err != nil {
-			_ = db.Close()
+			db.Close()
 			return nil, err
 		}
 
 	case nil:
 		// Version present, flush if different
 		if !bytes.Equal(blob, currentVer) {
-			_ = db.Close()
+			db.Close()
 			if err = os.RemoveAll(path); err != nil {
 				return nil, err
 			}
@@ -501,5 +501,5 @@ func (db *DB) Close() {
 	default:
 		close(db.quit)
 	}
-	_ = db.lvl.Close()
+	db.lvl.Close()
 }

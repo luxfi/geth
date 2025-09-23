@@ -205,7 +205,7 @@ func (t *UDPv5) Self() *enode.Node {
 func (t *UDPv5) Close() {
 	t.closeOnce.Do(func() {
 		t.cancelCloseCtx()
-		_ = t.conn.Close()
+		t.conn.Close()
 		t.talk.wait()
 		t.wg.Wait()
 		t.tab.close()
