@@ -27,8 +27,9 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        key: ${{ runner.os }}-go-ci-lint-${{ hashFiles('**/go.sum') }}
         restore-keys: |
+          ${{ runner.os }}-go-ci-lint-
           ${{ runner.os }}-go-
 
     - name: Install golangci-lint
@@ -70,8 +71,10 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        key: ${{ runner.os }}-go-test-${{ matrix.os }}-${{ hashFiles('**/go.sum') }}
         restore-keys: |
+          ${{ runner.os }}-go-test-${{ matrix.os }}-
+          ${{ runner.os }}-go-test-
           ${{ runner.os }}-go-
 
     - name: Install dependencies
@@ -107,8 +110,10 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        key: ${{ runner.os }}-go-build-${{ matrix.os }}-${{ hashFiles('**/go.sum') }}
         restore-keys: |
+          ${{ runner.os }}-go-build-${{ matrix.os }}-
+          ${{ runner.os }}-go-build-
           ${{ runner.os }}-go-
 
     - name: Build geth
