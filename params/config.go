@@ -464,6 +464,17 @@ type ChainConfig struct {
 	Ethash             *EthashConfig       `json:"ethash,omitempty"`
 	Clique             *CliqueConfig       `json:"clique,omitempty"`
 	BlobScheduleConfig *BlobScheduleConfig `json:"blobSchedule,omitempty"`
+
+	// SubnetEVM specific fields
+	FeeConfig          *FeeConfig  `json:"feeConfig,omitempty"`          // Dynamic fee configuration for SubnetEVM
+	WarpConfig         *WarpConfig `json:"warpConfig,omitempty"`         // Warp messaging configuration
+	SubnetEVMTimestamp *uint64     `json:"subnetEVMTimestamp,omitempty"` // SubnetEVM activation timestamp
+	Durango            *Upgrade    `json:"durango,omitempty"`            // Durango network upgrade
+	Etna               *Upgrade    `json:"etna,omitempty"`               // Etna network upgrade
+	Fortuna            *Upgrade    `json:"fortunaTimestamp,omitempty"`   // Fortuna timestamp
+
+	// Additional compatibility fields
+	TerminalTotalDifficultyPassed bool `json:"terminalTotalDifficultyPassed,omitempty"`
 }
 
 // EthashConfig is the consensus engine configs for proof-of-work based sealing.
@@ -483,6 +494,30 @@ type CliqueConfig struct {
 // String implements the stringer interface, returning the consensus engine details.
 func (c CliqueConfig) String() string {
 	return fmt.Sprintf("clique(period: %d, epoch: %d)", c.Period, c.Epoch)
+}
+
+// FeeConfig is the SubnetEVM dynamic fee configuration
+type FeeConfig struct {
+	GasLimit                 uint64   `json:"gasLimit,omitempty"`
+	TargetBlockRate          uint64   `json:"targetBlockRate,omitempty"`
+	MinBaseFee               *big.Int `json:"minBaseFee,omitempty"`
+	TargetGas                uint64   `json:"targetGas,omitempty"`
+	BaseFeeChangeDenominator uint64   `json:"baseFeeChangeDenominator,omitempty"`
+	MinBlockGasCost          *big.Int `json:"minBlockGasCost,omitempty"`
+	MaxBlockGasCost          *big.Int `json:"maxBlockGasCost,omitempty"`
+	BlockGasCostStep         *big.Int `json:"blockGasCostStep,omitempty"`
+	ElasticityMultiplier     uint64   `json:"elasticityMultiplier,omitempty"`
+}
+
+// WarpConfig is the SubnetEVM warp messaging configuration
+type WarpConfig struct {
+	BlockTimestamp   uint64 `json:"blockTimestamp,omitempty"`
+	QuorumNumerator  uint64 `json:"quorumNumerator,omitempty"`
+}
+
+// Upgrade represents a network upgrade activation
+type Upgrade struct {
+	BlockTimestamp uint64 `json:"blockTimestamp,omitempty"`
 }
 
 // Description returns a human-readable description of ChainConfig.
