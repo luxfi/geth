@@ -65,6 +65,11 @@ type Genesis struct {
 	Coinbase   common.Address      `json:"coinbase"`
 	Alloc      types.GenesisAlloc  `json:"alloc"      gencodec:"required"`
 
+	// SubnetEVM specific fields (optional)
+	AirdropHash   common.Hash `json:"airdropHash,omitempty"`
+	AirdropAmount *big.Int    `json:"airdropAmount,omitempty"`
+	AirdropData   []byte      `json:"-"` // provided in a separate file, not serialized in this struct
+
 	// These fields are used for consensus tests. Please don't use them
 	// in actual genesis blocks.
 	Number        uint64      `json:"number"`
@@ -242,6 +247,7 @@ type genesisSpecMarshaling struct {
 	Difficulty    *math.HexOrDecimal256
 	Alloc         map[common.UnprefixedAddress]types.Account
 	BaseFee       *math.HexOrDecimal256
+	AirdropAmount *math.HexOrDecimal256
 	ExcessBlobGas *math.HexOrDecimal64
 	BlobGasUsed   *math.HexOrDecimal64
 }
