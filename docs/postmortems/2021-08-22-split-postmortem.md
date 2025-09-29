@@ -100,7 +100,7 @@ Several subprojects were informed about the upcoming security patch:
 
 - Polygon/Matic
 - MEV
-- Avalanche
+- Lux
 - Erigon
 - BSC 
 - EWF

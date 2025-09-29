@@ -1,7 +1,7 @@
 # Lux Geth v1.16.3-lux Release
 
 ## Overview
-This release brings Lux Geth up to parity with go-ethereum v1.16.3 (latest stable) while maintaining complete independence from Avalanche dependencies.
+This release brings Lux Geth up to parity with go-ethereum v1.16.3 (latest stable) while maintaining complete independence from Lux dependencies.
 
 ## ✅ What's New
 
@@ -17,7 +17,7 @@ This release brings Lux Geth up to parity with go-ethereum v1.16.3 (latest stabl
 
 ### Lux-Specific Features
 - All imports use `github.com/luxfi/` packages exclusively
-- No ava-labs dependencies anywhere in the codebase
+- No luxfi dependencies anywhere in the codebase
 - Integrated with `luxfi/crypto` and `luxfi/ids` packages
 - Maintains compatibility with Lux network infrastructure
 
@@ -64,7 +64,7 @@ go build ./cmd/geth
 ### ⚠️ Known Issues
 - **lux/node**: Package structure mismatch requires refactoring
   - Missing consensus packages at expected paths
-  - Requires mapping from old avalanchego structure to new luxfi structure
+  - Requires mapping from old luxd structure to new luxfi structure
 - **lux/evm**: Builds with warnings due to lux/node package issues
   - Core functionality works
   - Plugin/validator integration requires lux/node fixes
@@ -103,8 +103,8 @@ The tag has been tested with:
 
 3. Rebuild your application
 
-### From Avalanche-based Versions
-1. Replace all `github.com/ava-labs/` imports with `github.com/luxfi/`
+### From Lux-based Versions
+1. Replace all `github.com/luxfi/` imports with `github.com/luxfi/`
 2. Update consensus package imports to use `github.com/luxfi/consensus`
 3. Update database imports to use `github.com/luxfi/database`
 

@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
+	"os"
 	"strings"
 
 	"github.com/luxfi/geth/common"
@@ -344,6 +345,38 @@ func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *triedb.Database, g
 		}
 
 		if hash := genesis.ToBlock().Hash(); hash != ghash {
+			// DUMP GENESIS BYTES FOR DEBUGGING
+			genesisJSON, _ := json.MarshalIndent(genesis, "", "  ")
+			os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json", genesisJSON, 0644)
+			
+			// ALSO DUMP THE GENESIS FROM DATABASE
+			if dbBlock := rawdb.ReadBlock(db, ghash, 0); dbBlock != nil {
+				dbGenesis := &Genesis{
+					Config:     storedCfg,
+					Nonce:      dbBlock.Nonce(),
+					Timestamp:  dbBlock.Time(),
+					ExtraData:  dbBlock.Extra(),
+					GasLimit:   dbBlock.GasLimit(),
+					Difficulty: dbBlock.Difficulty(),
+					Mixhash:    dbBlock.MixDigest(),
+					Coinbase:   dbBlock.Coinbase(),
+					ParentHash: dbBlock.ParentHash(),
+				}
+				if dbBlock.BaseFee() != nil {
+					dbGenesis.BaseFee = dbBlock.BaseFee()
+				}
+				dbGenesisJSON, _ := json.MarshalIndent(dbGenesis, "", "  ")
+				os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json", dbGenesisJSON, 0644)
+				log.Info("GENESIS MISMATCH - dumped both genesis files",
+					"dbHash", ghash.Hex(),
+					"configHash", hash.Hex(),
+					"dbFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json",
+					"configFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json")
+			} else {
+				log.Info("GENESIS MISMATCH DETECTED - dumped config genesis to /home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json",
+					"dbHash", ghash.Hex(),
+					"configHash", hash.Hex())
+			}
 			return nil, common.Hash{}, nil, &GenesisMismatchError{ghash, hash}
 		}
 		block, err := genesis.Commit(db, triedb)
@@ -361,6 +394,38 @@ func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *triedb.Database, g
 		}
 
 		if hash := genesis.ToBlock().Hash(); hash != ghash {
+			// DUMP GENESIS BYTES FOR DEBUGGING
+			genesisJSON, _ := json.MarshalIndent(genesis, "", "  ")
+			os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json", genesisJSON, 0644)
+			
+			// ALSO DUMP THE GENESIS FROM DATABASE
+			if dbBlock := rawdb.ReadBlock(db, ghash, 0); dbBlock != nil {
+				dbGenesis := &Genesis{
+					Config:     storedCfg,
+					Nonce:      dbBlock.Nonce(),
+					Timestamp:  dbBlock.Time(),
+					ExtraData:  dbBlock.Extra(),
+					GasLimit:   dbBlock.GasLimit(),
+					Difficulty: dbBlock.Difficulty(),
+					Mixhash:    dbBlock.MixDigest(),
+					Coinbase:   dbBlock.Coinbase(),
+					ParentHash: dbBlock.ParentHash(),
+				}
+				if dbBlock.BaseFee() != nil {
+					dbGenesis.BaseFee = dbBlock.BaseFee()
+				}
+				dbGenesisJSON, _ := json.MarshalIndent(dbGenesis, "", "  ")
+				os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json", dbGenesisJSON, 0644)
+				log.Info("GENESIS MISMATCH (existing) - dumped both genesis files",
+					"dbHash", ghash.Hex(),
+					"configHash", hash.Hex(),
+					"dbFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json",
+					"configFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json")
+			} else {
+				log.Info("GENESIS MISMATCH DETECTED (existing) - dumped config genesis to /home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json",
+					"dbHash", ghash.Hex(),
+					"configHash", hash.Hex())
+			}
 			return nil, common.Hash{}, nil, &GenesisMismatchError{ghash, hash}
 		}
 	}
