@@ -11,7 +11,7 @@ fix_imports() {
 
     # Replace ethereum imports with luxfi
     sed -i 's|"github.com/ethereum/go-ethereum/|"github.com/luxfi/geth/|g' "$file"
-    sed -i 's|"github.com/ava-labs/|"github.com/luxfi/|g' "$file"
+    sed -i 's|"github.com/luxfi/|"github.com/luxfi/|g' "$file"
 }
 
 # Resolve specific conflicts
