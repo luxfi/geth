@@ -1,13 +1,13 @@
 #!/bin/bash
 
 echo "======================================"
-echo "  AVALANCHEGO PARITY TEST SUITE      "
+echo "  LUXD PARITY TEST SUITE      "
 echo "======================================"
 echo ""
-echo "Testing for 100% parity with avalanchego functionality..."
+echo "Testing for 100% parity with luxd functionality..."
 echo ""
 
-# Core packages that match avalanchego functionality
+# Core packages that match luxd functionality
 packages=(
     # Core EVM and state management
     "./core"
@@ -87,7 +87,7 @@ passed=0
 failed=0
 failed_list=""
 
-echo "Testing ${total} packages for avalanchego parity..."
+echo "Testing ${total} packages for luxd parity..."
 echo ""
 
 for pkg in "${packages[@]}"; do
@@ -122,16 +122,16 @@ echo "Pass Rate: $(($passed * 100 / $total))%"
 echo ""
 
 if [ $failed -eq 0 ]; then
-    echo "✅ 100% PARITY ACHIEVED WITH AVALANCHEGO!"
+    echo "✅ 100% PARITY ACHIEVED WITH LUXD!"
     echo ""
-    echo "All core functionality matches avalanchego."
+    echo "All core functionality matches luxd."
     echo "The codebase is fully compatible and production-ready."
 else
     echo "❌ Parity not yet achieved"
     echo ""
     echo "Failed packages:$failed_list"
     echo ""
-    echo "These packages need fixes to match avalanchego functionality."
+    echo "These packages need fixes to match luxd functionality."
 fi
 
 exit $failed

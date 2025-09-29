@@ -793,7 +793,7 @@ ok  	github.com/luxfi/geth/internal/testlog	(cached)
 ok  	github.com/luxfi/geth/internal/utesting	(cached)
 ?   	github.com/luxfi/geth/internal/version	[no test files]
 ?   	github.com/luxfi/geth/internal/web3ext	[no test files]
-?   	github.com/luxfi/geth/libevm/stateconf	[no test files]
+?   	github.com/luxfi/geth/geth/stateconf	[no test files]
 ok  	github.com/luxfi/geth/log	(cached)
 ok  	github.com/luxfi/geth/metrics	(cached)
 ?   	github.com/luxfi/geth/metrics/exp	[no test files]
