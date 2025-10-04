@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/geth"
+	"github.com/ethereum/go-ethereum"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"

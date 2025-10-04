@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/luxfi/geth"
+	"github.com/ethereum/go-ethereum"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/accounts/abi/bind/v2"
 	"github.com/luxfi/geth/common"
