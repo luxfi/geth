@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"github.com/luxfi/crypto"
-	"github.com/luxfi/geth"
+	"github.com/ethereum/go-ethereum"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/internal/utesting"

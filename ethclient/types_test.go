@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/luxfi/geth"
+	"github.com/ethereum/go-ethereum"
 	"github.com/luxfi/geth/common"
 )
 

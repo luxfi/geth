@@ -20,7 +20,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/luxfi/geth"
+	"github.com/ethereum/go-ethereum"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
