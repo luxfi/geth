@@ -35,7 +35,7 @@ import (
 
 	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/luxfi/crypto"
-	"github.com/luxfi/geth"
+	"github.com/ethereum/go-ethereum"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"

@@ -34,7 +34,7 @@ import (
 	"testing"
 	"time"
 
-	ethereum "github.com/luxfi/geth"
+	ethereum "github.com/ethereum/go-ethereum"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/accounts/keystore"
