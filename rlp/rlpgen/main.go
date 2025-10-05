@@ -50,7 +50,7 @@ func main() {
 		fatal(err)
 	}
 	if *output == "-" {
-		_, _ = os.Stdout.Write(code)
+		os.Stdout.Write(code)
 	} else if err := os.WriteFile(*output, code, 0600); err != nil {
 		fatal(err)
 	}

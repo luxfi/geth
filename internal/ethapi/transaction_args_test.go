@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
@@ -296,20 +296,19 @@ func newBackendMock() *backendMock {
 }
 
 func (b *backendMock) setFork(fork string) error {
-	switch fork {
-	case "legacy":
+	if fork == "legacy" {
 		b.current.Number = big.NewInt(900)
 		b.current.Time = 555
-	case "london":
+	} else if fork == "london" {
 		b.current.Number = big.NewInt(1100)
 		b.current.Time = 555
-	case "cancun":
+	} else if fork == "cancun" {
 		b.current.Number = big.NewInt(1100)
 		b.current.Time = 700
 		// Blob base fee will be 2
 		excess := uint64(2314058)
 		b.current.ExcessBlobGas = &excess
-	default:
+	} else {
 		return errors.New("invalid fork")
 	}
 	return nil

@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -47,8 +47,6 @@ var testParams = Params{
 }
 
 func TestIndexerRandomRange(t *testing.T) {
-	// Run all tests - no skipping long-running tests
-	t.Parallel()
 	ts := newTestSetup(t)
 	defer ts.close()
 
@@ -222,7 +220,6 @@ func testIndexerMatcherView(t *testing.T, concurrentRead bool) {
 }
 
 func TestLogsByIndex(t *testing.T) {
-	// Run all tests - no skipping long-running tests
 	ts := newTestSetup(t)
 	defer func() {
 		ts.fm.testProcessEventsHook = nil
@@ -275,7 +272,6 @@ func TestLogsByIndex(t *testing.T) {
 }
 
 func TestIndexerCompareDb(t *testing.T) {
-	// Run all tests - no skipping long-running tests
 	ts := newTestSetup(t)
 	defer ts.close()
 
@@ -399,8 +395,8 @@ func (ts *testSetup) fmDbHash() common.Hash {
 	hasher := sha256.New()
 	it := ts.db.NewIterator(nil, nil)
 	for it.Next() {
-		_, _ = hasher.Write(it.Key())
-		_, _ = hasher.Write(it.Value())
+		hasher.Write(it.Key())
+		hasher.Write(it.Value())
 	}
 	it.Release()
 	var result common.Hash
@@ -423,7 +419,7 @@ func (ts *testSetup) matcherViewHash() common.Hash {
 		}
 		var enc [8]byte
 		binary.LittleEndian.PutUint64(enc[:], lvptr)
-		_, _ = hasher.Write(enc[:])
+		hasher.Write(enc[:])
 		headPtr = lvptr
 	}
 	headMap := uint32(headPtr >> params.logValuesPerMap)
@@ -436,7 +432,7 @@ func (ts *testSetup) matcherViewHash() common.Hash {
 			for _, row := range rows {
 				for _, v := range row {
 					binary.LittleEndian.PutUint32(enc[8:], v)
-					_, _ = hasher.Write(enc[:])
+					hasher.Write(enc[:])
 				}
 			}
 		}
@@ -445,14 +441,14 @@ func (ts *testSetup) matcherViewHash() common.Hash {
 	hasher.Sum(hash[:0])
 	for i := 0; i < 50; i++ {
 		hasher.Reset()
-		_, _ = hasher.Write(hash[:])
+		hasher.Write(hash[:])
 		lvptr := binary.LittleEndian.Uint64(hash[:8]) % headPtr
 		if log, _ := mb.GetLogByLvIndex(ctx, lvptr); log != nil {
 			enc, err := rlp.EncodeToBytes(log)
 			if err != nil {
 				panic(err)
 			}
-			_, _ = hasher.Write(enc)
+			hasher.Write(enc)
 		}
 		hasher.Sum(hash[:0])
 	}

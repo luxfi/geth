@@ -22,7 +22,6 @@ import (
 	"errors"
 	"fmt"
 	"math/big"
-	"os"
 	"strings"
 
 	"github.com/luxfi/geth/common"
@@ -32,7 +31,7 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
@@ -65,11 +64,6 @@ type Genesis struct {
 	Mixhash    common.Hash         `json:"mixHash"`
 	Coinbase   common.Address      `json:"coinbase"`
 	Alloc      types.GenesisAlloc  `json:"alloc"      gencodec:"required"`
-
-	// SubnetEVM specific fields (optional)
-	AirdropHash   common.Hash `json:"airdropHash,omitempty"`
-	AirdropAmount *big.Int    `json:"airdropAmount,omitempty"`
-	AirdropData   []byte      `json:"-"` // provided in a separate file, not serialized in this struct
 
 	// These fields are used for consensus tests. Please don't use them
 	// in actual genesis blocks.
@@ -248,7 +242,6 @@ type genesisSpecMarshaling struct {
 	Difficulty    *math.HexOrDecimal256
 	Alloc         map[common.UnprefixedAddress]types.Account
 	BaseFee       *math.HexOrDecimal256
-	AirdropAmount *math.HexOrDecimal256
 	ExcessBlobGas *math.HexOrDecimal64
 	BlobGasUsed   *math.HexOrDecimal64
 }
@@ -266,6 +259,8 @@ func (e *GenesisMismatchError) Error() string {
 // ChainOverrides contains the changes to chain config.
 type ChainOverrides struct {
 	OverrideOsaka  *uint64
+	OverrideBPO1   *uint64
+	OverrideBPO2   *uint64
 	OverrideVerkle *uint64
 }
 
@@ -276,6 +271,12 @@ func (o *ChainOverrides) apply(cfg *params.ChainConfig) error {
 	}
 	if o.OverrideOsaka != nil {
 		cfg.OsakaTime = o.OverrideOsaka
+	}
+	if o.OverrideBPO1 != nil {
+		cfg.BPO1Time = o.OverrideBPO1
+	}
+	if o.OverrideBPO2 != nil {
+		cfg.BPO2Time = o.OverrideBPO2
 	}
 	if o.OverrideVerkle != nil {
 		cfg.VerkleTime = o.OverrideVerkle
@@ -345,38 +346,6 @@ func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *triedb.Database, g
 		}
 
 		if hash := genesis.ToBlock().Hash(); hash != ghash {
-			// DUMP GENESIS BYTES FOR DEBUGGING
-			genesisJSON, _ := json.MarshalIndent(genesis, "", "  ")
-			os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json", genesisJSON, 0644)
-			
-			// ALSO DUMP THE GENESIS FROM DATABASE
-			if dbBlock := rawdb.ReadBlock(db, ghash, 0); dbBlock != nil {
-				dbGenesis := &Genesis{
-					Config:     storedCfg,
-					Nonce:      dbBlock.Nonce(),
-					Timestamp:  dbBlock.Time(),
-					ExtraData:  dbBlock.Extra(),
-					GasLimit:   dbBlock.GasLimit(),
-					Difficulty: dbBlock.Difficulty(),
-					Mixhash:    dbBlock.MixDigest(),
-					Coinbase:   dbBlock.Coinbase(),
-					ParentHash: dbBlock.ParentHash(),
-				}
-				if dbBlock.BaseFee() != nil {
-					dbGenesis.BaseFee = dbBlock.BaseFee()
-				}
-				dbGenesisJSON, _ := json.MarshalIndent(dbGenesis, "", "  ")
-				os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json", dbGenesisJSON, 0644)
-				log.Info("GENESIS MISMATCH - dumped both genesis files",
-					"dbHash", ghash.Hex(),
-					"configHash", hash.Hex(),
-					"dbFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json",
-					"configFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json")
-			} else {
-				log.Info("GENESIS MISMATCH DETECTED - dumped config genesis to /home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json",
-					"dbHash", ghash.Hex(),
-					"configHash", hash.Hex())
-			}
 			return nil, common.Hash{}, nil, &GenesisMismatchError{ghash, hash}
 		}
 		block, err := genesis.Commit(db, triedb)
@@ -394,38 +363,6 @@ func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *triedb.Database, g
 		}
 
 		if hash := genesis.ToBlock().Hash(); hash != ghash {
-			// DUMP GENESIS BYTES FOR DEBUGGING
-			genesisJSON, _ := json.MarshalIndent(genesis, "", "  ")
-			os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json", genesisJSON, 0644)
-			
-			// ALSO DUMP THE GENESIS FROM DATABASE
-			if dbBlock := rawdb.ReadBlock(db, ghash, 0); dbBlock != nil {
-				dbGenesis := &Genesis{
-					Config:     storedCfg,
-					Nonce:      dbBlock.Nonce(),
-					Timestamp:  dbBlock.Time(),
-					ExtraData:  dbBlock.Extra(),
-					GasLimit:   dbBlock.GasLimit(),
-					Difficulty: dbBlock.Difficulty(),
-					Mixhash:    dbBlock.MixDigest(),
-					Coinbase:   dbBlock.Coinbase(),
-					ParentHash: dbBlock.ParentHash(),
-				}
-				if dbBlock.BaseFee() != nil {
-					dbGenesis.BaseFee = dbBlock.BaseFee()
-				}
-				dbGenesisJSON, _ := json.MarshalIndent(dbGenesis, "", "  ")
-				os.WriteFile("/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json", dbGenesisJSON, 0644)
-				log.Info("GENESIS MISMATCH (existing) - dumped both genesis files",
-					"dbHash", ghash.Hex(),
-					"configHash", hash.Hex(),
-					"dbFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-database.json",
-					"configFile", "/home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json")
-			} else {
-				log.Info("GENESIS MISMATCH DETECTED (existing) - dumped config genesis to /home/z/work/lux/genesis/lux-mainnet-96369-genesis-from-config.json",
-					"dbHash", ghash.Hex(),
-					"configHash", hash.Hex())
-			}
 			return nil, common.Hash{}, nil, &GenesisMismatchError{ghash, hash}
 		}
 	}

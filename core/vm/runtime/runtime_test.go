@@ -18,8 +18,9 @@ package runtime
 
 import (
 	"encoding/binary"
-	"io"
+	"fmt"
 	"math/big"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -149,8 +150,7 @@ func BenchmarkCall(b *testing.B) {
 		b.Fatal(err)
 	}
 
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		for j := 0; j < 400; j++ {
 			Execute(code, cpurchase, nil)
 			Execute(code, creceived, nil)
@@ -189,11 +189,9 @@ func benchmarkEVM_Create(bench *testing.B, code string) {
 		EVMConfig: vm.Config{},
 	}
 	// Warm up the intpools and stuff
-	bench.ResetTimer()
-	for i := 0; i < bench.N; i++ {
+	for bench.Loop() {
 		Call(receiver, []byte{}, &runtimeConfig)
 	}
-	bench.StopTimer()
 }
 
 func BenchmarkEVM_CREATE_500(bench *testing.B) {
@@ -232,8 +230,7 @@ func BenchmarkEVM_SWAP1(b *testing.B) {
 	b.Run("10k", func(b *testing.B) {
 		contractCode := swapContract(10_000)
 		state.SetCode(contractAddr, contractCode, tracing.CodeChangeUnspecified)
-
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			_, _, err := Call(contractAddr, []byte{}, &Config{State: state})
 			if err != nil {
 				b.Fatal(err)
@@ -263,8 +260,7 @@ func BenchmarkEVM_RETURN(b *testing.B) {
 
 			contractCode := returnContract(n)
 			state.SetCode(contractAddr, contractCode, tracing.CodeChangeUnspecified)
-
-			for i := 0; i < b.N; i++ {
+			for b.Loop() {
 				ret, _, err := Call(contractAddr, []byte{}, &Config{State: state})
 				if err != nil {
 					b.Fatal(err)
@@ -313,6 +309,18 @@ func (d *dummyChain) GetHeader(h common.Hash, n uint64) *types.Header {
 }
 
 func (d *dummyChain) Config() *params.ChainConfig {
+	return nil
+}
+
+func (d *dummyChain) CurrentHeader() *types.Header {
+	return nil
+}
+
+func (d *dummyChain) GetHeaderByNumber(n uint64) *types.Header {
+	return d.GetHeader(common.Hash{}, n)
+}
+
+func (d *dummyChain) GetHeaderByHash(h common.Hash) *types.Header {
 	return nil
 }
 
@@ -431,7 +439,7 @@ func benchmarkNonModifyingCode(gas uint64, code []byte, name string, tracerCode 
 
 	b.Run(name, func(b *testing.B) {
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			Call(destination, nil, cfg)
 		}
 	})
@@ -503,15 +511,15 @@ func BenchmarkSimpleLoop(b *testing.B) {
 // TestEip2929Cases contains various testcases that are used for
 // EIP-2929 about gas repricings
 func TestEip2929Cases(t *testing.T) {
-	// Execute tests but discard output to avoid cluttering test logs
+	t.Skip("Test only useful for generating documentation")
 	id := 1
 	prettyPrint := func(comment string, code []byte) {
-		// Discard documentation output but still execute the tests
-		devNull := io.Discard
+		fmt.Printf("### Case %d\n\n", id)
 		id++
+		fmt.Printf("%v\n\nBytecode: \n```\n%#x\n```\n", comment, code)
 		Execute(code, nil, &Config{
 			EVMConfig: vm.Config{
-				Tracer:    logger.NewMarkdownLogger(nil, devNull).Hooks(),
+				Tracer:    logger.NewMarkdownLogger(nil, os.Stdout).Hooks(),
 				ExtraEips: []int{2929},
 			},
 		})

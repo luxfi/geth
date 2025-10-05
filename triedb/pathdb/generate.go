@@ -78,7 +78,7 @@ type diskStore struct {
 func (s *diskStore) NodeReader(stateRoot common.Hash) (database.NodeReader, error) {
 	root := types.EmptyRootHash
 	if blob := rawdb.ReadAccountTrieNode(s.db, nil); len(blob) > 0 {
-		root = common.BytesToHash(crypto.Keccak256(blob))
+		root = crypto.Keccak256Hash(blob)
 	}
 	if root != stateRoot {
 		return nil, fmt.Errorf("state %x is not available", stateRoot)

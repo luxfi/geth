@@ -25,16 +25,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/holiman/uint256"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/internal/utesting"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/p2p/enode"
+	"github.com/holiman/uint256"
 )
 
 // Suite represents a structure used to test a node's conformance
@@ -527,7 +527,7 @@ func (s *Suite) TestBlockRangeUpdateInvalid(t *utesting.T) {
 	}
 	defer conn.Close()
 
-	_ = conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
+	conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
 		EarliestBlock:   10,
 		LatestBlock:     8,
 		LatestBlockHash: s.chain.GetBlock(8).Hash(),
@@ -552,7 +552,7 @@ The node should accept the update and should not disonnect.`)
 	head := s.chain.Head().NumberU64()
 	var hash common.Hash
 	rand.Read(hash[:])
-	_ = conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
+	conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
 		EarliestBlock:   head + 10,
 		LatestBlock:     head + 50,
 		LatestBlockHash: hash,
@@ -586,7 +586,7 @@ The node should accept the update and should not disonnect.`)
 	defer conn.Close()
 
 	head := s.chain.Head()
-	_ = conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
+	conn.Write(ethProto, eth.BlockRangeUpdateMsg, &eth.BlockRangeUpdatePacket{
 		EarliestBlock:   head.NumberU64() - 10,
 		LatestBlock:     head.NumberU64(),
 		LatestBlockHash: head.Hash(),

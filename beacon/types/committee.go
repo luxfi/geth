@@ -92,26 +92,26 @@ func (s *SerializedSyncCommittee) Root() common.Hash {
 	)
 	for i := range data {
 		hasher.Reset()
-		_, _ = hasher.Write(s[i*params.BLSPubkeySize : (i+1)*params.BLSPubkeySize])
-		_, _ = hasher.Write(padding[:])
+		hasher.Write(s[i*params.BLSPubkeySize : (i+1)*params.BLSPubkeySize])
+		hasher.Write(padding[:])
 		hasher.Sum(data[i][:0])
 	}
 	for l > 1 {
 		for i := 0; i < l/2; i++ {
 			hasher.Reset()
-			_, _ = hasher.Write(data[i*2][:])
-			_, _ = hasher.Write(data[i*2+1][:])
+			hasher.Write(data[i*2][:])
+			hasher.Write(data[i*2+1][:])
 			hasher.Sum(data[i][:0])
 		}
 		l /= 2
 	}
 	hasher.Reset()
-	_, _ = hasher.Write(s[SerializedSyncCommitteeSize-params.BLSPubkeySize : SerializedSyncCommitteeSize])
-	_, _ = hasher.Write(padding[:])
+	hasher.Write(s[SerializedSyncCommitteeSize-params.BLSPubkeySize : SerializedSyncCommitteeSize])
+	hasher.Write(padding[:])
 	hasher.Sum(data[1][:0])
 	hasher.Reset()
-	_, _ = hasher.Write(data[0][:])
-	_, _ = hasher.Write(data[1][:])
+	hasher.Write(data[0][:])
+	hasher.Write(data[1][:])
 	hasher.Sum(data[0][:0])
 	return data[0]
 }

@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -882,7 +882,7 @@ func (f *FilterMaps) exportCheckpoints() {
 		if epoch == epochCount-1 {
 			comma = ""
 		}
-		fmt.Fprintf(w, "{\"blockNumber\": %d, \"blockId\": \"0x%064x\", \"firstIndex\": %d}%s\n", lastBlock, lastBlockId, lvPtr, comma)
+		w.WriteString(fmt.Sprintf("{\"blockNumber\": %d, \"blockId\": \"0x%064x\", \"firstIndex\": %d}%s\n", lastBlock, lastBlockId, lvPtr, comma))
 	}
 	w.WriteString("]\n")
 	f.lastFinalEpoch = epochCount

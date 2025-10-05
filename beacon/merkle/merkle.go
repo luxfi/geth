@@ -46,11 +46,11 @@ func VerifyProof(root common.Hash, index uint64, branch Values, value Value) err
 	for _, sibling := range branch {
 		hasher.Reset()
 		if index&1 == 0 {
-			_, _ = hasher.Write(value[:])
-			_, _ = hasher.Write(sibling[:])
+			hasher.Write(value[:])
+			hasher.Write(sibling[:])
 		} else {
-			_, _ = hasher.Write(sibling[:])
-			_, _ = hasher.Write(value[:])
+			hasher.Write(sibling[:])
+			hasher.Write(value[:])
 		}
 		hasher.Sum(value[:0])
 		if index >>= 1; index == 0 {

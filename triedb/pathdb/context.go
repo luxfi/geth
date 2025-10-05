@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -184,7 +184,7 @@ func (ctx *generatorContext) removeStorageBefore(account common.Hash) uint64 {
 		count++
 		ctx.batch.Delete(key)
 		if ctx.batch.ValueSize() > ethdb.IdealBatchSize {
-			_ = ctx.batch.Write()
+			ctx.batch.Write()
 			ctx.batch.Reset()
 		}
 	}
@@ -215,7 +215,7 @@ func (ctx *generatorContext) removeStorageAt(account common.Hash) error {
 		count++
 		ctx.batch.Delete(key)
 		if ctx.batch.ValueSize() > ethdb.IdealBatchSize {
-			_ = ctx.batch.Write()
+			ctx.batch.Write()
 			ctx.batch.Reset()
 		}
 	}
@@ -236,7 +236,7 @@ func (ctx *generatorContext) removeRemainingStorage() uint64 {
 		count++
 		ctx.batch.Delete(iter.Key())
 		if ctx.batch.ValueSize() > ethdb.IdealBatchSize {
-			_ = ctx.batch.Write()
+			ctx.batch.Write()
 			ctx.batch.Reset()
 		}
 	}

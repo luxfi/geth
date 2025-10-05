@@ -21,6 +21,7 @@ import (
 	"bytes"
 	"fmt"
 	"math/big"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -87,7 +88,7 @@ func TestLegacyState(t *testing.T) {
 // TestExecutionSpecState runs the test fixtures from execution-spec-tests.
 func TestExecutionSpecState(t *testing.T) {
 	if !common.FileExist(executionSpecStateTestDir) {
-
+		t.Skipf("directory %s does not exist", executionSpecStateTestDir)
 	}
 	st := new(testMatcher)
 
@@ -100,9 +101,16 @@ func execStateTest(t *testing.T, st *testMatcher, test *StateTest) {
 	for _, subtest := range test.Subtests() {
 		key := fmt.Sprintf("%s/%d", subtest.Fork, subtest.Index)
 
-		// Run all four permutations for complete test coverage
+		// If -short flag is used, we don't execute all four permutations, only
+		// one.
+		executionMask := 0xf
+		if testing.Short() {
+			executionMask = (1 << (rand.Int63() & 4))
+		}
 		t.Run(key+"/hash/trie", func(t *testing.T) {
-			// Always run this test - no random skipping
+			if executionMask&0x1 == 0 {
+				t.Skip("test (randomly) skipped due to short-tag")
+			}
 			withTrace(t, test.gasLimit(subtest), func(vmconfig vm.Config) error {
 				var result error
 				test.Run(subtest, vmconfig, false, rawdb.HashScheme, func(err error, state *StateTestState) {
@@ -112,7 +120,9 @@ func execStateTest(t *testing.T, st *testMatcher, test *StateTest) {
 			})
 		})
 		t.Run(key+"/hash/snap", func(t *testing.T) {
-			// Always run this test - no random skipping
+			if executionMask&0x2 == 0 {
+				t.Skip("test (randomly) skipped due to short-tag")
+			}
 			withTrace(t, test.gasLimit(subtest), func(vmconfig vm.Config) error {
 				var result error
 				test.Run(subtest, vmconfig, true, rawdb.HashScheme, func(err error, state *StateTestState) {
@@ -128,7 +138,9 @@ func execStateTest(t *testing.T, st *testMatcher, test *StateTest) {
 			})
 		})
 		t.Run(key+"/path/trie", func(t *testing.T) {
-			// Always run this test - no random skipping
+			if executionMask&0x4 == 0 {
+				t.Skip("test (randomly) skipped due to short-tag")
+			}
 			withTrace(t, test.gasLimit(subtest), func(vmconfig vm.Config) error {
 				var result error
 				test.Run(subtest, vmconfig, false, rawdb.PathScheme, func(err error, state *StateTestState) {
@@ -138,12 +150,14 @@ func execStateTest(t *testing.T, st *testMatcher, test *StateTest) {
 			})
 		})
 		t.Run(key+"/path/snap", func(t *testing.T) {
-			// Always run this test - no random skipping
+			if executionMask&0x8 == 0 {
+				t.Skip("test (randomly) skipped due to short-tag")
+			}
 			withTrace(t, test.gasLimit(subtest), func(vmconfig vm.Config) error {
 				var result error
 				test.Run(subtest, vmconfig, true, rawdb.PathScheme, func(err error, state *StateTestState) {
-					if state.Snapshots != nil && state.StateDB != nil {
-						if _, err := state.Snapshots.Journal(state.StateDB.IntermediateRoot(false)); err != nil {
+					if state.TrieDB != nil && state.StateDB != nil {
+						if err := state.TrieDB.Journal(state.StateDB.IntermediateRoot(false)); err != nil {
 							result = err
 							return
 						}

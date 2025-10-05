@@ -92,8 +92,8 @@ func TestEventId(t *testing.T) {
 			{ "type" : "event", "name" : "Check", "inputs": [{ "name" : "t", "type": "address" }, { "name": "b", "type": "uint256" }] }
 			]`,
 			expectations: map[string]common.Hash{
-				"Balance": common.Hash(crypto.Keccak256Hash([]byte("Balance(uint256)"))),
-				"Check":   common.Hash(crypto.Keccak256Hash([]byte("Check(address,uint256)"))),
+				"Balance": crypto.Keccak256Hash([]byte("Balance(uint256)")),
+				"Check":   crypto.Keccak256Hash([]byte("Check(address,uint256)")),
 			},
 		},
 	}
@@ -155,7 +155,7 @@ func TestEventMultiValueWithArrayUnpack(t *testing.T) {
 	var b bytes.Buffer
 	var i uint8 = 1
 	for ; i <= 3; i++ {
-		_, _ = b.Write(packNum(reflect.ValueOf(i)))
+		b.Write(packNum(reflect.ValueOf(i)))
 	}
 	unpacked, err := abi.Unpack("test", b.Bytes())
 	require.NoError(t, err)
@@ -363,7 +363,7 @@ func TestEventUnpackIndexed(t *testing.T) {
 	abi, err := JSON(strings.NewReader(definition))
 	require.NoError(t, err)
 	var b bytes.Buffer
-	_, _ = b.Write(packNum(reflect.ValueOf(uint8(8))))
+	b.Write(packNum(reflect.ValueOf(uint8(8))))
 	var rst testStruct
 	require.NoError(t, abi.UnpackIntoInterface(&rst, "test", b.Bytes()))
 	require.Equal(t, uint8(0), rst.Value1)
@@ -383,9 +383,9 @@ func TestEventIndexedWithArrayUnpack(t *testing.T) {
 	var b bytes.Buffer
 	stringOut := "abc"
 	// number of fields that will be encoded * 32
-	_, _ = b.Write(packNum(reflect.ValueOf(32)))
-	_, _ = b.Write(packNum(reflect.ValueOf(len(stringOut))))
-	_, _ = b.Write(common.RightPadBytes([]byte(stringOut), 32))
+	b.Write(packNum(reflect.ValueOf(32)))
+	b.Write(packNum(reflect.ValueOf(len(stringOut))))
+	b.Write(common.RightPadBytes([]byte(stringOut), 32))
 
 	var rst testStruct
 	require.NoError(t, abi.UnpackIntoInterface(&rst, "test", b.Bytes()))

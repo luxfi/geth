@@ -29,7 +29,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto/kzg4844"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"
@@ -100,7 +100,7 @@ type SimulatedBeacon struct {
 
 func payloadVersion(config *params.ChainConfig, time uint64) engine.PayloadVersion {
 	switch config.LatestFork(time) {
-	case forks.Prague, forks.Cancun:
+	case forks.BPO5, forks.BPO4, forks.BPO3, forks.BPO2, forks.BPO1, forks.Osaka, forks.Prague, forks.Cancun:
 		return engine.PayloadV3
 	case forks.Paris, forks.Shanghai:
 		return engine.PayloadV2

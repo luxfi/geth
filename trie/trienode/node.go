@@ -268,11 +268,6 @@ func (set *MergedNodeSet) Nodes() map[common.Hash]map[string]*Node {
 	return nodes
 }
 
-// Flatten returns a two-dimensional map for internal nodes (alias for Nodes).
-func (set *MergedNodeSet) Flatten() map[common.Hash]map[string]*Node {
-	return set.Nodes()
-}
-
 // NodeAndOrigins returns a two-dimensional map for internal nodes along with
 // their original values.
 func (set *MergedNodeSet) NodeAndOrigins() (map[common.Hash]map[string]*Node, map[common.Hash]map[string][]byte) {

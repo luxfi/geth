@@ -34,11 +34,11 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/bitutil"
 	"github.com/luxfi/geth/core/tracing"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/blake2b"
-	"github.com/luxfi/crypto/bn256"
-	"github.com/luxfi/crypto/kzg4844"
-	"github.com/luxfi/crypto/secp256r1"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/crypto/blake2b"
+	"github.com/luxfi/geth/crypto/bn256"
+	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/geth/crypto/secp256r1"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
 	"golang.org/x/crypto/ripemd160"
@@ -348,7 +348,7 @@ func (c *ripemd160hash) RequiredGas(input []byte) uint64 {
 }
 func (c *ripemd160hash) Run(input []byte) ([]byte, error) {
 	ripemd := ripemd160.New()
-	_, _ = ripemd.Write(input)
+	ripemd.Write(input)
 	return common.LeftPadBytes(ripemd.Sum(nil), 32), nil
 }
 

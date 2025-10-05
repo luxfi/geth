@@ -100,8 +100,10 @@ func TestCustomGenesis(t *testing.T) {
 // TestCustomBackend that the backend selection and detection (leveldb vs pebble) works properly.
 func TestCustomBackend(t *testing.T) {
 	t.Parallel()
-	// Determine available backends based on platform
-	is64Bit := strconv.IntSize == 64
+	// Test pebble, but only on 64-bit platforms
+	if strconv.IntSize != 64 {
+		t.Skip("Custom backends are only available on 64-bit platform")
+	}
 	genesis := `{
 		"alloc"      : {},
 		"coinbase"   : "0x0000000000000000000000000000000000000000",
@@ -148,11 +150,11 @@ func TestCustomBackend(t *testing.T) {
 		}
 		return nil
 	}
-	// Build test cases based on platform capabilities
-	var tests []backendTest
-
-	// Tests that work on all platforms (leveldb only)
-	tests = append(tests, []backendTest{
+	for i, tt := range []backendTest{
+		{ // When not specified, it should default to pebble
+			execArgs:   []string{"--db.engine", "pebble"},
+			execExpect: "0x0000000000001338",
+		},
 		{ // Explicit leveldb
 			initArgs:   []string{"--db.engine", "leveldb"},
 			execArgs:   []string{"--db.engine", "leveldb"},
@@ -162,6 +164,25 @@ func TestCustomBackend(t *testing.T) {
 			initArgs:   []string{"--db.engine", "leveldb"},
 			execExpect: "0x0000000000001338",
 		},
+		{ // Explicit pebble
+			initArgs:   []string{"--db.engine", "pebble"},
+			execArgs:   []string{"--db.engine", "pebble"},
+			execExpect: "0x0000000000001338",
+		},
+		{ // Explicit pebble, then auto-discover
+			initArgs:   []string{"--db.engine", "pebble"},
+			execExpect: "0x0000000000001338",
+		},
+		{ // Can't start pebble on top of leveldb
+			initArgs:   []string{"--db.engine", "leveldb"},
+			execArgs:   []string{"--db.engine", "pebble"},
+			execExpect: `Fatal: Failed to register the Ethereum service: db.engine choice was pebble but found pre-existing leveldb database in specified data directory`,
+		},
+		{ // Can't start leveldb on top of pebble
+			initArgs:   []string{"--db.engine", "pebble"},
+			execArgs:   []string{"--db.engine", "leveldb"},
+			execExpect: `Fatal: Failed to register the Ethereum service: db.engine choice was leveldb but found pre-existing pebble database in specified data directory`,
+		},
 		{ // Reject invalid backend choice
 			initArgs:   []string{"--db.engine", "mssql"},
 			initExpect: `Fatal: Invalid choice for db.engine 'mssql', allowed 'leveldb' or 'pebble'`,
@@ -169,38 +190,7 @@ func TestCustomBackend(t *testing.T) {
 			// block nonce
 			execExpect: `0x0000000000000042`,
 		},
-	}...)
-
-	// Tests that only work on 64-bit platforms (pebble support)
-	if is64Bit {
-		tests = append(tests, []backendTest{
-			{ // When not specified, it should default to pebble
-				execArgs:   []string{"--db.engine", "pebble"},
-				execExpect: "0x0000000000001338",
-			},
-			{ // Explicit pebble
-				initArgs:   []string{"--db.engine", "pebble"},
-				execArgs:   []string{"--db.engine", "pebble"},
-				execExpect: "0x0000000000001338",
-			},
-			{ // Explicit pebble, then auto-discover
-				initArgs:   []string{"--db.engine", "pebble"},
-				execExpect: "0x0000000000001338",
-			},
-			{ // Can't start pebble on top of leveldb
-				initArgs:   []string{"--db.engine", "leveldb"},
-				execArgs:   []string{"--db.engine", "pebble"},
-				execExpect: `Fatal: Failed to register the Ethereum service: db.engine choice was pebble but found pre-existing leveldb database in specified data directory`,
-			},
-			{ // Can't start leveldb on top of pebble
-				initArgs:   []string{"--db.engine", "pebble"},
-				execArgs:   []string{"--db.engine", "leveldb"},
-				execExpect: `Fatal: Failed to register the Ethereum service: db.engine choice was leveldb but found pre-existing pebble database in specified data directory`,
-			},
-		}...)
-	}
-
-	for i, tt := range tests {
+	} {
 		if err := testfunc(t, tt); err != nil {
 			t.Fatalf("test %d-leveldb: %v", i, err)
 		}
