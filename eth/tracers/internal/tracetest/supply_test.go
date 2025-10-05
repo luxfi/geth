@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -29,7 +29,6 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/beacon"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
@@ -97,8 +96,8 @@ func TestSupplyGenesisAlloc(t *testing.T) {
 	var (
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		key2, _ = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
-		addr2   = common.Address(crypto.PubkeyToAddress(key2.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
+		addr2   = crypto.PubkeyToAddress(key2.PublicKey)
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
 		config = *params.AllEthashProtocolChanges
@@ -149,20 +148,9 @@ func TestSupplyRewards(t *testing.T) {
 		ParentHash: common.HexToHash("0xadeda0a83e337b6c073e3f0e9a17531a04009b397a9588c093b628f21b8bc5a3"),
 	}
 
-	out, chain, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc, 1)
+	out, _, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
-	}
-
-	// Debug: Check the actual coinbase balance
-	block := chain.GetBlockByNumber(1)
-	if block != nil {
-		state, err := chain.StateAt(block.Root())
-		if err == nil {
-			coinbase := block.Coinbase()
-			balance := state.GetBalance(coinbase)
-			t.Logf("Block 1 coinbase %s balance: %s", coinbase, balance.String())
-		}
 	}
 
 	actual := out[expected.Number]
@@ -225,7 +213,7 @@ func TestSupplyEip1559Burn(t *testing.T) {
 		aa = common.HexToAddress("0x000000000000000000000000000000000000aaaa")
 		// A sender who makes transactions, has some eth1
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
@@ -332,7 +320,7 @@ func TestSupplySelfdestruct(t *testing.T) {
 		bb      = common.HexToAddress("0x2222222222222222222222222222222222222222")
 		dad     = common.HexToAddress("0x0000000000000000000000000000000000000dad")
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
@@ -472,7 +460,7 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 		cc      = common.HexToAddress("0x3333333333333333333333333333333333333333")
 		dd      = common.HexToAddress("0x4444444444444444444444444444444444444444")
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 		eth2    = new(big.Int).Mul(common.Big2, big.NewInt(params.Ether))
@@ -603,15 +591,7 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 }
 
 func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(b *core.BlockGen), numBlocks int) ([]supplyInfo, *core.BlockChain, error) {
-	// Use appropriate consensus engine based on genesis config
-	var engine consensus.Engine
-	if genesis.Config.TerminalTotalDifficulty != nil && genesis.Config.TerminalTotalDifficulty.Sign() == 0 {
-		// Post-merge (PoS), use beacon
-		engine = beacon.New(ethash.NewFaker())
-	} else {
-		// Pre-merge (PoW), use ethash for mining rewards
-		engine = ethash.NewFaker()
-	}
+	engine := beacon.New(ethash.NewFaker())
 
 	traceOutputPath := filepath.ToSlash(t.TempDir())
 	traceOutputFilename := path.Join(traceOutputPath, "supply.jsonl")
@@ -622,26 +602,19 @@ func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(b *core.Bloc
 		return nil, nil, fmt.Errorf("failed to create call tracer: %v", err)
 	}
 
-	// Generate blocks without the chain first
-	db := rawdb.NewMemoryDatabase()
-	_, blocks, _ := core.GenerateChainWithGenesis(genesis, engine, numBlocks, func(i int, b *core.BlockGen) {
-		b.SetCoinbase(common.Address{1})
-		gen(b)
-	})
-
-	// Now create the chain with the tracer and import blocks
-	// This way, when blocks are processed/imported, the tracer will be active
 	options := core.DefaultConfig().WithStateScheme(rawdb.PathScheme)
 	options.VmConfig = vm.Config{Tracer: tracer}
-
-	// Create chain from the same genesis with the tracer enabled
-	chain, err := core.NewBlockChain(db, genesis, engine, options)
+	chain, err := core.NewBlockChain(rawdb.NewMemoryDatabase(), genesis, engine, options)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create tester chain: %v", err)
 	}
 	defer chain.Stop()
 
-	// Import the pre-generated blocks - the chain will re-execute them with tracing
+	_, blocks, _ := core.GenerateChainWithGenesis(genesis, engine, numBlocks, func(i int, b *core.BlockGen) {
+		b.SetCoinbase(common.Address{1})
+		gen(b)
+	})
+
 	if n, err := chain.InsertChain(blocks); err != nil {
 		return nil, chain, fmt.Errorf("block %d: failed to insert into chain: %v", n, err)
 	}

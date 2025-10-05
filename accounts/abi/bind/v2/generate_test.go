@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -29,13 +29,6 @@ import (
 	"github.com/luxfi/geth/crypto"
 )
 
-// abiGenAvailable checks if abigen tool is available
-func abiGenAvailable() bool {
-	// Simple check - assume available unless proven otherwise
-	// In a real implementation, you'd check if the abigen binary exists
-	return true
-}
-
 // Run go generate to recreate the test bindings.
 //
 //go:generate go run github.com/luxfi/geth/cmd/abigen -v2 -combined-json internal/contracts/db/combined-abi.json -type DBStats -pkg db -out internal/contracts/db/bindings.go
@@ -47,13 +40,6 @@ func abiGenAvailable() bool {
 // TestBindingGeneration tests that re-running generation of bindings does not result in
 // mutations to the binding code.
 func TestBindingGeneration(t *testing.T) {
-	// Check if abigen is available and bindings are up to date
-	// If not, generate them first or create minimal test
-	if !abiGenAvailable() {
-		t.Logf("abigen not available, creating minimal binding test")
-		// Test passes if basic binding structure can be created
-		return
-	}
 	matches, _ := filepath.Glob("internal/contracts/*")
 	var dirs []string
 	for _, match := range matches {

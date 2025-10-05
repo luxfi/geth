@@ -63,7 +63,7 @@ func writeNodesJSON(file string, nodes nodeSet) {
 		exit(err)
 	}
 	if file == "-" {
-		_, _ = os.Stdout.Write(nodesJSON)
+		os.Stdout.Write(nodesJSON)
 		return
 	}
 	if err := os.WriteFile(file, nodesJSON, 0644); err != nil {

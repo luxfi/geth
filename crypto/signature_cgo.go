@@ -24,8 +24,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/crypto/secp256k1"
+	"github.com/luxfi/geth/common/math"
 )
 
 // Ecrecover returns the uncompressed public key that created the given signature.

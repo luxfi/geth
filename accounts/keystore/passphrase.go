@@ -37,11 +37,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/google/uuid"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/geth/crypto"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
 )
@@ -235,7 +235,7 @@ func DecryptKey(keyjson []byte, auth string) (*Key, error) {
 	}
 	return &Key{
 		Id:         id,
-		Address:    common.BytesToAddress(crypto.PubkeyToAddress(key.PublicKey).Bytes()),
+		Address:    crypto.PubkeyToAddress(key.PublicKey),
 		PrivateKey: key,
 	}, nil
 }
@@ -338,13 +338,12 @@ func getKDFKey(cryptoJSON CryptoJSON, auth string) ([]byte, error) {
 	}
 	dkLen := ensureInt(cryptoJSON.KDFParams["dklen"])
 
-	switch cryptoJSON.KDF {
-	case keyHeaderKDF:
+	if cryptoJSON.KDF == keyHeaderKDF {
 		n := ensureInt(cryptoJSON.KDFParams["n"])
 		r := ensureInt(cryptoJSON.KDFParams["r"])
 		p := ensureInt(cryptoJSON.KDFParams["p"])
 		return scrypt.Key(authArray, salt, n, r, p, dkLen)
-	case "pbkdf2":
+	} else if cryptoJSON.KDF == "pbkdf2" {
 		c := ensureInt(cryptoJSON.KDFParams["c"])
 		prf := cryptoJSON.KDFParams["prf"].(string)
 		if prf != "hmac-sha256" {

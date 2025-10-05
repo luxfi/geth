@@ -39,7 +39,6 @@ func TestHeaderVerification(t *testing.T) {
 }
 
 func testHeaderVerification(t *testing.T, scheme string) {
-	// Run all tests - no skipping blockchain tests
 	// Create a simple chain to verify
 	var (
 		gspec        = &Genesis{Config: params.TestChainConfig}
@@ -93,7 +92,6 @@ func TestHeaderVerificationForMergingEthash(t *testing.T) { testHeaderVerificati
 
 // Tests the verification for eth1/2 merging, including pre-merge and post-merge
 func testHeaderVerificationForMerging(t *testing.T, isClique bool) {
-	// Run all tests - no skipping blockchain tests
 	var (
 		gspec      *Genesis
 		preBlocks  []*types.Block
@@ -103,7 +101,7 @@ func testHeaderVerificationForMerging(t *testing.T, isClique bool) {
 	if isClique {
 		var (
 			key, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-			addr   = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+			addr   = crypto.PubkeyToAddress(key.PublicKey)
 			config = *params.AllCliqueProtocolChanges
 		)
 		engine = beacon.New(clique.New(params.AllCliqueProtocolChanges.Clique, rawdb.NewMemoryDatabase()))

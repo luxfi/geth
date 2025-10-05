@@ -175,14 +175,7 @@ func (t *TransitionTrie) Commit(collectLeaf bool) (common.Hash, *trienode.NodeSe
 // NodeIterator returns an iterator that returns nodes of the trie. Iteration
 // starts at the key after the given start key.
 func (t *TransitionTrie) NodeIterator(startKey []byte) (NodeIterator, error) {
-	// Use the overlay trie's iterator if available, fallback to base
-	if t.overlay != nil {
-		return t.overlay.NodeIterator(startKey)
-	}
-	if t.base != nil {
-		return t.base.NodeIterator(startKey)
-	}
-	return nil, fmt.Errorf("both overlay and base tries are nil")
+	panic("not implemented") // TODO: Implement
 }
 
 // Prove constructs a Merkle proof for key. The result contains all encoded nodes
@@ -193,16 +186,7 @@ func (t *TransitionTrie) NodeIterator(startKey []byte) (NodeIterator, error) {
 // nodes of the longest existing prefix of the key (at least the root), ending
 // with the node that proves the absence of the key.
 func (t *TransitionTrie) Prove(key []byte, proofDb ethdb.KeyValueWriter) error {
-	// Try overlay first, then base
-	if t.overlay != nil {
-		if err := t.overlay.Prove(key, proofDb); err == nil {
-			return nil
-		}
-	}
-	if t.base != nil {
-		return t.base.Prove(key, proofDb)
-	}
-	return fmt.Errorf("both overlay and base tries are nil")
+	panic("not implemented") // TODO: Implement
 }
 
 // IsVerkle returns true if the trie is verkle-tree based
@@ -239,20 +223,5 @@ func (t *TransitionTrie) UpdateContractCode(addr common.Address, codeHash common
 
 // Witness returns a set containing all trie nodes that have been accessed.
 func (t *TransitionTrie) Witness() map[string][]byte {
-	// Combine witnesses from both overlay and base tries
-	witness := make(map[string][]byte)
-
-	if t.overlay != nil {
-		for k, v := range t.overlay.Witness() {
-			witness[k] = v
-		}
-	}
-
-	if t.base != nil {
-		for k, v := range t.base.Witness() {
-			witness[k] = v
-		}
-	}
-
-	return witness
+	panic("not implemented")
 }

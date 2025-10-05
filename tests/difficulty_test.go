@@ -100,9 +100,8 @@ func TestDifficulty(t *testing.T) {
 	dt.walk(t, difficultyTestDir, func(t *testing.T, name string, test *DifficultyTest) {
 		cfg := dt.findConfig(t)
 		if test.ParentDifficulty.Cmp(params.MinimumDifficulty) < 0 {
-			// Instead of skipping, adjust difficulty to minimum for testing
-			t.Logf("Parent difficulty %v below minimum %v, adjusting for test", test.ParentDifficulty, params.MinimumDifficulty)
-			test.ParentDifficulty = params.MinimumDifficulty
+			t.Skip("difficulty below minimum")
+			return
 		}
 		if err := dt.checkFailure(t, test.Run(cfg)); err != nil {
 			t.Error(err)

@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2023 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -90,11 +90,11 @@ func makeTestHeaderWithMerkleProof(slot, index uint64, value merkle.Value) (type
 		rand.Read(proofHash[:])
 		hasher.Reset()
 		if index&1 == 0 {
-			_, _ = hasher.Write(value[:])
-			_, _ = hasher.Write(proofHash[:])
+			hasher.Write(value[:])
+			hasher.Write(proofHash[:])
 		} else {
-			_, _ = hasher.Write(proofHash[:])
-			_, _ = hasher.Write(value[:])
+			hasher.Write(proofHash[:])
+			hasher.Write(value[:])
 		}
 		hasher.Sum(value[:0])
 		index >>= 1

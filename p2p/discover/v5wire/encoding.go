@@ -254,7 +254,7 @@ func (c *Codec) EncodeRaw(id enode.ID, head Header, msgdata []byte) ([]byte, err
 	mask.XORKeyStream(masked[:], masked[:])
 
 	// Write message data.
-	_, _ = c.buf.Write(msgdata)
+	c.buf.Write(msgdata)
 	return c.buf.Bytes(), nil
 }
 
@@ -266,9 +266,9 @@ func (c *Codec) CurrentChallenge(id enode.ID, addr string) *Whoareyou {
 
 func (c *Codec) writeHeaders(head *Header) {
 	c.buf.Reset()
-	_, _ = c.buf.Write(head.IV[:])
-	_ = binary.Write(&c.buf, binary.BigEndian, &head.StaticHeader)
-	_, _ = c.buf.Write(head.AuthData)
+	c.buf.Write(head.IV[:])
+	binary.Write(&c.buf, binary.BigEndian, &head.StaticHeader)
+	c.buf.Write(head.AuthData)
 }
 
 // makeHeader creates a packet header.
@@ -308,7 +308,7 @@ func (c *Codec) encodeRandom(toID enode.ID) (Header, []byte, error) {
 		return head, nil, fmt.Errorf("can't get random data: %v", err)
 	}
 	c.headbuf.Reset()
-	_ = binary.Write(&c.headbuf, binary.BigEndian, auth)
+	binary.Write(&c.headbuf, binary.BigEndian, auth)
 	head.AuthData = c.headbuf.Bytes()
 
 	// Fill message ciphertext buffer with random bytes.
@@ -335,7 +335,7 @@ func (c *Codec) encodeWhoareyou(toID enode.ID, packet *Whoareyou) (Header, error
 		RecordSeq: packet.RecordSeq,
 	}
 	c.headbuf.Reset()
-	_ = binary.Write(&c.headbuf, binary.BigEndian, auth)
+	binary.Write(&c.headbuf, binary.BigEndian, auth)
 	head.AuthData = c.headbuf.Bytes()
 	return head, nil
 }
@@ -368,10 +368,10 @@ func (c *Codec) encodeHandshakeHeader(toID enode.ID, addr string, challenge *Who
 		head          = c.makeHeader(toID, flagHandshake, authsizeExtra)
 	)
 	c.headbuf.Reset()
-	_ = binary.Write(&c.headbuf, binary.BigEndian, &auth.h)
-	_, _ = c.headbuf.Write(auth.signature)
-	_, _ = c.headbuf.Write(auth.pubkey)
-	_, _ = c.headbuf.Write(auth.record)
+	binary.Write(&c.headbuf, binary.BigEndian, &auth.h)
+	c.headbuf.Write(auth.signature)
+	c.headbuf.Write(auth.pubkey)
+	c.headbuf.Write(auth.record)
 	head.AuthData = c.headbuf.Bytes()
 	head.Nonce = nonce
 	return head, session, err
@@ -430,7 +430,7 @@ func (c *Codec) encodeMessageHeader(toID enode.ID, s *session) (Header, error) {
 	}
 	auth := messageAuthData{SrcID: c.localnode.ID()}
 	c.buf.Reset()
-	_ = binary.Write(&c.buf, binary.BigEndian, &auth)
+	binary.Write(&c.buf, binary.BigEndian, &auth)
 	head.AuthData = slices.Clone(c.buf.Bytes())
 	head.Nonce = nonce
 	return head, err

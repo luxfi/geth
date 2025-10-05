@@ -28,8 +28,8 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/rlp"
@@ -250,7 +250,7 @@ func Decode(input []byte) (Packet, Pubkey, []byte, error) {
 // Encode encodes a discovery packet.
 func Encode(priv *ecdsa.PrivateKey, req Packet) (packet, hash []byte, err error) {
 	b := new(bytes.Buffer)
-	_, _ = b.Write(headSpace)
+	b.Write(headSpace)
 	b.WriteByte(req.Kind())
 	if err := rlp.Encode(b, req); err != nil {
 		return nil, nil, err
@@ -291,7 +291,7 @@ func DecodePubkey(curve elliptic.Curve, e Pubkey) (*ecdsa.PublicKey, error) {
 	half := len(e) / 2
 	p.X.SetBytes(e[:half])
 	p.Y.SetBytes(e[half:])
-	if !p.IsOnCurve(p.X, p.Y) {
+	if !p.Curve.IsOnCurve(p.X, p.Y) {
 		return nil, ErrBadPoint
 	}
 	return p, nil

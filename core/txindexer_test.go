@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -73,7 +73,7 @@ func verifyNoIndex(t *testing.T, db ethdb.Database, blocks []*types.Block) {
 func TestTxIndexer(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
+		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{
@@ -136,7 +136,7 @@ func TestTxIndexer(t *testing.T) {
 func TestTxIndexerRepair(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
+		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{
@@ -261,7 +261,7 @@ func TestTxIndexerRepair(t *testing.T) {
 func TestTxIndexerReport(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
+		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{

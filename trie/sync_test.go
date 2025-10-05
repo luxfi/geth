@@ -216,7 +216,7 @@ func testIterativeSync(t *testing.T, count int, bypath bool, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_ = batch.Write()
+		batch.Write()
 
 		paths, nodes, _ = sched.Missing(count)
 		elements = elements[:0]
@@ -282,7 +282,7 @@ func testIterativeDelayedSync(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_ = batch.Write()
+		batch.Write()
 
 		paths, nodes, _ = sched.Missing(10000)
 		elements = elements[len(results):]
@@ -352,7 +352,7 @@ func testIterativeRandomSync(t *testing.T, count int, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_ = batch.Write()
+		batch.Write()
 
 		paths, nodes, _ = sched.Missing(count)
 		queue = make(map[string]trieElement)
@@ -423,7 +423,7 @@ func testIterativeRandomDelayedSync(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_ = batch.Write()
+		batch.Write()
 		for _, result := range results {
 			delete(queue, result.Path)
 		}
@@ -495,7 +495,7 @@ func testDuplicateAvoidanceSync(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_ = batch.Write()
+		batch.Write()
 
 		paths, nodes, _ = sched.Missing(0)
 		elements = elements[:0]
@@ -567,10 +567,10 @@ func testIncompleteSync(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_ = batch.Write()
+		batch.Write()
 
 		for _, result := range results {
-			hash := common.Hash(crypto.Keccak256Hash(result.Data))
+			hash := crypto.Keccak256Hash(result.Data)
 			if hash != root {
 				addedKeys = append(addedKeys, result.Path)
 				addedHashes = append(addedHashes, hash)
@@ -657,7 +657,7 @@ func testSyncOrdering(t *testing.T, scheme string) {
 		if err := sched.Commit(batch); err != nil {
 			t.Fatalf("failed to commit data: %v", err)
 		}
-		_ = batch.Write()
+		batch.Write()
 
 		paths, nodes, _ = sched.Missing(1)
 		elements = elements[:0]
@@ -730,7 +730,7 @@ func syncWithHookWriter(t *testing.T, root common.Hash, db ethdb.Database, srcDb
 		if hookWriter != nil {
 			batch.Replay(hookWriter)
 		} else {
-			_ = batch.Write()
+			batch.Write()
 		}
 		paths, nodes, _ = sched.Missing(0)
 		elements = elements[:0]

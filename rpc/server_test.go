@@ -152,7 +152,7 @@ func TestServerShortLivedConn(t *testing.T) {
 
 		conn.SetDeadline(deadline)
 		// Write the request, then half-close the connection so the server stops reading.
-		_, _ = conn.Write([]byte(request))
+		conn.Write([]byte(request))
 		conn.(*net.TCPConn).CloseWrite()
 		// Now try to get the response.
 		buf := make([]byte, 2000)

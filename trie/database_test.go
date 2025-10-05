@@ -109,8 +109,10 @@ func (db *testDb) dirties(root common.Hash, topToBottom bool) ([]*trienode.Merge
 		pending []*trienode.MergedNodeSet
 		roots   []common.Hash
 	)
-	for root != db.root {
-
+	for {
+		if root == db.root {
+			break
+		}
 		nodes, ok := db.nodes[root]
 		if !ok {
 			break

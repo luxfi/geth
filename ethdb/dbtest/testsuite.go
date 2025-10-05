@@ -790,7 +790,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			for i := 0; i < len(keys); i++ {
 				batch.Put(keys[i], vals[i])
 			}
-			_ = batch.Write()
+			batch.Write()
 		}
 		b.Run("BenchWriteSorted", func(b *testing.B) {
 			benchBatchWrite(b, sKeys, sVals)
@@ -838,7 +838,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			// Create batch and delete range
 			batch := db.NewBatch()
 			batch.DeleteRange([]byte("0"), []byte("999999999"))
-			_ = batch.Write()
+			batch.Write()
 		}
 
 		b.Run("BatchDeleteRange100", func(b *testing.B) {
@@ -884,7 +884,7 @@ func BenchDatabaseSuite(b *testing.B, New func() ethdb.KeyValueStore) {
 			batch.DeleteRange([]byte(strconv.Itoa(rangeStart)), []byte(strconv.Itoa(rangeEnd)))
 
 			// Write the batch
-			_ = batch.Write()
+			batch.Write()
 		}
 
 		b.Run("BatchMixedOps100", func(b *testing.B) {

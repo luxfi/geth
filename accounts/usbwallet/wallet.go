@@ -25,13 +25,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/karalabe/hid"
-	"github.com/luxfi/crypto"
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/log"
+	"github.com/karalabe/hid"
 )
 
 // Maximum time between wallet health checks to detect USB unplugs.
@@ -531,7 +531,7 @@ func (w *wallet) signHash(account accounts.Account, hash []byte) ([]byte, error)
 // SignData signs keccak256(data). The mimetype parameter describes the type of data being signed
 func (w *wallet) SignData(account accounts.Account, mimeType string, data []byte) ([]byte, error) {
 	// Unless we are doing 712 signing, simply dispatch to signHash
-	if mimeType != accounts.MimetypeTypedData || len(data) != 66 || data[0] != 0x19 || data[1] != 0x01 {
+	if !(mimeType == accounts.MimetypeTypedData && len(data) == 66 && data[0] == 0x19 && data[1] == 0x01) {
 		return w.signHash(account, crypto.Keccak256(data))
 	}
 

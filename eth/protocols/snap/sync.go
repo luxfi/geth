@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"
@@ -639,7 +639,7 @@ func (s *Syncer) Sync(root common.Hash, cancel chan struct{}) error {
 	// Flush out the last committed raw states
 	defer func() {
 		if s.stateWriter.ValueSize() > 0 {
-			_ = s.stateWriter.Write()
+			s.stateWriter.Write()
 			s.stateWriter.Reset()
 		}
 	}()
@@ -2679,7 +2679,7 @@ func (s *Syncer) onByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) error
 	for i, j := 0, 0; i < len(bytecodes); i++ {
 		// Find the next hash that we've been served, leaving misses with nils
 		hasher.Reset()
-		_, _ = hasher.Write(bytecodes[i])
+		hasher.Write(bytecodes[i])
 		hasher.Read(hash)
 
 		for j < len(req.hashes) && !bytes.Equal(hash, req.hashes[j][:]) {
@@ -2928,7 +2928,7 @@ func (s *Syncer) OnTrieNodes(peer SyncPeer, id uint64, trienodes [][]byte) error
 	for i, j := 0, 0; i < len(trienodes); i++ {
 		// Find the next hash that we've been served, leaving misses with nils
 		hasher.Reset()
-		_, _ = hasher.Write(trienodes[i])
+		hasher.Write(trienodes[i])
 		hasher.Read(hash)
 
 		for j < len(req.hashes) && !bytes.Equal(hash, req.hashes[j][:]) {
@@ -3033,7 +3033,7 @@ func (s *Syncer) onHealByteCodes(peer SyncPeer, id uint64, bytecodes [][]byte) e
 	for i, j := 0, 0; i < len(bytecodes); i++ {
 		// Find the next hash that we've been served, leaving misses with nils
 		hasher.Reset()
-		_, _ = hasher.Write(bytecodes[i])
+		hasher.Write(bytecodes[i])
 		hasher.Read(hash)
 
 		for j < len(req.hashes) && !bytes.Equal(hash, req.hashes[j][:]) {
@@ -3085,7 +3085,7 @@ func (s *Syncer) onHealState(paths [][]byte, value []byte) error {
 		s.storageHealedBytes += common.StorageSize(1 + 2*common.HashLength + len(value))
 	}
 	if s.stateWriter.ValueSize() > ethdb.IdealBatchSize {
-		_ = s.stateWriter.Write() // It's fine to ignore the error here
+		s.stateWriter.Write() // It's fine to ignore the error here
 		s.stateWriter.Reset()
 	}
 	return nil

@@ -58,7 +58,7 @@ func TestHashing(t *testing.T) {
 		hasher := sha3.NewLegacyKeccak256()
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			_, _ = hasher.Write(bytecodes[i])
+			hasher.Write(bytecodes[i])
 			hash := hasher.Sum(nil)
 			got = fmt.Sprintf("%v\n%v", got, hash)
 		}
@@ -68,7 +68,7 @@ func TestHashing(t *testing.T) {
 		var hash = make([]byte, 32)
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			_, _ = hasher.Write(bytecodes[i])
+			hasher.Write(bytecodes[i])
 			hasher.Read(hash)
 			want = fmt.Sprintf("%v\n%v", want, hash)
 		}
@@ -91,7 +91,7 @@ func BenchmarkHashing(b *testing.B) {
 		hasher := sha3.NewLegacyKeccak256()
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			_, _ = hasher.Write(bytecodes[i])
+			hasher.Write(bytecodes[i])
 			hasher.Sum(nil)
 		}
 	}
@@ -100,19 +100,19 @@ func BenchmarkHashing(b *testing.B) {
 		var hash = make([]byte, 32)
 		for i := 0; i < len(bytecodes); i++ {
 			hasher.Reset()
-			_, _ = hasher.Write(bytecodes[i])
+			hasher.Write(bytecodes[i])
 			hasher.Read(hash)
 		}
 	}
 	b.Run("old", func(b *testing.B) {
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			old()
 		}
 	})
 	b.Run("new", func(b *testing.B) {
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			new()
 		}
 	})
@@ -596,7 +596,6 @@ func testSyncBloatedProof(t *testing.T, scheme string) {
 		// The proofs
 		proof := trienode.NewProofSet()
 		if err := t.accountTrie.Prove(origin[:], proof); err != nil {
-			t.logger.Error("Could not prove origin", "origin", origin, "error", err)
 			t.logger.Error("Could not prove origin", "origin", origin, "error", err)
 		}
 		// The bloat: add proof of every single element
@@ -1461,14 +1460,14 @@ func key32(i uint64) []byte {
 
 var (
 	codehashes = []common.Hash{
-		common.Hash(crypto.Keccak256Hash([]byte{0})),
-		common.Hash(crypto.Keccak256Hash([]byte{1})),
-		common.Hash(crypto.Keccak256Hash([]byte{2})),
-		common.Hash(crypto.Keccak256Hash([]byte{3})),
-		common.Hash(crypto.Keccak256Hash([]byte{4})),
-		common.Hash(crypto.Keccak256Hash([]byte{5})),
-		common.Hash(crypto.Keccak256Hash([]byte{6})),
-		common.Hash(crypto.Keccak256Hash([]byte{7})),
+		crypto.Keccak256Hash([]byte{0}),
+		crypto.Keccak256Hash([]byte{1}),
+		crypto.Keccak256Hash([]byte{2}),
+		crypto.Keccak256Hash([]byte{3}),
+		crypto.Keccak256Hash([]byte{4}),
+		crypto.Keccak256Hash([]byte{5}),
+		crypto.Keccak256Hash([]byte{6}),
+		crypto.Keccak256Hash([]byte{7}),
 	}
 )
 
