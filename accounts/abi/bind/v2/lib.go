@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -30,11 +30,11 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/luxfi/crypto"
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/event"
 )
 
@@ -225,9 +225,7 @@ func DeployContract(opts *TransactOpts, bytecode []byte, backend ContractBackend
 	if err != nil {
 		return common.Address{}, nil, err
 	}
-	fromCrypto := crypto.BytesToAddress(opts.From[:])
-	cryptoAddr := crypto.CreateAddress(fromCrypto, tx.Nonce())
-	return common.BytesToAddress(cryptoAddr[:]), tx, nil
+	return crypto.CreateAddress(opts.From, tx.Nonce()), tx, nil
 }
 
 // DefaultDeployer returns a DeployFn that signs and submits creation transactions

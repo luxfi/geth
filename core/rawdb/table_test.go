@@ -77,7 +77,7 @@ func testTableDatabase(t *testing.T, prefix string) {
 	for _, entry := range entries {
 		batch.Put(entry.key, entry.value)
 	}
-	_ = batch.Write()
+	batch.Write()
 	for _, entry := range entries {
 		got, err := db.Get(entry.key)
 		if err != nil {
@@ -139,10 +139,10 @@ func testTableDatabase(t *testing.T, prefix string) {
 	for _, entry := range entries {
 		batch.Put(entry.key, entry.value)
 	}
-	_ = batch.Write()
+	batch.Write()
 	batch.Reset()
 	batch.DeleteRange(nil, nil)
-	_ = batch.Write()
+	batch.Write()
 	for _, entry := range entries {
 		_, err := db.Get(entry.key)
 		if err == nil {

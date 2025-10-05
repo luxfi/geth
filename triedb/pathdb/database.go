@@ -25,7 +25,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-verkle"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
@@ -33,6 +32,7 @@ import (
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/trie/trienode"
+	"github.com/ethereum/go-verkle"
 )
 
 // layer is the interface implemented by all state layers which includes some
@@ -606,9 +606,9 @@ func (db *Database) journalPath() string {
 	}
 	var fname string
 	if db.isVerkle {
-		fname = "verkle.journal"
+		fname = fmt.Sprintf("verkle.journal")
 	} else {
-		fname = "merkle.journal"
+		fname = fmt.Sprintf("merkle.journal")
 	}
 	return filepath.Join(db.config.JournalDirectory, fname)
 }

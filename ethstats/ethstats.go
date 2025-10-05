@@ -30,7 +30,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/mclock"
 	"github.com/luxfi/geth/consensus"

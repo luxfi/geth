@@ -103,47 +103,14 @@ func (d *depTreeDeployer) linkAndDeploy(metadata *MetaData) (common.Address, err
 	// If this contract/library depends on other libraries deploy them
 	// (and their dependencies) first
 	deployerCode := metadata.Bin
-
-	// Mapping of library placeholders to metadata IDs for test contracts
-	// This handles cases where bytecode placeholders don't match metadata IDs
-	placeholderMap := map[string]string{
-		"ffc1393672b8ed81d0c8093ffcb0e7fbe8": "c1393672b8ed81d0c8093ffcb0e7fbe8fa", // L1
-		"2ce896a6dd38932d354f317286f90bc675": "e896a6dd38932d354f317286f90bc675f2", // L2
-		"fd1474cf57f7ed48491e8bfdfd0d172adf": "1474cf57f7ed48491e8bfdfd0d172adf54", // L2b
-		"d03b97f5e1a564374023a72ac7d1806773": "3b97f5e1a564374023a72ac7d18067730a", // L3
-		"5f33a1fab8ea7d932b4bc8c5e7dcd90bc2": "33a1fab8ea7d932b4bc8c5e7dcd90bc28b", // L4
-		"6070639404c39b5667691bb1f9177e1eac": "70639404c39b5667691bb1f9177e1eacdf", // L4b
-	}
-
-	// Deploy dependencies and link them
 	for _, dep := range metadata.Deps {
 		addr, err := d.linkAndDeploy(dep)
 		if err != nil {
 			return common.Address{}, err
 		}
-		// Link their deployed addresses into the bytecode
+		// Link their deployed addresses into the bytecode to produce
 		deployerCode = strings.ReplaceAll(deployerCode, "__$"+dep.ID+"$__", strings.ToLower(addr.String()[2:]))
 	}
-
-	// Also replace any mismatched placeholders using the mapping
-	for placeholder, id := range placeholderMap {
-		if addr, ok := d.deployedAddrs[id]; ok {
-			deployerCode = strings.ReplaceAll(deployerCode, "__$"+placeholder+"$__", strings.ToLower(addr.String()[2:]))
-		}
-	}
-
-	// Check if there are any unresolved library placeholders
-	if strings.Contains(deployerCode, "__$") {
-		// Extract unresolved placeholder for better error message
-		start := strings.Index(deployerCode, "__$")
-		end := strings.Index(deployerCode[start:], "$__")
-		if end != -1 {
-			placeholder := deployerCode[start+3 : start+end]
-			return common.Address{}, fmt.Errorf("unresolved library placeholder: %s", placeholder)
-		}
-		return common.Address{}, fmt.Errorf("unresolved library placeholders in bytecode")
-	}
-
 	// Finally, deploy the top-level contract.
 	code, err := hex.DecodeString(deployerCode[2:])
 	if err != nil {

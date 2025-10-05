@@ -19,6 +19,7 @@ package trie
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"sync"
 
 	"github.com/luxfi/geth/common"
@@ -26,7 +27,7 @@ import (
 	"github.com/luxfi/geth/common/prque"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/metrics"
@@ -553,7 +554,7 @@ func (s *Sync) children(req *nodeRequest, object node) ([]*nodeRequest, error) {
 		}
 		children = []childNode{{
 			node: node.Val,
-			path: append(append([]byte(nil), req.path...), key...),
+			path: slices.Concat(req.path, key),
 		}}
 		// Mark all internal nodes between shortNode and its **in disk**
 		// child as invalid. This is essential in the case of path mode
@@ -595,7 +596,7 @@ func (s *Sync) children(req *nodeRequest, object node) ([]*nodeRequest, error) {
 			if node.Children[i] != nil {
 				children = append(children, childNode{
 					node: node.Children[i],
-					path: append(append([]byte(nil), req.path...), byte(i)),
+					path: append(slices.Clone(req.path), byte(i)),
 				})
 			}
 		}
@@ -729,7 +730,7 @@ func (s *Sync) hasNode(owner common.Hash, path []byte, hash common.Hash) (exists
 	} else {
 		blob = rawdb.ReadStorageTrieNode(s.database, owner, path)
 	}
-	exists = hash == common.BytesToHash(crypto.Keccak256(blob))
+	exists = hash == crypto.Keccak256Hash(blob)
 	inconsistent = !exists && len(blob) != 0
 	return exists, inconsistent
 }

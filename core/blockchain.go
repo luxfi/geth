@@ -28,7 +28,6 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
-	"testing"
 	"time"
 
 	"github.com/luxfi/geth/common"
@@ -395,7 +394,7 @@ func NewBlockChain(db ethdb.Database, genesis *Genesis, engine consensus.Engine,
 	bc.statedb = state.NewDatabase(bc.triedb, nil)
 	bc.validator = NewBlockValidator(chainConfig, bc)
 	bc.prefetcher = newStatePrefetcher(chainConfig, bc.hc)
-	bc.processor = NewStateProcessorWithVMConfig(chainConfig, bc.hc, cfg.VmConfig)
+	bc.processor = NewStateProcessor(bc.hc)
 
 	genesisHeader := bc.GetHeaderByNumber(0)
 	if genesisHeader == nil {
@@ -712,7 +711,7 @@ func (bc *BlockChain) initializeHistoryPruning(latest uint64) error {
 			// here, but it'd be a bit dangerous since they may not have intended this
 			// action to happen. So just tell them how to do it.
 			log.Error(fmt.Sprintf("Chain history mode is configured as %q, but database is not pruned.", bc.cfg.ChainHistoryMode.String()))
-			log.Error("Run 'geth prune-history' to prune pre-merge history.")
+			log.Error(fmt.Sprintf("Run 'geth prune-history' to prune pre-merge history."))
 			return errors.New("history pruning requested via configuration")
 		}
 		predefinedPoint := history.PrunePoints[bc.genesisBlock.Hash()]
@@ -1765,10 +1764,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks, setHead bool, makeWitness 
 	}()
 
 	// Start a parallel signature recovery (signer will fluke on fork transition, minimal perf loss)
-	// Skip sender caching during tests to avoid goroutine leaks
-	if !testing.Testing() {
-		SenderCacher().RecoverFromBlocks(types.MakeSigner(bc.chainConfig, chain[0].Number(), chain[0].Time()), chain)
-	}
+	SenderCacher().RecoverFromBlocks(types.MakeSigner(bc.chainConfig, chain[0].Number(), chain[0].Time()), chain)
 
 	var (
 		stats     = insertStats{startTime: mclock.Now()}
@@ -2032,11 +2028,7 @@ func (bc *BlockChain) ProcessBlock(parentRoot common.Hash, block *types.Block, s
 			// Disable tracing for prefetcher executions.
 			vmCfg := bc.cfg.VmConfig
 			vmCfg.Tracer = nil
-			var interruptFlag uint32
-			if interrupt.Load() {
-				interruptFlag = 1
-			}
-			bc.prefetcher.Prefetch(block, throwaway, bc.chainConfig, &interruptFlag)
+			bc.prefetcher.Prefetch(block, throwaway, vmCfg, &interrupt)
 
 			blockPrefetchExecuteTimer.Update(time.Since(start))
 			if interrupt.Load() {
@@ -2065,7 +2057,7 @@ func (bc *BlockChain) ProcessBlock(parentRoot common.Hash, block *types.Block, s
 				witnessStats = stateless.NewWitnessStats()
 			}
 		}
-		statedb.StartPrefetcher("chain", witness)
+		statedb.StartPrefetcher("chain", witness, witnessStats)
 		defer statedb.StopPrefetcher()
 	}
 
@@ -2084,7 +2076,7 @@ func (bc *BlockChain) ProcessBlock(parentRoot common.Hash, block *types.Block, s
 
 	// Process block using the parent state as reference point
 	pstart := time.Now()
-	res, err := bc.processor.Process(block, statedb, bc.chainConfig)
+	res, err := bc.processor.Process(block, statedb, bc.cfg.VmConfig)
 	if err != nil {
 		bc.reportBlock(block, res, err)
 		return nil, err
@@ -2092,7 +2084,7 @@ func (bc *BlockChain) ProcessBlock(parentRoot common.Hash, block *types.Block, s
 	ptime := time.Since(pstart)
 
 	vstart := time.Now()
-	if err := bc.validator.ValidateState(block, statedb, res.Receipts, res.GasUsed); err != nil {
+	if err := bc.validator.ValidateState(block, statedb, res, false); err != nil {
 		bc.reportBlock(block, res, err)
 		return nil, err
 	}

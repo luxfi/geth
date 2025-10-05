@@ -274,8 +274,7 @@ func (t *BinaryTrie) NodeIterator(startKey []byte) (trie.NodeIterator, error) {
 // nodes of the longest existing prefix of the key (at least the root), ending
 // with the node that proves the absence of the key.
 func (t *BinaryTrie) Prove(key []byte, proofDb ethdb.KeyValueWriter) error {
-	// Binary trie proofs are not yet implemented
-	return errors.New("binary trie proofs not yet implemented")
+	panic("not implemented")
 }
 
 // Copy creates a deep copy of the trie.
@@ -350,10 +349,5 @@ func (t *BinaryTrie) PrefetchStorage(addr common.Address, keys [][]byte) error {
 
 // Witness returns a set containing all trie nodes that have been accessed.
 func (t *BinaryTrie) Witness() map[string][]byte {
-	// Return the accessed nodes from the tracer if available
-	if t.tracer != nil {
-		return t.tracer.Values()
-	}
-	// Return empty map if no tracer
-	return make(map[string][]byte)
+	panic("not implemented")
 }

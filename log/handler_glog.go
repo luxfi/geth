@@ -170,16 +170,10 @@ func (h *GlogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 
 // WithGroup implements slog.Handler, returning a new Handler with the given
 // group appended to the receiver's existing groups.
+//
+// Note, this function is not implemented.
 func (h *GlogHandler) WithGroup(name string) slog.Handler {
-	// Create a new GlogHandler wrapping the origin handler's WithGroup result
-	return &GlogHandler{
-		origin:    h.origin.WithGroup(name),
-		level:     h.level,
-		override:  h.override,
-		patterns:  h.patterns,
-		siteCache: make(map[uintptr]slog.Level), // New cache to avoid concurrent access
-		location:  h.location,
-	}
+	panic("not implemented")
 }
 
 // Handle implements slog.Handler, filtering a log record through the global,

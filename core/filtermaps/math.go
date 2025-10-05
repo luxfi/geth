@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -95,7 +95,7 @@ func (p *Params) deriveFields() {
 func addressValue(address common.Address) common.Hash {
 	var result common.Hash
 	hasher := sha256.New()
-	_, _ = hasher.Write(address[:])
+	hasher.Write(address[:])
 	hasher.Sum(result[:0])
 	return result
 }
@@ -104,7 +104,7 @@ func addressValue(address common.Address) common.Hash {
 func topicValue(topic common.Hash) common.Hash {
 	var result common.Hash
 	hasher := sha256.New()
-	_, _ = hasher.Write(topic[:])
+	hasher.Write(topic[:])
 	hasher.Sum(result[:0])
 	return result
 }
@@ -155,11 +155,11 @@ func (p *Params) lastEpochMap(epoch uint32) uint32 {
 // higher order layers.
 func (p *Params) rowIndex(mapIndex, layerIndex uint32, logValue common.Hash) uint32 {
 	hasher := sha256.New()
-	_, _ = hasher.Write(logValue[:])
+	hasher.Write(logValue[:])
 	var indexEnc [8]byte
 	binary.LittleEndian.PutUint32(indexEnc[0:4], p.maskedMapIndex(mapIndex, layerIndex))
 	binary.LittleEndian.PutUint32(indexEnc[4:8], layerIndex)
-	_, _ = hasher.Write(indexEnc[:])
+	hasher.Write(indexEnc[:])
 	var hash common.Hash
 	hasher.Sum(hash[:0])
 	return binary.LittleEndian.Uint32(hash[:4]) % p.mapHeight
@@ -174,8 +174,8 @@ func (p *Params) columnIndex(lvIndex uint64, logValue *common.Hash) uint32 {
 	// require passing it through the entire matcher logic because of multi-thread
 	// matching
 	hasher := fnv.New64a()
-	_, _ = hasher.Write(indexEnc[:])
-	_, _ = hasher.Write(logValue[:])
+	hasher.Write(indexEnc[:])
+	hasher.Write(logValue[:])
 	hash := hasher.Sum64()
 	hashBits := p.logMapWidth - p.logValuesPerMap
 	return uint32(lvIndex%p.valuesPerMap)<<hashBits + (uint32(hash>>(64-hashBits)) ^ uint32(hash)>>(32-hashBits))

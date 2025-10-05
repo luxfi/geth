@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/holiman/uint256"
@@ -70,8 +70,7 @@ func (e *BlockAccessList) Hash() common.Hash {
 		// under reasonable conditions.
 		panic(err)
 	}
-	hash := crypto.Keccak256Hash(enc.Bytes())
-	return common.BytesToHash(hash[:])
+	return crypto.Keccak256Hash(enc.Bytes())
 }
 
 // encodeBalance encodes the provided balance into 16-bytes.

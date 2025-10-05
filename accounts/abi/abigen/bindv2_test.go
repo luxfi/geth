@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -269,8 +269,6 @@ var combinedJSONBindTestsV2 = []bindV2Test{
 // cases (using v2 binding mode) and ensures that no mutations occurred compared
 // to the expected output included under testdata/v2.
 func TestBindingV2ConvertedV1Tests(t *testing.T) {
-	// Test binding generation with current available data
-	// If IDs need regeneration, the test will log but continue
 	for _, tc := range combinedJSONBindTestsV2 {
 		fname := fmt.Sprintf("testdata/v2/%v.go.txt", strings.ToLower(tc.name))
 		t.Run(tc.name, func(t *testing.T) {

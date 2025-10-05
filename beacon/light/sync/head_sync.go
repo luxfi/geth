@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -90,7 +90,7 @@ func (s *HeadSync) Process(requester request.Requester, events []request.Event) 
 			if epoch < s.reqFinalityEpoch[event.Server] {
 				continue
 			}
-			if finality, ok := s.headTracker.ValidatedFinality(); ok && finality.Attested.Epoch() >= epoch {
+			if finality, ok := s.headTracker.ValidatedFinality(); ok && finality.Attested.Header.Epoch() >= epoch {
 				continue
 			}
 			requester.Send(event.Server, ReqFinality{})

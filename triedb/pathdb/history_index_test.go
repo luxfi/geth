@@ -39,7 +39,7 @@ func TestIndexReaderBasic(t *testing.T) {
 	}
 	batch := db.NewBatch()
 	bw.finish(batch)
-	_ = batch.Write()
+	batch.Write()
 
 	br, err := newIndexReader(db, newAccountIdent(common.Hash{0xa}))
 	if err != nil {
@@ -81,7 +81,7 @@ func TestIndexReaderLarge(t *testing.T) {
 	}
 	batch := db.NewBatch()
 	bw.finish(batch)
-	_ = batch.Write()
+	batch.Write()
 
 	br, err := newIndexReader(db, newAccountIdent(common.Hash{0xa}))
 	if err != nil {
@@ -132,7 +132,7 @@ func TestIndexWriterBasic(t *testing.T) {
 	}
 	batch := db.NewBatch()
 	iw.finish(batch)
-	_ = batch.Write()
+	batch.Write()
 
 	iw, err := newIndexWriter(db, newAccountIdent(common.Hash{0xa}))
 	if err != nil {
@@ -154,7 +154,7 @@ func TestIndexWriterDelete(t *testing.T) {
 	}
 	batch := db.NewBatch()
 	iw.finish(batch)
-	_ = batch.Write()
+	batch.Write()
 
 	// Delete unknown id, the request should be rejected
 	id, _ := newIndexDeleter(db, newAccountIdent(common.Hash{0xa}))
@@ -171,7 +171,7 @@ func TestIndexWriterDelete(t *testing.T) {
 		if rand.Intn(10) == 0 {
 			batch := db.NewBatch()
 			id.finish(batch)
-			_ = batch.Write()
+			batch.Write()
 		}
 	}
 }
@@ -200,7 +200,7 @@ func TestBatchIndexerWrite(t *testing.T) {
 	)
 	for i, h := range histories {
 		for _, addr := range h.accountList {
-			addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+			addrHash := crypto.Keccak256Hash(addr.Bytes())
 			accounts[addrHash] = append(accounts[addrHash], uint64(i+1))
 
 			if _, ok := storages[addrHash]; !ok {

@@ -23,9 +23,9 @@ import (
 	"math/big"
 	"reflect"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/geth/crypto"
 )
 
 // MakeTopics converts a filter query argument list into a filter topic set.

@@ -65,7 +65,7 @@ func TestTransaction(t *testing.T) {
 
 func TestExecutionSpecTransaction(t *testing.T) {
 	if !common.FileExist(executionSpecStateTestDir) {
-
+		t.Skipf("directory %s does not exist", executionSpecStateTestDir)
 	}
 	st := new(testMatcher)
 

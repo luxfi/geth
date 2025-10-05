@@ -26,7 +26,6 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
@@ -39,6 +38,7 @@ import (
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/trie/utils"
+	"github.com/holiman/uint256"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -192,13 +192,13 @@ func NewWithReader(root common.Hash, db Database, reader Reader) (*StateDB, erro
 // StartPrefetcher initializes a new trie prefetcher to pull in nodes from the
 // state trie concurrently while the state is mutated so that when we reach the
 // commit phase, most of the needed data is already hot.
-func (s *StateDB) StartPrefetcher(namespace string, witness *stateless.Witness) {
+func (s *StateDB) StartPrefetcher(namespace string, witness *stateless.Witness, witnessStats *stateless.WitnessStats) {
 	// Terminate any previously running prefetcher
 	s.StopPrefetcher()
 
 	// Enable witness collection if requested
 	s.witness = witness
-	s.witnessStats = nil
+	s.witnessStats = witnessStats
 
 	// With the switch to the Proof-of-Stake consensus algorithm, block production
 	// rewards are now handled at the consensus layer. Consequently, a block may
@@ -208,7 +208,7 @@ func (s *StateDB) StartPrefetcher(namespace string, witness *stateless.Witness) 
 	//
 	// To prevent this, the account trie is always scheduled for prefetching once
 	// the prefetcher is constructed. For more details, see:
-	// https://github.com/ethereum/go-ethereum/issues/29880
+	// https://github.com/luxfi/geth/issues/29880
 	s.prefetcher = newTriePrefetcher(s.db, s.originalRoot, namespace, witness == nil)
 	if err := s.prefetcher.prefetch(common.Hash{}, s.originalRoot, common.Address{}, nil, nil, false); err != nil {
 		log.Error("Failed to prefetch account trie", "root", s.originalRoot, "err", err)

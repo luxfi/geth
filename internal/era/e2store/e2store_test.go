@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -144,7 +144,7 @@ func FuzzCodec(f *testing.F) {
 			b = bytes.NewBuffer(nil)
 			w = NewWriter(b)
 		)
-		_, _ = w.Write(entry.Type, entry.Value)
+		w.Write(entry.Type, entry.Value)
 		output := b.Bytes()
 		// Only care about the input that was actually consumed
 		input = input[:r.offset]

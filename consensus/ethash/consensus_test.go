@@ -64,8 +64,7 @@ func (d *diffTest) UnmarshalJSON(b []byte) (err error) {
 func TestCalcDifficulty(t *testing.T) {
 	file, err := os.Open(filepath.Join("..", "..", "tests", "testdata", "BasicTests", "difficulty.json"))
 	if err != nil {
-		t.Skipf("Test data file not found, skipping test: %v", err)
-		return
+		t.Skip(err)
 	}
 	defer file.Close()
 

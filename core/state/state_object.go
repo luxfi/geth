@@ -25,7 +25,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie/trienode"
@@ -99,7 +99,7 @@ func newObject(db *StateDB, address common.Address, acct *types.StateAccount) *s
 	return &stateObject{
 		db:                 db,
 		address:            address,
-		addrHash:           common.BytesToHash(crypto.Keccak256Hash(address[:]).Bytes()),
+		addrHash:           crypto.Keccak256Hash(address[:]),
 		origin:             origin,
 		data:               *acct,
 		originStorage:      make(Storage),
@@ -333,7 +333,7 @@ func (s *stateObject) updateTrie() (Trie, error) {
 			continue
 		}
 		if !exist {
-			log.Error("Storage slot is not found in pending area", s.address, "slot", key)
+			log.Error("Storage slot is not found in pending area", "address", s.address, "slot", key)
 			continue
 		}
 		if (value != common.Hash{}) {
@@ -398,7 +398,7 @@ func (s *stateObject) commitStorage(op *accountUpdate) {
 		if op.storages == nil {
 			op.storages = make(map[common.Hash][]byte)
 		}
-		op.storages[common.BytesToHash(hash.Bytes())] = encode(val)
+		op.storages[hash] = encode(val)
 
 		if op.storagesOriginByKey == nil {
 			op.storagesOriginByKey = make(map[common.Hash][]byte)
@@ -408,7 +408,7 @@ func (s *stateObject) commitStorage(op *accountUpdate) {
 		}
 		origin := encode(s.originStorage[key])
 		op.storagesOriginByKey[key] = origin
-		op.storagesOriginByHash[common.BytesToHash(hash.Bytes())] = origin
+		op.storagesOriginByHash[hash] = origin
 
 		// Overwrite the clean value of storage slots
 		s.originStorage[key] = val

@@ -35,13 +35,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/internal/flags"
 	"github.com/luxfi/geth/log"
@@ -801,10 +801,9 @@ func DefaultConfigDir() string {
 	// Try to place the data folder in the user's home dir
 	home := flags.HomeDir()
 	if home != "" {
-		switch runtime.GOOS {
-		case "darwin":
+		if runtime.GOOS == "darwin" {
 			return filepath.Join(home, "Library", "Signer")
-		case "windows":
+		} else if runtime.GOOS == "windows" {
 			appdata := os.Getenv("APPDATA")
 			if appdata != "" {
 				return filepath.Join(appdata, "Signer")

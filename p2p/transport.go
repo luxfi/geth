@@ -120,7 +120,7 @@ func (t *rlpxTransport) close(err error) {
 			// Connection supports write deadline.
 			t.wbuf.Reset()
 			rlp.Encode(&t.wbuf, []any{reason})
-			_, _ = t.conn.Write(discMsg, t.wbuf.Bytes())
+			t.conn.Write(discMsg, t.wbuf.Bytes())
 		}
 	}
 	t.conn.Close()

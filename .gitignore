@@ -55,19 +55,4 @@ cmd/ethkey/ethkey
 cmd/evm/evm
 cmd/geth/geth
 cmd/rlpdump/rlpdump
-cmd/workload/workloadLLM.md
-
-# Root binaries and test files
-/*.test
-/abigen
-/geth
-/signer
-/bin/
-/build/geth
-CLAUDE.md
-AGENTS.md
-GEMINI.md
-
-# Go workspace files
-go.work
-go.work.sum
+cmd/workload/workload

@@ -159,7 +159,6 @@ func TestShortSetHead(t *testing.T)              { testShortSetHead(t, false) }
 func TestShortSetHeadWithSnapshots(t *testing.T) { testShortSetHead(t, true) }
 
 func testShortSetHead(t *testing.T, snapshots bool) {
-	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//
@@ -289,7 +288,6 @@ func TestShortOldForkedSetHead(t *testing.T)              { testShortOldForkedSe
 func TestShortOldForkedSetHeadWithSnapshots(t *testing.T) { testShortOldForkedSetHead(t, true) }
 
 func testShortOldForkedSetHead(t *testing.T, snapshots bool) {
-	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3
@@ -439,7 +437,6 @@ func TestShortNewlyForkedSetHead(t *testing.T)              { testShortNewlyFork
 func TestShortNewlyForkedSetHeadWithSnapshots(t *testing.T) { testShortNewlyForkedSetHead(t, true) }
 
 func testShortNewlyForkedSetHead(t *testing.T, snapshots bool) {
-	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8->C9->C10 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8
@@ -595,7 +592,6 @@ func TestShortReorgedSetHead(t *testing.T)              { testShortReorgedSetHea
 func TestShortReorgedSetHeadWithSnapshots(t *testing.T) { testShortReorgedSetHead(t, true) }
 
 func testShortReorgedSetHead(t *testing.T, snapshots bool) {
-	t.Parallel()
 	// Chain:
 	//   G->C1->C2->C3->C4->C5->C6->C7->C8 (HEAD)
 	//   └->S1->S2->S3->S4->S5->S6->S7->S8->S9->S10

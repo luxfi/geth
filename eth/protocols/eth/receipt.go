@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -126,7 +126,7 @@ func (r *Receipt) encodeForStorage(w *rlp.EncoderBuffer) {
 	list := w.List()
 	w.WriteBytes(r.PostStateOrStatus)
 	w.WriteUint64(r.GasUsed)
-	_, _ = w.Write(r.Logs)
+	w.Write(r.Logs)
 	w.ListEnd(list)
 }
 
@@ -139,7 +139,7 @@ func (r *Receipt) encodeForNetwork68(buf *receiptListBuffers, w *rlp.EncoderBuff
 		w.WriteUint64(r.GasUsed)
 		bloom := r.bloom(&buf.bloom)
 		w.WriteBytes(bloom[:])
-		_, _ = w.Write(r.Logs)
+		w.Write(r.Logs)
 		w.ListEnd(list)
 	}
 
@@ -161,7 +161,7 @@ func (r *Receipt) encodeForNetwork69(w *rlp.EncoderBuffer) {
 	w.WriteUint64(uint64(r.TxType))
 	w.WriteBytes(r.PostStateOrStatus)
 	w.WriteUint64(r.GasUsed)
-	_, _ = w.Write(r.Logs)
+	w.Write(r.Logs)
 	w.ListEnd(list)
 }
 
@@ -179,7 +179,7 @@ func (r *Receipt) encodeForHash(buf *receiptListBuffers, out *bytes.Buffer) {
 	w.WriteUint64(r.GasUsed)
 	bloom := r.bloom(&buf.bloom)
 	w.WriteBytes(bloom[:])
-	_, _ = w.Write(r.Logs)
+	w.Write(r.Logs)
 	w.ListEnd(l)
 	w.Flush()
 }
@@ -425,7 +425,7 @@ func blockReceiptsToNetwork69(blockReceipts, blockBody rlp.RawValue) ([]byte, er
 		content, _, _ := rlp.SplitList(it.Value())
 		receiptList := enc.List()
 		enc.WriteUint64(uint64(txType))
-		_, _ = enc.Write(content)
+		enc.Write(content)
 		enc.ListEnd(receiptList)
 	}
 	enc.ListEnd(outer)

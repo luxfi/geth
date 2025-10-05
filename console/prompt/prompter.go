@@ -116,7 +116,7 @@ func (p *terminalPrompter) PromptInput(prompt string) (string, error) {
 		prompt = ""
 		defer fmt.Println()
 	}
-	return p.Prompt(prompt)
+	return p.State.Prompt(prompt)
 }
 
 // PromptPassword displays the given prompt to the user and requests some textual
@@ -126,7 +126,7 @@ func (p *terminalPrompter) PromptPassword(prompt string) (passwd string, err err
 	if p.supported {
 		p.rawMode.ApplyMode()
 		defer p.normalMode.ApplyMode()
-		return p.PasswordPrompt(prompt)
+		return p.State.PasswordPrompt(prompt)
 	}
 	if !p.warned {
 		fmt.Println("!! Unsupported terminal, password will be echoed.")
@@ -134,7 +134,7 @@ func (p *terminalPrompter) PromptPassword(prompt string) (passwd string, err err
 	}
 	// Just as in Prompt, handle printing the prompt here instead of relying on liner.
 	fmt.Print(prompt)
-	passwd, err = p.Prompt("")
+	passwd, err = p.State.Prompt("")
 	fmt.Println()
 	return passwd, err
 }
@@ -152,7 +152,7 @@ func (p *terminalPrompter) PromptConfirm(prompt string) (bool, error) {
 // SetHistory sets the input scrollback history that the prompter will allow
 // the user to scroll back to.
 func (p *terminalPrompter) SetHistory(history []string) {
-	p.ReadHistory(strings.NewReader(strings.Join(history, "\n")))
+	p.State.ReadHistory(strings.NewReader(strings.Join(history, "\n")))
 }
 
 // AppendHistory appends an entry to the scrollback history.

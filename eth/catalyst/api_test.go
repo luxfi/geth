@@ -39,7 +39,7 @@ import (
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/crypto/kzg4844"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/internal/testrand"
@@ -1987,6 +1987,31 @@ func TestGetBlobsV1(t *testing.T) {
 		}
 		if !reflect.DeepEqual(result, expect) {
 			t.Fatalf("Unexpected result for case %d", i)
+		}
+	}
+}
+
+func TestGetBlobsV1AfterOsakaFork(t *testing.T) {
+	genesis := &core.Genesis{
+		Config:     params.MergedTestChainConfig,
+		Alloc:      types.GenesisAlloc{testAddr: {Balance: testBalance}},
+		Difficulty: common.Big0,
+		Timestamp:  1, // Timestamp > 0 to ensure Osaka fork is active
+	}
+	n, ethServ := startEthService(t, genesis, nil)
+	defer n.Close()
+
+	var engineErr *engine.EngineAPIError
+	api := newConsensusAPIWithoutHeartbeat(ethServ)
+	_, err := api.GetBlobsV1([]common.Hash{testrand.Hash()})
+	if !errors.As(err, &engineErr) {
+		t.Fatalf("Unexpected error: %T", err)
+	} else {
+		if engineErr.ErrorCode() != -38005 {
+			t.Fatalf("Expected error code -38005, got %d", engineErr.ErrorCode())
+		}
+		if engineErr.Error() != "Unsupported fork" {
+			t.Fatalf("Expected error message 'Unsupported fork', got '%s'", engineErr.Error())
 		}
 	}
 }

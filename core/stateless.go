@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -17,8 +17,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/consensus/beacon"
@@ -53,7 +51,6 @@ func ExecuteStateless(config *params.ChainConfig, vmconfig vm.Config, block *typ
 	}
 	// Create and populate the state database to serve as the stateless backend
 	memdb := witness.MakeHashDB()
-
 	db, err := state.New(witness.Root(), state.NewDatabase(triedb.NewDatabase(memdb, triedb.HashDefaults), nil))
 	if err != nil {
 		return common.Hash{}, common.Hash{}, err
@@ -65,24 +62,19 @@ func ExecuteStateless(config *params.ChainConfig, vmconfig vm.Config, block *typ
 		headerCache: lru.NewCache[common.Hash, *types.Header](256),
 		engine:      beacon.New(ethash.NewFaker()),
 	}
-	processor := NewStateProcessorWithVMConfig(config, chain, vmconfig)
+	processor := NewStateProcessor(chain)
+	validator := NewBlockValidator(config, nil) // No chain, we only validate the state, not the block
 
 	// Run the stateless blocks processing and self-validate certain fields
-	res, err := processor.Process(block, db, config)
+	res, err := processor.Process(block, db, vmconfig)
 	if err != nil {
 		return common.Hash{}, common.Hash{}, err
 	}
-
-	// In stateless mode, we can't validate the state/receipt roots as they're zeroed
-	// We only validate the gas usage
-	if block.GasUsed() != res.GasUsed {
-		return common.Hash{}, common.Hash{}, fmt.Errorf("invalid gas used (remote: %d local: %d)", block.GasUsed(), res.GasUsed)
+	if err = validator.ValidateState(block, db, res, true); err != nil {
+		return common.Hash{}, common.Hash{}, err
 	}
 	// Almost everything validated, but receipt and state root needs to be returned
 	receiptRoot := types.DeriveSha(res.Receipts, trie.NewStackTrie(nil))
-
-	// Calculate the state root
 	stateRoot := db.IntermediateRoot(config.IsEIP158(block.Number()))
-
 	return stateRoot, receiptRoot, nil
 }

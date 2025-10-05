@@ -25,7 +25,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
@@ -574,14 +574,13 @@ func (d *Downloader) syncToHead() (err error) {
 		func() error { return d.fetchReceipts(chainOffset) }, // Receipts are retrieved during snap sync
 		func() error { return d.processHeaders(origin + 1) },
 	}
-	switch mode {
-	case ethconfig.SnapSync:
+	if mode == ethconfig.SnapSync {
 		d.pivotLock.Lock()
 		d.pivotHeader = pivot
 		d.pivotLock.Unlock()
 
 		fetchers = append(fetchers, func() error { return d.processSnapSyncContent() })
-	case ethconfig.FullSync:
+	} else if mode == ethconfig.FullSync {
 		fetchers = append(fetchers, func() error { return d.processFullSyncContent() })
 	}
 	return d.spawnSync(fetchers)

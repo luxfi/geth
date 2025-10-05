@@ -28,7 +28,7 @@ import (
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/consensus/clique"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/signer/core/apitypes"
 )
@@ -315,8 +315,7 @@ func (api *SignerAPI) EcRecover(ctx context.Context, data hexutil.Bytes, sig hex
 	if err != nil {
 		return common.Address{}, err
 	}
-	addr := common.Address(crypto.PubkeyToAddress(*rpk))
-	return common.BytesToAddress(addr[:]), nil
+	return crypto.PubkeyToAddress(*rpk), nil
 }
 
 // UnmarshalValidatorData converts the bytes input to typed data

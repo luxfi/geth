@@ -27,7 +27,6 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/external"
 	"github.com/luxfi/geth/accounts/keystore"
@@ -37,6 +36,7 @@ import (
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/catalyst"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/internal/flags"
@@ -227,6 +227,14 @@ func makeFullNode(ctx *cli.Context) *node.Node {
 		v := ctx.Uint64(utils.OverrideOsaka.Name)
 		cfg.Eth.OverrideOsaka = &v
 	}
+	if ctx.IsSet(utils.OverrideBPO1.Name) {
+		v := ctx.Uint64(utils.OverrideBPO1.Name)
+		cfg.Eth.OverrideBPO1 = &v
+	}
+	if ctx.IsSet(utils.OverrideBPO2.Name) {
+		v := ctx.Uint64(utils.OverrideBPO2.Name)
+		cfg.Eth.OverrideBPO2 = &v
+	}
 	if ctx.IsSet(utils.OverrideVerkle.Name) {
 		v := ctx.Uint64(utils.OverrideVerkle.Name)
 		cfg.Eth.OverrideVerkle = &v
@@ -327,7 +335,7 @@ func dumpConfig(ctx *cli.Context) error {
 		defer dump.Close()
 	}
 	dump.WriteString(comment)
-	_, _ = dump.Write(out)
+	dump.Write(out)
 
 	return nil
 }

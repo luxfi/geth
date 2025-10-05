@@ -7,9 +7,9 @@ import (
     "os"
     "strconv"
 
-    "github.com/ethereum/go-ethereum/common"
-    "github.com/ethereum/go-ethereum/core/rawdb"
-    "github.com/ethereum/go-ethereum/ethdb"
+    "github.com/luxfi/geth/common"
+    "github.com/luxfi/geth/core/rawdb"
+    "github.com/luxfi/geth/ethdb"
     badger "github.com/dgraph-io/badger/v2"
     "github.com/cockroachdb/pebble"
 )

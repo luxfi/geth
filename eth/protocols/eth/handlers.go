@@ -115,7 +115,7 @@ func serviceNonContiguousBlockHeaderQuery(chain *core.BlockChain, query *GetBloc
 				next    = current + query.Skip + 1
 			)
 			if next <= current {
-				infos, _ := json.MarshalIndent(peer.Info(), "", "  ")
+				infos, _ := json.MarshalIndent(peer.Peer.Info(), "", "  ")
 				peer.Log().Warn("GetBlockHeaders skip overflow attack", "current", current, "skip", query.Skip, "next", next, "attacker", infos)
 				unknown = true
 			} else {

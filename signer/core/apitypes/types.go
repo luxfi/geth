@@ -35,8 +35,8 @@ import (
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"github.com/holiman/uint256"
 )
 
@@ -460,7 +460,7 @@ func (typedData *TypedData) EncodeData(primaryType string, data map[string]inter
 	}
 
 	// Add typehash
-	_, _ = buffer.Write(typedData.TypeHash(primaryType))
+	buffer.Write(typedData.TypeHash(primaryType))
 
 	// Add field contents. Structs and arrays have special handlers.
 	for _, field := range typedData.Types[primaryType] {
@@ -471,7 +471,7 @@ func (typedData *TypedData) EncodeData(primaryType string, data map[string]inter
 			if err != nil {
 				return nil, err
 			}
-			_, _ = buffer.Write(encodedData)
+			buffer.Write(encodedData)
 		} else if typedData.Types[field.Type] != nil {
 			mapValue, ok := encValue.(map[string]interface{})
 			if !ok {
@@ -481,13 +481,13 @@ func (typedData *TypedData) EncodeData(primaryType string, data map[string]inter
 			if err != nil {
 				return nil, err
 			}
-			_, _ = buffer.Write(crypto.Keccak256(encodedData))
+			buffer.Write(crypto.Keccak256(encodedData))
 		} else {
 			byteValue, err := typedData.EncodePrimitiveValue(encType, encValue, depth)
 			if err != nil {
 				return nil, err
 			}
-			_, _ = buffer.Write(byteValue)
+			buffer.Write(byteValue)
 		}
 	}
 	return buffer.Bytes(), nil
@@ -517,7 +517,7 @@ func (typedData *TypedData) encodeArrayValue(encValue interface{}, encType strin
 			if err != nil {
 				return nil, err
 			}
-			_, _ = arrayBuffer.Write(encodedData)
+			arrayBuffer.Write(encodedData)
 		} else {
 			if typedData.Types[parsedType] != nil {
 				mapValue, ok := item.(map[string]interface{})
@@ -529,13 +529,13 @@ func (typedData *TypedData) encodeArrayValue(encValue interface{}, encType strin
 					return nil, err
 				}
 				digest := crypto.Keccak256(encodedData)
-				_, _ = arrayBuffer.Write(digest)
+				arrayBuffer.Write(digest)
 			} else {
 				bytesValue, err := typedData.EncodePrimitiveValue(parsedType, item, depth)
 				if err != nil {
 					return nil, err
 				}
-				_, _ = arrayBuffer.Write(bytesValue)
+				arrayBuffer.Write(bytesValue)
 			}
 		}
 	}
