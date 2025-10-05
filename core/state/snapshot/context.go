@@ -179,7 +179,7 @@ func (ctx *generatorContext) removeStorageBefore(account common.Hash) {
 		count++
 		ctx.batch.Delete(key)
 		if ctx.batch.ValueSize() > ethdb.IdealBatchSize {
-			_ = ctx.batch.Write()
+			ctx.batch.Write()
 			ctx.batch.Reset()
 		}
 	}
@@ -210,7 +210,7 @@ func (ctx *generatorContext) removeStorageAt(account common.Hash) error {
 		count++
 		ctx.batch.Delete(key)
 		if ctx.batch.ValueSize() > ethdb.IdealBatchSize {
-			_ = ctx.batch.Write()
+			ctx.batch.Write()
 			ctx.batch.Reset()
 		}
 	}
@@ -231,7 +231,7 @@ func (ctx *generatorContext) removeStorageLeft() {
 		count++
 		ctx.batch.Delete(iter.Key())
 		if ctx.batch.ValueSize() > ethdb.IdealBatchSize {
-			_ = ctx.batch.Write()
+			ctx.batch.Write()
 			ctx.batch.Reset()
 		}
 	}

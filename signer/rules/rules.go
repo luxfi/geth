@@ -140,11 +140,10 @@ func (r *rulesetUI) checkApproval(jsfunc string, jsarg []byte, err error) (bool,
 		return false, err
 	}
 	result := v.ToString().String()
-	switch result {
-	case "Approve":
+	if result == "Approve" {
 		log.Info("Op approved")
 		return true, nil
-	case "Reject":
+	} else if result == "Reject" {
 		log.Info("Op rejected")
 		return false, nil
 	}

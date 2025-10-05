@@ -41,28 +41,28 @@ func (e *testEncoder) EncodeRLP(w io.Writer) error {
 	if e.err != nil {
 		return e.err
 	}
-	_, _ = w.Write([]byte{0, 1, 0, 1, 0, 1, 0, 1, 0, 1})
+	w.Write([]byte{0, 1, 0, 1, 0, 1, 0, 1, 0, 1})
 	return nil
 }
 
 type testEncoderValueMethod struct{}
 
 func (e testEncoderValueMethod) EncodeRLP(w io.Writer) error {
-	_, _ = w.Write([]byte{0xFA, 0xFE, 0xF0})
+	w.Write([]byte{0xFA, 0xFE, 0xF0})
 	return nil
 }
 
 type byteEncoder byte
 
 func (e byteEncoder) EncodeRLP(w io.Writer) error {
-	_, _ = w.Write(EmptyList)
+	w.Write(EmptyList)
 	return nil
 }
 
 type undecodableEncoder func()
 
 func (f undecodableEncoder) EncodeRLP(w io.Writer) error {
-	_, _ = w.Write([]byte{0xF5, 0xF5, 0xF5})
+	w.Write([]byte{0xF5, 0xF5, 0xF5})
 	return nil
 }
 

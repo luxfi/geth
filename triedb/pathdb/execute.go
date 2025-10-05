@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -92,7 +92,7 @@ func apply(db database.NodeDatabase, prevRoot common.Hash, postRoot common.Hash,
 func updateAccount(ctx *context, db database.NodeDatabase, addr common.Address) error {
 	// The account was present in prev-state, decode it from the
 	// 'slim-rlp' format bytes.
-	addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+	addrHash := crypto.Keccak256Hash(addr.Bytes())
 	prev, err := types.FullAccount(ctx.accounts[addr])
 	if err != nil {
 		return err
@@ -118,7 +118,7 @@ func updateAccount(ctx *context, db database.NodeDatabase, addr common.Address) 
 	for key, val := range ctx.storages[addr] {
 		tkey := key
 		if ctx.rawStorageKey {
-			tkey = common.BytesToHash(crypto.Keccak256(key.Bytes()))
+			tkey = crypto.Keccak256Hash(key.Bytes())
 		}
 		if len(val) == 0 {
 			deletes = append(deletes, tkey)
@@ -159,7 +159,7 @@ func updateAccount(ctx *context, db database.NodeDatabase, addr common.Address) 
 // account and storage is wiped out correctly.
 func deleteAccount(ctx *context, db database.NodeDatabase, addr common.Address) error {
 	// The account must be existent in post-state, load the account.
-	addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+	addrHash := crypto.Keccak256Hash(addr.Bytes())
 	blob, err := ctx.accountTrie.Get(addrHash.Bytes())
 	if err != nil {
 		return err
@@ -181,7 +181,7 @@ func deleteAccount(ctx *context, db database.NodeDatabase, addr common.Address) 
 		}
 		tkey := key
 		if ctx.rawStorageKey {
-			tkey = common.BytesToHash(crypto.Keccak256(key.Bytes()))
+			tkey = crypto.Keccak256Hash(key.Bytes())
 		}
 		if err := st.Delete(tkey.Bytes()); err != nil {
 			return err

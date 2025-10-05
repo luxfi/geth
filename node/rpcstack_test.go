@@ -461,7 +461,7 @@ func TestGzipHandler(t *testing.T) {
 		{
 			name: "Write",
 			handler: func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write([]byte("response"))
+				w.Write([]byte("response"))
 			},
 			isGzip: true,
 			status: 200,
@@ -471,7 +471,7 @@ func TestGzipHandler(t *testing.T) {
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("x-foo", "bar")
 				w.WriteHeader(205)
-				_, _ = w.Write([]byte("response"))
+				w.Write([]byte("response"))
 			},
 			isGzip: true,
 			status: 205,
@@ -481,7 +481,7 @@ func TestGzipHandler(t *testing.T) {
 			name: "WriteContentLength",
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("content-length", "8")
-				_, _ = w.Write([]byte("response"))
+				w.Write([]byte("response"))
 			},
 			isGzip: true,
 			status: 200,
@@ -489,9 +489,9 @@ func TestGzipHandler(t *testing.T) {
 		{
 			name: "Flush",
 			handler: func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write([]byte("res"))
+				w.Write([]byte("res"))
 				w.(http.Flusher).Flush()
-				_, _ = w.Write([]byte("ponse"))
+				w.Write([]byte("ponse"))
 			},
 			isGzip: true,
 			status: 200,
@@ -501,7 +501,7 @@ func TestGzipHandler(t *testing.T) {
 			handler: func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("transfer-encoding", "identity")
 				w.Header().Set("x-foo", "bar")
-				_, _ = w.Write([]byte("response"))
+				w.Write([]byte("response"))
 			},
 			isGzip: false,
 			status: 200,
@@ -513,7 +513,7 @@ func TestGzipHandler(t *testing.T) {
 				w.Header().Set("transfer-encoding", "identity")
 				w.Header().Set("x-foo", "bar")
 				w.WriteHeader(205)
-				_, _ = w.Write([]byte("response"))
+				w.Write([]byte("response"))
 			},
 			isGzip: false,
 			status: 205,

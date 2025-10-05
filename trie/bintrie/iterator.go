@@ -238,7 +238,9 @@ func (it *binaryNodeIterator) LeafProof() [][]byte {
 
 	// Add the stem and siblings
 	proof = append(proof, sn.Stem)
-	proof = append(proof, sn.Values...)
+	for _, v := range sn.Values {
+		proof = append(proof, v)
+	}
 
 	return proof
 }

@@ -264,7 +264,7 @@ func TestStartRPC(t *testing.T) {
 
 			// Register the test handler.
 			stack.RegisterHandler("test", "/test", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				_, _ = w.Write([]byte("OK"))
+				w.Write([]byte("OK"))
 			}))
 
 			if err := stack.Start(); err != nil {

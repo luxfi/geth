@@ -33,13 +33,13 @@ import (
 	"sync"
 	"time"
 
-	pcsc "github.com/gballet/go-libpcsclite"
-	"github.com/luxfi/crypto"
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/log"
+	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/status-im/keycard-go/derivationpath"
 )
 
@@ -928,7 +928,7 @@ func (s *Session) initialize(seed []byte) error {
 
 	// HMAC the seed to produce the private key and chain code
 	mac := hmac.New(sha512.New, []byte("Bitcoin seed"))
-	_, _ = mac.Write(seed)
+	mac.Write(seed)
 	seed = mac.Sum(nil)
 
 	key, err := crypto.ToECDSA(seed[:32])
@@ -1004,7 +1004,7 @@ func (s *Session) derive(path accounts.DerivationPath) (accounts.Account, error)
 	if err != nil {
 		return accounts.Account{}, err
 	}
-	return s.Wallet.makeAccount(common.BytesToAddress(crypto.PubkeyToAddress(*pub).Bytes()), path), nil
+	return s.Wallet.makeAccount(crypto.PubkeyToAddress(*pub), path), nil
 }
 
 // keyExport contains information on an exported keypair.

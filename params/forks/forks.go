@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2023 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -45,6 +45,7 @@ const (
 	BPO3
 	BPO4
 	BPO5
+	Amsterdam
 )
 
 // String implements fmt.Stringer.
@@ -82,4 +83,5 @@ var forkToString = map[Fork]string{
 	BPO3:             "BPO3",
 	BPO4:             "BPO4",
 	BPO5:             "BPO5",
+	Amsterdam:        "Amsterdam",
 }

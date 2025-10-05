@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -109,4 +109,14 @@ func (l *lookup) untrack(tx *blobTxMeta) {
 			delete(l.blobIndex, vhash)
 		}
 	}
+}
+
+// update updates the transaction index. It should only be used in the conversion.
+func (l *lookup) update(hash common.Hash, id uint64, size uint64) bool {
+	meta, exists := l.txIndex[hash]
+	if !exists {
+		return false
+	}
+	meta.id, meta.size = id, size
+	return true
 }

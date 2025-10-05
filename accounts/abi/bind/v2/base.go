@@ -24,7 +24,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/common"

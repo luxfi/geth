@@ -22,7 +22,7 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 )
 
 type bytesBacked interface {
@@ -144,7 +144,7 @@ func Bloom9(data []byte) []byte {
 func bloomValues(data []byte, hashbuf *[6]byte) (uint, byte, uint, byte, uint, byte) {
 	sha := hasherPool.Get().(crypto.KeccakState)
 	sha.Reset()
-	_, _ = sha.Write(data)
+	sha.Write(data)
 	sha.Read(hashbuf[:])
 	hasherPool.Put(sha)
 	// The actual bits to flip

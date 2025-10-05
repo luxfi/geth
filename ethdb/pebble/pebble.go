@@ -122,10 +122,9 @@ func (d *Database) onCompactionBegin(info pebble.CompactionInfo) {
 }
 
 func (d *Database) onCompactionEnd(info pebble.CompactionInfo) {
-	switch d.activeComp {
-	case 1:
+	if d.activeComp == 1 {
 		d.compTime.Add(int64(time.Since(d.compStartTime)))
-	case 0:
+	} else if d.activeComp == 0 {
 		panic("should not happen")
 	}
 	d.activeComp--
@@ -693,16 +692,15 @@ func (b *batch) Replay(w ethdb.KeyValueWriter) error {
 		}
 		// The (k,v) slices might be overwritten if the batch is reset/reused,
 		// and the receiver should copy them if they are to be retained long-term.
-		switch kind {
-		case pebble.InternalKeyKindSet:
+		if kind == pebble.InternalKeyKindSet {
 			if err = w.Put(k, v); err != nil {
 				return err
 			}
-		case pebble.InternalKeyKindDelete:
+		} else if kind == pebble.InternalKeyKindDelete {
 			if err = w.Delete(k); err != nil {
 				return err
 			}
-		case pebble.InternalKeyKindRangeDelete:
+		} else if kind == pebble.InternalKeyKindRangeDelete {
 			// For range deletion, k is the start key and v is the end key
 			if rangeDeleter, ok := w.(ethdb.KeyValueRangeDeleter); ok {
 				if err = rangeDeleter.DeleteRange(k, v); err != nil {
@@ -711,7 +709,7 @@ func (b *batch) Replay(w ethdb.KeyValueWriter) error {
 			} else {
 				return errors.New("ethdb.KeyValueWriter does not implement DeleteRange")
 			}
-		default:
+		} else {
 			return fmt.Errorf("unhandled operation, keytype: %v", kind)
 		}
 	}

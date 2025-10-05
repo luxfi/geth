@@ -391,7 +391,7 @@ func TestRegisterHandler_Successful(t *testing.T) {
 	defer node.Close()
 	// create and mount handler
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("success"))
+		w.Write([]byte("success"))
 	})
 	node.RegisterHandler("test", "/test", handler)
 

@@ -529,9 +529,7 @@ func (c *cleaner) Put(key []byte, rlp []byte) error {
 }
 
 func (c *cleaner) Delete(key []byte) error {
-	// Delete the key from the underlying database
-	// This is the complementary operation to Put
-	return c.db.diskdb.Delete(key)
+	panic("not implemented")
 }
 
 // Update inserts the dirty nodes in provided nodeset into database and link the

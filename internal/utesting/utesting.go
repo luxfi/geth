@@ -175,7 +175,7 @@ func (t *tapOutput) testResult(r Result) {
 		status = "not ok"
 	}
 	fmt.Fprintln(t.out, status, t.counter, r.Name)
-	_, _ = t.indented.Write([]byte(r.Output))
+	t.indented.Write([]byte(r.Output))
 	t.indented.flush()
 }
 

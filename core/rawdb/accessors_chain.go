@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
@@ -348,7 +348,7 @@ func ReadHeaderRLP(db ethdb.Reader, hash common.Hash, number uint64) rlp.RawValu
 		// comparison is necessary since ancient database only maintains
 		// the canonical data.
 		data, _ = reader.Ancient(ChainFreezerHeaderTable, number)
-		if len(data) > 0 && common.Hash(crypto.Keccak256Hash(data)) == hash {
+		if len(data) > 0 && crypto.Keccak256Hash(data) == hash {
 			return nil
 		}
 		// If not, try reading from leveldb

@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2023 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -129,7 +129,7 @@ func (s *beaconBlockSync) updateEventFeed() {
 	var finalizedHash common.Hash
 	if finality, ok := s.headTracker.ValidatedFinality(); ok {
 		he := optimistic.Attested.Epoch()
-		fe := finality.Attested.Epoch()
+		fe := finality.Attested.Header.Epoch()
 		switch {
 		case he == fe:
 			finalizedHash = finality.Finalized.PayloadHeader.BlockHash()

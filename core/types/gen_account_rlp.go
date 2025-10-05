@@ -10,7 +10,7 @@ func (obj *StateAccount) EncodeRLP(_w io.Writer) error {
 	_tmp0 := w.List()
 	w.WriteUint64(obj.Nonce)
 	if obj.Balance == nil {
-		_, _ = w.Write(rlp.EmptyString)
+		w.Write(rlp.EmptyString)
 	} else {
 		w.WriteUint256(obj.Balance)
 	}

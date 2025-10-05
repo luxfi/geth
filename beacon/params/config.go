@@ -180,8 +180,8 @@ func (f *Fork) computeDomain(genesisValidatorsRoot common.Hash) {
 		forkDataRoot  merkle.Value
 	)
 	copy(forkVersion32[:], f.Version)
-	_, _ = hasher.Write(forkVersion32[:])
-	_, _ = hasher.Write(genesisValidatorsRoot[:])
+	hasher.Write(forkVersion32[:])
+	hasher.Write(genesisValidatorsRoot[:])
 	hasher.Sum(forkDataRoot[:0])
 
 	f.domain[0] = syncCommitteeDomain
@@ -212,8 +212,8 @@ func (f Forks) SigningRoot(epoch uint64, root common.Hash) (common.Hash, error) 
 		signingRoot common.Hash
 		hasher      = sha256.New()
 	)
-	_, _ = hasher.Write(root[:])
-	_, _ = hasher.Write(domain[:])
+	hasher.Write(root[:])
+	hasher.Write(domain[:])
 	hasher.Sum(signingRoot[:0])
 
 	return signingRoot, nil

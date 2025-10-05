@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -67,10 +67,4 @@ type StateDatabase interface {
 	// StateReader returns a state reader associated with the specific state.
 	// An error will be returned if the specified state is not available.
 	StateReader(stateRoot common.Hash) (StateReader, error)
-}
-
-// Reader combines both NodeReader and StateReader interfaces
-type Reader interface {
-	NodeReader
-	StateReader
 }

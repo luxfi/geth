@@ -114,12 +114,12 @@ func (h Hash) Format(s fmt.State, c rune) {
 		}
 		fallthrough
 	case 'v', 's':
-		_, _ = s.Write(hexb)
+		s.Write(hexb)
 	case 'q':
 		q := []byte{'"'}
-		_, _ = s.Write(q)
-		_, _ = s.Write(hexb)
-		_, _ = s.Write(q)
+		s.Write(q)
+		s.Write(hexb)
+		s.Write(q)
 	case 'd':
 		fmt.Fprint(s, ([len(h)]byte)(h))
 	default:
@@ -212,9 +212,6 @@ func (h UnprefixedHash) MarshalText() ([]byte, error) {
 // Address represents the 20 byte address of an Ethereum account.
 type Address [AddressLength]byte
 
-// Removed ToCryptoAddress and FromCryptoAddress to avoid import cycle
-// These were luxfi-specific but unused
-
 // BytesToAddress returns Address with value b.
 // If b is larger than len(h), b will be cropped from the left.
 func BytesToAddress(b []byte) Address {
@@ -266,7 +263,7 @@ func (a *Address) checksumHex() []byte {
 
 	// compute checksum
 	sha := sha3.NewLegacyKeccak256()
-	_, _ = sha.Write(buf[2:])
+	sha.Write(buf[2:])
 	hash := sha.Sum(nil)
 	for i := 2; i < len(buf); i++ {
 		hashByte := hash[(i-2)/2]
@@ -294,12 +291,12 @@ func (a Address) hex() []byte {
 func (a Address) Format(s fmt.State, c rune) {
 	switch c {
 	case 'v', 's':
-		_, _ = s.Write(a.checksumHex())
+		s.Write(a.checksumHex())
 	case 'q':
 		q := []byte{'"'}
-		_, _ = s.Write(q)
-		_, _ = s.Write(a.checksumHex())
-		_, _ = s.Write(q)
+		s.Write(q)
+		s.Write(a.checksumHex())
+		s.Write(q)
 	case 'x', 'X':
 		// %x disables the checksum.
 		hex := a.hex()
@@ -309,7 +306,7 @@ func (a Address) Format(s fmt.State, c rune) {
 		if c == 'X' {
 			hex = bytes.ToUpper(hex)
 		}
-		_, _ = s.Write(hex)
+		s.Write(hex)
 	case 'd':
 		fmt.Fprint(s, ([len(a)]byte)(a))
 	default:

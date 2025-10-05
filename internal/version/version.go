@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/version"
 )
 
-const ourPath = "github.com/ethereum/go-ethereum" // Path to our module
+const ourPath = "github.com/luxfi/geth" // Path to our module
 
 // Family holds the textual version string for major.minor
 var Family = fmt.Sprintf("%d.%d", version.Major, version.Minor)

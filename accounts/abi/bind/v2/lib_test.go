@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ import (
 )
 
 var testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-var testAddr = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+var testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
 
 func testSetup() (*backends.SimulatedBackend, error) {
 	backend := simulated.NewBackend(
@@ -80,7 +80,7 @@ func TestDeploymentLibraries(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err setting up test: %v", err)
 	}
-	defer bindBackend.Close()
+	defer bindBackend.Backend.Close()
 
 	c := nested_libraries.NewC1()
 	constructorInput := c.PackConstructor(big.NewInt(42), big.NewInt(1))
@@ -124,7 +124,7 @@ func TestDeploymentWithOverrides(t *testing.T) {
 	if err != nil {
 		t.Fatalf("err setting up test: %v", err)
 	}
-	defer bindBackend.Close()
+	defer bindBackend.Backend.Close()
 
 	// deploy all the library dependencies of our target contract, but not the target contract itself.
 	deploymentParams := &bind.DeploymentParams{

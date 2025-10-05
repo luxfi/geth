@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -78,8 +78,6 @@ type supplyInfo struct {
 type supplyTxCallstack struct {
 	calls []supplyTxCallstack
 	burn  *big.Int
-	value *big.Int // Track value sent in calls
-	typ   byte     // Track call type
 }
 
 type supplyTracer struct {
@@ -218,7 +216,6 @@ func (s *supplyTracer) onTxStart(vm *tracing.VMContext, tx *types.Transaction, f
 	s.txCallstack = make([]supplyTxCallstack, 0, 1)
 }
 
-
 // internalTxsHandler handles internal transactions burned amount
 func (s *supplyTracer) internalTxsHandler(call *supplyTxCallstack) {
 	// Handle Burned amount
@@ -236,17 +233,11 @@ func (s *supplyTracer) internalTxsHandler(call *supplyTxCallstack) {
 func (s *supplyTracer) onEnter(depth int, typ byte, from common.Address, to common.Address, input []byte, gas uint64, value *big.Int) {
 	call := supplyTxCallstack{
 		calls: make([]supplyTxCallstack, 0),
-		typ:   typ,
-	}
-
-	// Store value for calls that might lead to burns
-	if value != nil && value.Sign() > 0 {
-		call.value = new(big.Int).Set(value)
 	}
 
 	// This is a special case of burned amount which has to be handled here
 	// which happens when type == selfdestruct and from == to.
-	if vm.OpCode(typ) == vm.SELFDESTRUCT && from == to && value != nil && value.Sign() > 0 {
+	if vm.OpCode(typ) == vm.SELFDESTRUCT && from == to && value.Cmp(common.Big0) == 1 {
 		call.burn = value
 	}
 
@@ -277,22 +268,6 @@ func (s *supplyTracer) onExit(depth int, output []byte, gasUsed uint64, err erro
 	if reverted {
 		return
 	}
-
-	// Check if this call contains a selfdestruct that burns value
-	// If a call with value contains a selfdestruct, the value is burned
-	if call.value != nil && call.value.Sign() > 0 {
-		for _, subcall := range call.calls {
-			if vm.OpCode(subcall.typ) == vm.SELFDESTRUCT {
-				// The value sent to this contract that self-destructed is burned
-				if call.burn == nil {
-					call.burn = new(big.Int)
-				}
-				call.burn.Add(call.burn, call.value)
-				break
-			}
-		}
-	}
-
 	s.txCallstack[size-1].calls = append(s.txCallstack[size-1].calls, call)
 }
 

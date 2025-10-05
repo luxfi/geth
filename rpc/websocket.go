@@ -28,8 +28,8 @@ import (
 	"time"
 
 	mapset "github.com/deckarep/golang-set/v2"
-	"github.com/gorilla/websocket"
 	"github.com/luxfi/geth/log"
+	"github.com/gorilla/websocket"
 )
 
 const (
@@ -362,11 +362,11 @@ func (wc *websocketCodec) pingLoop() {
 			pingTimer.Reset(wsPingInterval)
 
 		case <-pingTimer.C:
-			wc.encMu.Lock()
+			wc.jsonCodec.encMu.Lock()
 			wc.conn.SetWriteDeadline(time.Now().Add(wsPingWriteTimeout))
 			wc.conn.WriteMessage(websocket.PingMessage, nil)
 			wc.conn.SetReadDeadline(time.Now().Add(wsPongTimeout))
-			wc.encMu.Unlock()
+			wc.jsonCodec.encMu.Unlock()
 			pingTimer.Reset(wsPingInterval)
 
 		case <-wc.pongReceived:

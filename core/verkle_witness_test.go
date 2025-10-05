@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -530,7 +530,7 @@ func TestProcessVerkleExtCodeHashOpcode(t *testing.T) {
 
 		byte(vm.PUSH1), 42,
 	}
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	dummyContractAddr := crypto.CreateAddress(deployer, 0)
 
 	// contract that calls EXTCODEHASH on the dummy contract
@@ -571,7 +571,7 @@ func TestProcessVerkleExtCodeHashOpcode(t *testing.T) {
 				Data:     extCodeHashContract})
 			gen.AddTx(tx)
 		} else {
-			tx, _ := types.SignTx(types.NewTransaction(2, common.Address(extCodeHashContractAddr), big.NewInt(0), 100_000, big.NewInt(875000000), nil), signer, testKey)
+			tx, _ := types.SignTx(types.NewTransaction(2, extCodeHashContractAddr, big.NewInt(0), 100_000, big.NewInt(875000000), nil), signer, testKey)
 			gen.AddTx(tx)
 		}
 	})
@@ -701,7 +701,7 @@ func TestProcessVerkleSelfDestructInSeparateTx(t *testing.T) {
 	},
 		runtimeCode)
 
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 2, func(i int, gen *BlockGen) {
@@ -718,7 +718,7 @@ func TestProcessVerkleSelfDestructInSeparateTx(t *testing.T) {
 			gen.AddTx(tx)
 		} else {
 			// Call it.
-			tx, _ := types.SignTx(types.NewTransaction(1, common.Address(contract), big.NewInt(0), 100_000, big.NewInt(875000000), nil), signer, testKey)
+			tx, _ := types.SignTx(types.NewTransaction(1, contract, big.NewInt(0), 100_000, big.NewInt(875000000), nil), signer, testKey)
 			gen.AddTx(tx)
 		}
 	})
@@ -809,7 +809,7 @@ func TestProcessVerkleSelfDestructInSameTx(t *testing.T) {
 		[]byte{byte(vm.PUSH20)},
 		account2.Bytes(),
 		[]byte{byte(vm.SELFDESTRUCT)})
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 1, func(i int, gen *BlockGen) {
@@ -912,7 +912,7 @@ func TestProcessVerkleSelfDestructInSeparateTxWithSelfBeneficiary(t *testing.T) 
 		byte(vm.ADDRESS),
 		byte(vm.SELFDESTRUCT),
 	}
-	deployer := common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	deployer := crypto.PubkeyToAddress(testKey.PublicKey)
 	contract := crypto.CreateAddress(deployer, 0)
 
 	_, _, _, _, _, statediffs := GenerateVerkleChainWithGenesis(gspec, beacon.New(ethash.NewFaker()), 2, func(i int, gen *BlockGen) {
@@ -928,7 +928,7 @@ func TestProcessVerkleSelfDestructInSeparateTxWithSelfBeneficiary(t *testing.T) 
 			gen.AddTx(tx)
 		} else {
 			// Call it.
-			tx, _ := types.SignTx(types.NewTransaction(1, common.Address(contract), big.NewInt(0), 100_000, big.NewInt(875000000), nil), signer, testKey)
+			tx, _ := types.SignTx(types.NewTransaction(1, contract, big.NewInt(0), 100_000, big.NewInt(875000000), nil), signer, testKey)
 			gen.AddTx(tx)
 		}
 	})
@@ -1055,7 +1055,7 @@ func TestProcessVerkleSelfDestructInSameTxWithSelfBeneficiaryAndPrefundedAccount
 	// before it selfdestrucs. We can therefore check that the account itseld is
 	// NOT destroyed, which is what the current version of the spec requires.
 	// TODO(gballet) revisit after the spec has been modified.
-	gspec.Alloc[common.Address(contract)] = types.Account{
+	gspec.Alloc[contract] = types.Account{
 		Balance: big.NewInt(100),
 	}
 

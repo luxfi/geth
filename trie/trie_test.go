@@ -326,7 +326,7 @@ func TestReplication(t *testing.T) {
 		updateString(trie2, val.k, val.v)
 	}
 	if trie2.Hash() != hash {
-		t.Errorf("root failure. expected %x got %x", hash, hash)
+		t.Errorf("root failure. expected %x got %x", hash, trie2.Hash())
 	}
 }
 
@@ -846,8 +846,8 @@ func (s *spongeDb) Put(key []byte, value []byte) error {
 	s.journal = append(s.journal, fmt.Sprintf("%v: PUT([%x...], [%d bytes] %x...)\n", s.id, keybrief, len(value), valbrief))
 
 	if s.values == nil {
-		_, _ = s.sponge.Write(key)
-		_, _ = s.sponge.Write(value)
+		s.sponge.Write(key)
+		s.sponge.Write(value)
 	} else {
 		s.keys = append(s.keys, string(key))
 		s.values[string(key)] = string(value)
@@ -860,8 +860,8 @@ func (s *spongeDb) Flush() {
 	// Bottom-up, the longest path first
 	sort.Sort(sort.Reverse(sort.StringSlice(s.keys)))
 	for _, key := range s.keys {
-		_, _ = s.sponge.Write([]byte(key))
-		_, _ = s.sponge.Write([]byte(s.values[key]))
+		s.sponge.Write([]byte(key))
+		s.sponge.Write([]byte(s.values[key]))
 	}
 }
 
@@ -1502,7 +1502,7 @@ func testTrieCopyNewTrie(t *testing.T, entries []kv) {
 
 // goos: darwin
 // goarch: arm64
-// pkg: github.com/ethereum/go-ethereum/trie
+// pkg: github.com/luxfi/geth/trie
 // cpu: Apple M1 Pro
 // BenchmarkTriePrefetch
 // BenchmarkTriePrefetch-8   	    9961	    100706 ns/op
@@ -1541,7 +1541,7 @@ func BenchmarkTriePrefetch(b *testing.B) {
 
 // goos: darwin
 // goarch: arm64
-// pkg: github.com/ethereum/go-ethereum/trie
+// pkg: github.com/luxfi/geth/trie
 // cpu: Apple M1 Pro
 // BenchmarkTrieSeqPrefetch
 // BenchmarkTrieSeqPrefetch-8   	   12879	     96710 ns/op

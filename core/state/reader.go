@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -541,7 +541,7 @@ func newReaderWithCacheStats(reader *readerWithCache) *readerWithCacheStats {
 //
 // An error will be returned if the state is corrupted in the underlying reader.
 func (r *readerWithCacheStats) Account(addr common.Address) (*types.StateAccount, error) {
-	account, incache, err := r.account(addr)
+	account, incache, err := r.readerWithCache.account(addr)
 	if err != nil {
 		return nil, err
 	}
@@ -559,7 +559,7 @@ func (r *readerWithCacheStats) Account(addr common.Address) (*types.StateAccount
 //
 // An error will be returned if the state is corrupted in the underlying reader.
 func (r *readerWithCacheStats) Storage(addr common.Address, slot common.Hash) (common.Hash, error) {
-	value, incache, err := r.storage(addr, slot)
+	value, incache, err := r.readerWithCache.storage(addr, slot)
 	if err != nil {
 		return common.Hash{}, err
 	}

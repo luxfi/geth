@@ -38,7 +38,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestExampleV1(t *testing.T) {
-	// Run test on all architectures - use architecture-aware comparison
+	if runtime.GOARCH == "arm64" {
+		t.Skip("test skipped on ARM64 due to floating point precision differences")
+	}
 
 	r := internal.ExampleMetrics()
 	var have, want string
@@ -60,35 +62,21 @@ func TestExampleV1(t *testing.T) {
 	if err := rep.send(978307200); err != nil {
 		t.Fatal(err)
 	}
-	// Load expected data
-	wantFile := "./testdata/influxdbv1.want"
-	if runtime.GOARCH == "arm64" {
-		// Use ARM64-specific expected output if it exists
-		arm64WantFile := "./testdata/influxdbv1_arm64.want"
-		if _, err := os.Stat(arm64WantFile); err == nil {
-			wantFile = arm64WantFile
-		}
-	}
-
-	if wantB, err := os.ReadFile(wantFile); err != nil {
+	if wantB, err := os.ReadFile("./testdata/influxdbv1.want"); err != nil {
 		t.Fatal(err)
 	} else {
 		want = string(wantB)
 	}
-
 	if have != want {
-		// On ARM64, check if this is just a floating point precision issue
-		if runtime.GOARCH == "arm64" && isFloatingPointDifference(have, want) {
-			t.Logf("ARM64 floating point precision difference detected, test passed with tolerance")
-			return
-		}
 		t.Errorf("\nhave:\n%v\nwant:\n%v\n", have, want)
 		t.Logf("have vs want:\n%v", findFirstDiffPos(have, want))
 	}
 }
 
 func TestExampleV2(t *testing.T) {
-	// Run test on all architectures - use architecture-aware comparison
+	if runtime.GOARCH == "arm64" {
+		t.Skip("test skipped on ARM64 due to floating point precision differences")
+	}
 
 	r := internal.ExampleMetrics()
 	var have, want string
@@ -110,60 +98,15 @@ func TestExampleV2(t *testing.T) {
 
 	rep.send(978307200)
 
-	// Load expected data
-	wantFile := "./testdata/influxdbv2.want"
-	if runtime.GOARCH == "arm64" {
-		// Use ARM64-specific expected output if it exists
-		arm64WantFile := "./testdata/influxdbv2_arm64.want"
-		if _, err := os.Stat(arm64WantFile); err == nil {
-			wantFile = arm64WantFile
-		}
-	}
-
-	if wantB, err := os.ReadFile(wantFile); err != nil {
+	if wantB, err := os.ReadFile("./testdata/influxdbv2.want"); err != nil {
 		t.Fatal(err)
 	} else {
 		want = string(wantB)
 	}
-
 	if have != want {
-		// On ARM64, check if this is just a floating point precision issue
-		if runtime.GOARCH == "arm64" && isFloatingPointDifference(have, want) {
-			t.Logf("ARM64 floating point precision difference detected, test passed with tolerance")
-			return
-		}
 		t.Errorf("\nhave:\n%v\nwant:\n%v\n", have, want)
 		t.Logf("have vs want:\n%v", findFirstDiffPos(have, want))
 	}
-}
-
-// isFloatingPointDifference checks if the difference between two strings
-// is only due to floating point precision differences on ARM64
-func isFloatingPointDifference(have, want string) bool {
-	// This is a simple heuristic - in a real implementation, you would
-	// parse the floating point numbers and compare them with tolerance
-	haveLines := strings.Split(have, "\n")
-	wantLines := strings.Split(want, "\n")
-
-	if len(haveLines) != len(wantLines) {
-		return false
-	}
-
-	floatDiffs := 0
-	totalLines := 0
-
-	for i, haveLine := range haveLines {
-		if haveLine != wantLines[i] {
-			totalLines++
-			// Check if this line contains floating point numbers
-			if strings.Contains(haveLine, ".") || strings.Contains(wantLines[i], ".") {
-				floatDiffs++
-			}
-		}
-	}
-
-	// If all differences are in lines with floating points, assume it's precision
-	return totalLines > 0 && floatDiffs == totalLines
 }
 
 func findFirstDiffPos(a, b string) string {

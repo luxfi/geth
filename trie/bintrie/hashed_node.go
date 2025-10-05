@@ -25,20 +25,8 @@ import (
 
 type HashedNode common.Hash
 
-func (h HashedNode) Get(key []byte, resolver NodeResolverFn) ([]byte, error) {
-	// Use the resolver to fetch the node data for this hash
-	if resolver == nil {
-		return nil, errors.New("resolver function is required for hashed node")
-	}
-	// The resolver expects a path and a hash to resolve the node
-	// For hashed nodes, we need to resolve the node first then delegate the Get
-	nodeData, err := resolver(nil, common.Hash(h))
-	if err != nil {
-		return nil, fmt.Errorf("failed to resolve hashed node: %w", err)
-	}
-	// The resolved node data would need to be deserialized and the Get called on it
-	// For now, return the raw node data
-	return nodeData, nil
+func (h HashedNode) Get(_ []byte, _ NodeResolverFn) ([]byte, error) {
+	panic("not implemented") // TODO: Implement
 }
 
 func (h HashedNode) Insert(key []byte, value []byte, resolver NodeResolverFn, depth int) (BinaryNode, error) {

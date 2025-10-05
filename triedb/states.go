@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -47,35 +47,4 @@ func (set *StateSet) internal() *pathdb.StateSetWithOrigin {
 		return nil
 	}
 	return pathdb.NewStateSetWithOrigin(set.Accounts, set.Storages, set.AccountsOrigin, set.StoragesOrigin, set.RawStorageKey)
-}
-
-// Size returns the approximate memory size of the state set.
-func (set *StateSet) Size() int {
-	if set == nil {
-		return 0
-	}
-	size := 0
-	for _, account := range set.Accounts {
-		size += len(account)
-	}
-	for _, accountOrigin := range set.AccountsOrigin {
-		size += len(accountOrigin)
-	}
-	for _, storage := range set.Storages {
-		for _, data := range storage {
-			size += len(data)
-		}
-	}
-	for _, storageOrigin := range set.StoragesOrigin {
-		for _, data := range storageOrigin {
-			size += len(data)
-		}
-	}
-	return size
-}
-
-// Incomplete returns a flag whether the state set contains incomplete data.
-func (set *StateSet) Incomplete() bool {
-	// For now, always return false as we don't track incomplete states
-	return false
 }

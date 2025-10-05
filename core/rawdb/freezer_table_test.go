@@ -1050,7 +1050,7 @@ func TestFreezerReadonly(t *testing.T) {
 		t.Errorf("Failed to open index file: %v\n", err)
 	}
 	// size should not be a multiple of indexEntrySize.
-	_, _ = idxFile.Write(make([]byte, 17))
+	idxFile.Write(make([]byte, 17))
 	idxFile.Close()
 	_, err = newTable(tmpdir, fname,
 		metrics.NewMeter(), metrics.NewMeter(), metrics.NewGauge(), 50, freezerTableConfig{noSnappy: true}, true)

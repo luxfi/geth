@@ -209,12 +209,11 @@ func handleMessage(backend Backend, peer *Peer) error {
 	defer msg.Discard()
 
 	var handlers map[uint64]msgHandler
-	switch peer.version {
-	case ETH68:
+	if peer.version == ETH68 {
 		handlers = eth68
-	case ETH69:
+	} else if peer.version == ETH69 {
 		handlers = eth69
-	default:
+	} else {
 		return fmt.Errorf("unknown eth protocol version: %v", peer.version)
 	}
 

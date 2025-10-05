@@ -54,7 +54,7 @@ func TestHeaderStorage(t *testing.T) {
 		t.Fatalf("Stored header RLP not found")
 	} else {
 		hasher := sha3.NewLegacyKeccak256()
-		_, _ = hasher.Write(entry)
+		hasher.Write(entry)
 
 		if hash := common.BytesToHash(hasher.Sum(nil)); hash != header.Hash() {
 			t.Fatalf("Retrieved RLP header mismatch: have %v, want %v", entry, header)
@@ -92,7 +92,7 @@ func TestBodyStorage(t *testing.T) {
 		t.Fatalf("Stored body RLP not found")
 	} else {
 		hasher := sha3.NewLegacyKeccak256()
-		_, _ = hasher.Write(entry)
+		hasher.Write(entry)
 
 		if calc := common.BytesToHash(hasher.Sum(nil)); calc != hash {
 			t.Fatalf("Retrieved RLP body mismatch: have %v, want %v", entry, body)
@@ -246,7 +246,7 @@ func TestBadBlockStorage(t *testing.T) {
 	}
 	for i := 0; i < len(badBlocks)-1; i++ {
 		if badBlocks[i].NumberU64() < badBlocks[i+1].NumberU64() {
-			t.Fatalf("The bad blocks are not sorted #[%d](%d) < #[%d](%d)", i, i+1, badBlocks[i].NumberU64(), badBlocks[i+1].NumberU64())
+			t.Fatalf("The bad blocks are not sorted #[%d](%d) < #[%d](%d)", i, badBlocks[i].NumberU64(), i+1, badBlocks[i+1].NumberU64())
 		}
 	}
 

@@ -147,8 +147,8 @@ func HandleMessage(backend Backend, peer *Peer) error {
 		}(start)
 	}
 	// Handle the message depending on its contents
-	switch msg.Code {
-	case GetAccountRangeMsg:
+	switch {
+	case msg.Code == GetAccountRangeMsg:
 		// Decode the account retrieval request
 		var req GetAccountRangePacket
 		if err := msg.Decode(&req); err != nil {
@@ -164,7 +164,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 			Proof:    proofs,
 		})
 
-	case AccountRangeMsg:
+	case msg.Code == AccountRangeMsg:
 		// A range of accounts arrived to one of our previous requests
 		res := new(AccountRangePacket)
 		if err := msg.Decode(res); err != nil {
@@ -180,7 +180,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 
 		return backend.Handle(peer, res)
 
-	case GetStorageRangesMsg:
+	case msg.Code == GetStorageRangesMsg:
 		// Decode the storage retrieval request
 		var req GetStorageRangesPacket
 		if err := msg.Decode(&req); err != nil {
@@ -196,7 +196,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 			Proof: proofs,
 		})
 
-	case StorageRangesMsg:
+	case msg.Code == StorageRangesMsg:
 		// A range of storage slots arrived to one of our previous requests
 		res := new(StorageRangesPacket)
 		if err := msg.Decode(res); err != nil {
@@ -214,7 +214,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 
 		return backend.Handle(peer, res)
 
-	case GetByteCodesMsg:
+	case msg.Code == GetByteCodesMsg:
 		// Decode bytecode retrieval request
 		var req GetByteCodesPacket
 		if err := msg.Decode(&req); err != nil {
@@ -229,7 +229,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 			Codes: codes,
 		})
 
-	case ByteCodesMsg:
+	case msg.Code == ByteCodesMsg:
 		// A batch of byte codes arrived to one of our previous requests
 		res := new(ByteCodesPacket)
 		if err := msg.Decode(res); err != nil {
@@ -239,7 +239,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 
 		return backend.Handle(peer, res)
 
-	case GetTrieNodesMsg:
+	case msg.Code == GetTrieNodesMsg:
 		// Decode trie node retrieval request
 		var req GetTrieNodesPacket
 		if err := msg.Decode(&req); err != nil {
@@ -256,7 +256,7 @@ func HandleMessage(backend Backend, peer *Peer) error {
 			Nodes: nodes,
 		})
 
-	case TrieNodesMsg:
+	case msg.Code == TrieNodesMsg:
 		// A batch of trie nodes arrived to one of our previous requests
 		res := new(TrieNodesPacket)
 		if err := msg.Decode(res); err != nil {

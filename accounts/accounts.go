@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/event"
@@ -197,7 +197,7 @@ func TextHash(data []byte) []byte {
 func TextAndHash(data []byte) ([]byte, string) {
 	msg := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(data), data)
 	hasher := sha3.NewLegacyKeccak256()
-	_, _ = hasher.Write([]byte(msg))
+	hasher.Write([]byte(msg))
 	return hasher.Sum(nil), msg
 }
 

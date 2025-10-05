@@ -26,8 +26,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/internal/flags"
@@ -128,8 +128,7 @@ func generateTraceTests(clictx *cli.Context) error {
 		}
 		test.BlockHashes = append(test.BlockHashes, header.Hash())
 		test.TraceConfigs = append(test.TraceConfigs, *config)
-		hash := crypto.Keccak256Hash(blob)
-		test.ResultHashes = append(test.ResultHashes, common.BytesToHash(hash[:]))
+		test.ResultHashes = append(test.ResultHashes, crypto.Keccak256Hash(blob))
 		writeTraceResult(outputDir, header.Hash(), result, configName)
 
 		if time.Since(logged) > time.Second*8 {

@@ -34,7 +34,7 @@ import (
 	"testing"
 	"time"
 
-	ethereum "github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/accounts/keystore"
@@ -50,7 +50,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/crypto/kzg4844"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/internal/blocktest"
@@ -543,7 +543,7 @@ func (b testBackend) GetBody(ctx context.Context, hash common.Hash, number rpc.B
 }
 func (b testBackend) StateAndHeaderByNumber(ctx context.Context, number rpc.BlockNumber) (*state.StateDB, *types.Header, error) {
 	if number == rpc.PendingBlockNumber {
-		return nil, nil, fmt.Errorf("pending state not implemented")
+		panic("pending state not implemented")
 	}
 	header, err := b.HeaderByNumber(ctx, number)
 	if err != nil {
@@ -3746,8 +3746,8 @@ func TestCreateAccessListWithStateOverrides(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create access list: %v", err)
 	}
-	if err != nil || result == nil {
-		t.Fatalf("Failed to create access list: %v", err)
+	if result == nil {
+		t.Fatalf("Failed to create access list: result is nil")
 	}
 	require.NotNil(t, result.Accesslist)
 
@@ -3879,8 +3879,7 @@ func (b configTimeBackend) HeaderByNumber(_ context.Context, n rpc.BlockNumber) 
 	if n == 0 {
 		return b.genesis.ToBlock().Header(), nil
 	}
-	// This test backend only supports the genesis block
-	return nil, fmt.Errorf("test backend only supports block 0 (genesis), requested block %d", n)
+	panic("not implemented")
 }
 
 func (b configTimeBackend) CurrentHeader() *types.Header {
