@@ -310,10 +310,10 @@ func TestUpdateSmallNodes(t *testing.T) {
 // For all practical purposes, this is fine, since keys are fixed-size length
 // in account and storage tries.
 //
-// This test documents the expected behavior and validates that the limitation is detected.
+// The test is marked as 'skipped', and exists just to have the behaviour documented.
 // This case was found via fuzzing.
 func TestUpdateVariableKeys(t *testing.T) {
-	// Test that StackTrie properly detects variable key conflicts
+	t.SkipNow()
 	st := NewStackTrie(nil)
 	nt := NewEmpty(newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme))
 	kvs := []struct {
@@ -323,30 +323,13 @@ func TestUpdateVariableKeys(t *testing.T) {
 		{"0x33303534636532393561313031676174", "303030"},
 		{"0x3330353463653239356131303167617430", "313131"},
 	}
-
-	// First test with normal trie - should work fine
 	for _, kv := range kvs {
 		nt.Update(common.FromHex(kv.K), common.FromHex(kv.V))
-	}
-
-	// Now test that StackTrie detects the conflict as expected
-	defer func() {
-		if r := recover(); r != nil {
-			if r != "Trying to insert into existing key" {
-				t.Fatalf("Unexpected panic: %v", r)
-			}
-			// Expected behavior - StackTrie detected the variable key conflict
-			t.Logf("StackTrie correctly detected variable key conflict: %v", r)
-		}
-	}()
-
-	// This should panic on the second key due to variable length conflict
-	for _, kv := range kvs {
 		st.Update(common.FromHex(kv.K), common.FromHex(kv.V))
 	}
-
-	// If we get here, the expected panic didn't occur
-	t.Fatal("Expected StackTrie to panic on variable length key conflict, but it didn't")
+	if nt.Hash() != st.Hash() {
+		t.Fatalf("error %x != %x", st.Hash(), nt.Hash())
+	}
 }
 
 // TestStacktrieNotModifyValues checks that inserting blobs of data into the

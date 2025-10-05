@@ -18,7 +18,7 @@ func BenchmarkDebugGCStats(b *testing.B) {
 
 func TestDebugGCStatsBlocking(t *testing.T) {
 	if g := runtime.GOMAXPROCS(0); g < 2 {
-
+		t.Skipf("skipping TestDebugGCMemStatsBlocking with GOMAXPROCS=%d\n", g)
 		return
 	}
 	ch := make(chan int)

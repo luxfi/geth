@@ -49,13 +49,13 @@ type BuildPayloadArgs struct {
 // Id computes an 8-byte identifier by hashing the components of the payload arguments.
 func (args *BuildPayloadArgs) Id() engine.PayloadID {
 	hasher := sha256.New()
-	_, _ = hasher.Write(args.Parent[:])
-	_ = binary.Write(hasher, binary.BigEndian, args.Timestamp)
-	_, _ = hasher.Write(args.Random[:])
-	_, _ = hasher.Write(args.FeeRecipient[:])
+	hasher.Write(args.Parent[:])
+	binary.Write(hasher, binary.BigEndian, args.Timestamp)
+	hasher.Write(args.Random[:])
+	hasher.Write(args.FeeRecipient[:])
 	rlp.Encode(hasher, args.Withdrawals)
 	if args.BeaconRoot != nil {
-		_, _ = hasher.Write(args.BeaconRoot[:])
+		hasher.Write(args.BeaconRoot[:])
 	}
 	var out engine.PayloadID
 	copy(out[:], hasher.Sum(nil)[:8])

@@ -19,10 +19,10 @@ package vm
 import (
 	"fmt"
 
-	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/geth/core/tracing"
+	"github.com/holiman/uint256"
 )
 
 // Config are the configuration options for the Interpreter
@@ -116,11 +116,11 @@ func (evm *EVM) Run(contract *Contract, input []byte, readOnly bool) (ret []byte
 	}
 
 	var (
-		op          OpCode // current opcode
-		jumpTable   = evm.table
-		mem         = NewMemory() // bound memory
-		stack       = newstack()  // local stack
-		callContext = &ScopeContext{
+		op          OpCode     // current opcode
+		jumpTable   *JumpTable = evm.table
+		mem                    = NewMemory() // bound memory
+		stack                  = newstack()  // local stack
+		callContext            = &ScopeContext{
 			Memory:   mem,
 			Stack:    stack,
 			Contract: contract,
@@ -175,7 +175,7 @@ func (evm *EVM) Run(contract *Contract, input []byte, readOnly bool) (ret []byte
 			// if the PC ends up in a new "chunk" of verkleized code, charge the
 			// associated costs.
 			contractAddr := contract.Address()
-			consumed, wanted := evm.AccessEvents.CodeChunksRangeGas(contractAddr, pc, 1, uint64(len(contract.Code)), false, contract.Gas)
+			consumed, wanted := evm.TxContext.AccessEvents.CodeChunksRangeGas(contractAddr, pc, 1, uint64(len(contract.Code)), false, contract.Gas)
 			contract.UseGas(consumed, evm.Config.Tracer, tracing.GasChangeWitnessCodeChunk)
 			if consumed < wanted {
 				return nil, ErrOutOfGas

@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/eth/protocols/snap"
 	"github.com/luxfi/geth/p2p"
@@ -143,7 +143,7 @@ func (c *Conn) ReadEth() (any, error) {
 			return nil, err
 		}
 		if code == pingMsg {
-			_ =c.Write(baseProto, pongMsg, []byte{})
+			c.Write(baseProto, pongMsg, []byte{})
 			continue
 		}
 		if getProto(code) != ethProto {
@@ -352,7 +352,7 @@ loop:
 		case pingMsg:
 			// TODO (renaynay): in the future, this should be an error
 			// (PINGs should not be a response upon fresh connection)
-			_ =c.Write(baseProto, pongMsg, nil)
+			c.Write(baseProto, pongMsg, nil)
 		default:
 			return fmt.Errorf("bad status message: code %d", code)
 		}

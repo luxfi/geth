@@ -21,10 +21,10 @@ import (
 	"math"
 	"sort"
 
-	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/params"
+	"github.com/holiman/uint256"
 )
 
 var activators = map[int]func(*JumpTable){
@@ -278,8 +278,8 @@ func opMcopy(pc *uint64, evm *EVM, scope *ScopeContext) ([]byte, error) {
 // opBlobHash implements the BLOBHASH opcode
 func opBlobHash(pc *uint64, evm *EVM, scope *ScopeContext) ([]byte, error) {
 	index := scope.Stack.peek()
-	if index.LtUint64(uint64(len(evm.BlobHashes))) {
-		blobHash := evm.BlobHashes[index.Uint64()]
+	if index.LtUint64(uint64(len(evm.TxContext.BlobHashes))) {
+		blobHash := evm.TxContext.BlobHashes[index.Uint64()]
 		index.SetBytes32(blobHash[:])
 	} else {
 		index.Clear()

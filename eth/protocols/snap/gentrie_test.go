@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -59,7 +59,7 @@ func (r *replayer) decode(key []byte, value []byte) {
 	if len(value) == 0 {
 		r.hashes = append(r.hashes, common.Hash{})
 	} else {
-		r.hashes = append(r.hashes, common.Hash(crypto.Keccak256Hash(value)))
+		r.hashes = append(r.hashes, crypto.Keccak256Hash(value))
 	}
 }
 
@@ -239,7 +239,6 @@ func TestPartialGentree(t *testing.T) {
 			{1, len(entries) - 1},                // no left
 			{2, len(entries) - 1},                // no left
 			{2, len(entries) - 2},                // no left and right
-			{2, len(entries) - 2},                // no left and right
 			{len(entries) / 2, len(entries) / 2}, // single
 			{0, 0},                               // single first
 			{len(entries) - 1, len(entries) - 1}, // single last
@@ -348,7 +347,6 @@ func TestGentreeDanglingClearing(t *testing.T) {
 			{1, len(entries) - 1},                // no left
 			{2, len(entries) - 1},                // no left
 			{2, len(entries) - 2},                // no left and right
-			{2, len(entries) - 2},                // no left and right
 			{len(entries) / 2, len(entries) / 2}, // single
 			{0, 0},                               // single first
 			{len(entries) - 1, len(entries) - 1}, // single last
@@ -414,14 +412,14 @@ func TestFlushPartialTree(t *testing.T) {
 				tr.commit(false)
 
 				batch.Replay(combined)
-				_ = batch.Write()
+				batch.Write()
 				batch.Reset()
 			}
 		}
 		tr.commit(c.last == len(entries)-1)
 
 		batch.Replay(combined)
-		_ = batch.Write()
+		batch.Write()
 		batch.Reset()
 
 		r := newBatchReplay()
@@ -469,8 +467,10 @@ func TestBoundSplit(t *testing.T) {
 
 			lastRightRoot []byte
 		)
-		for next != len(entries) {
-
+		for {
+			if next == len(entries) {
+				break
+			}
 			last = rand.Intn(len(entries)-next) + next
 
 			r := buildPartial(common.Hash{}, db, db.NewBatch(), entries, next, last)
@@ -614,7 +614,7 @@ func TestTrieDelete(t *testing.T) {
 
 		r := newBatchReplay()
 		batch.Replay(r)
-		_ = batch.Write()
+		batch.Write()
 
 		for _, path := range injects {
 			if rawdb.HasAccountTrieNode(db, []byte(path)) {

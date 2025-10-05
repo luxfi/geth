@@ -80,7 +80,7 @@ func (s *Suite) sendTxs(t *utesting.T, txs []*types.Transaction) error {
 			if err != nil {
 				t.Logf("invalid GetBlockHeaders request: %v", err)
 			}
-			_ = recvConn.Write(ethProto, eth.BlockHeadersMsg, &eth.BlockHeadersPacket{
+			recvConn.Write(ethProto, eth.BlockHeadersMsg, &eth.BlockHeadersPacket{
 				RequestId:           msg.RequestId,
 				BlockHeadersRequest: headers,
 			})
@@ -167,7 +167,7 @@ func (s *Suite) sendInvalidTxs(t *utesting.T, txs []*types.Transaction) error {
 			if err != nil {
 				t.Logf("invalid GetBlockHeaders request: %v", err)
 			}
-			_ = recvConn.Write(ethProto, eth.BlockHeadersMsg, &eth.BlockHeadersPacket{
+			recvConn.Write(ethProto, eth.BlockHeadersMsg, &eth.BlockHeadersPacket{
 				RequestId:           msg.RequestId,
 				BlockHeadersRequest: headers,
 			})

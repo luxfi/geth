@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -260,7 +260,7 @@ func (r *HistoricalStateReader) AccountRLP(address common.Address) ([]byte, erro
 	// and try to define a low granularity lock if the current approach doesn't
 	// work later.
 	dl := r.db.tree.bottom()
-	hash := common.BytesToHash(crypto.Keccak256(address.Bytes()))
+	hash := crypto.Keccak256Hash(address.Bytes())
 	latest, err := dl.account(hash, 0)
 	if err != nil {
 		return nil, err
@@ -310,8 +310,8 @@ func (r *HistoricalStateReader) Storage(address common.Address, key common.Hash)
 	// and try to define a low granularity lock if the current approach doesn't
 	// work later.
 	dl := r.db.tree.bottom()
-	addrHash := common.BytesToHash(crypto.Keccak256(address.Bytes()))
-	keyHash := common.BytesToHash(crypto.Keccak256(key.Bytes()))
+	addrHash := crypto.Keccak256Hash(address.Bytes())
+	keyHash := crypto.Keccak256Hash(key.Bytes())
 	latest, err := dl.storage(addrHash, keyHash, 0)
 	if err != nil {
 		return nil, err

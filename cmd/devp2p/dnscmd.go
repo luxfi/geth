@@ -407,7 +407,7 @@ func writeTXTJSON(file string, txt map[string]string) {
 		exit(err)
 	}
 	if file == "-" {
-		_, _ = os.Stdout.Write(txtJSON)
+		os.Stdout.Write(txtJSON)
 		fmt.Println()
 		return
 	}

@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -153,7 +153,7 @@ func internalLinkDeps(metadata *MetaData, depMap map[string]*MetaData, roots *ma
 
 func testLinkCase(tcInput linkTestCaseInput) error {
 	var (
-		testAddr       = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+		testAddr       = crypto.PubkeyToAddress(testKey.PublicKey)
 		overridesAddrs = make(map[common.Address]struct{})
 		overrideAddrs  = make(map[rune]common.Address)
 	)

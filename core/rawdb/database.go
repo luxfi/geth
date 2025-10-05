@@ -80,7 +80,7 @@ func (frdb *freezerdb) Freeze() error {
 	}
 	// Trigger a freeze cycle and block until it's done
 	trigger := make(chan struct{}, 1)
-	frdb.trigger <- trigger
+	frdb.chainFreezer.trigger <- trigger
 	<-trigger
 	return nil
 }
@@ -643,20 +643,11 @@ func InspectDatabase(db ethdb.Database, keyPrefix, keyStart []byte) error {
 		total.Add(uint64(ancient.size()))
 	}
 
-	// Print table header
-	fmt.Fprintf(os.Stdout, "%-20s %-20s %-15s %-15s\n", "Database", "Category", "Size", "Items")
-	fmt.Fprintf(os.Stdout, "%s\n", strings.Repeat("-", 70))
-
-	// Print stats
-	for _, row := range stats {
-		if len(row) >= 4 {
-			fmt.Fprintf(os.Stdout, "%-20s %-20s %-15s %-15s\n", row[0], row[1], row[2], row[3])
-		}
-	}
-
-	// Print footer
-	fmt.Fprintf(os.Stdout, "%s\n", strings.Repeat("-", 70))
-	fmt.Fprintf(os.Stdout, "%-20s %-20s %-15s %-15s\n", "", "Total", common.StorageSize(total.Load()).String(), fmt.Sprintf("%d", count.Load()))
+	table := newTableWriter(os.Stdout)
+	table.SetHeader([]string{"Database", "Category", "Size", "Items"})
+	table.SetFooter([]string{"", "Total", common.StorageSize(total.Load()).String(), fmt.Sprintf("%d", count.Load())})
+	table.AppendBulk(stats)
+	table.Render()
 
 	if !unaccounted.empty() {
 		log.Error("Database contains unaccounted data", "size", unaccounted.sizeString(), "count", unaccounted.countString())

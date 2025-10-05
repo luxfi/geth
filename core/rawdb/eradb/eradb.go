@@ -174,7 +174,7 @@ func convertReceipts(input []byte) ([]byte, error) {
 			if field == 2 {
 				continue // skip bloom
 			}
-			_, _ = enc.Write(dataIter.Value())
+			enc.Write(dataIter.Value())
 		}
 		enc.ListEnd(innerList)
 		if dataIter.Err() != nil {

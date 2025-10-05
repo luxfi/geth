@@ -1,4 +1,4 @@
-// Copyright 2025 The go-ethereum Authors
+// Copyright 2024 The go-ethereum Authors
 // This file is part of the go-ethereum library.
 //
 // The go-ethereum library is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ package stateless
 import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 )
 
@@ -48,7 +48,7 @@ func (w *Witness) MakeHashDB() ethdb.Database {
 		blob := []byte(code)
 
 		hasher.Reset()
-		_, _ = hasher.Write(blob)
+		hasher.Write(blob)
 		hasher.Read(hash)
 
 		rawdb.WriteCode(memdb, common.BytesToHash(hash), blob)
@@ -58,7 +58,7 @@ func (w *Witness) MakeHashDB() ethdb.Database {
 		blob := []byte(node)
 
 		hasher.Reset()
-		_, _ = hasher.Write(blob)
+		hasher.Write(blob)
 		hasher.Read(hash)
 
 		rawdb.WriteLegacyTrieNode(memdb, common.BytesToHash(hash), blob)

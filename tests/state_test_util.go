@@ -37,7 +37,7 @@ import (
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
@@ -387,8 +387,7 @@ func (tx *stTransaction) toMessage(ps stPostState, baseFee *big.Int) (*core.Mess
 		if err != nil {
 			return nil, fmt.Errorf("invalid private key: %v", err)
 		}
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
-		from = common.BytesToAddress(addr[:])
+		from = crypto.PubkeyToAddress(key.PublicKey)
 	}
 	// Parse recipient if present.
 	var to *common.Address
@@ -524,7 +523,7 @@ func MakePreState(db ethdb.Database, accounts types.GenesisAlloc, snapshotter bo
 
 	// If snapshot is requested, initialize the snapshotter and use it in state.
 	var snaps *snapshot.Tree
-	if snapshotter {
+	if snapshotter && scheme == rawdb.HashScheme {
 		snapconfig := snapshot.Config{
 			CacheSize:  1,
 			Recovery:   false,
@@ -560,3 +559,6 @@ type dummyChain struct {
 func (d *dummyChain) Engine() consensus.Engine                        { return nil }
 func (d *dummyChain) GetHeader(h common.Hash, n uint64) *types.Header { return nil }
 func (d *dummyChain) Config() *params.ChainConfig                     { return d.config }
+func (d *dummyChain) CurrentHeader() *types.Header                    { return nil }
+func (d *dummyChain) GetHeaderByNumber(n uint64) *types.Header        { return nil }
+func (d *dummyChain) GetHeaderByHash(h common.Hash) *types.Header     { return nil }

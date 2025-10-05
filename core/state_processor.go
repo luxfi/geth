@@ -20,13 +20,13 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 )
 
@@ -35,27 +35,19 @@ import (
 //
 // StateProcessor implements Processor.
 type StateProcessor struct {
-	config   *params.ChainConfig // Chain configuration options
-	chain    *HeaderChain        // Canonical header chain
-	vmConfig vm.Config           // VM configuration options
+	chain ChainContext // Chain context interface
 }
 
 // NewStateProcessor initialises a new StateProcessor.
-func NewStateProcessor(config *params.ChainConfig, chain *HeaderChain) *StateProcessor {
+func NewStateProcessor(chain ChainContext) *StateProcessor {
 	return &StateProcessor{
-		config:   config,
-		chain:    chain,
-		vmConfig: vm.Config{},
+		chain: chain,
 	}
 }
 
-// NewStateProcessorWithVMConfig initialises a new StateProcessor with a custom VM config.
-func NewStateProcessorWithVMConfig(config *params.ChainConfig, chain *HeaderChain, vmConfig vm.Config) *StateProcessor {
-	return &StateProcessor{
-		config:   config,
-		chain:    chain,
-		vmConfig: vmConfig,
-	}
+// chainConfig returns the chain configuration.
+func (p *StateProcessor) chainConfig() *params.ChainConfig {
+	return p.chain.Config()
 }
 
 // Process processes the state changes according to the Ethereum rules by running
@@ -65,8 +57,9 @@ func NewStateProcessorWithVMConfig(config *params.ChainConfig, chain *HeaderChai
 // Process returns the receipts and logs accumulated during the process and
 // returns the amount of gas that was used in the process. If any of the
 // transactions failed to execute due to insufficient gas it will return an error.
-func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg *params.ChainConfig) (*ProcessResult, error) {
+func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg vm.Config) (*ProcessResult, error) {
 	var (
+		config      = p.chainConfig()
 		receipts    types.Receipts
 		usedGas     = new(uint64)
 		header      = block.Header()
@@ -77,30 +70,26 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 	)
 
 	// Mutate the block and state according to any hard-fork specs
-	if cfg.DAOForkSupport && cfg.DAOForkBlock != nil && cfg.DAOForkBlock.Cmp(block.Number()) == 0 {
+	if config.DAOForkSupport && config.DAOForkBlock != nil && config.DAOForkBlock.Cmp(block.Number()) == 0 {
 		misc.ApplyDAOHardFork(statedb)
 	}
 	var (
 		context vm.BlockContext
-		signer  = types.MakeSigner(cfg, header.Number, header.Time)
+		signer  = types.MakeSigner(config, header.Number, header.Time)
 	)
 
 	// Apply pre-execution system calls.
-	vmCfg := p.vmConfig // Use the processor's VM config
-
-	// Wrap the state with hooks if a tracer is configured
-	var tracingStateDB vm.StateDB = statedb
-	if vmCfg.Tracer != nil {
-		tracingStateDB = state.NewHookedState(statedb, vmCfg.Tracer)
+	var tracingStateDB = vm.StateDB(statedb)
+	if hooks := cfg.Tracer; hooks != nil {
+		tracingStateDB = state.NewHookedState(statedb, hooks)
 	}
-
 	context = NewEVMBlockContext(header, p.chain, nil)
-	evm := vm.NewEVM(context, tracingStateDB, cfg, vmCfg)
+	evm := vm.NewEVM(context, tracingStateDB, config, cfg)
 
 	if beaconRoot := block.BeaconRoot(); beaconRoot != nil {
 		ProcessBeaconBlockRoot(*beaconRoot, evm)
 	}
-	if cfg.IsPrague(block.Number(), block.Time()) || cfg.IsVerkle(block.Number(), block.Time()) {
+	if config.IsPrague(block.Number(), block.Time()) || config.IsVerkle(block.Number(), block.Time()) {
 		ProcessParentBlockHash(block.ParentHash(), evm)
 	}
 
@@ -121,10 +110,10 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 	}
 	// Read requests if Prague is enabled.
 	var requests [][]byte
-	if p.config.IsPrague(block.Number(), block.Time()) {
+	if config.IsPrague(block.Number(), block.Time()) {
 		requests = [][]byte{}
 		// EIP-6110
-		if err := ParseDepositLogs(&requests, allLogs, p.config); err != nil {
+		if err := ParseDepositLogs(&requests, allLogs, config); err != nil {
 			return nil, fmt.Errorf("failed to parse deposit logs: %w", err)
 		}
 		// EIP-7002
@@ -138,7 +127,7 @@ func (p *StateProcessor) Process(block *types.Block, statedb *state.StateDB, cfg
 	}
 
 	// Finalize the block, applying any consensus engine specific extras (e.g. block rewards)
-	p.chain.engine.Finalize(p.chain, header, tracingStateDB, block.Body())
+	p.chain.Engine().Finalize(p.chain, header, tracingStateDB, block.Body())
 
 	return &ProcessResult{
 		Receipts: receipts,
@@ -202,12 +191,7 @@ func MakeReceipt(evm *vm.EVM, result *ExecutionResult, statedb *state.StateDB, b
 
 	// If the transaction created a contract, store the creation address in the receipt.
 	if tx.To() == nil {
-		// Convert geth common.Address to crypto.Address for CreateAddress function
-		var cryptoAddr [20]byte
-		copy(cryptoAddr[:], evm.Origin[:])
-		createdAddr := crypto.CreateAddress(cryptoAddr, tx.Nonce())
-		// Convert crypto.Address back to geth common.Address
-		receipt.ContractAddress = common.BytesToAddress(createdAddr[:])
+		receipt.ContractAddress = crypto.CreateAddress(evm.TxContext.Origin, tx.Nonce())
 	}
 
 	// Set the receipt logs and create the bloom filter.

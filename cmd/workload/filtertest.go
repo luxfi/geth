@@ -24,10 +24,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/luxfi/crypto"
-	"github.com/ethereum/go-ethereum"
+	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/utesting"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"
@@ -208,8 +208,7 @@ func (fq *filterQuery) calculateHash() common.Hash {
 	if err != nil {
 		exit(fmt.Errorf("Error encoding logs: %v", err))
 	}
-	hash := crypto.Keccak256Hash(enc)
-	return common.BytesToHash(hash[:])
+	return crypto.Keccak256Hash(enc)
 }
 
 func (fq *filterQuery) run(client *client, historyPruneBlock *uint64) {

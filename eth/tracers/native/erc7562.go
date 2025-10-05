@@ -24,7 +24,6 @@ import (
 	"slices"
 	"sync/atomic"
 
-	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
@@ -35,6 +34,7 @@ import (
 	"github.com/luxfi/geth/eth/tracers/internal"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
+	"github.com/holiman/uint256"
 )
 
 //go:generate go run github.com/fjl/gencodec -type callFrameWithOpcodes -field-override callFrameWithOpcodesMarshaling -out gen_callframewithopcodes_json.go
@@ -419,8 +419,7 @@ func (t *erc7562Tracer) handleStorageAccess(opcode vm.OpCode, scope tracing.OpCo
 		slot := common.BytesToHash(peepStack(scope.StackData(), 0).Bytes())
 		addr := scope.Address()
 
-		switch opcode {
-		case vm.SLOAD:
+		if opcode == vm.SLOAD {
 			// read slot values before this UserOp was created
 			// (so saving it if it was written before the first read)
 			_, rOk := currentCallFrame.AccessedSlots.Reads[slot]
@@ -428,11 +427,11 @@ func (t *erc7562Tracer) handleStorageAccess(opcode vm.OpCode, scope tracing.OpCo
 			if !rOk && !wOk {
 				currentCallFrame.AccessedSlots.Reads[slot] = append(currentCallFrame.AccessedSlots.Reads[slot], t.env.StateDB.GetState(addr, slot))
 			}
-		case vm.SSTORE:
+		} else if opcode == vm.SSTORE {
 			currentCallFrame.AccessedSlots.Writes[slot]++
-		case vm.TLOAD:
+		} else if opcode == vm.TLOAD {
 			currentCallFrame.AccessedSlots.TransientReads[slot]++
-		default:
+		} else {
 			currentCallFrame.AccessedSlots.TransientWrites[slot]++
 		}
 	}
@@ -458,7 +457,7 @@ func (t *erc7562Tracer) handleExtOpcodes(opcode vm.OpCode, currentCallFrame *cal
 		// only store the last EXTCODE* opcode per address - could even be a boolean for our current use-case
 		// [OP-051]
 
-		if t.lastOpWithStack.Opcode != vm.EXTCODESIZE || opcode != vm.ISZERO {
+		if !(t.lastOpWithStack.Opcode == vm.EXTCODESIZE && opcode == vm.ISZERO) {
 			currentCallFrame.ExtCodeAccessInfo = append(currentCallFrame.ExtCodeAccessInfo, addr)
 		}
 	}

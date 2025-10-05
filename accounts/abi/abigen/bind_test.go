@@ -1537,14 +1537,13 @@ var bindTests = []struct {
 
 		"github.com/luxfi/geth/accounts/abi/bind"
 		"github.com/luxfi/geth/accounts/abi/bind/backends"
-		"github.com/luxfi/geth/common"
 		"github.com/luxfi/geth/crypto"
 		"github.com/luxfi/geth/core/types"
 		`,
 		`
 		// Initialize test accounts
 		key, _ := crypto.GenerateKey()
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr := crypto.PubkeyToAddress(key.PublicKey)
 
 		// Deploy registrar contract
 		sim := backends.NewSimulatedBackend(types.GenesisAlloc{addr: {Balance: big.NewInt(10000000000000000)}}, 10000000)
@@ -1601,13 +1600,12 @@ var bindTests = []struct {
 
 		"github.com/luxfi/geth/accounts/abi/bind"
 		"github.com/luxfi/geth/accounts/abi/bind/backends"
-		"github.com/luxfi/geth/common"
 		"github.com/luxfi/geth/crypto"
 		"github.com/luxfi/geth/core/types"
         `,
 		`
 		key, _ := crypto.GenerateKey()
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr := crypto.PubkeyToAddress(key.PublicKey)
 
 		// Deploy registrar contract
 		sim := backends.NewSimulatedBackend(types.GenesisAlloc{addr: {Balance: big.NewInt(10000000000000000)}}, 10000000)
@@ -1725,13 +1723,12 @@ var bindTests = []struct {
 
 			"github.com/luxfi/geth/accounts/abi/bind"
 			"github.com/luxfi/geth/accounts/abi/bind/backends"
-			"github.com/luxfi/geth/common"
 			"github.com/luxfi/geth/core/types"
 			"github.com/luxfi/geth/crypto"
 	   `,
 		`
 			key, _ := crypto.GenerateKey()
-			addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+			addr := crypto.PubkeyToAddress(key.PublicKey)
 
 			sim := backends.NewSimulatedBackend(types.GenesisAlloc{addr: {Balance: big.NewInt(10000000000000000)}}, 1000000)
 			defer sim.Close()
@@ -2094,12 +2091,7 @@ func TestBindings(t *testing.T) {
 	// Skip the test if no Go command can be found
 	gocmd := runtime.GOROOT() + "/bin/go"
 	if !common.FileExist(gocmd) {
-		// Try alternative go command locations
-		if altGocmd, err := exec.LookPath("go"); err != nil {
-			t.Fatalf("go SDK not found in PATH or GOROOT: %v", err)
-		} else {
-			gocmd = altGocmd
-		}
+		t.Skip("go sdk not found for testing")
 	}
 
 	// Create a temporary workspace for the test suite

@@ -41,11 +41,11 @@ import (
 	"sync"
 	"time"
 
-	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"
+	pcsc "github.com/gballet/go-libpcsclite"
 )
 
 // Scheme is the URI prefix for smartcard wallets.

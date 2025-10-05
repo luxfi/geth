@@ -262,7 +262,7 @@ func (tl *testlogger) Write(b []byte) (n int, err error) {
 		}
 	}
 	tl.mu.Lock()
-	_, _ = tl.buf.Write(b)
+	tl.buf.Write(b)
 	tl.mu.Unlock()
 	return len(b), err
 }
@@ -279,7 +279,7 @@ type runeTee struct {
 
 func (rtee *runeTee) Read(b []byte) (n int, err error) {
 	n, err = rtee.in.Read(b)
-	_, _ = rtee.buf.Write(b[:n])
+	rtee.buf.Write(b[:n])
 	return n, err
 }
 

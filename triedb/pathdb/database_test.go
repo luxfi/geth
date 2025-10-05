@@ -249,14 +249,14 @@ func (t *tester) randAccount() (common.Address, []byte) {
 
 func (t *tester) generateStorage(ctx *genctx, addr common.Address) common.Hash {
 	var (
-		addrHash = common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+		addrHash = crypto.Keccak256Hash(addr.Bytes())
 		storage  = make(map[common.Hash][]byte)
 		origin   = make(map[common.Hash][]byte)
 	)
 	for i := 0; i < 10; i++ {
 		v, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(testrand.Bytes(32)))
 		key := testrand.Bytes(32)
-		hash := common.BytesToHash(crypto.Keccak256(key))
+		hash := crypto.Keccak256Hash(key)
 		t.preimages[hash] = key
 
 		storage[hash] = v
@@ -272,7 +272,7 @@ func (t *tester) generateStorage(ctx *genctx, addr common.Address) common.Hash {
 
 func (t *tester) mutateStorage(ctx *genctx, addr common.Address, root common.Hash) common.Hash {
 	var (
-		addrHash = common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+		addrHash = crypto.Keccak256Hash(addr.Bytes())
 		storage  = make(map[common.Hash][]byte)
 		origin   = make(map[common.Hash][]byte)
 	)
@@ -287,13 +287,13 @@ func (t *tester) mutateStorage(ctx *genctx, addr common.Address, root common.Has
 	for i := 0; i < 3; i++ {
 		v, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(testrand.Bytes(32)))
 		key := testrand.Bytes(32)
-		hash := common.BytesToHash(crypto.Keccak256(key))
+		hash := crypto.Keccak256Hash(key)
 		t.preimages[hash] = key
 
 		storage[hash] = v
 		origin[hash] = nil
 	}
-	root, set := updateTrie(t.db, ctx.stateRoot, common.BytesToHash(crypto.Keccak256(addr.Bytes())), root, storage)
+	root, set := updateTrie(t.db, ctx.stateRoot, crypto.Keccak256Hash(addr.Bytes()), root, storage)
 
 	ctx.storages[addrHash] = storage
 	ctx.storageOrigin[addr] = origin
@@ -303,7 +303,7 @@ func (t *tester) mutateStorage(ctx *genctx, addr common.Address, root common.Has
 
 func (t *tester) clearStorage(ctx *genctx, addr common.Address, root common.Hash) common.Hash {
 	var (
-		addrHash = common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+		addrHash = crypto.Keccak256Hash(addr.Bytes())
 		storage  = make(map[common.Hash][]byte)
 		origin   = make(map[common.Hash][]byte)
 	)
@@ -379,7 +379,7 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 		case createAccountOp:
 			// account creation
 			addr := testrand.Address()
-			addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+			addrHash := crypto.Keccak256Hash(addr.Bytes())
 
 			// Short circuit if the account was already existent
 			if _, ok := t.accounts[addrHash]; ok {
@@ -402,7 +402,7 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 			if addr == (common.Address{}) {
 				continue
 			}
-			addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+			addrHash := crypto.Keccak256Hash(addr.Bytes())
 
 			// short circuit if the account has been modified within the same transition
 			if _, ok := dirties[addrHash]; ok {
@@ -423,7 +423,7 @@ func (t *tester) generate(parent common.Hash, rawStorageKey bool) (common.Hash, 
 			if addr == (common.Address{}) {
 				continue
 			}
-			addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+			addrHash := crypto.Keccak256Hash(addr.Bytes())
 
 			// short circuit if the account has been modified within the same transition
 			if _, ok := dirties[addrHash]; ok {
@@ -719,7 +719,7 @@ func TestDisable(t *testing.T) {
 	tester := newTester(t, &testerConfig{layers: 32})
 	defer tester.release()
 
-	stored := common.BytesToHash(crypto.Keccak256(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil)))
+	stored := crypto.Keccak256Hash(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil))
 	if err := tester.db.Disable(); err != nil {
 		t.Fatalf("Failed to deactivate database: %v", err)
 	}
@@ -843,7 +843,7 @@ func testCorruptedJournal(t *testing.T, journalDir string, modifyFn func(databas
 		t.Errorf("Failed to journal, err: %v", err)
 	}
 	tester.db.Close()
-	root := common.BytesToHash(crypto.Keccak256(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil)))
+	root := crypto.Keccak256Hash(rawdb.ReadAccountTrieNode(tester.db.diskdb, nil))
 
 	modifyFn(tester.db.diskdb)
 

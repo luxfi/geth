@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/rlp"
 )
 
@@ -191,7 +191,7 @@ func (h *hasher) encodedBytes() []byte {
 func (h *hasher) hashData(data []byte) []byte {
 	n := make([]byte, 32)
 	h.sha.Reset()
-	_, _ = h.sha.Write(data)
+	h.sha.Write(data)
 	h.sha.Read(n)
 	return n
 }
@@ -200,7 +200,7 @@ func (h *hasher) hashData(data []byte) []byte {
 // must ensure that the dst buffer is of appropriate size.
 func (h *hasher) hashDataTo(dst, data []byte) {
 	h.sha.Reset()
-	_, _ = h.sha.Write(data)
+	h.sha.Write(data)
 	h.sha.Read(dst)
 }
 

@@ -24,7 +24,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math"
 	"math/big"
 	"net"
 	"net/http"
@@ -35,9 +34,6 @@ import (
 	"strings"
 	"time"
 
-	pcsclite "github.com/gballet/go-libpcsclite"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/accounts/keystore"
 	bparams "github.com/luxfi/geth/beacon/params"
@@ -49,6 +45,8 @@ import (
 	"github.com/luxfi/geth/core/txpool/blobpool"
 	"github.com/luxfi/geth/core/txpool/legacypool"
 	"github.com/luxfi/geth/core/vm"
+	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/eth/filters"
@@ -76,6 +74,7 @@ import (
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/hashdb"
 	"github.com/luxfi/geth/triedb/pathdb"
+	pcsclite "github.com/gballet/go-libpcsclite"
 	gopsutil "github.com/shirou/gopsutil/mem"
 	"github.com/urfave/cli/v2"
 )
@@ -246,6 +245,16 @@ var (
 	OverrideOsaka = &cli.Uint64Flag{
 		Name:     "override.osaka",
 		Usage:    "Manually specify the Osaka fork timestamp, overriding the bundled setting",
+		Category: flags.EthCategory,
+	}
+	OverrideBPO1 = &cli.Uint64Flag{
+		Name:     "override.bpo1",
+		Usage:    "Manually specify the bpo1 fork timestamp, overriding the bundled setting",
+		Category: flags.EthCategory,
+	}
+	OverrideBPO2 = &cli.Uint64Flag{
+		Name:     "override.bpo2",
+		Usage:    "Manually specify the bpo2 fork timestamp, overriding the bundled setting",
 		Category: flags.EthCategory,
 	}
 	OverrideVerkle = &cli.Uint64Flag{
@@ -1015,7 +1024,7 @@ var (
 // default account to prefund when running Geth in dev mode
 var (
 	DeveloperKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	DeveloperAddr   = common.Address(crypto.PubkeyToAddress(DeveloperKey.PublicKey))
+	DeveloperAddr   = crypto.PubkeyToAddress(DeveloperKey.PublicKey)
 )
 
 // MakeDataDir retrieves the currently requested data directory, terminating
@@ -1610,7 +1619,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	}
 	// Ensure Go's GC ignores the database cache for trigger percentage
 	cache := ctx.Int(CacheFlag.Name)
-	gogc := math.Max(20, math.Min(100, 100/(float64(cache)/1024)))
+	gogc := max(20, min(100, 100/(float64(cache)/1024)))
 
 	log.Debug("Sanitizing Go's GC trigger", "percent", int(gogc))
 	godebug.SetGCPercent(int(gogc))
@@ -1936,7 +1945,7 @@ func MakeBeaconLightConfig(ctx *cli.Context) bparams.ClientConfig {
 		if err != nil {
 			Fatalf("failed to read beacon chain config file '%s': %v", configPath, err)
 		}
-		if err := config.LoadForks(file); err != nil {
+		if err := config.ChainConfig.LoadForks(file); err != nil {
 			Fatalf("Could not load beacon chain config '%s': %v", configPath, err)
 		}
 		log.Info("Using custom beacon chain config", "file", configPath)
@@ -2154,8 +2163,10 @@ func MakeChainDatabase(ctx *cli.Context, stack *node.Node, readonly bool) ethdb.
 func tryMakeReadOnlyDatabase(ctx *cli.Context, stack *node.Node) ethdb.Database {
 	// If the database doesn't exist we need to open it in write-mode to allow
 	// the engine to create files.
-	readonly := !(rawdb.PreexistingDatabase(stack.ResolvePath("chaindata")) == "")
-
+	readonly := true
+	if rawdb.PreexistingDatabase(stack.ResolvePath("chaindata")) == "" {
+		readonly = false
+	}
 	return MakeChainDatabase(ctx, stack, readonly)
 }
 

@@ -72,7 +72,7 @@ func BenchmarkInsertChain_ring1000_diskdb(b *testing.B) {
 var (
 	// This is the content of the genesis block used by the benchmarks.
 	benchRootKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	benchRootAddr   = common.Address(crypto.PubkeyToAddress(benchRootKey.PublicKey))
+	benchRootAddr   = crypto.PubkeyToAddress(benchRootKey.PublicKey)
 	benchRootFunds  = math.BigPow(2, 200)
 )
 
@@ -114,10 +114,10 @@ var (
 
 func init() {
 	ringKeys[0] = benchRootKey
-	ringAddrs[0] = common.Address(benchRootAddr)
+	ringAddrs[0] = benchRootAddr
 	for i := 1; i < len(ringKeys); i++ {
 		ringKeys[i], _ = crypto.GenerateKey()
-		ringAddrs[i] = common.Address(crypto.PubkeyToAddress(ringKeys[i].PublicKey))
+		ringAddrs[i] = crypto.PubkeyToAddress(ringKeys[i].PublicKey)
 	}
 }
 
@@ -193,7 +193,7 @@ func benchInsertChain(b *testing.B, disk bool, gen func(int, *BlockGen)) {
 	// generator function.
 	gspec := &Genesis{
 		Config: params.TestChainConfig,
-		Alloc:  types.GenesisAlloc{common.Address(benchRootAddr): {Balance: benchRootFunds}},
+		Alloc:  types.GenesisAlloc{benchRootAddr: {Balance: benchRootFunds}},
 	}
 	_, chain, _ := GenerateChainWithGenesis(gspec, ethash.NewFaker(), b.N, gen)
 
@@ -215,15 +215,27 @@ func BenchmarkChainRead_full_10k(b *testing.B) {
 	benchReadChain(b, true, 10000)
 }
 func BenchmarkChainRead_header_100k(b *testing.B) {
+	if testing.Short() {
+		b.Skip("Skipping in short-mode")
+	}
 	benchReadChain(b, false, 100000)
 }
 func BenchmarkChainRead_full_100k(b *testing.B) {
+	if testing.Short() {
+		b.Skip("Skipping in short-mode")
+	}
 	benchReadChain(b, true, 100000)
 }
 func BenchmarkChainRead_header_500k(b *testing.B) {
+	if testing.Short() {
+		b.Skip("Skipping in short-mode")
+	}
 	benchReadChain(b, false, 500000)
 }
 func BenchmarkChainRead_full_500k(b *testing.B) {
+	if testing.Short() {
+		b.Skip("Skipping in short-mode")
+	}
 	benchReadChain(b, true, 500000)
 }
 func BenchmarkChainWrite_header_10k(b *testing.B) {
@@ -239,9 +251,15 @@ func BenchmarkChainWrite_full_100k(b *testing.B) {
 	benchWriteChain(b, true, 100000)
 }
 func BenchmarkChainWrite_header_500k(b *testing.B) {
+	if testing.Short() {
+		b.Skip("Skipping in short-mode")
+	}
 	benchWriteChain(b, false, 500000)
 }
 func BenchmarkChainWrite_full_500k(b *testing.B) {
+	if testing.Short() {
+		b.Skip("Skipping in short-mode")
+	}
 	benchWriteChain(b, true, 500000)
 }
 
@@ -283,7 +301,7 @@ func makeChainForBench(db ethdb.Database, genesis *Genesis, full bool, count uin
 
 func benchWriteChain(b *testing.B, full bool, count uint64) {
 	genesis := &Genesis{Config: params.AllEthashProtocolChanges}
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		pdb, err := pebble.New(b.TempDir(), 1024, 128, "", false)
 		if err != nil {
 			b.Fatalf("error opening database: %v", err)
@@ -308,9 +326,7 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 	db.Close()
 	options := DefaultConfig().WithArchive(true)
 	b.ReportAllocs()
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		pdb, err = pebble.New(dir, 1024, 128, "", false)
 		if err != nil {
 			b.Fatalf("error opening database: %v", err)

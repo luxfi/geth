@@ -37,7 +37,7 @@ func getBlock(transactions int, uncles int, dataSize int) *types.Block {
 
 		// A sender who makes transactions, has some funds
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		address = crypto.PubkeyToAddress(key.PublicKey)
 		funds   = big.NewInt(1_000_000_000_000_000_000)
 		gspec   = &Genesis{
 			Config: params.TestChainConfig,
@@ -108,7 +108,7 @@ func testRlpIterator(t *testing.T, txs, uncles, datasize int) {
 	var gotHashes []common.Hash
 	var expHashes []common.Hash
 	for txIt.Next() {
-		gotHashes = append(gotHashes, common.Hash(crypto.Keccak256Hash(txIt.Value())))
+		gotHashes = append(gotHashes, crypto.Keccak256Hash(txIt.Value()))
 	}
 
 	var expBody types.Body
@@ -149,8 +149,7 @@ func BenchmarkHashing(b *testing.B) {
 	var got common.Hash
 	var hasher = sha3.NewLegacyKeccak256()
 	b.Run("iteratorhashing", func(b *testing.B) {
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			var hash common.Hash
 			it, err := rlp.NewListIterator(bodyRlp)
 			if err != nil {
@@ -164,7 +163,7 @@ func BenchmarkHashing(b *testing.B) {
 			}
 			for txIt.Next() {
 				hasher.Reset()
-				_, _ = hasher.Write(txIt.Value())
+				hasher.Write(txIt.Value())
 				hasher.Sum(hash[:0])
 				got = hash
 			}
@@ -172,8 +171,7 @@ func BenchmarkHashing(b *testing.B) {
 	})
 	var exp common.Hash
 	b.Run("fullbodyhashing", func(b *testing.B) {
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			var body types.Body
 			rlp.DecodeBytes(bodyRlp, &body)
 			for _, tx := range body.Transactions {
@@ -182,8 +180,7 @@ func BenchmarkHashing(b *testing.B) {
 		}
 	})
 	b.Run("fullblockhashing", func(b *testing.B) {
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			var block types.Block
 			rlp.DecodeBytes(blockRlp, &block)
 			for _, tx := range block.Transactions() {
