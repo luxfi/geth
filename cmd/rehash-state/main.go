@@ -12,7 +12,7 @@ import (
     "bytes"
 
     "github.com/cockroachdb/pebble"
-    badger "github.com/dgraph-io/badger/v2"
+    badger "github.com/dgraph-io/badger/v4"
 
     // Using only luxfi packages as required
     "github.com/luxfi/geth/common"

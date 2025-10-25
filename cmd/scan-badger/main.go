@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/dgraph-io/badger/v3"
+	"github.com/dgraph-io/badger/v4"
 )
 
 func main() {
