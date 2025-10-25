@@ -28,10 +28,12 @@ import (
 
 // Genesis hashes to enforce below configs on.
 var (
-	MainnetGenesisHash = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
-	HoleskyGenesisHash = common.HexToHash("0xb5f7f912443c940f21fd611f12828d75b534364ed9e95ca4e307729a4661bde4")
-	SepoliaGenesisHash = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
-	HoodiGenesisHash   = common.HexToHash("0xbbe312868b376a3001692a646dd2d7d1e4406380dfd86b98aa8a34d1557c971b")
+	MainnetGenesisHash    = common.HexToHash("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3")
+	HoleskyGenesisHash    = common.HexToHash("0xb5f7f912443c940f21fd611f12828d75b534364ed9e95ca4e307729a4661bde4")
+	SepoliaGenesisHash    = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
+	HoodiGenesisHash      = common.HexToHash("0xbbe312868b376a3001692a646dd2d7d1e4406380dfd86b98aa8a34d1557c971b")
+	LuxMainnetGenesisHash = common.HexToHash("0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e")
+	LuxTestnetGenesisHash = common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000") // TODO: Add actual testnet genesis hash
 )
 
 func newUint64(val uint64) *uint64 { return &val }
@@ -174,6 +176,71 @@ var (
 			Osaka:  DefaultOsakaBlobConfig,
 			BPO1:   DefaultBPO1BlobConfig,
 			BPO2:   DefaultBPO2BlobConfig,
+		},
+	}
+
+	// LuxMainnetChainConfig contains the chain parameters for Lux mainnet (network ID 96369).
+	// This genesis matches the migrated SubnetEVM blockchain data.
+	LuxMainnetChainConfig = &ChainConfig{
+		ChainID:                 big.NewInt(96369),
+		HomesteadBlock:          big.NewInt(0),
+		DAOForkBlock:            nil,
+		DAOForkSupport:          false,
+		EIP150Block:             big.NewInt(0),
+		EIP155Block:             big.NewInt(0),
+		EIP158Block:             big.NewInt(0),
+		ByzantiumBlock:          big.NewInt(0),
+		ConstantinopleBlock:     big.NewInt(0),
+		PetersburgBlock:         big.NewInt(0),
+		IstanbulBlock:           big.NewInt(0),
+		MuirGlacierBlock:        big.NewInt(0),
+		BerlinBlock:             big.NewInt(0),
+		LondonBlock:             big.NewInt(0),
+		ArrowGlacierBlock:       nil,
+		GrayGlacierBlock:        nil,
+		TerminalTotalDifficulty: big.NewInt(0),
+		MergeNetsplitBlock:      big.NewInt(0),
+		ShanghaiTime:            newUint64(0),
+		CancunTime:              newUint64(0),
+		PragueTime:              newUint64(0),
+		OsakaTime:               nil,
+		VerkleTime:              newUint64(0),
+		Ethash:                  new(EthashConfig),
+		BlobScheduleConfig: &BlobScheduleConfig{
+			Cancun: DefaultCancunBlobConfig,
+			Prague: DefaultPragueBlobConfig,
+		},
+	}
+
+	// LuxTestnetChainConfig contains the chain parameters for Lux testnet (network ID 96368).
+	LuxTestnetChainConfig = &ChainConfig{
+		ChainID:                 big.NewInt(96368),
+		HomesteadBlock:          big.NewInt(0),
+		DAOForkBlock:            nil,
+		DAOForkSupport:          false,
+		EIP150Block:             big.NewInt(0),
+		EIP155Block:             big.NewInt(0),
+		EIP158Block:             big.NewInt(0),
+		ByzantiumBlock:          big.NewInt(0),
+		ConstantinopleBlock:     big.NewInt(0),
+		PetersburgBlock:         big.NewInt(0),
+		IstanbulBlock:           big.NewInt(0),
+		MuirGlacierBlock:        big.NewInt(0),
+		BerlinBlock:             big.NewInt(0),
+		LondonBlock:             big.NewInt(0),
+		ArrowGlacierBlock:       nil,
+		GrayGlacierBlock:        nil,
+		TerminalTotalDifficulty: big.NewInt(0),
+		MergeNetsplitBlock:      big.NewInt(0),
+		ShanghaiTime:            newUint64(0),
+		CancunTime:              newUint64(0),
+		PragueTime:              newUint64(0),
+		OsakaTime:               nil,
+		VerkleTime:              newUint64(0),
+		Ethash:                  new(EthashConfig),
+		BlobScheduleConfig: &BlobScheduleConfig{
+			Cancun: DefaultCancunBlobConfig,
+			Prague: DefaultPragueBlobConfig,
 		},
 	}
 	// AllEthashProtocolChanges contains every protocol change (EIPs) introduced
@@ -411,10 +478,12 @@ var (
 
 // NetworkNames are user friendly names to use in the chain spec banner.
 var NetworkNames = map[string]string{
-	MainnetChainConfig.ChainID.String(): "mainnet",
-	SepoliaChainConfig.ChainID.String(): "sepolia",
-	HoleskyChainConfig.ChainID.String(): "holesky",
-	HoodiChainConfig.ChainID.String():   "hoodi",
+	MainnetChainConfig.ChainID.String():    "mainnet",
+	SepoliaChainConfig.ChainID.String():    "sepolia",
+	HoleskyChainConfig.ChainID.String():    "holesky",
+	HoodiChainConfig.ChainID.String():      "hoodi",
+	LuxMainnetChainConfig.ChainID.String(): "lux-mainnet",
+	LuxTestnetChainConfig.ChainID.String(): "lux-testnet",
 }
 
 // ChainConfig is the core config which determines the blockchain settings.

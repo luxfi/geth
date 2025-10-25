@@ -643,11 +643,18 @@ func InspectDatabase(db ethdb.Database, keyPrefix, keyStart []byte) error {
 		total.Add(uint64(ancient.size()))
 	}
 
-	table := newTableWriter(os.Stdout)
-	table.SetHeader([]string{"Database", "Category", "Size", "Items"})
-	table.SetFooter([]string{"", "Total", common.StorageSize(total.Load()).String(), fmt.Sprintf("%d", count.Load())})
-	table.AppendBulk(stats)
-	table.Render()
+	// Simple table output without tablewriter for now
+	fmt.Println("\n╔════════════════════════════════════════════════════════════╗")
+	fmt.Printf("║ %-15s │ %-15s │ %-10s │ %-10s ║\n", "Database", "Category", "Size", "Items")
+	fmt.Println("╠════════════════════════════════════════════════════════════╣")
+	for _, row := range stats {
+		if len(row) >= 4 {
+			fmt.Printf("║ %-15s │ %-15s │ %-10s │ %-10s ║\n", row[0], row[1], row[2], row[3])
+		}
+	}
+	fmt.Println("╠════════════════════════════════════════════════════════════╣")
+	fmt.Printf("║ %-15s │ %-15s │ %-10s │ %-10s ║\n", "", "Total", common.StorageSize(total.Load()).String(), fmt.Sprintf("%d", count.Load()))
+	fmt.Println("╚════════════════════════════════════════════════════════════╝")
 
 	if !unaccounted.empty() {
 		log.Error("Database contains unaccounted data", "size", unaccounted.sizeString(), "count", unaccounted.countString())

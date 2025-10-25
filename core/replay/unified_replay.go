@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dgraph-io/badger/v3"
+	"github.com/dgraph-io/badger/v4"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
