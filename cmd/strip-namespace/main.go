@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/cockroachdb/pebble"
-	badger "github.com/dgraph-io/badger/v3"
+	badger "github.com/dgraph-io/badger/v4"
 	"github.com/golang/snappy"
 )
 

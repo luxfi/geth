@@ -82,7 +82,14 @@ func NewHeaderChain(chainDb ethdb.Database, config *params.ChainConfig, engine c
 	}
 	hc.genesisHeader = hc.GetHeaderByNumber(0)
 	if hc.genesisHeader == nil {
-		return nil, ErrNoGenesis
+		// For migrated data, try reading directly from database
+		genesisHash := rawdb.ReadCanonicalHash(chainDb, 0)
+		if genesisHash != (common.Hash{}) {
+			hc.genesisHeader = rawdb.ReadHeader(chainDb, genesisHash, 0)
+		}
+		if hc.genesisHeader == nil {
+			return nil, ErrNoGenesis
+		}
 	}
 	hc.currentHeader.Store(hc.genesisHeader)
 	if head := rawdb.ReadHeadBlockHash(chainDb); head != (common.Hash{}) {
