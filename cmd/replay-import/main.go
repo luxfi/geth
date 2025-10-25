@@ -10,7 +10,7 @@ import (
     "github.com/luxfi/geth/common"
     "github.com/luxfi/geth/core/rawdb"
     "github.com/luxfi/geth/ethdb"
-    badger "github.com/dgraph-io/badger/v2"
+    badger "github.com/dgraph-io/badger/v4"
     "github.com/cockroachdb/pebble"
 )
 

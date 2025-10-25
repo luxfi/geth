@@ -73,6 +73,10 @@ type Genesis struct {
 	BaseFee       *big.Int    `json:"baseFeePerGas"` // EIP-1559
 	ExcessBlobGas *uint64     `json:"excessBlobGas"` // EIP-4844
 	BlobGasUsed   *uint64     `json:"blobGasUsed"`   // EIP-4844
+
+	// AcceptExistingState indicates whether to accept existing blockchain state
+	// without checking genesis mismatch. Used for migrated SubnetEVM data.
+	AcceptExistingState bool `json:"acceptExistingState,omitempty"`
 }
 
 // copy copies the genesis.
@@ -446,6 +450,10 @@ func (g *Genesis) chainConfigOrDefault(ghash common.Hash, stored *params.ChainCo
 		return params.SepoliaChainConfig
 	case ghash == params.HoodiGenesisHash:
 		return params.HoodiChainConfig
+	case ghash == params.LuxMainnetGenesisHash:
+		return params.LuxMainnetChainConfig
+	case ghash == params.LuxTestnetGenesisHash:
+		return params.LuxTestnetChainConfig
 	default:
 		return stored
 	}

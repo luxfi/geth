@@ -25,9 +25,10 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
-// Re-export the real tablewriter types and functions
+// Table is a type alias for tablewriter.Table
 type Table = tablewriter.Table
 
+// newTableWriter creates a new table writer
 func newTableWriter(w io.Writer) *Table {
 	return tablewriter.NewWriter(w)
 }
