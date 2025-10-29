@@ -37,9 +37,6 @@ type Config struct {
 	PathDB    *pathdb.Config // Configs for experimental path-based scheme
 }
 
-// DBOverride is a type alias for Database to support config constructors
-type DBOverride = Database
-
 // HashDefaults represents a config for using hash-based scheme with
 // default settings.
 var HashDefaults = &Config{
@@ -377,4 +374,13 @@ func (db *Database) IsVerkle() bool {
 // Disk returns the underlying disk database.
 func (db *Database) Disk() ethdb.Database {
 	return db.disk
+}
+
+// SnapshotCompleted returns the indicator if the snapshot is completed.
+func (db *Database) SnapshotCompleted() bool {
+	pdb, ok := db.backend.(*pathdb.Database)
+	if !ok {
+		return false
+	}
+	return pdb.SnapshotCompleted()
 }

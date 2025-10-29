@@ -23,17 +23,18 @@ import (
 	"testing"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
+	"github.com/luxfi/geth/params/forks"
 	"github.com/luxfi/geth/rlp"
 )
 
 func TestEIP155Signing(t *testing.T) {
 	key, _ := crypto.GenerateKey()
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	addr := crypto.PubkeyToAddress(key.PublicKey)
 
 	signer := NewEIP155Signer(big.NewInt(18))
-	tx, err := SignTx(NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil), signer, key)
+	tx, err := SignTx(NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil), signer, key)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -42,17 +43,17 @@ func TestEIP155Signing(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if from != common.Address(addr) {
+	if from != addr {
 		t.Errorf("expected from and address to be equal. Got %x want %x", from, addr)
 	}
 }
 
 func TestEIP155ChainId(t *testing.T) {
 	key, _ := crypto.GenerateKey()
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	addr := crypto.PubkeyToAddress(key.PublicKey)
 
 	signer := NewEIP155Signer(big.NewInt(18))
-	tx, err := SignTx(NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil), signer, key)
+	tx, err := SignTx(NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil), signer, key)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +65,7 @@ func TestEIP155ChainId(t *testing.T) {
 		t.Error("expected chainId to be", signer.chainId, "got", tx.ChainId())
 	}
 
-	tx = NewTransaction(0, common.Address(addr), new(big.Int), 0, new(big.Int), nil)
+	tx = NewTransaction(0, addr, new(big.Int), 0, new(big.Int), nil)
 	tx, err = SignTx(tx, HomesteadSigner{}, key)
 	if err != nil {
 		t.Fatal(err)
@@ -111,7 +112,7 @@ func TestEIP155SigningVitalik(t *testing.T) {
 		}
 
 		addr := common.HexToAddress(test.addr)
-		if from != common.Address(addr) {
+		if from != addr {
 			t.Errorf("%d: expected %x got %x", i, addr, from)
 		}
 	}
@@ -186,5 +187,16 @@ func createTestLegacyTxInner() *LegacyTx {
 		Gas:      params.TxGas,
 		GasPrice: big.NewInt(params.GWei),
 		Data:     nil,
+	}
+}
+
+func Benchmark_modernSigner_Equal(b *testing.B) {
+	signer1 := newModernSigner(big.NewInt(1), forks.Amsterdam)
+	signer2 := newModernSigner(big.NewInt(1), forks.Amsterdam)
+
+	for b.Loop() {
+		if !signer1.Equal(signer2) {
+			b.Fatal("expected signers to be equal")
+		}
 	}
 }

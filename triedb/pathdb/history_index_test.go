@@ -25,7 +25,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 )
 
 func TestIndexReaderBasic(t *testing.T) {
@@ -179,8 +179,8 @@ func TestIndexWriterDelete(t *testing.T) {
 func TestBatchIndexerWrite(t *testing.T) {
 	var (
 		db        = rawdb.NewMemoryDatabase()
-		batch     = newBatchIndexer(db, false)
-		histories = makeHistories(10)
+		batch     = newBatchIndexer(db, false, typeStateHistory)
+		histories = makeStateHistories(10)
 	)
 	for i, h := range histories {
 		if err := batch.process(h, uint64(i+1)); err != nil {
@@ -190,7 +190,7 @@ func TestBatchIndexerWrite(t *testing.T) {
 	if err := batch.finish(true); err != nil {
 		t.Fatalf("Failed to finish batch indexer, %v", err)
 	}
-	metadata := loadIndexMetadata(db)
+	metadata := loadIndexMetadata(db, typeStateHistory)
 	if metadata == nil || metadata.Last != uint64(10) {
 		t.Fatal("Unexpected index position")
 	}
@@ -200,7 +200,7 @@ func TestBatchIndexerWrite(t *testing.T) {
 	)
 	for i, h := range histories {
 		for _, addr := range h.accountList {
-			addrHash := common.BytesToHash(crypto.Keccak256(addr.Bytes()))
+			addrHash := crypto.Keccak256Hash(addr.Bytes())
 			accounts[addrHash] = append(accounts[addrHash], uint64(i+1))
 
 			if _, ok := storages[addrHash]; !ok {
@@ -256,8 +256,8 @@ func TestBatchIndexerWrite(t *testing.T) {
 func TestBatchIndexerDelete(t *testing.T) {
 	var (
 		db        = rawdb.NewMemoryDatabase()
-		bw        = newBatchIndexer(db, false)
-		histories = makeHistories(10)
+		bw        = newBatchIndexer(db, false, typeStateHistory)
+		histories = makeStateHistories(10)
 	)
 	// Index histories
 	for i, h := range histories {
@@ -270,7 +270,7 @@ func TestBatchIndexerDelete(t *testing.T) {
 	}
 
 	// Unindex histories
-	bd := newBatchIndexer(db, true)
+	bd := newBatchIndexer(db, true, typeStateHistory)
 	for i := len(histories) - 1; i >= 0; i-- {
 		if err := bd.process(histories[i], uint64(i+1)); err != nil {
 			t.Fatalf("Failed to process history, %v", err)
@@ -280,7 +280,7 @@ func TestBatchIndexerDelete(t *testing.T) {
 		t.Fatalf("Failed to finish batch indexer, %v", err)
 	}
 
-	metadata := loadIndexMetadata(db)
+	metadata := loadIndexMetadata(db, typeStateHistory)
 	if metadata != nil {
 		t.Fatal("Unexpected index position")
 	}

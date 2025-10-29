@@ -35,7 +35,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
@@ -524,7 +524,7 @@ func dbDumpTrie(ctx *cli.Context) error {
 	db := utils.MakeChainDatabase(ctx, stack, true)
 	defer db.Close()
 
-	triedb := utils.MakeTrieDatabase(ctx, db, false, true, false)
+	triedb := utils.MakeTrieDatabase(ctx, stack, db, false, true, false)
 	defer triedb.Close()
 
 	var (
@@ -761,8 +761,8 @@ func showMetaData(ctx *cli.Context) error {
 		data = append(data, []string{"headHeader.Number", fmt.Sprintf("%d (%#x)", h.Number, h.Number)})
 	}
 	table := tablewriter.NewWriter(os.Stdout)
-	table.Header("Field", "Value")
-	table.Bulk(data)
+	table.SetHeader([]string{"Field", "Value"})
+	table.AppendBulk(data)
 	table.Render()
 	return nil
 }
@@ -859,7 +859,7 @@ func inspectHistory(ctx *cli.Context) error {
 	db := utils.MakeChainDatabase(ctx, stack, true)
 	defer db.Close()
 
-	triedb := utils.MakeTrieDatabase(ctx, db, false, false, false)
+	triedb := utils.MakeTrieDatabase(ctx, stack, db, false, false, false)
 	defer triedb.Close()
 
 	var (

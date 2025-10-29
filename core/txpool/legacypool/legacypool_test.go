@@ -36,7 +36,7 @@ import (
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
@@ -355,7 +355,7 @@ func TestStateChangeDuringReset(t *testing.T) {
 
 	var (
 		key, _     = crypto.GenerateKey()
-		address    = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		address    = crypto.PubkeyToAddress(key.PublicKey)
 		statedb, _ = state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
 		trigger    = false
 	)
@@ -466,8 +466,8 @@ func TestQueue(t *testing.T) {
 	if _, ok := pool.pending[from].txs.items[tx.Nonce()]; ok {
 		t.Error("expected transaction to be in tx pool")
 	}
-	if len(pool.queue) > 0 {
-		t.Error("expected transaction queue to be empty. is", len(pool.queue))
+	if len(pool.queue.queued) > 0 {
+		t.Error("expected transaction queue to be empty. is", len(pool.queue.queued))
 	}
 }
 
@@ -492,8 +492,8 @@ func TestQueue2(t *testing.T) {
 	if len(pool.pending) != 1 {
 		t.Error("expected pending length to be 1, got", len(pool.pending))
 	}
-	if pool.queue[from].Len() != 2 {
-		t.Error("expected len(queue) == 2, got", pool.queue[from].Len())
+	if list, _ := pool.queue.get(from); list.Len() != 2 {
+		t.Error("expected len(queue) == 2, got", list.Len())
 	}
 }
 
@@ -550,7 +550,7 @@ func TestChainFork(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	addr := crypto.PubkeyToAddress(key.PublicKey)
 	resetState := func() {
 		statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
 		statedb.AddBalance(addr, uint256.NewInt(100000000000000), tracing.BalanceChangeUnspecified)
@@ -579,7 +579,7 @@ func TestDoubleNonce(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	addr := crypto.PubkeyToAddress(key.PublicKey)
 	resetState := func() {
 		statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
 		statedb.AddBalance(addr, uint256.NewInt(100000000000000), tracing.BalanceChangeUnspecified)
@@ -630,7 +630,7 @@ func TestMissingNonce(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	addr := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, addr, big.NewInt(100000000000000))
 	tx := transaction(1, 100000, key)
 	if _, err := pool.add(tx); err != nil {
@@ -639,8 +639,8 @@ func TestMissingNonce(t *testing.T) {
 	if len(pool.pending) != 0 {
 		t.Error("expected 0 pending transactions, got", len(pool.pending))
 	}
-	if pool.queue[addr].Len() != 1 {
-		t.Error("expected 1 queued transaction, got", pool.queue[addr].Len())
+	if list, _ := pool.queue.get(addr); list.Len() != 1 {
+		t.Error("expected 1 queued transaction, got", list.Len())
 	}
 	if pool.all.Count() != 1 {
 		t.Error("expected 1 total transactions, got", pool.all.Count())
@@ -654,7 +654,7 @@ func TestNonceRecovery(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	addr := crypto.PubkeyToAddress(key.PublicKey)
 	testSetNonce(pool, addr, n)
 	testAddBalance(pool, addr, big.NewInt(100000000000000))
 	<-pool.requestReset(nil, nil)
@@ -680,7 +680,7 @@ func TestDropping(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000))
 
 	// Add some pending and some queued transactions
@@ -712,8 +712,8 @@ func TestDropping(t *testing.T) {
 	if pool.pending[account].Len() != 3 {
 		t.Errorf("pending transaction mismatch: have %d, want %d", pool.pending[account].Len(), 3)
 	}
-	if pool.queue[account].Len() != 3 {
-		t.Errorf("queued transaction mismatch: have %d, want %d", pool.queue[account].Len(), 3)
+	if list, _ := pool.queue.get(account); list.Len() != 3 {
+		t.Errorf("queued transaction mismatch: have %d, want %d", list.Len(), 3)
 	}
 	if pool.all.Count() != 6 {
 		t.Errorf("total transaction mismatch: have %d, want %d", pool.all.Count(), 6)
@@ -722,8 +722,8 @@ func TestDropping(t *testing.T) {
 	if pool.pending[account].Len() != 3 {
 		t.Errorf("pending transaction mismatch: have %d, want %d", pool.pending[account].Len(), 3)
 	}
-	if pool.queue[account].Len() != 3 {
-		t.Errorf("queued transaction mismatch: have %d, want %d", pool.queue[account].Len(), 3)
+	if list, _ := pool.queue.get(account); list.Len() != 3 {
+		t.Errorf("queued transaction mismatch: have %d, want %d", list.Len(), 3)
 	}
 	if pool.all.Count() != 6 {
 		t.Errorf("total transaction mismatch: have %d, want %d", pool.all.Count(), 6)
@@ -741,13 +741,14 @@ func TestDropping(t *testing.T) {
 	if _, ok := pool.pending[account].txs.items[tx2.Nonce()]; ok {
 		t.Errorf("out-of-fund pending transaction present: %v", tx1)
 	}
-	if _, ok := pool.queue[account].txs.items[tx10.Nonce()]; !ok {
+	list, _ := pool.queue.get(account)
+	if _, ok := list.txs.items[tx10.Nonce()]; !ok {
 		t.Errorf("funded queued transaction missing: %v", tx10)
 	}
-	if _, ok := pool.queue[account].txs.items[tx11.Nonce()]; !ok {
+	if _, ok := list.txs.items[tx11.Nonce()]; !ok {
 		t.Errorf("funded queued transaction missing: %v", tx10)
 	}
-	if _, ok := pool.queue[account].txs.items[tx12.Nonce()]; ok {
+	if _, ok := list.txs.items[tx12.Nonce()]; ok {
 		t.Errorf("out-of-fund queued transaction present: %v", tx11)
 	}
 	if pool.all.Count() != 4 {
@@ -763,10 +764,11 @@ func TestDropping(t *testing.T) {
 	if _, ok := pool.pending[account].txs.items[tx1.Nonce()]; ok {
 		t.Errorf("over-gased pending transaction present: %v", tx1)
 	}
-	if _, ok := pool.queue[account].txs.items[tx10.Nonce()]; !ok {
+	list, _ = pool.queue.get(account)
+	if _, ok := list.txs.items[tx10.Nonce()]; !ok {
 		t.Errorf("funded queued transaction missing: %v", tx10)
 	}
-	if _, ok := pool.queue[account].txs.items[tx11.Nonce()]; ok {
+	if _, ok := list.txs.items[tx11.Nonce()]; ok {
 		t.Errorf("over-gased queued transaction present: %v", tx11)
 	}
 	if pool.all.Count() != 2 {
@@ -794,9 +796,9 @@ func TestPostponing(t *testing.T) {
 
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		accs[i] = common.Address(crypto.PubkeyToAddress(keys[i].PublicKey))
+		accs[i] = crypto.PubkeyToAddress(keys[i].PublicKey)
 
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(50100))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(50100))
 	}
 	// Add a batch consecutive pending transactions for validation
 	txs := []*types.Transaction{}
@@ -820,8 +822,8 @@ func TestPostponing(t *testing.T) {
 	if pending := pool.pending[accs[0]].Len() + pool.pending[accs[1]].Len(); pending != len(txs) {
 		t.Errorf("pending transaction mismatch: have %d, want %d", pending, len(txs))
 	}
-	if len(pool.queue) != 0 {
-		t.Errorf("queued accounts mismatch: have %d, want %d", len(pool.queue), 0)
+	if len(pool.queue.addresses()) != 0 {
+		t.Errorf("queued accounts mismatch: have %d, want %d", len(pool.queue.addresses()), 0)
 	}
 	if pool.all.Count() != len(txs) {
 		t.Errorf("total transaction mismatch: have %d, want %d", pool.all.Count(), len(txs))
@@ -830,8 +832,8 @@ func TestPostponing(t *testing.T) {
 	if pending := pool.pending[accs[0]].Len() + pool.pending[accs[1]].Len(); pending != len(txs) {
 		t.Errorf("pending transaction mismatch: have %d, want %d", pending, len(txs))
 	}
-	if len(pool.queue) != 0 {
-		t.Errorf("queued accounts mismatch: have %d, want %d", len(pool.queue), 0)
+	if len(pool.queue.addresses()) != 0 {
+		t.Errorf("queued accounts mismatch: have %d, want %d", len(pool.queue.addresses()), 0)
 	}
 	if pool.all.Count() != len(txs) {
 		t.Errorf("total transaction mismatch: have %d, want %d", pool.all.Count(), len(txs))
@@ -847,7 +849,8 @@ func TestPostponing(t *testing.T) {
 	if _, ok := pool.pending[accs[0]].txs.items[txs[0].Nonce()]; !ok {
 		t.Errorf("tx %d: valid and funded transaction missing from pending pool: %v", 0, txs[0])
 	}
-	if _, ok := pool.queue[accs[0]].txs.items[txs[0].Nonce()]; ok {
+	list, _ := pool.queue.get(accs[0])
+	if _, ok := list.txs.items[txs[0].Nonce()]; ok {
 		t.Errorf("tx %d: valid and funded transaction present in future queue: %v", 0, txs[0])
 	}
 	for i, tx := range txs[1:100] {
@@ -855,14 +858,14 @@ func TestPostponing(t *testing.T) {
 			if _, ok := pool.pending[accs[0]].txs.items[tx.Nonce()]; ok {
 				t.Errorf("tx %d: valid but future transaction present in pending pool: %v", i+1, tx)
 			}
-			if _, ok := pool.queue[accs[0]].txs.items[tx.Nonce()]; !ok {
+			if _, ok := list.txs.items[tx.Nonce()]; !ok {
 				t.Errorf("tx %d: valid but future transaction missing from future queue: %v", i+1, tx)
 			}
 		} else {
 			if _, ok := pool.pending[accs[0]].txs.items[tx.Nonce()]; ok {
 				t.Errorf("tx %d: out-of-fund transaction present in pending pool: %v", i+1, tx)
 			}
-			if _, ok := pool.queue[accs[0]].txs.items[tx.Nonce()]; ok {
+			if _, ok := list.txs.items[tx.Nonce()]; ok {
 				t.Errorf("tx %d: out-of-fund transaction present in future queue: %v", i+1, tx)
 			}
 		}
@@ -872,13 +875,14 @@ func TestPostponing(t *testing.T) {
 	if pool.pending[accs[1]] != nil {
 		t.Errorf("invalidated account still has pending transactions")
 	}
+	list, _ = pool.queue.get(accs[1])
 	for i, tx := range txs[100:] {
 		if i%2 == 1 {
-			if _, ok := pool.queue[accs[1]].txs.items[tx.Nonce()]; !ok {
+			if _, ok := list.txs.items[tx.Nonce()]; !ok {
 				t.Errorf("tx %d: valid but future transaction missing from future queue: %v", 100+i, tx)
 			}
 		} else {
-			if _, ok := pool.queue[accs[1]].txs.items[tx.Nonce()]; ok {
+			if _, ok := list.txs.items[tx.Nonce()]; ok {
 				t.Errorf("tx %d: out-of-fund transaction present in future queue: %v", 100+i, tx)
 			}
 		}
@@ -898,7 +902,7 @@ func TestGapFilling(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000))
 
 	// Keep track of transaction events to ensure all executables get announced
@@ -952,7 +956,7 @@ func TestQueueAccountLimiting(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000))
 
 	// Keep queuing up transactions and make sure all above a limit are dropped
@@ -963,13 +967,14 @@ func TestQueueAccountLimiting(t *testing.T) {
 		if len(pool.pending) != 0 {
 			t.Errorf("tx %d: pending pool size mismatch: have %d, want %d", i, len(pool.pending), 0)
 		}
+		list, _ := pool.queue.get(account)
 		if i <= testTxPoolConfig.AccountQueue {
-			if pool.queue[account].Len() != int(i) {
-				t.Errorf("tx %d: queue size mismatch: have %d, want %d", i, pool.queue[account].Len(), i)
+			if list.Len() != int(i) {
+				t.Errorf("tx %d: queue size mismatch: have %d, want %d", i, list.Len(), i)
 			}
 		} else {
-			if pool.queue[account].Len() != int(testTxPoolConfig.AccountQueue) {
-				t.Errorf("tx %d: queue limit mismatch: have %d, want %d", i, pool.queue[account].Len(), testTxPoolConfig.AccountQueue)
+			if list.Len() != int(testTxPoolConfig.AccountQueue) {
+				t.Errorf("tx %d: queue limit mismatch: have %d, want %d", i, list.Len(), testTxPoolConfig.AccountQueue)
 			}
 		}
 	}
@@ -1002,7 +1007,7 @@ func TestQueueGlobalLimiting(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 5)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 
 	// Generate and queue a batch of transactions
@@ -1011,7 +1016,7 @@ func TestQueueGlobalLimiting(t *testing.T) {
 	txs := make(types.Transactions, 0, 3*config.GlobalQueue)
 	for len(txs) < cap(txs) {
 		key := keys[rand.Intn(len(keys)-1)] // skip adding transactions with the local account
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr := crypto.PubkeyToAddress(key.PublicKey)
 
 		txs = append(txs, transaction(nonces[addr]+1, 100000, key))
 		nonces[addr]++
@@ -1020,7 +1025,7 @@ func TestQueueGlobalLimiting(t *testing.T) {
 	pool.addRemotesSync(txs)
 
 	queued := 0
-	for addr, list := range pool.queue {
+	for addr, list := range pool.queue.queued {
 		if list.Len() > int(config.AccountQueue) {
 			t.Errorf("addr %x: queued accounts overflown allowance: %d > %d", addr, list.Len(), config.AccountQueue)
 		}
@@ -1053,7 +1058,7 @@ func TestQueueTimeLimiting(t *testing.T) {
 	// Create a test account to ensure remotes expire
 	remote, _ := crypto.GenerateKey()
 
-	testAddBalance(pool, common.Address(crypto.PubkeyToAddress(remote.PublicKey)), big.NewInt(1000000000))
+	testAddBalance(pool, crypto.PubkeyToAddress(remote.PublicKey), big.NewInt(1000000000))
 
 	// Add the transaction and ensure it is queued up
 	if err := pool.addRemote(pricedTransaction(1, 100000, big.NewInt(1), remote)); err != nil {
@@ -1100,7 +1105,7 @@ func TestQueueTimeLimiting(t *testing.T) {
 	}
 
 	// remove current transactions and increase nonce to prepare for a reset and cleanup
-	statedb.SetNonce(common.Address(crypto.PubkeyToAddress(remote.PublicKey)), 2, tracing.NonceChangeUnspecified)
+	statedb.SetNonce(crypto.PubkeyToAddress(remote.PublicKey), 2, tracing.NonceChangeUnspecified)
 	<-pool.requestReset(nil, nil)
 
 	// make sure queue, pending are cleared
@@ -1163,7 +1168,7 @@ func TestPendingLimiting(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000000000))
 
 	// Keep track of transaction events to ensure all executables get announced
@@ -1179,8 +1184,8 @@ func TestPendingLimiting(t *testing.T) {
 		if pool.pending[account].Len() != int(i)+1 {
 			t.Errorf("tx %d: pending pool size mismatch: have %d, want %d", i, pool.pending[account].Len(), i+1)
 		}
-		if len(pool.queue) != 0 {
-			t.Errorf("tx %d: queue size mismatch: have %d, want %d", i, pool.queue[account].Len(), 0)
+		if len(pool.queue.addresses()) != 0 {
+			t.Errorf("tx %d: queue size mismatch: have %d, want %d", i, len(pool.queue.addresses()), 0)
 		}
 	}
 	if pool.all.Count() != int(testTxPoolConfig.AccountQueue+5) {
@@ -1215,14 +1220,14 @@ func TestPendingGlobalLimiting(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 5)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 	// Generate and queue a batch of transactions
 	nonces := make(map[common.Address]uint64)
 
 	txs := types.Transactions{}
 	for _, key := range keys {
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr := crypto.PubkeyToAddress(key.PublicKey)
 		for j := 0; j < int(config.GlobalSlots)/len(keys)*2; j++ {
 			txs = append(txs, transaction(nonces[addr], 100000, key))
 			nonces[addr]++
@@ -1253,7 +1258,7 @@ func TestAllowedTxSize(t *testing.T) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000000))
 
 	// Find the maximum data length for the kind of transaction which will
@@ -1312,7 +1317,7 @@ func TestCapClearsFromAll(t *testing.T) {
 
 	// Create a number of test accounts and fund them
 	key, _ := crypto.GenerateKey()
-	addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	addr := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, addr, big.NewInt(1000000))
 
 	txs := types.Transactions{}
@@ -1347,14 +1352,14 @@ func TestPendingMinimumAllowance(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 5)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 	// Generate and queue a batch of transactions
 	nonces := make(map[common.Address]uint64)
 
 	txs := types.Transactions{}
 	for _, key := range keys {
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr := crypto.PubkeyToAddress(key.PublicKey)
 		for j := 0; j < int(config.AccountSlots)*2; j++ {
 			txs = append(txs, transaction(nonces[addr], 100000, key))
 			nonces[addr]++
@@ -1396,7 +1401,7 @@ func TestRepricing(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 3)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 	// Generate and queue a batch of transactions, both pending and queued
 	txs := types.Transactions{}
@@ -1493,7 +1498,7 @@ func TestMinGasPriceEnforced(t *testing.T) {
 	defer pool.Close()
 
 	key, _ := crypto.GenerateKey()
-	testAddBalance(pool, common.Address(crypto.PubkeyToAddress(key.PublicKey)), big.NewInt(1000000))
+	testAddBalance(pool, crypto.PubkeyToAddress(key.PublicKey), big.NewInt(1000000))
 
 	tx := pricedTransaction(0, 100000, big.NewInt(2), key)
 	pool.SetGasTip(big.NewInt(tx.GasPrice().Int64() + 1))
@@ -1531,7 +1536,7 @@ func TestRepricingDynamicFee(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 4)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 	// Generate and queue a batch of transactions, both pending and queued
 	txs := types.Transactions{}
@@ -1650,7 +1655,7 @@ func TestUnderpricing(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 5)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(10000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(10000000))
 	}
 	// Generate and queue a batch of transactions, both pending and queued
 	txs := types.Transactions{}
@@ -1740,7 +1745,7 @@ func TestStableUnderpricing(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 2)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 	// Fill up the entire queue with the same transaction price points
 	txs := types.Transactions{}
@@ -1802,7 +1807,7 @@ func TestUnderpricingDynamicFee(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 4)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 
 	// Generate and queue a batch of transactions, both pending and queued
@@ -1892,7 +1897,7 @@ func TestDualHeapEviction(t *testing.T) {
 			var tx *types.Transaction
 			// Create a test accounts and fund it
 			key, _ := crypto.GenerateKey()
-			testAddBalance(pool, common.Address(crypto.PubkeyToAddress(key.PublicKey)), big.NewInt(1000000000000))
+			testAddBalance(pool, crypto.PubkeyToAddress(key.PublicKey), big.NewInt(1000000000000))
 			if urgent {
 				tx = dynamicFeeTx(0, 100000, big.NewInt(int64(baseFee+1+i)), big.NewInt(int64(1+i)), key)
 				highTip = tx
@@ -1936,7 +1941,7 @@ func TestDeduplication(t *testing.T) {
 
 	// Create a test account to add transactions with
 	key, _ := crypto.GenerateKey()
-	testAddBalance(pool, common.Address(crypto.PubkeyToAddress(key.PublicKey)), big.NewInt(1000000000))
+	testAddBalance(pool, crypto.PubkeyToAddress(key.PublicKey), big.NewInt(1000000000))
 
 	// Create a batch of transactions and add a few of them
 	txs := make([]*types.Transaction, 16)
@@ -2008,7 +2013,7 @@ func TestReplacement(t *testing.T) {
 
 	// Create a test account to add transactions with
 	key, _ := crypto.GenerateKey()
-	testAddBalance(pool, common.Address(crypto.PubkeyToAddress(key.PublicKey)), big.NewInt(1000000000))
+	testAddBalance(pool, crypto.PubkeyToAddress(key.PublicKey), big.NewInt(1000000000))
 
 	// Add pending transactions, ensuring the minimum price bump is enforced for replacement (for ultra low prices too)
 	price := int64(100)
@@ -2077,7 +2082,7 @@ func TestReplacementDynamicFee(t *testing.T) {
 	// Create the pool to test the pricing enforcement with
 	pool, key := setupPoolWithConfig(eip1559Config)
 	defer pool.Close()
-	testAddBalance(pool, common.Address(crypto.PubkeyToAddress(key.PublicKey)), big.NewInt(1000000000))
+	testAddBalance(pool, crypto.PubkeyToAddress(key.PublicKey), big.NewInt(1000000000))
 
 	// Keep track of transaction events to ensure all executables get announced
 	events := make(chan core.NewTxsEvent, 32)
@@ -2197,7 +2202,7 @@ func TestStatusCheck(t *testing.T) {
 	keys := make([]*ecdsa.PrivateKey, 3)
 	for i := 0; i < len(keys); i++ {
 		keys[i], _ = crypto.GenerateKey()
-		testAddBalance(pool, common.Address(crypto.PubkeyToAddress(keys[i].PublicKey)), big.NewInt(1000000))
+		testAddBalance(pool, crypto.PubkeyToAddress(keys[i].PublicKey), big.NewInt(1000000))
 	}
 	// Generate and queue a batch of transactions, both pending and queued
 	txs := types.Transactions{}
@@ -2271,9 +2276,9 @@ func TestSetCodeTransactions(t *testing.T) {
 		keyA, _ = crypto.GenerateKey()
 		keyB, _ = crypto.GenerateKey()
 		keyC, _ = crypto.GenerateKey()
-		addrA   = common.Address(crypto.PubkeyToAddress(keyA.PublicKey))
-		addrB   = common.Address(crypto.PubkeyToAddress(keyB.PublicKey))
-		addrC   = common.Address(crypto.PubkeyToAddress(keyC.PublicKey))
+		addrA   = crypto.PubkeyToAddress(keyA.PublicKey)
+		addrB   = crypto.PubkeyToAddress(keyB.PublicKey)
+		addrC   = crypto.PubkeyToAddress(keyC.PublicKey)
 	)
 	testAddBalance(pool, addrA, big.NewInt(params.Ether))
 	testAddBalance(pool, addrB, big.NewInt(params.Ether))
@@ -2292,8 +2297,8 @@ func TestSetCodeTransactions(t *testing.T) {
 			pending: 1,
 			run: func(name string) {
 				aa := common.Address{0xaa, 0xaa}
-				statedb.SetCode(addrA, append(types.DelegationPrefix, aa.Bytes()...))
-				statedb.SetCode(aa, []byte{byte(vm.ADDRESS), byte(vm.PUSH0), byte(vm.SSTORE)})
+				statedb.SetCode(addrA, append(types.DelegationPrefix, aa.Bytes()...), tracing.CodeChangeUnspecified)
+				statedb.SetCode(aa, []byte{byte(vm.ADDRESS), byte(vm.PUSH0), byte(vm.SSTORE)}, tracing.CodeChangeUnspecified)
 
 				// Send gapped transaction, it should be rejected.
 				if err := pool.addRemoteSync(pricedTransaction(2, 100000, big.NewInt(1), keyA)); !errors.Is(err, ErrOutOfOrderTxFromDelegated) {
@@ -2317,7 +2322,7 @@ func TestSetCodeTransactions(t *testing.T) {
 				}
 
 				// Reset the delegation, avoid leaking state into the other tests
-				statedb.SetCode(addrA, nil)
+				statedb.SetCode(addrA, nil, tracing.CodeChangeUnspecified)
 			},
 		},
 		{
@@ -2519,7 +2524,7 @@ func TestSetCodeTransactions(t *testing.T) {
 				for i := 0; i < 30; i++ {
 					key, _ := crypto.GenerateKey()
 					keys = append(keys, key)
-					addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+					addr := crypto.PubkeyToAddress(key.PublicKey)
 					testAddBalance(pool, addr, big.NewInt(params.Ether))
 				}
 				// Create a transactions with 3 unique auths so the lookup's auth map is
@@ -2567,7 +2572,7 @@ func TestSetCodeTransactionsReorg(t *testing.T) {
 	// Create the test accounts
 	var (
 		keyA, _ = crypto.GenerateKey()
-		addrA   = common.Address(crypto.PubkeyToAddress(keyA.PublicKey))
+		addrA   = crypto.PubkeyToAddress(keyA.PublicKey)
 	)
 	testAddBalance(pool, addrA, big.NewInt(params.Ether))
 	// Send an authorization for 0x42
@@ -2583,7 +2588,7 @@ func TestSetCodeTransactionsReorg(t *testing.T) {
 	}
 	// Simulate the chain moving
 	blockchain.statedb.SetNonce(addrA, 1, tracing.NonceChangeAuthorization)
-	blockchain.statedb.SetCode(addrA, types.AddressToDelegation(auth.Address))
+	blockchain.statedb.SetCode(addrA, types.AddressToDelegation(auth.Address), tracing.CodeChangeUnspecified)
 	<-pool.requestReset(nil, nil)
 	// Set an authorization for 0x00
 	auth, _ = types.SignSetCode(keyA, types.SetCodeAuthorization{
@@ -2601,7 +2606,7 @@ func TestSetCodeTransactionsReorg(t *testing.T) {
 	}
 	// Simulate the chain moving
 	blockchain.statedb.SetNonce(addrA, 2, tracing.NonceChangeAuthorization)
-	blockchain.statedb.SetCode(addrA, nil)
+	blockchain.statedb.SetCode(addrA, nil, tracing.CodeChangeUnspecified)
 	<-pool.requestReset(nil, nil)
 	// Now send two transactions from addrA
 	if err := pool.addRemoteSync(pricedTransaction(2, 100000, big.NewInt(1000), keyA)); err != nil {
@@ -2623,7 +2628,7 @@ func benchmarkPendingDemotion(b *testing.B, size int) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000))
 
 	for i := 0; i < size; i++ {
@@ -2648,7 +2653,7 @@ func benchmarkFuturePromotion(b *testing.B, size int) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000))
 
 	for i := 0; i < size; i++ {
@@ -2672,7 +2677,7 @@ func benchmarkBatchInsert(b *testing.B, size int) {
 	pool, key := setupPool()
 	defer pool.Close()
 
-	account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	account := crypto.PubkeyToAddress(key.PublicKey)
 	testAddBalance(pool, account, big.NewInt(1000000000000000000))
 
 	batches := make([]types.Transactions, b.N)
@@ -2698,7 +2703,7 @@ func BenchmarkMultiAccountBatchInsert(b *testing.B) {
 	batches := make(types.Transactions, b.N)
 	for i := 0; i < b.N; i++ {
 		key, _ := crypto.GenerateKey()
-		account := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		account := crypto.PubkeyToAddress(key.PublicKey)
 		pool.currentState.AddBalance(account, uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
 		tx := transaction(uint64(0), 100000, key)
 		batches[i] = tx

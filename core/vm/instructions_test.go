@@ -29,7 +29,7 @@ import (
 	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
 )
@@ -291,15 +291,13 @@ func opBenchmark(bench *testing.B, op executionFunc, args ...string) {
 		intArgs[i] = new(uint256.Int).SetBytes(common.Hex2Bytes(arg))
 	}
 	pc := uint64(0)
-	bench.ResetTimer()
-	for i := 0; i < bench.N; i++ {
+	for bench.Loop() {
 		for _, arg := range intArgs {
 			stack.push(arg)
 		}
 		op(&pc, evm, scope)
 		stack.pop()
 	}
-	bench.StopTimer()
 
 	for i, arg := range args {
 		want := new(uint256.Int).SetBytes(common.Hex2Bytes(arg))
@@ -551,8 +549,7 @@ func BenchmarkOpMstore(bench *testing.B) {
 	memStart := new(uint256.Int)
 	value := new(uint256.Int).SetUint64(0x1337)
 
-	bench.ResetTimer()
-	for i := 0; i < bench.N; i++ {
+	for bench.Loop() {
 		stack.push(value)
 		stack.push(memStart)
 		opMstore(&pc, evm, &ScopeContext{mem, stack, nil})
@@ -609,8 +606,7 @@ func BenchmarkOpKeccak256(bench *testing.B) {
 	pc := uint64(0)
 	start := new(uint256.Int)
 
-	bench.ResetTimer()
-	for i := 0; i < bench.N; i++ {
+	for bench.Loop() {
 		stack.push(uint256.NewInt(32))
 		stack.push(start)
 		opKeccak256(&pc, evm, &ScopeContext{mem, stack, nil})
@@ -673,12 +669,7 @@ func TestCreate2Addresses(t *testing.T) {
 		salt := common.BytesToHash(common.FromHex(tt.salt))
 		code := common.FromHex(tt.code)
 		codeHash := crypto.Keccak256(code)
-		var originCrypto crypto.Address
-		copy(originCrypto[:], origin[:])
-		var saltCrypto crypto.Hash
-		copy(saltCrypto[:], salt[:])
-		addressCrypto := crypto.CreateAddress2(originCrypto, saltCrypto, codeHash)
-		address := common.BytesToAddress(addressCrypto[:])
+		address := crypto.CreateAddress2(origin, salt, codeHash)
 		/*
 			stack          := newstack()
 			// salt, but we don't need that for this test
@@ -690,7 +681,7 @@ func TestCreate2Addresses(t *testing.T) {
 		*/
 		expected := common.BytesToAddress(common.FromHex(tt.expected))
 		if !bytes.Equal(expected.Bytes(), address.Bytes()) {
-			t.Errorf("test %d: expected %s, got %s", i, expected.String(), address.Hex())
+			t.Errorf("test %d: expected %s, got %s", i, expected.String(), address.String())
 		}
 	}
 }
@@ -705,10 +696,7 @@ func TestRandom(t *testing.T) {
 		{name: "empty hash", random: common.Hash{}},
 		{name: "1", random: common.Hash{0}},
 		{name: "emptyCodeHash", random: types.EmptyCodeHash},
-		{name: "hash(0x010203)", random: func() common.Hash {
-			h := crypto.Keccak256Hash([]byte{0x01, 0x02, 0x03})
-			return common.BytesToHash(h[:])
-		}()},
+		{name: "hash(0x010203)", random: crypto.Keccak256Hash([]byte{0x01, 0x02, 0x03})},
 	} {
 		var (
 			evm   = NewEVM(BlockContext{Random: &tt.random}, nil, params.TestChainConfig, Config{})

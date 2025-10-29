@@ -27,6 +27,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/state"
+	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
@@ -87,7 +88,7 @@ func TestEIP2200(t *testing.T) {
 
 		statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
 		statedb.CreateAccount(address)
-		statedb.SetCode(address, hexutil.MustDecode(tt.input))
+		statedb.SetCode(address, hexutil.MustDecode(tt.input), tracing.CodeChangeUnspecified)
 		statedb.SetState(address, common.Hash{}, common.BytesToHash([]byte{tt.original}))
 		statedb.Finalise(true) // Push the state into the "original" slot
 
@@ -139,7 +140,7 @@ func TestCreateGas(t *testing.T) {
 			address := common.BytesToAddress([]byte("contract"))
 			statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
 			statedb.CreateAccount(address)
-			statedb.SetCode(address, hexutil.MustDecode(tt.code))
+			statedb.SetCode(address, hexutil.MustDecode(tt.code), tracing.CodeChangeUnspecified)
 			statedb.Finalise(true)
 			vmctx := BlockContext{
 				CanTransfer: func(StateDB, common.Address, *uint256.Int) bool { return true },

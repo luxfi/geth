@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
@@ -89,7 +89,7 @@ func newStateTestAction(addr common.Address, r *rand.Rand, index int) testAction
 				code := make([]byte, 16)
 				binary.BigEndian.PutUint64(code, uint64(a.args[0]))
 				binary.BigEndian.PutUint64(code[8:], uint64(a.args[1]))
-				s.SetCode(addr, code)
+				s.SetCode(addr, code, tracing.CodeChangeUnspecified)
 			},
 			args: make([]int64, 2),
 		},
@@ -260,7 +260,7 @@ func (test *stateTest) run() bool {
 // - the slots transition is correct
 func (test *stateTest) verifyAccountCreation(next common.Hash, db *triedb.Database, otr, ntr *trie.Trie, addr common.Address, account []byte, storages map[common.Hash][]byte, storagesOrigin map[common.Hash][]byte) error {
 	// Verify account change
-	addrHash := common.Hash(crypto.Keccak256Hash(addr.Bytes()))
+	addrHash := crypto.Keccak256Hash(addr.Bytes())
 	oBlob, err := otr.Get(addrHash.Bytes())
 	if err != nil {
 		return err
@@ -334,7 +334,7 @@ func (test *stateTest) verifyAccountCreation(next common.Hash, db *triedb.Databa
 // - the slots transition is correct
 func (test *stateTest) verifyAccountUpdate(next common.Hash, db *triedb.Database, otr, ntr *trie.Trie, addr common.Address, account []byte, accountOrigin []byte, storages map[common.Hash][]byte, storageOrigin map[common.Hash][]byte) error {
 	// Verify account change
-	addrHash := common.Hash(crypto.Keccak256Hash(addr.Bytes()))
+	addrHash := crypto.Keccak256Hash(addr.Bytes())
 	oBlob, err := otr.Get(addrHash.Bytes())
 	if err != nil {
 		return err
@@ -420,7 +420,7 @@ func (test *stateTest) verify(root common.Hash, next common.Hash, db *triedb.Dat
 	for addr, accountOrigin := range accountsOrigin {
 		var (
 			err      error
-			addrHash = common.Hash(crypto.Keccak256Hash(addr.Bytes()))
+			addrHash = crypto.Keccak256Hash(addr.Bytes())
 		)
 		if len(accountOrigin) == 0 {
 			err = test.verifyAccountCreation(next, db, otr, ntr, addr, accounts[addrHash], storages[addrHash], storagesOrigin[addr])

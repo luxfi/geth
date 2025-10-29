@@ -17,7 +17,11 @@
 package locals
 
 import (
+	"fmt"
+	"maps"
 	"math/big"
+	"math/rand"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -28,14 +32,14 @@ import (
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/txpool/legacypool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/params"
 )
 
 var (
 	key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	address = crypto.PubkeyToAddress(key.PublicKey)
 	funds   = big.NewInt(1000000000000000)
 	gspec   = &core.Genesis{
 		Config: params.TestChainConfig,
@@ -56,7 +60,7 @@ type testEnv struct {
 
 func newTestEnv(t *testing.T, n int, gasTip uint64, journal string) *testEnv {
 	genDb, blocks, _ := core.GenerateChainWithGenesis(gspec, ethash.NewFaker(), n, func(i int, gen *core.BlockGen) {
-		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(common.Address(address)), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
+		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(address), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
 		if err != nil {
 			panic(err)
 		}
@@ -126,7 +130,7 @@ func (env *testEnv) commit() {
 	head := env.chain.CurrentBlock()
 	block := env.chain.GetBlock(head.Hash(), head.Number.Uint64())
 	blocks, _ := core.GenerateChain(env.chain.Config(), block, ethash.NewFaker(), env.genDb, 1, func(i int, gen *core.BlockGen) {
-		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(common.Address(address)), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
+		tx, err := types.SignTx(types.NewTransaction(gen.TxNonce(address), common.Address{0x00}, big.NewInt(1000), params.TxGas, gen.BaseFee(), nil), signer, key)
 		if err != nil {
 			panic(err)
 		}
@@ -146,20 +150,59 @@ func TestResubmit(t *testing.T) {
 	txsA := txs[:len(txs)/2]
 	txsB := txs[len(txs)/2:]
 	env.pool.Add(txsA, true)
+
 	pending, queued := env.pool.ContentFrom(address)
 	if len(pending) != len(txsA) || len(queued) != 0 {
 		t.Fatalf("Unexpected txpool content: %d, %d", len(pending), len(queued))
 	}
 	env.tracker.TrackAll(txs)
 
-	resubmit, all := env.tracker.recheck(true)
+	resubmit := env.tracker.recheck(true)
 	if len(resubmit) != len(txsB) {
 		t.Fatalf("Unexpected transactions to resubmit, got: %d, want: %d", len(resubmit), len(txsB))
 	}
-	if len(all) == 0 || len(all[address]) == 0 {
-		t.Fatalf("Unexpected transactions being tracked, got: %d, want: %d", 0, len(txs))
+	env.tracker.mu.Lock()
+	allCopy := maps.Clone(env.tracker.all)
+	env.tracker.mu.Unlock()
+
+	if len(allCopy) != len(txs) {
+		t.Fatalf("Unexpected transactions being tracked, got: %d, want: %d", len(allCopy), len(txs))
 	}
-	if len(all[address]) != len(txs) {
-		t.Fatalf("Unexpected transactions being tracked, got: %d, want: %d", len(all[address]), len(txs))
+}
+
+func TestJournal(t *testing.T) {
+	journalPath := filepath.Join(t.TempDir(), fmt.Sprintf("%d", rand.Int63()))
+	env := newTestEnv(t, 10, 0, journalPath)
+	defer env.close()
+
+	env.tracker.Start()
+	defer env.tracker.Stop()
+
+	txs := env.makeTxs(10)
+	txsA := txs[:len(txs)/2]
+	txsB := txs[len(txs)/2:]
+	env.pool.Add(txsA, true)
+
+	pending, queued := env.pool.ContentFrom(address)
+	if len(pending) != len(txsA) || len(queued) != 0 {
+		t.Fatalf("Unexpected txpool content: %d, %d", len(pending), len(queued))
+	}
+	env.tracker.TrackAll(txsA)
+	env.tracker.TrackAll(txsB)
+	env.tracker.recheck(true) // manually rejournal the tracker
+
+	// Make sure all the transactions are properly journalled
+	trackerB := New(journalPath, time.Minute, gspec.Config, env.pool)
+	trackerB.journal.load(func(transactions []*types.Transaction) []error {
+		trackerB.TrackAll(transactions)
+		return nil
+	})
+
+	trackerB.mu.Lock()
+	allCopy := maps.Clone(trackerB.all)
+	trackerB.mu.Unlock()
+
+	if len(allCopy) != len(txs) {
+		t.Fatalf("Unexpected transactions being tracked, got: %d, want: %d", len(allCopy), len(txs))
 	}
 }

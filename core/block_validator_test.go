@@ -28,7 +28,7 @@ import (
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 )
 
@@ -101,7 +101,7 @@ func testHeaderVerificationForMerging(t *testing.T, isClique bool) {
 	if isClique {
 		var (
 			key, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-			addr   = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+			addr   = crypto.PubkeyToAddress(key.PublicKey)
 			config = *params.AllCliqueProtocolChanges
 		)
 		engine = beacon.New(clique.New(params.AllCliqueProtocolChanges.Clique, rawdb.NewMemoryDatabase()))

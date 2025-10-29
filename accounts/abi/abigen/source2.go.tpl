@@ -8,10 +8,10 @@ import (
 	"math/big"
 	"errors"
 
-	"github.com/luxfi/geth/accounts/abi"
-	"github.com/luxfi/geth/accounts/abi/bind/v2"
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/types"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -183,7 +183,7 @@ var (
 		// Solidity: {{.Original.String}}
 		func ({{ decapitalise $contract.Type}} *{{$contract.Type}}) Unpack{{.Normalized.Name}}Event(log *types.Log) (*{{$contract.Type}}{{.Normalized.Name}}, error) {
 			event := "{{.Original.Name}}"
-			if log.Topics[0] != {{ decapitalise $contract.Type}}.abi.Events[event].ID {
+			if len(log.Topics) == 0 || log.Topics[0] != {{ decapitalise $contract.Type}}.abi.Events[event].ID {
 				return nil, errors.New("event signature mismatch")
 			}
 			out := new({{$contract.Type}}{{.Normalized.Name}})

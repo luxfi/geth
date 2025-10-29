@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/testrand"
 	"github.com/luxfi/geth/rlp"
@@ -326,7 +326,7 @@ func TestReplication(t *testing.T) {
 		updateString(trie2, val.k, val.v)
 	}
 	if trie2.Hash() != hash {
-		t.Errorf("root failure. expected %x got %x", hash, hash)
+		t.Errorf("root failure. expected %x got %x", hash, trie2.Hash())
 	}
 }
 
@@ -449,35 +449,35 @@ func verifyAccessList(old *Trie, new *Trie, set *trienode.NodeSet) error {
 		if !ok || n.IsDeleted() {
 			return errors.New("expect new node")
 		}
-		//if len(n.Prev) > 0 {
-		//	return errors.New("unexpected origin value")
-		//}
+		if len(set.Origins[path]) > 0 {
+			return errors.New("unexpected origin value")
+		}
 	}
 	// Check deletion set
-	for path := range deletes {
+	for path, blob := range deletes {
 		n, ok := set.Nodes[path]
 		if !ok || !n.IsDeleted() {
 			return errors.New("expect deleted node")
 		}
-		//if len(n.Prev) == 0 {
-		//	return errors.New("expect origin value")
-		//}
-		//if !bytes.Equal(n.Prev, blob) {
-		//	return errors.New("invalid origin value")
-		//}
+		if len(set.Origins[path]) == 0 {
+			return errors.New("expect origin value")
+		}
+		if !bytes.Equal(set.Origins[path], blob) {
+			return errors.New("invalid origin value")
+		}
 	}
 	// Check update set
-	for path := range updates {
+	for path, blob := range updates {
 		n, ok := set.Nodes[path]
 		if !ok || n.IsDeleted() {
 			return errors.New("expect updated node")
 		}
-		//if len(n.Prev) == 0 {
-		//	return errors.New("expect origin value")
-		//}
-		//if !bytes.Equal(n.Prev, blob) {
-		//	return errors.New("invalid origin value")
-		//}
+		if len(set.Origins[path]) == 0 {
+			return errors.New("expect origin value")
+		}
+		if !bytes.Equal(set.Origins[path], blob) {
+			return errors.New("invalid origin value")
+		}
 	}
 	return nil
 }
@@ -1497,5 +1497,85 @@ func testTrieCopyNewTrie(t *testing.T, entries []kv) {
 	}
 	if trCpy.Hash() != hash {
 		t.Errorf("Hash mismatch: old %v, new %v", hash, tr.Hash())
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/luxfi/geth/trie
+// cpu: Apple M1 Pro
+// BenchmarkTriePrefetch
+// BenchmarkTriePrefetch-8   	    9961	    100706 ns/op
+func BenchmarkTriePrefetch(b *testing.B) {
+	db := newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme)
+	tr := NewEmpty(db)
+	vals := make(map[string]*kv)
+	for i := 0; i < 3000; i++ {
+		value := &kv{
+			k: randBytes(32),
+			v: randBytes(20),
+			t: false,
+		}
+		tr.MustUpdate(value.k, value.v)
+		vals[string(value.k)] = value
+	}
+	root, nodes := tr.Commit(false)
+	db.Update(root, types.EmptyRootHash, trienode.NewWithNodeSet(nodes))
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		tr, err := New(TrieID(root), db)
+		if err != nil {
+			b.Fatalf("Failed to open the trie")
+		}
+		var keys [][]byte
+		for k := range vals {
+			keys = append(keys, []byte(k))
+			if len(keys) > 64 {
+				break
+			}
+		}
+		tr.Prefetch(keys)
+	}
+}
+
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/luxfi/geth/trie
+// cpu: Apple M1 Pro
+// BenchmarkTrieSeqPrefetch
+// BenchmarkTrieSeqPrefetch-8   	   12879	     96710 ns/op
+func BenchmarkTrieSeqPrefetch(b *testing.B) {
+	db := newTestDatabase(rawdb.NewMemoryDatabase(), rawdb.HashScheme)
+	tr := NewEmpty(db)
+	vals := make(map[string]*kv)
+	for i := 0; i < 3000; i++ {
+		value := &kv{
+			k: randBytes(32),
+			v: randBytes(20),
+			t: false,
+		}
+		tr.MustUpdate(value.k, value.v)
+		vals[string(value.k)] = value
+	}
+	root, nodes := tr.Commit(false)
+	db.Update(root, types.EmptyRootHash, trienode.NewWithNodeSet(nodes))
+	b.ResetTimer()
+
+	for i := 0; i < b.N; i++ {
+		tr, err := New(TrieID(root), db)
+		if err != nil {
+			b.Fatalf("Failed to open the trie")
+		}
+		var keys [][]byte
+		for k := range vals {
+			keys = append(keys, []byte(k))
+			if len(keys) > 64 {
+				break
+			}
+		}
+		for _, k := range keys {
+			tr.Get(k)
+		}
 	}
 }

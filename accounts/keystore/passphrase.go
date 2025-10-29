@@ -40,7 +40,7 @@ import (
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/math"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
@@ -235,7 +235,7 @@ func DecryptKey(keyjson []byte, auth string) (*Key, error) {
 	}
 	return &Key{
 		Id:         id,
-		Address:    common.BytesToAddress(crypto.PubkeyToAddress(key.PublicKey).Bytes()),
+		Address:    crypto.PubkeyToAddress(key.PublicKey),
 		PrivateKey: key,
 	}, nil
 }

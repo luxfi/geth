@@ -8,10 +8,10 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/luxfi/geth/accounts/abi"
-	"github.com/luxfi/geth/accounts/abi/bind/v2"
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/types"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -27,7 +27,7 @@ var (
 // NumericMethodNameMetaData contains all meta data concerning the NumericMethodName contract.
 var NumericMethodNameMetaData = bind.MetaData{
 	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_param\",\"type\":\"address\"}],\"name\":\"_1TestEvent\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"_1test\",\"outputs\":[],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__1test\",\"outputs\":[],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__2test\",\"outputs\":[],\"stateMutability\":\"pure\",\"type\":\"function\"}]",
-	ID:  "91b347afbc44b90dd9a1dfbc65661904bf",
+	ID:  "a691b347afbc44b90dd9a1dfbc65661904",
 	Bin: "0x6080604052348015600f57600080fd5b5060958061001e6000396000f3fe6080604052348015600f57600080fd5b5060043610603c5760003560e01c80639d993132146041578063d02767c7146049578063ffa02795146051575b600080fd5b60476059565b005b604f605b565b005b6057605d565b005b565b565b56fea26469706673582212200382ca602dff96a7e2ba54657985e2b4ac423a56abe4a1f0667bc635c4d4371f64736f6c63430008110033",
 }
 
@@ -136,7 +136,7 @@ func (NumericMethodNameE1TestEvent) ContractEventName() string {
 // Solidity: event _1TestEvent(address _param)
 func (numericMethodName *NumericMethodName) UnpackE1TestEventEvent(log *types.Log) (*NumericMethodNameE1TestEvent, error) {
 	event := "_1TestEvent"
-	if log.Topics[0] != numericMethodName.abi.Events[event].ID {
+	if len(log.Topics) == 0 || log.Topics[0] != numericMethodName.abi.Events[event].ID {
 		return nil, errors.New("event signature mismatch")
 	}
 	out := new(NumericMethodNameE1TestEvent)
