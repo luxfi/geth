@@ -31,7 +31,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/common/math"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/signer/core"
 	"github.com/luxfi/geth/signer/core/apitypes"
 )
@@ -202,7 +202,7 @@ func TestSignData(t *testing.T) {
 		t.Errorf("Expected nil-data, got %x", signature)
 	}
 	if err != keystore.ErrDecrypt {
-		t.Errorf("Expected ErrLocked! '%v'", err)
+		t.Errorf("Expected ErrDecrypt! '%v'", err)
 	}
 	control.approveCh <- "No way"
 	signature, err = api.SignData(context.Background(), apitypes.TextPlain.Mime, a, hexutil.Encode([]byte("EHLO world")))

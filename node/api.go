@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/debug"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/p2p"
@@ -191,7 +191,7 @@ func (api *adminAPI) StartHTTP(host *string, port *int, cors *string, apis *stri
 	}
 	if vhosts != nil {
 		config.Vhosts = nil
-		for _, vhost := range strings.Split(*host, ",") {
+		for _, vhost := range strings.Split(*vhosts, ",") {
 			config.Vhosts = append(config.Vhosts, strings.TrimSpace(vhost))
 		}
 	}

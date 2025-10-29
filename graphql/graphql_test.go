@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/eth/filters"
@@ -179,7 +179,7 @@ func TestGraphQLBlockSerializationEIP2718(t *testing.T) {
 	// Account for signing txes
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		address = crypto.PubkeyToAddress(key.PublicKey)
 		funds   = big.NewInt(1000000000000000)
 		dad     = common.HexToAddress("0x0000000000000000000000000000000000000dad")
 	)
@@ -279,7 +279,7 @@ func TestGraphQLHTTPOnSamePort_GQLRequest_Unsuccessful(t *testing.T) {
 func TestGraphQLConcurrentResolvers(t *testing.T) {
 	var (
 		key, _  = crypto.GenerateKey()
-		addr    = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr    = crypto.PubkeyToAddress(key.PublicKey)
 		dadStr  = "0x0000000000000000000000000000000000000dad"
 		dad     = common.HexToAddress(dadStr)
 		genesis = &core.Genesis{
@@ -373,7 +373,7 @@ func TestGraphQLConcurrentResolvers(t *testing.T) {
 func TestWithdrawals(t *testing.T) {
 	var (
 		key, _ = crypto.GenerateKey()
-		addr   = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr   = crypto.PubkeyToAddress(key.PublicKey)
 
 		genesis = &core.Genesis{
 			Config:     params.AllEthashProtocolChanges,
@@ -427,6 +427,40 @@ func TestWithdrawals(t *testing.T) {
 		if string(have) != tt.want {
 			t.Errorf("response unmatch for testcase #%d.\nhave:\n%s\nwant:\n%s", i, have, tt.want)
 		}
+	}
+}
+
+// TestGraphQLMaxDepth ensures that queries exceeding the configured maximum depth
+// are rejected to prevent resource exhaustion from deeply nested operations.
+func TestGraphQLMaxDepth(t *testing.T) {
+	stack := createNode(t)
+	defer stack.Close()
+
+	h, err := newHandler(stack, nil, nil, []string{}, []string{})
+	if err != nil {
+		t.Fatalf("could not create graphql service: %v", err)
+	}
+
+	var b strings.Builder
+	for i := 0; i < maxQueryDepth+1; i++ {
+		b.WriteString("ommers{")
+	}
+	b.WriteString("number")
+	for i := 0; i < maxQueryDepth+1; i++ {
+		b.WriteString("}")
+	}
+	query := fmt.Sprintf("{block{%s}}", b.String())
+
+	res := h.Schema.Exec(context.Background(), query, "", nil)
+	var found bool
+	for _, err := range res.Errors {
+		if err.Rule == "MaxDepthExceeded" {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("expected max depth exceeded error, got %v", res.Errors)
 	}
 }
 

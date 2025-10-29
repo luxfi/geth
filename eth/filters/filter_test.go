@@ -31,7 +31,7 @@ import (
 	"github.com/luxfi/geth/core/filtermaps"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/triedb"
@@ -63,7 +63,7 @@ func benchmarkFilters(b *testing.B, history uint64, noHistory bool) {
 		db           = rawdb.NewMemoryDatabase()
 		backend, sys = newTestFilterSystem(db, Config{})
 		key1, _      = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1        = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1        = crypto.PubkeyToAddress(key1.PublicKey)
 		addr2        = common.BytesToAddress([]byte("jeff"))
 		addr3        = common.BytesToAddress([]byte("ethereum"))
 		addr4        = common.BytesToAddress([]byte("random addresses please"))
@@ -109,11 +109,8 @@ func benchmarkFilters(b *testing.B, history uint64, noHistory bool) {
 	backend.startFilterMaps(history, noHistory, filtermaps.DefaultParams)
 	defer backend.stopFilterMaps()
 
-	b.ResetTimer()
-
 	filter := sys.NewRangeFilter(0, int64(rpc.LatestBlockNumber), []common.Address{addr1, addr2, addr3, addr4}, nil)
-
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		filter.begin = 0
 		logs, _ := filter.Logs(context.Background())
 		if len(logs) != 4 {
@@ -140,7 +137,7 @@ func testFilters(t *testing.T, history uint64, noHistory bool) {
 		backend, sys = newTestFilterSystem(db, Config{})
 		// Sender account
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr    = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr    = crypto.PubkeyToAddress(key1.PublicKey)
 		signer  = types.NewLondonSigner(big.NewInt(1))
 		// Logging contract
 		contract  = common.Address{0xfe}

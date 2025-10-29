@@ -25,7 +25,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/tests"
@@ -33,7 +33,7 @@ import (
 
 func BenchmarkTransactionTraceV2(b *testing.B) {
 	key, _ := crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	from := common.Address(crypto.PubkeyToAddress(key.PublicKey)))
+	from := crypto.PubkeyToAddress(key.PublicKey)
 	gas := uint64(1000000) // 1M gas
 	to := common.HexToAddress("0x00000000000000000000000000000000deadbeef")
 	signer := types.LatestSignerForChainID(big.NewInt(1337))
@@ -84,10 +84,8 @@ func BenchmarkTransactionTraceV2(b *testing.B) {
 	if err != nil {
 		b.Fatalf("failed to prepare transaction for tracing: %v", err)
 	}
-	b.ResetTimer()
 	b.ReportAllocs()
-
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		tracer := logger.NewStructLogger(&logger.Config{}).Hooks()
 		tracer.OnTxStart(evm.GetVMContext(), tx, msg.From)
 		evm.Config.Tracer = tracer

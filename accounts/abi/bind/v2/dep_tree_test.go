@@ -23,7 +23,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"golang.org/x/exp/rand"
 )
 
@@ -153,7 +153,7 @@ func internalLinkDeps(metadata *MetaData, depMap map[string]*MetaData, roots *ma
 
 func testLinkCase(tcInput linkTestCaseInput) error {
 	var (
-		testAddr       = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+		testAddr       = crypto.PubkeyToAddress(testKey.PublicKey)
 		overridesAddrs = make(map[common.Address]struct{})
 		overrideAddrs  = make(map[rune]common.Address)
 	)
@@ -178,8 +178,7 @@ func testLinkCase(tcInput linkTestCaseInput) error {
 
 	var testAddrNonce uint64
 	mockDeploy := func(input []byte, deployer []byte) (common.Address, *types.Transaction, error) {
-		contractAddrCrypto := crypto.CreateAddress(crypto.Address(testAddr), testAddrNonce)
-		contractAddr := common.Address(contractAddrCrypto)
+		contractAddr := crypto.CreateAddress(testAddr, testAddrNonce)
 		testAddrNonce++
 
 		if len(deployer) >= 20 {

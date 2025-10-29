@@ -22,9 +22,10 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/state"
+	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
 )
@@ -139,7 +140,7 @@ func Execute(code, input []byte, cfg *Config) ([]byte, *state.StateDB, error) {
 	cfg.State.Prepare(rules, cfg.Origin, cfg.Coinbase, &address, vm.ActivePrecompiles(rules), nil)
 	cfg.State.CreateAccount(address)
 	// set the receiver's (the executing contract) code for execution.
-	cfg.State.SetCode(address, code)
+	cfg.State.SetCode(address, code, tracing.CodeChangeUnspecified)
 	// Call the code with the given configuration.
 	ret, leftOverGas, err := vmenv.Call(
 		cfg.Origin,

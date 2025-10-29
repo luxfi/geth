@@ -25,7 +25,7 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
@@ -601,16 +601,15 @@ func (evm *EVM) initNewContract(contract *Contract, address common.Address) ([]b
 		}
 	}
 
-	evm.StateDB.SetCode(address, ret)
+	if len(ret) > 0 {
+		evm.StateDB.SetCode(address, ret, tracing.CodeChangeContractCreation)
+	}
 	return ret, nil
 }
 
 // Create creates a new contract using code as deployment code.
 func (evm *EVM) Create(caller common.Address, code []byte, gas uint64, value *uint256.Int) (ret []byte, contractAddr common.Address, leftOverGas uint64, err error) {
-	var callerCrypto crypto.Address
-	copy(callerCrypto[:], caller[:])
-	contractAddrCrypto := crypto.CreateAddress(callerCrypto, evm.StateDB.GetNonce(caller))
-	contractAddr = common.BytesToAddress(contractAddrCrypto[:])
+	contractAddr = crypto.CreateAddress(caller, evm.StateDB.GetNonce(caller))
 	return evm.create(caller, code, gas, value, contractAddr, CREATE)
 }
 
@@ -620,10 +619,7 @@ func (evm *EVM) Create(caller common.Address, code []byte, gas uint64, value *ui
 // instead of the usual sender-and-nonce-hash as the address where the contract is initialized at.
 func (evm *EVM) Create2(caller common.Address, code []byte, gas uint64, endowment *uint256.Int, salt *uint256.Int) (ret []byte, contractAddr common.Address, leftOverGas uint64, err error) {
 	inithash := crypto.HashData(evm.hasher, code)
-	var callerCrypto crypto.Address
-	copy(callerCrypto[:], caller[:])
-	contractAddrCrypto := crypto.CreateAddress2(callerCrypto, salt.Bytes32(), inithash[:])
-	contractAddr = common.BytesToAddress(contractAddrCrypto[:])
+	contractAddr = crypto.CreateAddress2(caller, salt.Bytes32(), inithash[:])
 	return evm.create(caller, code, gas, endowment, contractAddr, CREATE2)
 }
 

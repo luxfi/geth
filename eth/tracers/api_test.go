@@ -41,7 +41,7 @@ import (
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/ethapi"
@@ -142,6 +142,10 @@ func (b *testBackend) ChainDb() ethdb.Database {
 	return b.chaindb
 }
 
+func (b *testBackend) CurrentHeader() *types.Header {
+	return b.chain.CurrentHeader()
+}
+
 // teardown releases the associated resources.
 func (b *testBackend) teardown() {
 	b.chain.Stop()
@@ -231,7 +235,7 @@ func TestStateHooks(t *testing.T) {
 	// Initialize test accounts
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		from    = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		from    = crypto.PubkeyToAddress(key.PublicKey)
 		to      = common.HexToAddress("0x00000000000000000000000000000000deadbeef")
 		genesis = &core.Genesis{
 			Config: params.TestChainConfig,
@@ -467,6 +471,20 @@ func TestTraceCall(t *testing.T) {
 		{"pc":0,"op":"NUMBER","gas":24946984,"gasCost":2,"depth":1,"stack":[]},
 		{"pc":1,"op":"STOP","gas":24946982,"gasCost":0,"depth":1,"stack":["0x1337"]}]}`,
 		},
+		// Tests issue #33014 where accessing nil block number override panics.
+		{
+			blockNumber: rpc.BlockNumber(0),
+			call: ethapi.TransactionArgs{
+				From:  &accounts[0].addr,
+				To:    &accounts[1].addr,
+				Value: (*hexutil.Big)(big.NewInt(1000)),
+			},
+			config: &TraceCallConfig{
+				BlockOverrides: &override.BlockOverrides{},
+			},
+			expectErr: nil,
+			expect:    `{"gas":21000,"failed":false,"returnValue":"0x","structLogs":[]}`,
+		},
 	}
 	for i, testspec := range testSuite {
 		result, err := api.TraceCall(context.Background(), testspec.call, rpc.BlockNumberOrHash{BlockNumber: &testspec.blockNumber}, testspec.config)
@@ -527,7 +545,7 @@ func TestTraceTransaction(t *testing.T) {
 		b.AddTx(tx)
 		target = tx.Hash()
 	})
-	defer backend.chain.Stop()
+	defer backend.teardown()
 	api := NewAPI(backend)
 	result, err := api.TraceTransaction(context.Background(), target, nil)
 	if err != nil {
@@ -584,7 +602,7 @@ func TestTraceBlock(t *testing.T) {
 		b.AddTx(tx)
 		txHash = tx.Hash()
 	})
-	defer backend.chain.Stop()
+	defer backend.teardown()
 	api := NewAPI(backend)
 
 	var testSuite = []struct {
@@ -681,7 +699,7 @@ func TestTracingWithOverrides(t *testing.T) {
 			signer, accounts[0].key)
 		b.AddTx(tx)
 	})
-	defer backend.chain.Stop()
+	defer backend.teardown()
 	api := NewAPI(backend)
 	randomAccounts := newAccounts(3)
 	type res struct {
@@ -1048,7 +1066,7 @@ type Account struct {
 func newAccounts(n int) (accounts []Account) {
 	for i := 0; i < n; i++ {
 		key, _ := crypto.GenerateKey()
-		addr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		addr := crypto.PubkeyToAddress(key.PublicKey)
 		accounts = append(accounts, Account{key: key, addr: addr})
 	}
 	slices.SortFunc(accounts, func(a, b Account) int { return a.addr.Cmp(b.addr) })
@@ -1105,6 +1123,7 @@ func TestTraceChain(t *testing.T) {
 			nonce += 1
 		}
 	})
+	defer backend.teardown()
 	backend.refHook = func() { ref.Add(1) }
 	backend.relHook = func() { rel.Add(1) }
 	api := NewAPI(backend)
@@ -1212,7 +1231,7 @@ func TestTraceBlockWithBasefee(t *testing.T) {
 		txHash = tx.Hash()
 		baseFee.Set(b.BaseFee())
 	})
-	defer backend.chain.Stop()
+	defer backend.teardown()
 	api := NewAPI(backend)
 
 	var testSuite = []struct {
@@ -1244,7 +1263,7 @@ func TestStandardTraceBlockToFile(t *testing.T) {
 	var (
 		// A sender who makes transactions, has some funds
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		address = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+		address = crypto.PubkeyToAddress(key.PublicKey)
 		funds   = big.NewInt(1000000000000000)
 
 		// first contract the sender transacts with
@@ -1298,7 +1317,7 @@ func TestStandardTraceBlockToFile(t *testing.T) {
 		b.AddTx(tx)
 		txHashs = append(txHashs, tx.Hash())
 	})
-	defer backend.chain.Stop()
+	defer backend.teardown()
 
 	var testSuite = []struct {
 		blockNumber rpc.BlockNumber
