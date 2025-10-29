@@ -25,7 +25,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
@@ -162,7 +162,7 @@ func findTxInBlockBody(blockbody rlp.RawValue, target common.Hash) (*types.Trans
 		if kind == rlp.List { // Legacy transaction
 			txHashPayload = txRLP
 		}
-		if common.BytesToHash(crypto.Keccak256(txHashPayload)) == target {
+		if crypto.Keccak256Hash(txHashPayload) == target {
 			var tx types.Transaction
 			if err := rlp.DecodeBytes(txRLP, &tx); err != nil {
 				return nil, 0, err

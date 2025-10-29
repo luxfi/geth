@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/rlp"
 )
 

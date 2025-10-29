@@ -19,9 +19,10 @@ package eth
 import (
 	"errors"
 	"fmt"
+	"maps"
+	"slices"
 	"sync"
 
-	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/eth/protocols/snap"
 	"github.com/luxfi/geth/p2p"
@@ -191,19 +192,12 @@ func (ps *peerSet) peer(id string) *ethPeer {
 	return ps.peers[id]
 }
 
-// peersWithoutTransaction retrieves a list of peers that do not have a given
-// transaction in their set of known hashes.
-func (ps *peerSet) peersWithoutTransaction(hash common.Hash) []*ethPeer {
+// all returns all current peers.
+func (ps *peerSet) all() []*ethPeer {
 	ps.lock.RLock()
 	defer ps.lock.RUnlock()
 
-	list := make([]*ethPeer, 0, len(ps.peers))
-	for _, p := range ps.peers {
-		if !p.KnownTransaction(hash) {
-			list = append(list, p)
-		}
-	}
-	return list
+	return slices.Collect(maps.Values(ps.peers))
 }
 
 // len returns if the current number of `eth` peers in the set. Since the `snap`

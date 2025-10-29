@@ -4,149 +4,262 @@
 package badgerdb
 
 import (
-	"io"
+	"fmt"
 
+	badger "github.com/dgraph-io/badger/v4"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/common"
 )
 
 // Database is a badgerdb implementation of ethdb.Database
 type Database struct {
-	db interface{}
+	db *badger.DB
 }
 
-// NewDatabase creates a new badgerdb database
-func NewDatabase(path string) (ethdb.Database, error) {
-	return &Database{}, nil
-}
-
-// New creates a new badgerdb database with options
+// New creates a new badgerdb database
 func New(path string, cache int, handles int, namespace string, readonly bool) (ethdb.Database, error) {
-	return &Database{}, nil
+	opts := badger.DefaultOptions(path)
+	opts.ReadOnly = readonly
+	opts.Logger = nil // Disable badger logging
+
+	db, err := badger.Open(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Database{db: db}, nil
 }
 
 // Has checks if key exists
 func (d *Database) Has(key []byte) (bool, error) {
-	return false, nil
+	err := d.db.View(func(txn *badger.Txn) error {
+		_, err := txn.Get(key)
+		return err
+	})
+	if err == badger.ErrKeyNotFound {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // Get retrieves value for key
 func (d *Database) Get(key []byte) ([]byte, error) {
-	return nil, nil
+	var value []byte
+	err := d.db.View(func(txn *badger.Txn) error {
+		item, err := txn.Get(key)
+		if err != nil {
+			return err
+		}
+		value, err = item.ValueCopy(nil)
+		return err
+	})
+	return value, err
 }
 
 // Put stores value for key
 func (d *Database) Put(key []byte, value []byte) error {
-	return nil
+	return d.db.Update(func(txn *badger.Txn) error {
+		return txn.Set(key, value)
+	})
 }
 
 // Delete removes key
 func (d *Database) Delete(key []byte) error {
-	return nil
+	return d.db.Update(func(txn *badger.Txn) error {
+		return txn.Delete(key)
+	})
 }
 
 // NewBatch creates a new batch
 func (d *Database) NewBatch() ethdb.Batch {
-	return &batch{}
+	return &batch{
+		db:   d.db,
+		wb:   d.db.NewWriteBatch(),
+		size: 0,
+	}
 }
 
 // NewBatchWithSize creates a new batch with size hint
 func (d *Database) NewBatchWithSize(size int) ethdb.Batch {
-	return &batch{}
+	return d.NewBatch()
 }
 
 // NewIterator creates a new iterator
 func (d *Database) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
-	return &iterator{}
+	txn := d.db.NewTransaction(false)
+	opts := badger.DefaultIteratorOptions
+	opts.Prefix = prefix
+	iter := txn.NewIterator(opts)
+
+	if start != nil {
+		iter.Seek(start)
+	} else {
+		iter.Rewind()
+	}
+
+	return &iterator{
+		iter: iter,
+		txn:  txn,
+	}
 }
 
 // Stat returns database statistics
 func (d *Database) Stat() (string, error) {
-	return "", nil
+	lsm, vlog := d.db.Size()
+	return fmt.Sprintf("LSM: %d bytes, VLog: %d bytes", lsm, vlog), nil
 }
 
 // Compact compacts the database
 func (d *Database) Compact(start []byte, limit []byte) error {
+	return d.db.Flatten(4)
+}
+
+// Close closes the database
+func (d *Database) Close() error {
+	return d.db.Close()
+}
+
+// batch implements ethdb.Batch
+type batch struct {
+	db   *badger.DB
+	wb   *badger.WriteBatch
+	size int
+}
+
+func (b *batch) Put(key []byte, value []byte) error {
+	b.size += len(key) + len(value)
+	return b.wb.Set(key, value)
+}
+
+func (b *batch) Delete(key []byte) error {
+	b.size += len(key)
+	return b.wb.Delete(key)
+}
+
+func (b *batch) ValueSize() int {
+	return b.size
+}
+
+func (b *batch) Write() error {
+	if err := b.wb.Flush(); err != nil {
+		return err
+	}
+	// CRITICAL: Sync to disk to ensure data persists
+	return b.db.Sync()
+}
+
+func (b *batch) Reset() {
+	b.wb.Cancel()
+	b.wb = b.db.NewWriteBatch()
+	b.size = 0
+}
+
+func (b *batch) DeleteRange(start, end []byte) error {
+	// Not efficiently supported by BadgerDB batches
 	return nil
 }
 
-// NewSnapshot creates a snapshot  
+func (b *batch) Replay(w ethdb.KeyValueWriter) error {
+	// BadgerDB doesn't support replay
+	return nil
+}
+
+// iterator implements ethdb.Iterator
+type iterator struct {
+	iter *badger.Iterator
+	txn  *badger.Txn
+}
+
+func (i *iterator) Next() bool {
+	i.iter.Next()
+	return i.iter.Valid()
+}
+
+func (i *iterator) Error() error {
+	return nil
+}
+
+func (i *iterator) Key() []byte {
+	return i.iter.Item().KeyCopy(nil)
+}
+
+func (i *iterator) Value() []byte {
+	val, _ := i.iter.Item().ValueCopy(nil)
+	return val
+}
+
+func (i *iterator) Release() {
+	i.iter.Close()
+	i.txn.Discard()
+}
+
+// Ancients/Freezer stubs
+
 type Snapshot interface {
 	Has(key []byte) (bool, error)
 	Get(key []byte) ([]byte, error)
 	Release()
 }
 
-// NewSnapshot creates a snapshot
+type snapshot struct {
+	db *badger.DB
+	txn *badger.Txn
+}
+
+func (s *snapshot) Has(key []byte) (bool, error) {
+	_, err := s.txn.Get(key)
+	if err == badger.ErrKeyNotFound {
+		return false, nil
+	}
+	return err == nil, err
+}
+
+func (s *snapshot) Get(key []byte) ([]byte, error) {
+	item, err := s.txn.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	return item.ValueCopy(nil)
+}
+
+func (s *snapshot) Release() {
+	s.txn.Discard()
+}
+
 func (d *Database) NewSnapshot() (Snapshot, error) {
-	return &snapshot{}, nil
+	return &snapshot{
+		db:  d.db,
+		txn: d.db.NewTransaction(false),
+	}, nil
 }
 
-// Close closes the database
-func (d *Database) Close() error {
-	return nil
-}
-
-// DeleteRange deletes all keys in the given range
 func (d *Database) DeleteRange(start, end []byte) error {
-	return nil
+	return d.db.Update(func(txn *badger.Txn) error {
+		opts := badger.DefaultIteratorOptions
+		iter := txn.NewIterator(opts)
+		defer iter.Close()
+
+		for iter.Seek(start); iter.Valid(); iter.Next() {
+			key := iter.Item().KeyCopy(nil)
+			if end != nil && string(key) >= string(end) {
+				break
+			}
+			if err := txn.Delete(key); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
-// AncientDatadir returns ancient datadir path
 func (d *Database) AncientDatadir() (string, error) {
 	return "", nil
 }
 
-// batch implements ethdb.Batch
-type batch struct{}
-
-func (b *batch) Put(key []byte, value []byte) error { return nil }
-func (b *batch) Delete(key []byte) error { return nil }
-func (b *batch) DeleteRange(start, end []byte) error { return nil }
-func (b *batch) ValueSize() int { return 0 }
-func (b *batch) Write() error { return nil }
-func (b *batch) Reset() {}
-func (b *batch) Replay(w ethdb.KeyValueWriter) error { return nil }
-
-// iterator implements ethdb.Iterator
-type iterator struct{}
-
-func (i *iterator) Next() bool { return false }
-func (i *iterator) Error() error { return nil }
-func (i *iterator) Key() []byte { return nil }
-func (i *iterator) Value() []byte { return nil }
-func (i *iterator) Release() {}
-
-// snapshot implements Snapshot
-type snapshot struct{}
-
-func (s *snapshot) Has(key []byte) (bool, error) { return false, nil }
-func (s *snapshot) Get(key []byte) ([]byte, error) { return nil, nil }
-func (s *snapshot) Release() {}
-
-// Implement AncientStore interface methods
-func (d *Database) HasAncient(kind string, number uint64) (bool, error) {
-	return false, nil
-}
-
-func (d *Database) Ancient(kind string, number uint64) ([]byte, error) {
-	return nil, nil
-}
-
-func (d *Database) AncientRange(kind string, start, count, maxBytes uint64) ([][]byte, error) {
-	return nil, nil
-}
-
-func (d *Database) Ancients() (uint64, error) {
-	return 0, nil
-}
-
-func (d *Database) Tail() (uint64, error) {
-	return 0, nil
-}
-
-func (d *Database) AncientSize(kind string) (uint64, error) {
-	return 0, nil
+func (d *Database) ReadAncients(fn func(ethdb.AncientReaderOp) error) error {
+	return nil
 }
 
 func (d *Database) ModifyAncients(fn func(ethdb.AncientWriteOp) error) (int64, error) {
@@ -162,7 +275,7 @@ func (d *Database) TruncateTail(n uint64) (uint64, error) {
 }
 
 func (d *Database) Sync() error {
-	return nil
+	return d.db.Sync()
 }
 
 func (d *Database) SyncAncient() error {
@@ -173,7 +286,7 @@ func (d *Database) SyncKeyValue() error {
 	return nil
 }
 
-func (d *Database) MigrateTable(string, func([]byte) ([]byte, error)) error {
+func (d *Database) MigrateTable(s string, f func([]byte) ([]byte, error)) error {
 	return nil
 }
 
@@ -181,41 +294,30 @@ func (d *Database) AncientOffSet() uint64 {
 	return 0
 }
 
-func (d *Database) ReadAncients(fn func(ethdb.AncientReaderOp) error) (err error) {
-	return nil
-}
-
-func (d *Database) ItemAmountInAncient() (uint64, error) {
+func (d *Database) Ancients() (uint64, error) {
 	return 0, nil
 }
 
-func (d *Database) AncientBlob(kind string, number uint64, maxBytes uint64) ([]byte, error) {
+func (d *Database) Tail() (uint64, error) {
+	return 0, nil
+}
+
+func (d *Database) AncientSize(kind string) (uint64, error) {
+	return 0, nil
+}
+
+func (d *Database) AncientRange(kind string, start, count, maxBytes uint64) ([][]byte, error) {
 	return nil, nil
 }
 
-// Implement the io.Closer interface
-func (d *Database) CloseAncient() error {
-	return nil
+func (d *Database) HasAncient(kind string, number uint64) (bool, error) {
+	return false, nil
 }
 
-// Implement additional AncientStore methods that might be needed
-func (d *Database) AppendAncient(number uint64, hash, header, body, receipt, td []byte) error {
-	return nil
-}
-
-func (d *Database) TruncateAncients(n uint64) error {
-	return nil
-}
-
-func (d *Database) AncientBlobReader(kind string, number uint64) (io.ReadSeeker, error) {
+func (d *Database) Ancient(kind string, number uint64) ([]byte, error) {
 	return nil, nil
 }
 
-// Implement AncientWriter interface methods
-type AncientWriter interface {
-	AppendAncient(number uint64, hash, header, body, receipts, td []byte) error
-}
-
-func (d *Database) Update(number uint64, hash common.Hash, header []byte, body []byte, receipts []byte, td []byte) error {
+func (d *Database) AncientBatch() ethdb.AncientWriteOp {
 	return nil
 }

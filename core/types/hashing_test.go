@@ -26,12 +26,10 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
-	"github.com/luxfi/geth/triedb"
 )
 
 func TestDeriveSha(t *testing.T) {
@@ -40,7 +38,7 @@ func TestDeriveSha(t *testing.T) {
 		t.Fatal(err)
 	}
 	for len(txs) < 1000 {
-		exp := types.DeriveSha(txs, trie.NewEmpty(triedb.NewDatabase(rawdb.NewMemoryDatabase(), nil)))
+		exp := types.DeriveSha(txs, trie.NewListHasher())
 		got := types.DeriveSha(txs, trie.NewStackTrie(nil))
 		if !bytes.Equal(got[:], exp[:]) {
 			t.Fatalf("%d txs: got %x exp %x", len(txs), got, exp)
@@ -76,31 +74,45 @@ func TestEIP2718DeriveSha(t *testing.T) {
 	}
 }
 
+// goos: darwin
+// goarch: arm64
+// pkg: github.com/luxfi/geth/core/types
+// cpu: Apple M1 Pro
+// BenchmarkDeriveSha200
+// BenchmarkDeriveSha200/std_trie
+// BenchmarkDeriveSha200/std_trie-8         	    6754	    174074 ns/op	   80054 B/op	    1926 allocs/op
+// BenchmarkDeriveSha200/stack_trie
+// BenchmarkDeriveSha200/stack_trie-8       	    7296	    162675 ns/op	     745 B/op	      19 allocs/op
 func BenchmarkDeriveSha200(b *testing.B) {
 	txs, err := genTxs(200)
 	if err != nil {
 		b.Fatal(err)
 	}
-	var exp common.Hash
-	var got common.Hash
+	want := types.DeriveSha(txs, trie.NewListHasher())
+
 	b.Run("std_trie", func(b *testing.B) {
-		b.ResetTimer()
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
-			exp = types.DeriveSha(txs, trie.NewEmpty(triedb.NewDatabase(rawdb.NewMemoryDatabase(), nil)))
+		var have common.Hash
+		for b.Loop() {
+			have = types.DeriveSha(txs, trie.NewListHasher())
+		}
+		if have != want {
+			b.Errorf("have %x want %x", have, want)
 		}
 	})
 
+	st := trie.NewStackTrie(nil)
 	b.Run("stack_trie", func(b *testing.B) {
-		b.ResetTimer()
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
-			got = types.DeriveSha(txs, trie.NewStackTrie(nil))
+		var have common.Hash
+		for b.Loop() {
+			st.Reset()
+			have = types.DeriveSha(txs, st)
+		}
+		if have != want {
+			b.Errorf("have %x want %x", have, want)
 		}
 	})
-	if got != exp {
-		b.Errorf("got %x exp %x", got, exp)
-	}
 }
 
 func TestFuzzDeriveSha(t *testing.T) {
@@ -108,7 +120,7 @@ func TestFuzzDeriveSha(t *testing.T) {
 	rndSeed := mrand.Int()
 	for i := 0; i < 10; i++ {
 		seed := rndSeed + i
-		exp := types.DeriveSha(newDummy(i), trie.NewEmpty(triedb.NewDatabase(rawdb.NewMemoryDatabase(), nil)))
+		exp := types.DeriveSha(newDummy(i), trie.NewListHasher())
 		got := types.DeriveSha(newDummy(i), trie.NewStackTrie(nil))
 		if !bytes.Equal(got[:], exp[:]) {
 			printList(t, newDummy(seed))
@@ -136,7 +148,7 @@ func TestDerivableList(t *testing.T) {
 		},
 	}
 	for i, tc := range tcs[1:] {
-		exp := types.DeriveSha(flatList(tc), trie.NewEmpty(triedb.NewDatabase(rawdb.NewMemoryDatabase(), nil)))
+		exp := types.DeriveSha(flatList(tc), trie.NewListHasher())
 		got := types.DeriveSha(flatList(tc), trie.NewStackTrie(nil))
 		if !bytes.Equal(got[:], exp[:]) {
 			t.Fatalf("case %d: got %x exp %x", i, got, exp)
@@ -149,10 +161,10 @@ func genTxs(num uint64) (types.Transactions, error) {
 	if err != nil {
 		return nil, err
 	}
-	var addr = common.Address(crypto.PubkeyToAddress(key.PublicKey))
+	var addr = crypto.PubkeyToAddress(key.PublicKey)
 	newTx := func(i uint64) (*types.Transaction, error) {
 		signer := types.NewEIP155Signer(big.NewInt(18))
-		utx := types.NewTransaction(i, common.Address(addr), new(big.Int), 0, new(big.Int).SetUint64(10000000), nil)
+		utx := types.NewTransaction(i, addr, new(big.Int), 0, new(big.Int).SetUint64(10000000), nil)
 		tx, err := types.SignTx(utx, signer, key)
 		return tx, err
 	}

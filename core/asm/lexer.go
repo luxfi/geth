@@ -48,20 +48,20 @@ const (
 	number
 	stringValue
 
-	Numbers      = "1234567890"
+	Numbers            = "1234567890"
 	HexadecimalNumbers = Numbers + "aAbBcCdDeEfF"
 )
 
 // lexer is the lexical analyzer.
 type lexer struct {
-	input   string
-	start   int
-	pos     int
-	width   int
-	state   stateFn
-	lineno  int
-	tokens  chan token
-	debug   bool
+	input  string
+	start  int
+	pos    int
+	width  int
+	state  stateFn
+	lineno int
+	tokens chan token
+	debug  bool
 }
 
 // lex lexes the program by name with the given source.
@@ -165,12 +165,12 @@ func lexLine(l *lexer) stateFn {
 // lexComment lexes a comment.
 func lexComment(l *lexer) stateFn {
 	for {
-		switch r := l.next(); {
-		case r == '\n':
+		switch r := l.next(); r {
+		case '\n':
 			l.backup()
 			l.ignore()
 			return lexLine
-		case r == 0:
+		case 0:
 			l.ignore()
 			return lexLine
 		}
@@ -215,13 +215,13 @@ func lexNumber(l *lexer) stateFn {
 // lexString lexes a string.
 func lexString(l *lexer) stateFn {
 	for {
-		switch r := l.next(); {
-		case r == '"':
+		switch r := l.next(); r {
+		case '"':
 			l.emit(stringValue)
 			return lexLine
-		case r == 0 || r == '\n':
+		case 0, '\n':
 			return l.errorf("unterminated string")
-		case r == '\\':
+		case '\\':
 			if l.next() == 0 {
 				return l.errorf("unterminated string")
 			}

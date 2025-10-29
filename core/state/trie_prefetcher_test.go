@@ -24,7 +24,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/testrand"
 	"github.com/luxfi/geth/triedb"
 	"github.com/holiman/uint256"
@@ -39,7 +39,7 @@ func filledStateDB() *StateDB {
 	sval := common.HexToHash("bbb")
 
 	state.SetBalance(addr, uint256.NewInt(42), tracing.BalanceChangeUnspecified) // Change the account trie
-	state.SetCode(addr, []byte("hello"))                                         // Change an external metadata
+	state.SetCode(addr, []byte("hello"), tracing.CodeChangeUnspecified)          // Change an external metadata
 	state.SetState(addr, skey, sval)                                             // Change the storage trie
 	for i := 0; i < 100; i++ {
 		sk := common.BigToHash(big.NewInt(int64(i)))
@@ -81,7 +81,7 @@ func TestVerklePrefetcher(t *testing.T) {
 	sval := testrand.Hash()
 
 	state.SetBalance(addr, uint256.NewInt(42), tracing.BalanceChangeUnspecified) // Change the account trie
-	state.SetCode(addr, []byte("hello"))                                         // Change an external metadata
+	state.SetCode(addr, []byte("hello"), tracing.CodeChangeUnspecified)          // Change an external metadata
 	state.SetState(addr, skey, sval)                                             // Change the storage trie
 	root, _ := state.Commit(0, true, false)
 
@@ -93,11 +93,11 @@ func TestVerklePrefetcher(t *testing.T) {
 	fetcher.prefetch(common.Hash{}, root, common.Address{}, []common.Address{addr}, nil, false)
 
 	// Read storage slot
-	fetcher.prefetch(common.Hash(crypto.Keccak256Hash(addr.Bytes())), sRoot, addr, nil, []common.Hash{skey}, false)
+	fetcher.prefetch(crypto.Keccak256Hash(addr.Bytes()), sRoot, addr, nil, []common.Hash{skey}, false)
 
 	fetcher.terminate(false)
 	accountTrie := fetcher.trie(common.Hash{}, root)
-	storageTrie := fetcher.trie(common.Hash(crypto.Keccak256Hash(addr.Bytes())), sRoot)
+	storageTrie := fetcher.trie(crypto.Keccak256Hash(addr.Bytes()), sRoot)
 
 	rootA := accountTrie.Hash()
 	rootB := storageTrie.Hash()

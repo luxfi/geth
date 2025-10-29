@@ -24,7 +24,7 @@ import (
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/params"
 )
@@ -73,7 +73,7 @@ func verifyNoIndex(t *testing.T, db ethdb.Database, blocks []*types.Block) {
 func TestTxIndexer(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
+		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{
@@ -136,7 +136,7 @@ func TestTxIndexer(t *testing.T) {
 func TestTxIndexerRepair(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
+		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{
@@ -261,7 +261,7 @@ func TestTxIndexerRepair(t *testing.T) {
 func TestTxIndexerReport(t *testing.T) {
 	var (
 		testBankKey, _  = crypto.GenerateKey()
-		testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
+		testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
 		testBankFunds   = big.NewInt(1000000000000000000)
 
 		gspec = &Genesis{

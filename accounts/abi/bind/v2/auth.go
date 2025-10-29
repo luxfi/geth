@@ -27,7 +27,7 @@ import (
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 )
 
 // ErrNotAuthorized is returned when an account is not properly unlocked.
@@ -62,13 +62,12 @@ func NewKeyedTransactor(key *ecdsa.PrivateKey, chainID *big.Int) *TransactOpts {
 	if chainID == nil {
 		panic("nil chainID")
 	}
-	keyAddr := common.Address(crypto.PubkeyToAddress(key.PublicKey))
-	keyAddrCommon := common.BytesToAddress(keyAddr[:])
+	keyAddr := crypto.PubkeyToAddress(key.PublicKey)
 	signer := types.LatestSignerForChainID(chainID)
 	return &TransactOpts{
-		From: keyAddrCommon,
+		From: keyAddr,
 		Signer: func(address common.Address, tx *types.Transaction) (*types.Transaction, error) {
-			if address != keyAddrCommon {
+			if address != keyAddr {
 				return nil, ErrNotAuthorized
 			}
 			signature, err := crypto.Sign(signer.Hash(tx).Bytes(), key)

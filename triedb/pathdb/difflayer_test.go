@@ -22,7 +22,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/testrand"
 	"github.com/luxfi/geth/trie/trienode"
 )
@@ -68,7 +68,7 @@ func benchmarkSearch(b *testing.B, depth int, total int) {
 			var (
 				path = testrand.Bytes(32)
 				blob = testrand.Bytes(100)
-				node = trienode.New(common.BytesToHash(crypto.Keccak256(blob)), blob)
+				node = trienode.New(crypto.Keccak256Hash(blob), blob)
 			)
 			nodes[common.Hash{}][string(path)] = node
 			if npath == nil && depth == index {
@@ -76,7 +76,7 @@ func benchmarkSearch(b *testing.B, depth int, total int) {
 				nblob = common.CopyBytes(blob)
 			}
 		}
-		return newDiffLayer(parent, common.Hash{}, 0, 0, newNodeSet(nodes), NewStateSetWithOrigin(nil, nil, nil, nil, false))
+		return newDiffLayer(parent, common.Hash{}, 0, 0, NewNodeSetWithOrigin(nodes, nil), NewStateSetWithOrigin(nil, nil, nil, nil, false))
 	}
 	var layer layer
 	layer = emptyLayer()
@@ -114,11 +114,11 @@ func BenchmarkPersist(b *testing.B) {
 			var (
 				path = testrand.Bytes(32)
 				blob = testrand.Bytes(100)
-				node = trienode.New(common.BytesToHash(crypto.Keccak256(blob)), blob)
+				node = trienode.New(crypto.Keccak256Hash(blob), blob)
 			)
 			nodes[common.Hash{}][string(path)] = node
 		}
-		return newDiffLayer(parent, common.Hash{}, 0, 0, newNodeSet(nodes), NewStateSetWithOrigin(nil, nil, nil, nil, false))
+		return newDiffLayer(parent, common.Hash{}, 0, 0, NewNodeSetWithOrigin(nodes, nil), NewStateSetWithOrigin(nil, nil, nil, nil, false))
 	}
 	for i := 0; i < b.N; i++ {
 		b.StopTimer()
@@ -152,11 +152,11 @@ func BenchmarkJournal(b *testing.B) {
 			var (
 				path = testrand.Bytes(32)
 				blob = testrand.Bytes(100)
-				node = trienode.New(common.BytesToHash(crypto.Keccak256(blob)), blob)
+				node = trienode.New(crypto.Keccak256Hash(blob), blob)
 			)
 			nodes[common.Hash{}][string(path)] = node
 		}
-		return newDiffLayer(parent, common.Hash{}, 0, 0, newNodeSet(nodes), NewStateSetWithOrigin(nil, nil, nil, nil, false))
+		return newDiffLayer(parent, common.Hash{}, 0, 0, NewNodeSetWithOrigin(nodes, nil), NewStateSetWithOrigin(nil, nil, nil, nil, false))
 	}
 	var layer layer
 	layer = emptyLayer()
