@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/common/math"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/internal/blocktest"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
@@ -263,9 +263,8 @@ var benchBuffer = bytes.NewBuffer(make([]byte, 0, 32000))
 
 func BenchmarkEncodeBlock(b *testing.B) {
 	block := makeBenchBlock()
-	b.ResetTimer()
 
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		benchBuffer.Reset()
 		if err := rlp.Encode(benchBuffer, block); err != nil {
 			b.Fatal(err)

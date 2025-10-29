@@ -30,7 +30,7 @@ const (
 
 	MaxTxGas uint64 = 1 << 24 // Maximum transaction gas limit after eip-7825 (16,777,216).
 
-	MaximumExtraDataSize  uint64 = 32    // Maximum size extra data may be after Genesis.
+	MaximumExtraDataSize  uint64 = 256   // Maximum size extra data may be after Genesis (increased for SubnetEVM compatibility).
 	ExpByteGas            uint64 = 10    // Times ceil(log256(exponent)) for the EXP instruction.
 	SloadGas              uint64 = 50    // Multiplied by the number of 32-byte words that are copied (round up) for any *COPY operation and added.
 	CallValueTransferGas  uint64 = 9000  // Paid for CALL when the value transfer is non-zero.
@@ -180,7 +180,7 @@ const (
 	BlobTxMaxBlobs                     = 6
 	BlobBaseCost                       = 1 << 13 // Base execution gas cost for a blob.
 
-	HistoryServeWindow = 8192 // Number of blocks to serve historical block hashes for, EIP-2935.
+	HistoryServeWindow = 8191 // Number of blocks to serve historical block hashes for, EIP-2935.
 
 	MaxBlockSize = 8_388_608 // maximum size of an RLP-encoded block
 )

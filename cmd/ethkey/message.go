@@ -25,7 +25,7 @@ import (
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/urfave/cli/v2"
 )
 
@@ -119,8 +119,7 @@ It is possible to refer to a file containing the message.`,
 			utils.Fatalf("Signature verification failed: %v", err)
 		}
 		recoveredPubkeyBytes := crypto.FromECDSAPub(recoveredPubkey)
-		recoveredAddressCrypto := common.Address(crypto.PubkeyToAddress(*recoveredPubkey))
-		recoveredAddress := common.BytesToAddress(recoveredAddressCrypto[:])
+		recoveredAddress := crypto.PubkeyToAddress(*recoveredPubkey)
 		success := address == recoveredAddress
 
 		out := outputVerify{

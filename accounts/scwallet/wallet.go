@@ -37,7 +37,7 @@ import (
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/log"
 	pcsc "github.com/gballet/go-libpcsclite"
 	"github.com/status-im/keycard-go/derivationpath"
@@ -1004,7 +1004,7 @@ func (s *Session) derive(path accounts.DerivationPath) (accounts.Account, error)
 	if err != nil {
 		return accounts.Account{}, err
 	}
-	return s.Wallet.makeAccount(common.BytesToAddress(crypto.PubkeyToAddress(*pub).Bytes()), path), nil
+	return s.Wallet.makeAccount(crypto.PubkeyToAddress(*pub), path), nil
 }
 
 // keyExport contains information on an exported keypair.

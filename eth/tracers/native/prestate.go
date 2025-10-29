@@ -23,12 +23,12 @@ import (
 	"math/big"
 	"sync/atomic"
 
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/internal"
 	"github.com/luxfi/geth/log"
@@ -44,11 +44,12 @@ func init() {
 type stateMap = map[common.Address]*account
 
 type account struct {
-	Balance *big.Int                    `json:"balance,omitempty"`
-	Code    []byte                      `json:"code,omitempty"`
-	Nonce   uint64                      `json:"nonce,omitempty"`
-	Storage map[common.Hash]common.Hash `json:"storage,omitempty"`
-	empty   bool
+	Balance  *big.Int                    `json:"balance,omitempty"`
+	Code     []byte                      `json:"code,omitempty"`
+	CodeHash *common.Hash                `json:"codeHash,omitempty"`
+	Nonce    uint64                      `json:"nonce,omitempty"`
+	Storage  map[common.Hash]common.Hash `json:"storage,omitempty"`
+	empty    bool
 }
 
 func (a *account) exists() bool {
@@ -144,8 +145,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 		}
 	case op == vm.CREATE:
 		nonce := t.env.StateDB.GetNonce(caller)
-		cryptoAddr := common.Address(crypto.CreateAddress(crypto.Address(caller), nonce))
-		addr := common.Address(cryptoAddr)
+		addr := crypto.CreateAddress(caller, nonce)
 		t.lookupAccount(addr)
 		t.created[addr] = true
 	case stackLen >= 4 && op == vm.CREATE2:
@@ -158,8 +158,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 		}
 		inithash := crypto.Keccak256(init)
 		salt := stackData[stackLen-4]
-		cryptoAddr := crypto.CreateAddress2(crypto.Address(caller), salt.Bytes32(), inithash)
-		addr := common.Address(cryptoAddr)
+		addr := crypto.CreateAddress2(caller, salt.Bytes32(), inithash)
 		t.lookupAccount(addr)
 		t.created[addr] = true
 	}
@@ -168,8 +167,7 @@ func (t *prestateTracer) OnOpcode(pc uint64, opcode byte, gas, cost uint64, scop
 func (t *prestateTracer) OnTxStart(env *tracing.VMContext, tx *types.Transaction, from common.Address) {
 	t.env = env
 	if tx.To() == nil {
-		cryptoAddr := common.Address(crypto.CreateAddress(crypto.Address(from), env.StateDB.GetNonce(from)))
-		t.to = common.Address(cryptoAddr)
+		t.to = crypto.CreateAddress(from, env.StateDB.GetNonce(from))
 		t.created[t.to] = true
 	} else {
 		t.to = *tx.To()
@@ -250,6 +248,7 @@ func (t *prestateTracer) processDiffState() {
 		postAccount := &account{Storage: make(map[common.Hash]common.Hash)}
 		newBalance := t.env.StateDB.GetBalance(addr).ToBig()
 		newNonce := t.env.StateDB.GetNonce(addr)
+		newCodeHash := t.env.StateDB.GetCodeHash(addr)
 
 		if newBalance.Cmp(t.pre[addr].Balance) != 0 {
 			modified = true
@@ -258,6 +257,19 @@ func (t *prestateTracer) processDiffState() {
 		if newNonce != t.pre[addr].Nonce {
 			modified = true
 			postAccount.Nonce = newNonce
+		}
+		prevCodeHash := common.Hash{}
+		if t.pre[addr].CodeHash != nil {
+			prevCodeHash = *t.pre[addr].CodeHash
+		}
+		// Empty code hashes are excluded from the prestate. Normalize
+		// the empty code hash to a zero hash to make it comparable.
+		if newCodeHash == types.EmptyCodeHash {
+			newCodeHash = common.Hash{}
+		}
+		if newCodeHash != prevCodeHash {
+			modified = true
+			postAccount.CodeHash = &newCodeHash
 		}
 		if !t.config.DisableCode {
 			newCode := t.env.StateDB.GetCode(addr)
@@ -307,6 +319,11 @@ func (t *prestateTracer) lookupAccount(addr common.Address) {
 		Balance: t.env.StateDB.GetBalance(addr).ToBig(),
 		Nonce:   t.env.StateDB.GetNonce(addr),
 		Code:    t.env.StateDB.GetCode(addr),
+	}
+	codeHash := t.env.StateDB.GetCodeHash(addr)
+	// If the code is empty, we don't need to store it in the prestate.
+	if codeHash != (common.Hash{}) && codeHash != types.EmptyCodeHash {
+		acc.CodeHash = &codeHash
 	}
 	if !acc.exists() {
 		acc.empty = true

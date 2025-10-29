@@ -21,7 +21,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 )
 
 // Tests that the node iterator indeed walks over the entire database contents.
@@ -97,11 +97,11 @@ func isTrieNode(scheme string, key, val []byte) (bool, common.Hash) {
 	} else {
 		ok := rawdb.IsAccountTrieNode(key)
 		if ok {
-			return true, common.Hash(crypto.Keccak256Hash(val))
+			return true, crypto.Keccak256Hash(val)
 		}
 		ok = rawdb.IsStorageTrieNode(key)
 		if ok {
-			return true, common.Hash(crypto.Keccak256Hash(val))
+			return true, crypto.Keccak256Hash(val)
 		}
 	}
 	return false, common.Hash{}

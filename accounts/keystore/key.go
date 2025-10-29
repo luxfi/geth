@@ -30,7 +30,7 @@ import (
 
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/google/uuid"
 )
 
@@ -136,7 +136,7 @@ func newKeyFromECDSA(privateKeyECDSA *ecdsa.PrivateKey) *Key {
 	}
 	key := &Key{
 		Id:         id,
-		Address:    common.BytesToAddress(crypto.PubkeyToAddress(privateKeyECDSA.PublicKey).Bytes()),
+		Address:    crypto.PubkeyToAddress(privateKeyECDSA.PublicKey),
 		PrivateKey: privateKeyECDSA,
 	}
 	return key

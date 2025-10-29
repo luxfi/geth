@@ -17,9 +17,12 @@
 package eth
 
 import (
+	"maps"
 	"math/big"
+	"math/rand"
 	"sort"
 	"sync"
+	"testing"
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/ethash"
@@ -27,10 +30,13 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/ethconfig"
+	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/event"
+	"github.com/luxfi/geth/p2p"
+	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/holiman/uint256"
@@ -41,7 +47,7 @@ var (
 	testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 
 	// testAddr is the Ethereum address of the tester account.
-	testAddr = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
 )
 
 // testTxPool is a mock transaction pool that blindly accepts all transactions.
@@ -211,4 +217,103 @@ func newTestHandlerWithBlocks(blocks int) *testHandler {
 func (b *testHandler) close() {
 	b.handler.Stop()
 	b.chain.Stop()
+}
+
+func TestBroadcastChoice(t *testing.T) {
+	self := enode.HexID("1111111111111111111111111111111111111111111111111111111111111111")
+	choice49 := newBroadcastChoice(self, [16]byte{1})
+	choice50 := newBroadcastChoice(self, [16]byte{1})
+
+	// Create test peers and random tx sender addresses.
+	rand := rand.New(rand.NewSource(33))
+	txsenders := make([]common.Address, 400)
+	for i := range txsenders {
+		rand.Read(txsenders[i][:])
+	}
+	peers := createTestPeers(rand, 50)
+	defer closePeers(peers)
+
+	// Evaluate choice49 first.
+	expectedCount := 7 // sqrt(49)
+	var chosen49 = make([]map[*ethPeer]struct{}, len(txsenders))
+	for i, txSender := range txsenders {
+		set := choice49.choosePeers(peers[:49], txSender)
+		chosen49[i] = maps.Clone(set)
+
+		// Sanity check choices. Here we check that the function selects different peers
+		// for different transaction senders.
+		if len(set) != expectedCount {
+			t.Fatalf("choice49 produced wrong count %d, want %d", len(set), expectedCount)
+		}
+		if i > 0 && maps.Equal(set, chosen49[i-1]) {
+			t.Errorf("choice49 for tx %d is equal to tx %d", i, i-1)
+		}
+	}
+
+	// Evaluate choice50 for the same peers and transactions. It should always yield more
+	// peers than choice49, and the chosen set should be a superset of choice49's.
+	for i, txSender := range txsenders {
+		set := choice50.choosePeers(peers[:50], txSender)
+		if len(set) < len(chosen49[i]) {
+			t.Errorf("for tx %d, choice50 has less peers than choice49", i)
+		}
+		for p := range chosen49[i] {
+			if _, ok := set[p]; !ok {
+				t.Errorf("for tx %d, choice50 did not choose peer %v, but choice49 did", i, p.ID())
+			}
+		}
+	}
+}
+
+func BenchmarkBroadcastChoice(b *testing.B) {
+	b.Run("50", func(b *testing.B) {
+		benchmarkBroadcastChoice(b, 50)
+	})
+	b.Run("200", func(b *testing.B) {
+		benchmarkBroadcastChoice(b, 200)
+	})
+	b.Run("500", func(b *testing.B) {
+		benchmarkBroadcastChoice(b, 500)
+	})
+}
+
+// This measures the overhead of sending one transaction to N peers.
+func benchmarkBroadcastChoice(b *testing.B, npeers int) {
+	rand := rand.New(rand.NewSource(33))
+	peers := createTestPeers(rand, npeers)
+	defer closePeers(peers)
+
+	txsenders := make([]common.Address, b.N)
+	for i := range txsenders {
+		rand.Read(txsenders[i][:])
+	}
+
+	self := enode.HexID("1111111111111111111111111111111111111111111111111111111111111111")
+	choice := newBroadcastChoice(self, [16]byte{1})
+
+	b.ResetTimer()
+	for i := range b.N {
+		set := choice.choosePeers(peers, txsenders[i])
+		if len(set) == 0 {
+			b.Fatal("empty result")
+		}
+	}
+}
+
+func createTestPeers(rand *rand.Rand, n int) []*ethPeer {
+	peers := make([]*ethPeer, n)
+	for i := range peers {
+		var id enode.ID
+		rand.Read(id[:])
+		p2pPeer := p2p.NewPeer(id, "test", nil)
+		ep := eth.NewPeer(eth.ETH69, p2pPeer, nil, nil)
+		peers[i] = &ethPeer{Peer: ep}
+	}
+	return peers
+}
+
+func closePeers(peers []*ethPeer) {
+	for _, p := range peers {
+		p.Close()
+	}
 }

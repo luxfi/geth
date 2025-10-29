@@ -25,7 +25,7 @@ import (
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/triedb/database"
@@ -207,30 +207,34 @@ type HistoricalStateReader struct {
 // HistoricReader constructs a reader for accessing the requested historic state.
 func (db *Database) HistoricReader(root common.Hash) (*HistoricalStateReader, error) {
 	// Bail out if the state history hasn't been fully indexed
-	if db.indexer == nil || !db.indexer.inited() {
+	if db.stateIndexer == nil || db.stateFreezer == nil {
+		return nil, fmt.Errorf("historical state %x is not available", root)
+	}
+	if !db.stateIndexer.inited() {
 		return nil, errors.New("state histories haven't been fully indexed yet")
 	}
-	if db.freezer == nil {
-		return nil, errors.New("state histories are not available")
-	}
-	// States at the current disk layer or above are directly accessible via
-	// db.StateReader.
+	// - States at the current disk layer or above are directly accessible
+	//   via `db.StateReader`.
 	//
-	// States older than the current disk layer (including the disk layer
-	// itself) are available through historic state access.
-	//
-	// Note: the requested state may refer to a stale historic state that has
-	// already been pruned. This function does not validate availability, as
-	// underlying states may be pruned dynamically. Validity is checked during
-	// each actual state retrieval.
+	// - States older than the current disk layer (including the disk layer
+	//   itself) are available via `db.HistoricReader`.
 	id := rawdb.ReadStateID(db.diskdb, root)
 	if id == nil {
 		return nil, fmt.Errorf("state %#x is not available", root)
 	}
+	// Ensure the requested state is canonical, historical states on side chain
+	// are not accessible.
+	meta, err := readStateHistoryMeta(db.stateFreezer, *id+1)
+	if err != nil {
+		return nil, err // e.g., the referred state history has been pruned
+	}
+	if meta.parent != root {
+		return nil, fmt.Errorf("state %#x is not canonincal", root)
+	}
 	return &HistoricalStateReader{
 		id:     *id,
 		db:     db,
-		reader: newHistoryReader(db.diskdb, db.freezer),
+		reader: newHistoryReader(db.diskdb, db.stateFreezer),
 	}, nil
 }
 
@@ -256,7 +260,7 @@ func (r *HistoricalStateReader) AccountRLP(address common.Address) ([]byte, erro
 	// and try to define a low granularity lock if the current approach doesn't
 	// work later.
 	dl := r.db.tree.bottom()
-	hash := common.BytesToHash(crypto.Keccak256(address.Bytes()))
+	hash := crypto.Keccak256Hash(address.Bytes())
 	latest, err := dl.account(hash, 0)
 	if err != nil {
 		return nil, err
@@ -306,8 +310,8 @@ func (r *HistoricalStateReader) Storage(address common.Address, key common.Hash)
 	// and try to define a low granularity lock if the current approach doesn't
 	// work later.
 	dl := r.db.tree.bottom()
-	addrHash := common.BytesToHash(crypto.Keccak256(address.Bytes()))
-	keyHash := common.BytesToHash(crypto.Keccak256(key.Bytes()))
+	addrHash := crypto.Keccak256Hash(address.Bytes())
+	keyHash := crypto.Keccak256Hash(key.Bytes())
 	latest, err := dl.storage(addrHash, keyHash, 0)
 	if err != nil {
 		return nil, err

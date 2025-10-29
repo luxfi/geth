@@ -23,9 +23,10 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/lru"
+	"github.com/luxfi/geth/core/overlay"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
@@ -164,7 +165,7 @@ func newFlatReader(reader database.StateReader) *flatReader {
 //
 // The returned account might be nil if it's not existent.
 func (r *flatReader) Account(addr common.Address) (*types.StateAccount, error) {
-	account, err := r.reader.Account(common.BytesToHash(crypto.Keccak256Hash(addr.Bytes()).Bytes()))
+	account, err := r.reader.Account(crypto.Keccak256Hash(addr.Bytes()))
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +197,7 @@ func (r *flatReader) Account(addr common.Address) (*types.StateAccount, error) {
 func (r *flatReader) Storage(addr common.Address, key common.Hash) (common.Hash, error) {
 	addrHash := crypto.Keccak256Hash(addr.Bytes())
 	slotHash := crypto.Keccak256Hash(key.Bytes())
-	ret, err := r.reader.Storage(common.BytesToHash(addrHash.Bytes()), common.BytesToHash(slotHash.Bytes()))
+	ret, err := r.reader.Storage(addrHash, slotHash)
 	if err != nil {
 		return common.Hash{}, err
 	}
@@ -231,7 +232,7 @@ type trieReader struct {
 	lock     sync.Mutex                     // Lock for protecting concurrent read
 }
 
-// trieReader constructs a trie reader of the specific state. An error will be
+// newTrieReader constructs a trie reader of the specific state. An error will be
 // returned if the associated trie specified by root is not existent.
 func newTrieReader(root common.Hash, db *triedb.Database, cache *utils.PointCache) (*trieReader, error) {
 	var (
@@ -241,8 +242,19 @@ func newTrieReader(root common.Hash, db *triedb.Database, cache *utils.PointCach
 	if !db.IsVerkle() {
 		tr, err = trie.NewStateTrie(trie.StateTrieID(root), db)
 	} else {
-		// TODO @gballet determine the trie type (verkle or overlay) by transition state
 		tr, err = trie.NewVerkleTrie(root, db, cache)
+
+		// Based on the transition status, determine if the overlay
+		// tree needs to be created, or if a single, target tree is
+		// to be picked.
+		ts := overlay.LoadTransitionState(db.Disk(), root, true)
+		if ts.InTransition() {
+			mpt, err := trie.NewStateTrie(trie.StateTrieID(ts.BaseRoot), db)
+			if err != nil {
+				return nil, err
+			}
+			tr = trie.NewTransitionTrie(mpt, tr.(*trie.VerkleTrie), false)
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -312,7 +324,7 @@ func (r *trieReader) Storage(addr common.Address, key common.Hash) (common.Hash,
 				root = r.subRoots[addr]
 			}
 			var err error
-			tr, err = trie.NewStateTrie(trie.StorageTrieID(r.root, common.BytesToHash(crypto.Keccak256Hash(addr.Bytes()).Bytes()), root), r.db)
+			tr, err = trie.NewStateTrie(trie.StorageTrieID(r.root, crypto.Keccak256Hash(addr.Bytes()), root), r.db)
 			if err != nil {
 				return common.Hash{}, err
 			}

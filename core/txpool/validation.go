@@ -22,11 +22,10 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto/kzg4844"
+	"github.com/luxfi/geth/crypto/kzg4844"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
 )
@@ -117,6 +116,10 @@ func ValidateTransaction(tx *types.Transaction, head *types.Header, signer types
 	if _, err := types.Sender(signer, tx); err != nil {
 		return fmt.Errorf("%w: %v", ErrInvalidSender, err)
 	}
+	// Limit nonce to 2^64-1 per EIP-2681
+	if tx.Nonce()+1 < tx.Nonce() {
+		return core.ErrNonceMax
+	}
 	// Ensure the transaction has more gas than the bare minimum needed to cover
 	// the transaction metadata
 	intrGas, err := core.IntrinsicGas(tx.Data(), tx.AccessList(), tx.SetCodeAuthorizations(), tx.To() == nil, true, rules.IsIstanbul, rules.IsShanghai)
@@ -167,9 +170,8 @@ func validateBlobTx(tx *types.Transaction, head *types.Header, opts *ValidationO
 	if len(hashes) == 0 {
 		return errors.New("blobless blob transaction")
 	}
-	maxBlobs := eip4844.MaxBlobsPerBlock(opts.Config, head.Time)
-	if len(hashes) > maxBlobs {
-		return fmt.Errorf("too many blobs in transaction: have %d, permitted %d", len(hashes), maxBlobs)
+	if len(hashes) > params.BlobTxMaxBlobs {
+		return fmt.Errorf("too many blobs in transaction: have %d, permitted %d", len(hashes), params.BlobTxMaxBlobs)
 	}
 	if len(sidecar.Blobs) != len(hashes) {
 		return fmt.Errorf("invalid number of %d blobs compared to %d blob hashes", len(sidecar.Blobs), len(hashes))
@@ -178,16 +180,14 @@ func validateBlobTx(tx *types.Transaction, head *types.Header, opts *ValidationO
 		return err
 	}
 	// Fork-specific sidecar checks, including proof verification.
-	if opts.Config.IsOsaka(head.Number, head.Time) {
+	if sidecar.Version == types.BlobSidecarVersion1 {
 		return validateBlobSidecarOsaka(sidecar, hashes)
+	} else {
+		return validateBlobSidecarLegacy(sidecar, hashes)
 	}
-	return validateBlobSidecarLegacy(sidecar, hashes)
 }
 
 func validateBlobSidecarLegacy(sidecar *types.BlobTxSidecar, hashes []common.Hash) error {
-	if sidecar.Version != types.BlobSidecarVersion0 {
-		return fmt.Errorf("invalid sidecar version pre-osaka: %v", sidecar.Version)
-	}
 	if len(sidecar.Proofs) != len(hashes) {
 		return fmt.Errorf("invalid number of %d blob proofs expected %d", len(sidecar.Proofs), len(hashes))
 	}
@@ -200,9 +200,6 @@ func validateBlobSidecarLegacy(sidecar *types.BlobTxSidecar, hashes []common.Has
 }
 
 func validateBlobSidecarOsaka(sidecar *types.BlobTxSidecar, hashes []common.Hash) error {
-	if sidecar.Version != types.BlobSidecarVersion1 {
-		return fmt.Errorf("invalid sidecar version post-osaka: %v", sidecar.Version)
-	}
 	if len(sidecar.Proofs) != len(hashes)*kzg4844.CellProofsPerBlob {
 		return fmt.Errorf("invalid number of %d blob proofs expected %d", len(sidecar.Proofs), len(hashes)*kzg4844.CellProofsPerBlob)
 	}

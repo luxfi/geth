@@ -29,7 +29,7 @@ import (
 	"github.com/luxfi/geth/accounts/abi/bind/v2/internal/contracts/solc_errors"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/ethclient"
 	"github.com/luxfi/geth/ethclient/simulated"
@@ -38,7 +38,7 @@ import (
 )
 
 var testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-var testAddr = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+var testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
 
 func testSetup() (*backends.SimulatedBackend, error) {
 	backend := simulated.NewBackend(
@@ -365,5 +365,30 @@ func TestErrors(t *testing.T) {
 	}
 	if unpackedErr.Arg4 != false {
 		t.Fatalf("bad unpacked error result: expected Arg4 to be false.  got true")
+	}
+}
+
+func TestEventUnpackEmptyTopics(t *testing.T) {
+	c := events.NewC()
+
+	for _, log := range []*types.Log{
+		{Topics: []common.Hash{}},
+		{Topics: nil},
+	} {
+		_, err := c.UnpackBasic1Event(log)
+		if err == nil {
+			t.Fatal("expected error when unpacking event with empty topics, got nil")
+		}
+		if err.Error() != "event signature mismatch" {
+			t.Fatalf("expected 'event signature mismatch' error, got: %v", err)
+		}
+
+		_, err = c.UnpackBasic2Event(log)
+		if err == nil {
+			t.Fatal("expected error when unpacking event with empty topics, got nil")
+		}
+		if err.Error() != "event signature mismatch" {
+			t.Fatalf("expected 'event signature mismatch' error, got: %v", err)
+		}
 	}
 }

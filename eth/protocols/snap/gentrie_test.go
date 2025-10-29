@@ -24,7 +24,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/testrand"
 	"github.com/luxfi/geth/trie"
@@ -59,7 +59,7 @@ func (r *replayer) decode(key []byte, value []byte) {
 	if len(value) == 0 {
 		r.hashes = append(r.hashes, common.Hash{})
 	} else {
-		r.hashes = append(r.hashes, common.Hash(crypto.Keccak256Hash(value)))
+		r.hashes = append(r.hashes, crypto.Keccak256Hash(value))
 	}
 }
 
@@ -239,7 +239,6 @@ func TestPartialGentree(t *testing.T) {
 			{1, len(entries) - 1},                // no left
 			{2, len(entries) - 1},                // no left
 			{2, len(entries) - 2},                // no left and right
-			{2, len(entries) - 2},                // no left and right
 			{len(entries) / 2, len(entries) / 2}, // single
 			{0, 0},                               // single first
 			{len(entries) - 1, len(entries) - 1}, // single last
@@ -347,7 +346,6 @@ func TestGentreeDanglingClearing(t *testing.T) {
 			{0, len(entries) - 1},                // full
 			{1, len(entries) - 1},                // no left
 			{2, len(entries) - 1},                // no left
-			{2, len(entries) - 2},                // no left and right
 			{2, len(entries) - 2},                // no left and right
 			{len(entries) / 2, len(entries) / 2}, // single
 			{0, 0},                               // single first

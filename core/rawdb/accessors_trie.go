@@ -20,7 +20,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 )
@@ -150,7 +150,7 @@ func HasTrieNode(db ethdb.KeyValueReader, owner common.Hash, path []byte, hash c
 		if len(blob) == 0 {
 			return false
 		}
-		return common.BytesToHash(crypto.Keccak256(blob)) == hash // exists but not match
+		return crypto.Keccak256Hash(blob) == hash // exist and match
 	default:
 		panic(fmt.Sprintf("Unknown scheme %v", scheme))
 	}
@@ -172,8 +172,8 @@ func ReadTrieNode(db ethdb.KeyValueReader, owner common.Hash, path []byte, hash 
 		if len(blob) == 0 {
 			return nil
 		}
-		if common.BytesToHash(crypto.Keccak256(blob)) != hash {
-			return nil // exists but not match
+		if crypto.Keccak256Hash(blob) != hash {
+			return nil // exist but not match
 		}
 		return blob
 	default:

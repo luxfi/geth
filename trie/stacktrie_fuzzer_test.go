@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/trie/trienode"
 )
 
@@ -106,7 +106,7 @@ func fuzz(data []byte, debugging bool) {
 	var (
 		nodeset = make(map[string][]byte) // path -> blob
 		trieC   = NewStackTrie(func(path []byte, hash common.Hash, blob []byte) {
-			if common.Hash(crypto.Keccak256Hash(blob)) != hash {
+			if crypto.Keccak256Hash(blob) != hash {
 				panic("invalid node blob")
 			}
 			nodeset[string(path)] = common.CopyBytes(blob)

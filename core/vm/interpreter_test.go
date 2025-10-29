@@ -24,6 +24,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/state"
+	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
@@ -45,7 +46,7 @@ func TestLoopInterrupt(t *testing.T) {
 	for i, tt := range loopInterruptTests {
 		statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
 		statedb.CreateAccount(address)
-		statedb.SetCode(address, common.Hex2Bytes(tt))
+		statedb.SetCode(address, common.Hex2Bytes(tt), tracing.CodeChangeUnspecified)
 		statedb.Finalise(true)
 
 		evm := NewEVM(vmctx, statedb, params.AllEthashProtocolChanges, Config{})
@@ -89,8 +90,7 @@ func BenchmarkInterpreter(b *testing.B) {
 	stack.push(uint256.NewInt(123))
 	stack.push(uint256.NewInt(123))
 	gasSStoreEIP3529 = makeGasSStoreFunc(params.SstoreClearsScheduleRefundEIP3529)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		gasSStoreEIP3529(evm, contract, stack, mem, 1234)
 	}
 }

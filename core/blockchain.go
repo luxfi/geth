@@ -18,10 +18,10 @@
 package core
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
-	"math"
 	"math/big"
 	"runtime"
 	"slices"
@@ -168,10 +168,13 @@ type BlockChainConfig struct {
 	TrieNoAsyncFlush     bool          // Whether the asynchronous buffer flushing is disallowed
 	TrieJournalDirectory string        // Directory path to the journal used for persisting trie data across node restarts
 
-	Preimages    bool   // Whether to store preimage of trie key to the disk
-	StateHistory uint64 // Number of blocks from head whose state histories are reserved.
-	StateScheme  string // Scheme used to store ethereum states and merkle tree nodes on top
-	ArchiveMode  bool   // Whether to enable the archive mode
+	Preimages   bool   // Whether to store preimage of trie key to the disk
+	StateScheme string // Scheme used to store ethereum states and merkle tree nodes on top
+	ArchiveMode bool   // Whether to enable the archive mode
+
+	// Number of blocks from the chain head for which state histories are retained.
+	// If set to 0, all state histories across the entire chain will be retained;
+	StateHistory uint64
 
 	// State snapshot related options
 	SnapshotLimit   int  // Memory allowance (MB) to use for caching snapshot entries in memory
@@ -193,6 +196,9 @@ type BlockChainConfig struct {
 	// If the value is zero, all transactions of the entire chain will be indexed.
 	// If the value is -1, indexing is disabled.
 	TxLookupLimit int64
+
+	// StateSizeTracking indicates whether the state size tracking is enabled.
+	StateSizeTracking bool
 }
 
 // DefaultConfig returns the default config.
@@ -330,6 +336,7 @@ type BlockChain struct {
 	prefetcher Prefetcher
 	processor  Processor // Block transaction processor interface
 	logger     *tracing.Hooks
+	stateSizer *state.SizeTracker // State size tracking
 
 	lastForkReadyAlert time.Time // Last time there was a fork readiness print out
 }
@@ -365,6 +372,11 @@ func NewBlockChain(db ethdb.Database, genesis *Genesis, engine consensus.Engine,
 	log.Info(strings.Repeat("-", 153))
 	log.Info("")
 
+	// SubnetEVM compatibility: Build canonical hash mappings if missing
+	if err := rawdb.BuildCanonicalMappingsIfMissing(db); err != nil {
+		return nil, fmt.Errorf("failed to build canonical mappings: %w", err)
+	}
+
 	bc := &BlockChain{
 		chainConfig:   chainConfig,
 		cfg:           cfg,
@@ -388,11 +400,64 @@ func NewBlockChain(db ethdb.Database, genesis *Genesis, engine consensus.Engine,
 	bc.statedb = state.NewDatabase(bc.triedb, nil)
 	bc.validator = NewBlockValidator(chainConfig, bc)
 	bc.prefetcher = newStatePrefetcher(chainConfig, bc.hc)
-	bc.processor = NewStateProcessor(chainConfig, bc.hc)
+	bc.processor = NewStateProcessor(bc.hc)
 
 	genesisHeader := bc.GetHeaderByNumber(0)
 	if genesisHeader == nil {
-		return nil, ErrNoGenesis
+		// For migrated data, try reading directly from database
+		genesisHash := rawdb.ReadCanonicalHash(bc.db, 0)
+		if genesisHash == (common.Hash{}) {
+			// Try direct key access for migrated BadgerDB
+			key := make([]byte, 9)
+			key[0] = 'H'
+			binary.BigEndian.PutUint64(key[1:], 0)
+			if val, err := bc.db.Get(key); err == nil && len(val) == 32 {
+				copy(genesisHash[:], val)
+				log.Info("Found genesis hash via direct key access", "hash", genesisHash.Hex())
+			}
+		}
+
+		if genesisHash != (common.Hash{}) {
+			genesisHeader = rawdb.ReadHeader(bc.db, genesisHash, 0)
+			if genesisHeader == nil {
+				// Try direct header key for migrated data
+				headerKey := make([]byte, 0, 41)
+				headerKey = append(headerKey, 'h')
+				numBytes := make([]byte, 8)
+				binary.BigEndian.PutUint64(numBytes, 0)
+				headerKey = append(headerKey, numBytes...)
+				headerKey = append(headerKey, genesisHash.Bytes()...)
+
+				if headerData, err := bc.db.Get(headerKey); err == nil && len(headerData) > 0 {
+					genesisHeader = new(types.Header)
+					if err := rlp.DecodeBytes(headerData, genesisHeader); err == nil {
+						log.Info("Decoded genesis header from migrated data", "number", genesisHeader.Number)
+						// Write it back in standard format so future reads work
+						rawdb.WriteHeader(bc.db, genesisHeader)
+					} else {
+						genesisHeader = nil
+					}
+				}
+			}
+		}
+
+		// MIGRATION FIX: If still nil, try creating a minimal genesis from chain config
+		// This allows migrated blockchains to work even if genesis header isn't accessible
+		if genesisHeader == nil && chainConfig != nil {
+			log.Warn("Genesis header not found, creating minimal genesis for migrated data")
+			genesisHeader = &types.Header{
+				Number:     big.NewInt(0),
+				Time:       0,
+				Difficulty: big.NewInt(0),
+				GasLimit:   8000000,
+				ParentHash: common.Hash{},
+				Root:       common.HexToHash("0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421"), // Empty state root
+			}
+		}
+
+		if genesisHeader == nil {
+			return nil, ErrNoGenesis
+		}
 	}
 	bc.genesisBlock = types.NewBlockWithHeader(genesisHeader)
 
@@ -523,6 +588,17 @@ func NewBlockChain(db ethdb.Database, genesis *Genesis, engine consensus.Engine,
 	if bc.cfg.TxLookupLimit >= 0 {
 		bc.txIndexer = newTxIndexer(uint64(bc.cfg.TxLookupLimit), bc)
 	}
+
+	// Start state size tracker
+	if bc.cfg.StateSizeTracking {
+		stateSizer, err := state.NewSizeTracker(bc.db, bc.triedb)
+		if err == nil {
+			bc.stateSizer = stateSizer
+			log.Info("Enabled state size metrics")
+		} else {
+			log.Info("Failed to setup size tracker", "err", err)
+		}
+	}
 	return bc, nil
 }
 
@@ -576,12 +652,15 @@ func (bc *BlockChain) empty() bool {
 func (bc *BlockChain) loadLastState() error {
 	// Restore the last known head block
 	head := rawdb.ReadHeadBlockHash(bc.db)
+	log.Info("🔍 DEBUG loadLastState: ReadHeadBlockHash returned", "hash", head)
 	if head == (common.Hash{}) {
 		// Corrupt or empty database, init from scratch
 		log.Warn("Empty database, resetting chain")
 		return bc.Reset()
 	}
+	log.Info("🔍 DEBUG loadLastState: Calling GetHeaderByHash", "hash", head)
 	headHeader := bc.GetHeaderByHash(head)
+	log.Info("🔍 DEBUG loadLastState: GetHeaderByHash returned", "header", headHeader)
 	if headHeader == nil {
 		// Corrupt or empty database, init from scratch
 		log.Warn("Head header missing, resetting chain", "hash", head)
@@ -1249,6 +1328,10 @@ func (bc *BlockChain) stopWithoutSaving() {
 	// Signal shutdown to all goroutines.
 	bc.InterruptInsert(true)
 
+	// Stop state size tracker
+	if bc.stateSizer != nil {
+		bc.stateSizer.Stop()
+	}
 	// Now wait for all chain modifications to end and persistent goroutines to exit.
 	//
 	// Note: Close waits for the mutex to become available, i.e. any running chain
@@ -1583,9 +1666,13 @@ func (bc *BlockChain) writeBlockWithState(block *types.Block, receipts []*types.
 		log.Crit("Failed to write block into disk", "err", err)
 	}
 	// Commit all cached state changes into underlying memory database.
-	root, err := statedb.Commit(block.NumberU64(), bc.chainConfig.IsEIP158(block.Number()), bc.chainConfig.IsCancun(block.Number(), block.Time()))
+	root, stateUpdate, err := statedb.CommitWithUpdate(block.NumberU64(), bc.chainConfig.IsEIP158(block.Number()), bc.chainConfig.IsCancun(block.Number(), block.Time()))
 	if err != nil {
 		return err
+	}
+	// Emit the state update to the state sizestats if it's active
+	if bc.stateSizer != nil {
+		bc.stateSizer.Notify(stateUpdate)
 	}
 	// If node is running in path mode, skip explicit gc operation
 	// which is unnecessary in this mode.
@@ -1665,7 +1752,12 @@ func (bc *BlockChain) writeBlockAndSetHead(block *types.Block, receipts []*types
 	// Set new head.
 	bc.writeHeadBlock(block)
 
-	bc.chainFeed.Send(ChainEvent{Header: block.Header()})
+	bc.chainFeed.Send(ChainEvent{
+		Header:       block.Header(),
+		Receipts:     receipts,
+		Transactions: block.Transactions(),
+	})
+
 	if len(logs) > 0 {
 		bc.logsFeed.Send(logs)
 	}
@@ -1881,7 +1973,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks, setHead bool, makeWitness 
 		}
 		// The traced section of block import.
 		start := time.Now()
-		res, err := bc.processBlock(parent.Root, block, setHead, makeWitness && len(chain) == 1)
+		res, err := bc.ProcessBlock(parent.Root, block, setHead, makeWitness && len(chain) == 1)
 		if err != nil {
 			return nil, it.index, err
 		}
@@ -1947,9 +2039,13 @@ type blockProcessingResult struct {
 	witness  *stateless.Witness
 }
 
-// processBlock executes and validates the given block. If there was no error
+func (bpr *blockProcessingResult) Witness() *stateless.Witness {
+	return bpr.witness
+}
+
+// ProcessBlock executes and validates the given block. If there was no error
 // it writes the block and associated state to database.
-func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, setHead bool, makeWitness bool) (_ *blockProcessingResult, blockEndErr error) {
+func (bc *BlockChain) ProcessBlock(parentRoot common.Hash, block *types.Block, setHead bool, makeWitness bool) (_ *blockProcessingResult, blockEndErr error) {
 	var (
 		err       error
 		startTime = time.Now()
@@ -1999,11 +2095,7 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 			// Disable tracing for prefetcher executions.
 			vmCfg := bc.cfg.VmConfig
 			vmCfg.Tracer = nil
-			var interruptFlag uint32
-			if interrupt.Load() {
-				interruptFlag = 1
-			}
-			bc.prefetcher.Prefetch(block, throwaway, bc.chainConfig, &interruptFlag)
+			bc.prefetcher.Prefetch(block, throwaway, vmCfg, &interrupt)
 
 			blockPrefetchExecuteTimer.Update(time.Since(start))
 			if interrupt.Load() {
@@ -2015,7 +2107,10 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 	// If we are past Byzantium, enable prefetching to pull in trie node paths
 	// while processing transactions. Before Byzantium the prefetcher is mostly
 	// useless due to the intermediate root hashing after each transaction.
-	var witness *stateless.Witness
+	var (
+		witness      *stateless.Witness
+		witnessStats *stateless.WitnessStats
+	)
 	if bc.chainConfig.IsByzantium(block.Number()) {
 		// Generate witnesses either if we're self-testing, or if it's the
 		// only block being inserted. A bit crude, but witnesses are huge,
@@ -2025,8 +2120,11 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 			if err != nil {
 				return nil, err
 			}
+			if bc.cfg.VmConfig.EnableWitnessStats {
+				witnessStats = stateless.NewWitnessStats()
+			}
 		}
-		statedb.StartPrefetcher("chain", witness)
+		statedb.StartPrefetcher("chain", witness, witnessStats)
 		defer statedb.StopPrefetcher()
 	}
 
@@ -2045,7 +2143,7 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 
 	// Process block using the parent state as reference point
 	pstart := time.Now()
-	res, err := bc.processor.Process(block, statedb, bc.chainConfig)
+	res, err := bc.processor.Process(block, statedb, bc.cfg.VmConfig)
 	if err != nil {
 		bc.reportBlock(block, res, err)
 		return nil, err
@@ -2053,7 +2151,7 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 	ptime := time.Since(pstart)
 
 	vstart := time.Now()
-	if err := bc.validator.ValidateState(block, statedb, res.Receipts, res.GasUsed); err != nil {
+	if err := bc.validator.ValidateState(block, statedb, res, false); err != nil {
 		bc.reportBlock(block, res, err)
 		return nil, err
 	}
@@ -2087,6 +2185,7 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 			return nil, fmt.Errorf("stateless self-validation receipt root mismatch (cross: %x local: %x)", crossReceiptRoot, block.ReceiptHash())
 		}
 	}
+
 	xvtime := time.Since(xvstart)
 	proctime := time.Since(startTime) // processing + validation + cross validation
 
@@ -2122,6 +2221,11 @@ func (bc *BlockChain) processBlock(parentRoot common.Hash, block *types.Block, s
 	if err != nil {
 		return nil, err
 	}
+	// Report the collected witness statistics
+	if witnessStats != nil {
+		witnessStats.ReportMetrics(block.NumberU64())
+	}
+
 	// Update the metrics touched during block commit
 	accountCommitTimer.Update(statedb.AccountCommits)   // Account commits are complete, we can mark them
 	storageCommitTimer.Update(statedb.StorageCommits)   // Storage commits are complete, we can mark them
@@ -2305,6 +2409,13 @@ func (bc *BlockChain) recoverAncestors(block *types.Block, makeWitness bool) (co
 // collectLogs collects the logs that were generated or removed during the
 // processing of a block. These logs are later announced as deleted or reborn.
 func (bc *BlockChain) collectLogs(b *types.Block, removed bool) []*types.Log {
+	_, logs := bc.collectReceiptsAndLogs(b, removed)
+	return logs
+}
+
+// collectReceiptsAndLogs retrieves receipts from the database and returns both receipts and logs.
+// This avoids duplicate database reads when both are needed.
+func (bc *BlockChain) collectReceiptsAndLogs(b *types.Block, removed bool) ([]*types.Receipt, []*types.Log) {
 	var blobGasPrice *big.Int
 	if b.ExcessBlobGas() != nil {
 		blobGasPrice = eip4844.CalcBlobFee(bc.chainConfig, b.Header())
@@ -2322,7 +2433,7 @@ func (bc *BlockChain) collectLogs(b *types.Block, removed bool) []*types.Log {
 			logs = append(logs, log)
 		}
 	}
-	return logs
+	return receipts, logs
 }
 
 // reorg takes two blocks, an old chain and a new chain and will reconstruct the
@@ -2551,8 +2662,14 @@ func (bc *BlockChain) SetCanonical(head *types.Block) (common.Hash, error) {
 	bc.writeHeadBlock(head)
 
 	// Emit events
-	logs := bc.collectLogs(head, false)
-	bc.chainFeed.Send(ChainEvent{Header: head.Header()})
+	receipts, logs := bc.collectReceiptsAndLogs(head, false)
+
+	bc.chainFeed.Send(ChainEvent{
+		Header:       head.Header(),
+		Receipts:     receipts,
+		Transactions: head.Transactions(),
+	})
+
 	if len(logs) > 0 {
 		bc.logsFeed.Send(logs)
 	}
@@ -2625,13 +2742,11 @@ func (bc *BlockChain) reportBlock(block *types.Block, res *ProcessResult, err er
 // logForkReadiness will write a log when a future fork is scheduled, but not
 // active. This is useful so operators know their client is ready for the fork.
 func (bc *BlockChain) logForkReadiness(block *types.Block) {
-	config := bc.Config()
-	current, last := config.LatestFork(block.Time()), config.LatestFork(math.MaxUint64)
+	current := bc.Config().LatestFork(block.Time())
 
-	// Short circuit if the timestamp of the last fork is undefined,
-	// or if the network has already passed the last configured fork.
-	t := config.Timestamp(last)
-	if t == nil || current >= last {
+	// Short circuit if the timestamp of the last fork is undefined.
+	t := bc.Config().Timestamp(current + 1)
+	if t == nil {
 		return
 	}
 	at := time.Unix(int64(*t), 0)
@@ -2641,7 +2756,7 @@ func (bc *BlockChain) logForkReadiness(block *types.Block) {
 	// - Enough time has passed since last alert
 	now := time.Now()
 	if now.Before(at) && now.After(bc.lastForkReadyAlert.Add(forkReadyInterval)) {
-		log.Info("Ready for fork activation", "fork", last, "date", at.Format(time.RFC822),
+		log.Info("Ready for fork activation", "fork", current+1, "date", at.Format(time.RFC822),
 			"remaining", time.Until(at).Round(time.Second), "timestamp", at.Unix())
 		bc.lastForkReadyAlert = time.Now()
 	}
@@ -2779,4 +2894,9 @@ func (bc *BlockChain) SetTrieFlushInterval(interval time.Duration) {
 // GetTrieFlushInterval gets the in-memory tries flushAlloc interval
 func (bc *BlockChain) GetTrieFlushInterval() time.Duration {
 	return time.Duration(bc.flushInterval.Load())
+}
+
+// StateSizer returns the state size tracker, or nil if it's not initialized
+func (bc *BlockChain) StateSizer() *state.SizeTracker {
+	return bc.stateSizer
 }

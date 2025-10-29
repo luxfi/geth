@@ -21,8 +21,9 @@ import (
 	"net"
 	"net/netip"
 	"testing"
+	"time"
 
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/p2p/netutil"
 	"github.com/stretchr/testify/assert"
@@ -53,7 +54,7 @@ func TestLocalNode(t *testing.T) {
 
 // This test checks that the sequence number is persisted between restarts.
 func TestLocalNodeSeqPersist(t *testing.T) {
-	timestamp := nowMilliseconds()
+	timestamp := uint64(time.Now().UnixMilli())
 
 	ln, db := newLocalNodeForTesting()
 	defer db.Close()
