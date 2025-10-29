@@ -8,10 +8,10 @@ import (
 	"errors"
 	"math/big"
 
-	"github.com/luxfi/geth/accounts/abi"
-	"github.com/luxfi/geth/accounts/abi/bind/v2"
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/types"
+	"github.com/ethereum/go-ethereum/accounts/abi"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -27,7 +27,7 @@ var (
 // EventCheckerMetaData contains all meta data concerning the EventChecker contract.
 var EventCheckerMetaData = bind.MetaData{
 	ABI: "[{\"type\":\"event\",\"name\":\"empty\",\"inputs\":[]},{\"type\":\"event\",\"name\":\"indexed\",\"inputs\":[{\"name\":\"addr\",\"type\":\"address\",\"indexed\":true},{\"name\":\"num\",\"type\":\"int256\",\"indexed\":true}]},{\"type\":\"event\",\"name\":\"mixed\",\"inputs\":[{\"name\":\"addr\",\"type\":\"address\",\"indexed\":true},{\"name\":\"num\",\"type\":\"int256\"}]},{\"type\":\"event\",\"name\":\"anonymous\",\"anonymous\":true,\"inputs\":[]},{\"type\":\"event\",\"name\":\"dynamic\",\"inputs\":[{\"name\":\"idxStr\",\"type\":\"string\",\"indexed\":true},{\"name\":\"idxDat\",\"type\":\"bytes\",\"indexed\":true},{\"name\":\"str\",\"type\":\"string\"},{\"name\":\"dat\",\"type\":\"bytes\"}]},{\"type\":\"event\",\"name\":\"unnamed\",\"inputs\":[{\"name\":\"\",\"type\":\"uint256\",\"indexed\":true},{\"name\":\"\",\"type\":\"uint256\",\"indexed\":true}]}]",
-	ID:  "3d421f98e29b25315bde79c1251ab27cbc",
+	ID:  "253d421f98e29b25315bde79c1251ab27c",
 }
 
 // EventChecker is an auto generated Go binding around an Ethereum contract.
@@ -72,7 +72,7 @@ func (EventCheckerDynamic) ContractEventName() string {
 // Solidity: event dynamic(string indexed idxStr, bytes indexed idxDat, string str, bytes dat)
 func (eventChecker *EventChecker) UnpackDynamicEvent(log *types.Log) (*EventCheckerDynamic, error) {
 	event := "dynamic"
-	if log.Topics[0] != eventChecker.abi.Events[event].ID {
+	if len(log.Topics) == 0 || log.Topics[0] != eventChecker.abi.Events[event].ID {
 		return nil, errors.New("event signature mismatch")
 	}
 	out := new(EventCheckerDynamic)
@@ -112,7 +112,7 @@ func (EventCheckerEmpty) ContractEventName() string {
 // Solidity: event empty()
 func (eventChecker *EventChecker) UnpackEmptyEvent(log *types.Log) (*EventCheckerEmpty, error) {
 	event := "empty"
-	if log.Topics[0] != eventChecker.abi.Events[event].ID {
+	if len(log.Topics) == 0 || log.Topics[0] != eventChecker.abi.Events[event].ID {
 		return nil, errors.New("event signature mismatch")
 	}
 	out := new(EventCheckerEmpty)
@@ -154,7 +154,7 @@ func (EventCheckerIndexed) ContractEventName() string {
 // Solidity: event indexed(address indexed addr, int256 indexed num)
 func (eventChecker *EventChecker) UnpackIndexedEvent(log *types.Log) (*EventCheckerIndexed, error) {
 	event := "indexed"
-	if log.Topics[0] != eventChecker.abi.Events[event].ID {
+	if len(log.Topics) == 0 || log.Topics[0] != eventChecker.abi.Events[event].ID {
 		return nil, errors.New("event signature mismatch")
 	}
 	out := new(EventCheckerIndexed)
@@ -196,7 +196,7 @@ func (EventCheckerMixed) ContractEventName() string {
 // Solidity: event mixed(address indexed addr, int256 num)
 func (eventChecker *EventChecker) UnpackMixedEvent(log *types.Log) (*EventCheckerMixed, error) {
 	event := "mixed"
-	if log.Topics[0] != eventChecker.abi.Events[event].ID {
+	if len(log.Topics) == 0 || log.Topics[0] != eventChecker.abi.Events[event].ID {
 		return nil, errors.New("event signature mismatch")
 	}
 	out := new(EventCheckerMixed)
@@ -238,7 +238,7 @@ func (EventCheckerUnnamed) ContractEventName() string {
 // Solidity: event unnamed(uint256 indexed arg0, uint256 indexed arg1)
 func (eventChecker *EventChecker) UnpackUnnamedEvent(log *types.Log) (*EventCheckerUnnamed, error) {
 	event := "unnamed"
-	if log.Topics[0] != eventChecker.abi.Events[event].ID {
+	if len(log.Topics) == 0 || log.Topics[0] != eventChecker.abi.Events[event].ID {
 		return nil, errors.New("event signature mismatch")
 	}
 	out := new(EventCheckerUnnamed)

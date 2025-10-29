@@ -28,7 +28,7 @@ import (
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/params"
 )
 
@@ -70,7 +70,7 @@ func (ap *testerAccountPool) address(account string) common.Address {
 		ap.accounts[account], _ = crypto.GenerateKey()
 	}
 	// Resolve and return the Ethereum address
-	return common.Address(crypto.PubkeyToAddress(ap.accounts[account].PublicKey))
+	return crypto.PubkeyToAddress(ap.accounts[account].PublicKey)
 }
 
 // sign calculates a Clique digital signature for the given block and embeds it

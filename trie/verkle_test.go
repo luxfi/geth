@@ -24,7 +24,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/trie/utils"
 	"github.com/holiman/uint256"
 )
@@ -66,7 +66,7 @@ func TestVerkleTreeReadWrite(t *testing.T) {
 		}
 		for key, val := range storages[addr] {
 			if err := tr.UpdateStorage(addr, key.Bytes(), val); err != nil {
-				t.Fatalf("Failed to update account, %v", err)
+				t.Fatalf("Failed to update storage, %v", err)
 			}
 		}
 	}
@@ -107,11 +107,11 @@ func TestVerkleRollBack(t *testing.T) {
 		}
 		for key, val := range storages[addr] {
 			if err := tr.UpdateStorage(addr, key.Bytes(), val); err != nil {
-				t.Fatalf("Failed to update account, %v", err)
+				t.Fatalf("Failed to update storage, %v", err)
 			}
 		}
 		hash := crypto.Keccak256Hash(code)
-		if err := tr.UpdateContractCode(addr, common.Hash(hash), code); err != nil {
+		if err := tr.UpdateContractCode(addr, hash, code); err != nil {
 			t.Fatalf("Failed to update contract, %v", err)
 		}
 	}

@@ -33,7 +33,7 @@ import (
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/ethclient"
@@ -59,7 +59,7 @@ var (
 
 var (
 	testKey, _         = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	testAddr           = common.Address(crypto.PubkeyToAddress(testKey.PublicKey))
+	testAddr           = crypto.PubkeyToAddress(testKey.PublicKey)
 	testBalance        = big.NewInt(2e15)
 	revertContractAddr = common.HexToAddress("290f1b36649a61e369c6276f6d29463335b4400c")
 	revertCode         = common.FromHex("7f08c379a0000000000000000000000000000000000000000000000000000000006000526020600452600a6024527f75736572206572726f7200000000000000000000000000000000000000000000604452604e6000fd")
@@ -110,6 +110,12 @@ func newTestBackend(config *node.Config) (*node.Node, []*types.Block, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("can't create new ethereum service: %v", err)
 	}
+	// Ensure tx pool starts the background operation
+	txPool := ethservice.TxPool()
+	if err = txPool.Sync(); err != nil {
+		return nil, nil, fmt.Errorf("can't sync transaction pool: %v", err)
+	}
+
 	// Import the test chain.
 	if err := n.Start(); err != nil {
 		return nil, nil, fmt.Errorf("can't start test node: %v", err)
@@ -506,8 +512,9 @@ func testAtFunctions(t *testing.T, client *rpc.Client) {
 	}
 
 	// send a transaction for some interesting pending status
-	// and wait for the transaction to be included in the pending block
-	sendTransaction(ec)
+	if err := sendTransaction(ec); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
 	// wait for the transaction to be included in the pending block
 	for {
@@ -746,4 +753,251 @@ func ExampleRevertErrorData() {
 	// Output:
 	// revert: 08c379a00000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000a75736572206572726f72
 	// message: user error
+}
+
+func TestSimulateV1(t *testing.T) {
+	backend, _, err := newTestBackend(nil)
+	if err != nil {
+		t.Fatalf("Failed to create test backend: %v", err)
+	}
+	defer backend.Close()
+
+	client := ethclient.NewClient(backend.Attach())
+	defer client.Close()
+
+	ctx := context.Background()
+
+	// Get current base fee
+	header, err := client.HeaderByNumber(ctx, nil)
+	if err != nil {
+		t.Fatalf("Failed to get header: %v", err)
+	}
+
+	// Simple test: transfer ETH from one account to another
+	from := testAddr
+	to := common.HexToAddress("0x0000000000000000000000000000000000000001")
+	value := big.NewInt(100)
+	gas := uint64(100000)
+	maxFeePerGas := new(big.Int).Mul(header.BaseFee, big.NewInt(2))
+
+	opts := ethclient.SimulateOptions{
+		BlockStateCalls: []ethclient.SimulateBlock{
+			{
+				Calls: []ethereum.CallMsg{
+					{
+						From:      from,
+						To:        &to,
+						Value:     value,
+						Gas:       gas,
+						GasFeeCap: maxFeePerGas,
+					},
+				},
+			},
+		},
+		Validation: true,
+	}
+
+	results, err := client.SimulateV1(ctx, opts, nil)
+	if err != nil {
+		t.Fatalf("SimulateV1 failed: %v", err)
+	}
+
+	if len(results) != 1 {
+		t.Fatalf("expected 1 block result, got %d", len(results))
+	}
+
+	if len(results[0].Calls) != 1 {
+		t.Fatalf("expected 1 call result, got %d", len(results[0].Calls))
+	}
+
+	// Check that the transaction succeeded
+	if results[0].Calls[0].Status != 1 {
+		t.Errorf("expected status 1 (success), got %d", results[0].Calls[0].Status)
+	}
+
+	if results[0].Calls[0].Error != nil {
+		t.Errorf("expected no error, got %v", results[0].Calls[0].Error)
+	}
+}
+
+func TestSimulateV1WithBlockOverrides(t *testing.T) {
+	backend, _, err := newTestBackend(nil)
+	if err != nil {
+		t.Fatalf("Failed to create test backend: %v", err)
+	}
+	defer backend.Close()
+
+	client := ethclient.NewClient(backend.Attach())
+	defer client.Close()
+
+	ctx := context.Background()
+
+	// Get current base fee
+	header, err := client.HeaderByNumber(ctx, nil)
+	if err != nil {
+		t.Fatalf("Failed to get header: %v", err)
+	}
+
+	from := testAddr
+	to := common.HexToAddress("0x0000000000000000000000000000000000000001")
+	value := big.NewInt(100)
+	gas := uint64(100000)
+	maxFeePerGas := new(big.Int).Mul(header.BaseFee, big.NewInt(2))
+
+	// Override timestamp only
+	timestamp := uint64(1234567890)
+
+	opts := ethclient.SimulateOptions{
+		BlockStateCalls: []ethclient.SimulateBlock{
+			{
+				BlockOverrides: &ethereum.BlockOverrides{
+					Time: timestamp,
+				},
+				Calls: []ethereum.CallMsg{
+					{
+						From:      from,
+						To:        &to,
+						Value:     value,
+						Gas:       gas,
+						GasFeeCap: maxFeePerGas,
+					},
+				},
+			},
+		},
+		Validation: true,
+	}
+
+	results, err := client.SimulateV1(ctx, opts, nil)
+	if err != nil {
+		t.Fatalf("SimulateV1 with block overrides failed: %v", err)
+	}
+
+	if len(results) != 1 {
+		t.Fatalf("expected 1 block result, got %d", len(results))
+	}
+
+	// Verify the timestamp was overridden
+	if results[0].Timestamp != timestamp {
+		t.Errorf("expected timestamp %d, got %d", timestamp, results[0].Timestamp)
+	}
+}
+
+func TestSimulateV1WithStateOverrides(t *testing.T) {
+	backend, _, err := newTestBackend(nil)
+	if err != nil {
+		t.Fatalf("Failed to create test backend: %v", err)
+	}
+	defer backend.Close()
+
+	client := ethclient.NewClient(backend.Attach())
+	defer client.Close()
+
+	ctx := context.Background()
+
+	// Get current base fee
+	header, err := client.HeaderByNumber(ctx, nil)
+	if err != nil {
+		t.Fatalf("Failed to get header: %v", err)
+	}
+
+	from := testAddr
+	to := common.HexToAddress("0x0000000000000000000000000000000000000001")
+	value := big.NewInt(1000000000000000000) // 1 ETH
+	gas := uint64(100000)
+	maxFeePerGas := new(big.Int).Mul(header.BaseFee, big.NewInt(2))
+
+	// Override the balance of the 'from' address
+	balanceStr := "1000000000000000000000"
+	balance := new(big.Int)
+	balance.SetString(balanceStr, 10)
+
+	stateOverrides := map[common.Address]ethereum.OverrideAccount{
+		from: {
+			Balance: balance,
+		},
+	}
+
+	opts := ethclient.SimulateOptions{
+		BlockStateCalls: []ethclient.SimulateBlock{
+			{
+				StateOverrides: stateOverrides,
+				Calls: []ethereum.CallMsg{
+					{
+						From:      from,
+						To:        &to,
+						Value:     value,
+						Gas:       gas,
+						GasFeeCap: maxFeePerGas,
+					},
+				},
+			},
+		},
+		Validation: true,
+	}
+
+	results, err := client.SimulateV1(ctx, opts, nil)
+	if err != nil {
+		t.Fatalf("SimulateV1 with state overrides failed: %v", err)
+	}
+
+	if len(results) != 1 {
+		t.Fatalf("expected 1 block result, got %d", len(results))
+	}
+
+	if results[0].Calls[0].Status != 1 {
+		t.Errorf("expected status 1 (success), got %d", results[0].Calls[0].Status)
+	}
+}
+
+func TestSimulateV1WithBlockNumberOrHash(t *testing.T) {
+	backend, _, err := newTestBackend(nil)
+	if err != nil {
+		t.Fatalf("Failed to create test backend: %v", err)
+	}
+	defer backend.Close()
+
+	client := ethclient.NewClient(backend.Attach())
+	defer client.Close()
+
+	ctx := context.Background()
+
+	// Get current base fee
+	header, err := client.HeaderByNumber(ctx, nil)
+	if err != nil {
+		t.Fatalf("Failed to get header: %v", err)
+	}
+
+	from := testAddr
+	to := common.HexToAddress("0x0000000000000000000000000000000000000001")
+	value := big.NewInt(100)
+	gas := uint64(100000)
+	maxFeePerGas := new(big.Int).Mul(header.BaseFee, big.NewInt(2))
+
+	opts := ethclient.SimulateOptions{
+		BlockStateCalls: []ethclient.SimulateBlock{
+			{
+				Calls: []ethereum.CallMsg{
+					{
+						From:      from,
+						To:        &to,
+						Value:     value,
+						Gas:       gas,
+						GasFeeCap: maxFeePerGas,
+					},
+				},
+			},
+		},
+		Validation: true,
+	}
+
+	// Simulate on the latest block
+	latest := rpc.BlockNumberOrHashWithNumber(rpc.LatestBlockNumber)
+	results, err := client.SimulateV1(ctx, opts, &latest)
+	if err != nil {
+		t.Fatalf("SimulateV1 with latest block failed: %v", err)
+	}
+
+	if len(results) != 1 {
+		t.Fatalf("expected 1 block result, got %d", len(results))
+	}
 }

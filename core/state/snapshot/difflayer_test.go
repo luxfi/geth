@@ -24,7 +24,7 @@ import (
 
 	"github.com/VictoriaMetrics/fastcache"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb/memorydb"
 )
 
@@ -229,9 +229,8 @@ func BenchmarkSearch(b *testing.B) {
 		layer = fill(layer)
 	}
 	key := crypto.Keccak256Hash([]byte{0x13, 0x38})
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		layer.AccountRLP(common.Hash(key))
+	for b.Loop() {
+		layer.AccountRLP(key)
 	}
 }
 
@@ -253,14 +252,14 @@ func BenchmarkSearchSlot(b *testing.B) {
 			accounts = make(map[common.Hash][]byte)
 			storage  = make(map[common.Hash]map[common.Hash][]byte)
 		)
-		accounts[common.Hash(accountKey)] = accountRLP
+		accounts[accountKey] = accountRLP
 
 		accStorage := make(map[common.Hash][]byte)
 		for i := 0; i < 5; i++ {
 			value := make([]byte, 32)
 			crand.Read(value)
 			accStorage[randomHash()] = value
-			storage[common.Hash(accountKey)] = accStorage
+			storage[accountKey] = accStorage
 		}
 		return newDiffLayer(parent, common.Hash{}, accounts, storage)
 	}
@@ -269,9 +268,8 @@ func BenchmarkSearchSlot(b *testing.B) {
 	for i := 0; i < 128; i++ {
 		layer = fill(layer)
 	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		layer.Storage(common.Hash(accountKey), common.Hash(storageKey))
+	for b.Loop() {
+		layer.Storage(accountKey, storageKey)
 	}
 }
 
@@ -288,7 +286,7 @@ func BenchmarkFlatten(b *testing.B) {
 		)
 		for i := 0; i < 100; i++ {
 			accountKey := randomHash()
-			accounts[common.Hash(accountKey)] = randomAccount()
+			accounts[accountKey] = randomAccount()
 
 			accStorage := make(map[common.Hash][]byte)
 			for i := 0; i < 20; i++ {
@@ -296,13 +294,11 @@ func BenchmarkFlatten(b *testing.B) {
 				crand.Read(value)
 				accStorage[randomHash()] = value
 			}
-			storage[common.Hash(accountKey)] = accStorage
+			storage[accountKey] = accStorage
 		}
 		return newDiffLayer(parent, common.Hash{}, accounts, storage)
 	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		b.StopTimer()
+	for b.Loop() {
 		var layer snapshot
 		layer = emptyLayer()
 		for i := 1; i < 128; i++ {
@@ -336,7 +332,7 @@ func BenchmarkJournal(b *testing.B) {
 		)
 		for i := 0; i < 200; i++ {
 			accountKey := randomHash()
-			accounts[common.Hash(accountKey)] = randomAccount()
+			accounts[accountKey] = randomAccount()
 
 			accStorage := make(map[common.Hash][]byte)
 			for i := 0; i < 200; i++ {
@@ -344,7 +340,7 @@ func BenchmarkJournal(b *testing.B) {
 				crand.Read(value)
 				accStorage[randomHash()] = value
 			}
-			storage[common.Hash(accountKey)] = accStorage
+			storage[accountKey] = accStorage
 		}
 		return newDiffLayer(parent, common.Hash{}, accounts, storage)
 	}
@@ -352,9 +348,7 @@ func BenchmarkJournal(b *testing.B) {
 	for i := 1; i < 128; i++ {
 		layer = fill(layer)
 	}
-	b.ResetTimer()
-
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		layer.Journal(new(bytes.Buffer))
 	}
 }

@@ -32,7 +32,7 @@ import (
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/txpool/legacypool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/params"
 )
@@ -45,11 +45,11 @@ var (
 
 	// Test accounts
 	testBankKey, _  = crypto.GenerateKey()
-	testBankAddress = common.Address(crypto.PubkeyToAddress(testBankKey.PublicKey))
+	testBankAddress = crypto.PubkeyToAddress(testBankKey.PublicKey)
 	testBankFunds   = big.NewInt(1000000000000000000)
 
 	testUserKey, _  = crypto.GenerateKey()
-	testUserAddress = common.Address(crypto.PubkeyToAddress(testUserKey.PublicKey))
+	testUserAddress = crypto.PubkeyToAddress(testUserKey.PublicKey)
 
 	// Test transactions
 	pendingTxs []*types.Transaction

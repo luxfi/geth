@@ -31,7 +31,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/testrand"
 	"github.com/luxfi/geth/log"
@@ -106,13 +106,13 @@ func BenchmarkHashing(b *testing.B) {
 	}
 	b.Run("old", func(b *testing.B) {
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			old()
 		}
 	})
 	b.Run("new", func(b *testing.B) {
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for b.Loop() {
 			new()
 		}
 	})
@@ -596,7 +596,6 @@ func testSyncBloatedProof(t *testing.T, scheme string) {
 		// The proofs
 		proof := trienode.NewProofSet()
 		if err := t.accountTrie.Prove(origin[:], proof); err != nil {
-			t.logger.Error("Could not prove origin", "origin", origin, "error", err)
 			t.logger.Error("Could not prove origin", "origin", origin, "error", err)
 		}
 		// The bloat: add proof of every single element
@@ -1461,14 +1460,14 @@ func key32(i uint64) []byte {
 
 var (
 	codehashes = []common.Hash{
-		common.Hash(crypto.Keccak256Hash([]byte{0})),
-		common.Hash(crypto.Keccak256Hash([]byte{1})),
-		common.Hash(crypto.Keccak256Hash([]byte{2})),
-		common.Hash(crypto.Keccak256Hash([]byte{3})),
-		common.Hash(crypto.Keccak256Hash([]byte{4})),
-		common.Hash(crypto.Keccak256Hash([]byte{5})),
-		common.Hash(crypto.Keccak256Hash([]byte{6})),
-		common.Hash(crypto.Keccak256Hash([]byte{7})),
+		crypto.Keccak256Hash([]byte{0}),
+		crypto.Keccak256Hash([]byte{1}),
+		crypto.Keccak256Hash([]byte{2}),
+		crypto.Keccak256Hash([]byte{3}),
+		crypto.Keccak256Hash([]byte{4}),
+		crypto.Keccak256Hash([]byte{5}),
+		crypto.Keccak256Hash([]byte{6}),
+		crypto.Keccak256Hash([]byte{7}),
 	}
 )
 

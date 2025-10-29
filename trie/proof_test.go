@@ -27,7 +27,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb/memorydb"
 )
 
@@ -109,7 +109,7 @@ func TestOneElementProof(t *testing.T) {
 			t.Fatalf("prover %d: failed to verify proof: %v\nraw proof: %x", i, err, proof)
 		}
 		if !bytes.Equal(val, []byte("v")) {
-			t.Fatalf("prover %d: verified value mismatch: have %x, want 'k'", i, val)
+			t.Fatalf("prover %d: verified value mismatch: have %x, want 'v'", i, val)
 		}
 	}
 }

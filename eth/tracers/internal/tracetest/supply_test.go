@@ -35,7 +35,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/params"
 
@@ -77,7 +77,7 @@ func TestSupplyOmittedFields(t *testing.T) {
 
 	out, _, err := testSupplyTracer(t, gspec, func(b *core.BlockGen) {
 		b.SetPoS()
-	})
+	}, 1)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
 	}
@@ -96,8 +96,8 @@ func TestSupplyGenesisAlloc(t *testing.T) {
 	var (
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		key2, _ = crypto.HexToECDSA("8a1f9a8f95be41cd7ccb6168179afb4504aefe388d1e14474d32c45c72ce7b7a")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
-		addr2   = common.Address(crypto.PubkeyToAddress(key2.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
+		addr2   = crypto.PubkeyToAddress(key2.PublicKey)
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
 		config = *params.AllEthashProtocolChanges
@@ -120,7 +120,7 @@ func TestSupplyGenesisAlloc(t *testing.T) {
 		ParentHash: common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000"),
 	}
 
-	out, _, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc)
+	out, _, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
 	}
@@ -148,7 +148,55 @@ func TestSupplyRewards(t *testing.T) {
 		ParentHash: common.HexToHash("0xadeda0a83e337b6c073e3f0e9a17531a04009b397a9588c093b628f21b8bc5a3"),
 	}
 
-	out, _, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc)
+	out, _, err := testSupplyTracer(t, gspec, emptyBlockGenerationFunc, 1)
+	if err != nil {
+		t.Fatalf("failed to test supply tracer: %v", err)
+	}
+
+	actual := out[expected.Number]
+
+	compareAsJSON(t, expected, actual)
+}
+
+func TestSupplyRewardsWithUncle(t *testing.T) {
+	var (
+		config = *params.AllEthashProtocolChanges
+
+		gspec = &core.Genesis{
+			Config: &config,
+		}
+	)
+
+	// Base reward for the miner
+	baseReward := ethash.ConstantinopleBlockReward.ToBig()
+	// Miner reward for uncle inclusion is 1/32 of the base reward
+	uncleInclusionReward := new(big.Int).Rsh(baseReward, 5)
+	// Uncle miner reward for an uncle that is 1 block behind is 7/8 of the base reward
+	uncleReward := big.NewInt(7)
+	uncleReward.Mul(uncleReward, baseReward).Rsh(uncleReward, 3)
+
+	totalReward := baseReward.Add(baseReward, uncleInclusionReward).Add(baseReward, uncleReward)
+
+	expected := supplyInfo{
+		Issuance: &supplyInfoIssuance{
+			Reward: (*hexutil.Big)(totalReward),
+		},
+		Number:     3,
+		Hash:       common.HexToHash("0x0737d31f8671c18d32b5143833cfa600e4264df62324c9de569668c6de9eed6d"),
+		ParentHash: common.HexToHash("0x45af6557df87719cb3c7e6f8a98b61508ea74a797733191aececb4c2ec802447"),
+	}
+
+	// Generate a new chain where block 3 includes an uncle
+	uncleGenerationFunc := func(b *core.BlockGen) {
+		if b.Number().Uint64() == 3 {
+			prevBlock := b.PrevBlock(1) // Block 2
+			uncle := types.CopyHeader(prevBlock.Header())
+			uncle.Extra = []byte("uncle!")
+			b.AddUncle(uncle)
+		}
+	}
+
+	out, _, err := testSupplyTracer(t, gspec, uncleGenerationFunc, 3)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
 	}
@@ -165,7 +213,7 @@ func TestSupplyEip1559Burn(t *testing.T) {
 		aa = common.HexToAddress("0x000000000000000000000000000000000000aaaa")
 		// A sender who makes transactions, has some eth1
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
@@ -195,7 +243,7 @@ func TestSupplyEip1559Burn(t *testing.T) {
 		b.AddTx(tx)
 	}
 
-	out, chain, err := testSupplyTracer(t, gspec, eip1559BlockGenerationFunc)
+	out, chain, err := testSupplyTracer(t, gspec, eip1559BlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
 	}
@@ -238,7 +286,7 @@ func TestSupplyWithdrawals(t *testing.T) {
 		})
 	}
 
-	out, chain, err := testSupplyTracer(t, gspec, withdrawalsBlockGenerationFunc)
+	out, chain, err := testSupplyTracer(t, gspec, withdrawalsBlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
 	}
@@ -272,7 +320,7 @@ func TestSupplySelfdestruct(t *testing.T) {
 		bb      = common.HexToAddress("0x2222222222222222222222222222222222222222")
 		dad     = common.HexToAddress("0x0000000000000000000000000000000000000dad")
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 
@@ -318,7 +366,7 @@ func TestSupplySelfdestruct(t *testing.T) {
 	}
 
 	// 1. Test pre Cancun
-	preCancunOutput, preCancunChain, err := testSupplyTracer(t, gspec, testBlockGenerationFunc)
+	preCancunOutput, preCancunChain, err := testSupplyTracer(t, gspec, testBlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("Pre-cancun failed to test supply tracer: %v", err)
 	}
@@ -360,7 +408,7 @@ func TestSupplySelfdestruct(t *testing.T) {
 	gspec.Config.CancunTime = &cancunTime
 	gspec.Config.BlobScheduleConfig = params.DefaultBlobSchedule
 
-	postCancunOutput, postCancunChain, err := testSupplyTracer(t, gspec, testBlockGenerationFunc)
+	postCancunOutput, postCancunChain, err := testSupplyTracer(t, gspec, testBlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("Post-cancun failed to test supply tracer: %v", err)
 	}
@@ -412,7 +460,7 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 		cc      = common.HexToAddress("0x3333333333333333333333333333333333333333")
 		dd      = common.HexToAddress("0x4444444444444444444444444444444444444444")
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1   = common.Address(crypto.PubkeyToAddress(key1.PublicKey))
+		addr1   = crypto.PubkeyToAddress(key1.PublicKey)
 		gwei5   = new(big.Int).Mul(big.NewInt(5), big.NewInt(params.GWei))
 		eth1    = new(big.Int).Mul(common.Big1, big.NewInt(params.Ether))
 		eth2    = new(big.Int).Mul(common.Big2, big.NewInt(params.Ether))
@@ -500,7 +548,7 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 		b.AddTx(tx)
 	}
 
-	output, chain, err := testSupplyTracer(t, gspec, testBlockGenerationFunc)
+	output, chain, err := testSupplyTracer(t, gspec, testBlockGenerationFunc, 1)
 	if err != nil {
 		t.Fatalf("failed to test supply tracer: %v", err)
 	}
@@ -542,7 +590,7 @@ func TestSupplySelfdestructItselfAndRevert(t *testing.T) {
 	compareAsJSON(t, expected, actual)
 }
 
-func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(*core.BlockGen)) ([]supplyInfo, *core.BlockChain, error) {
+func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(b *core.BlockGen), numBlocks int) ([]supplyInfo, *core.BlockChain, error) {
 	engine := beacon.New(ethash.NewFaker())
 
 	traceOutputPath := filepath.ToSlash(t.TempDir())
@@ -562,7 +610,7 @@ func testSupplyTracer(t *testing.T, genesis *core.Genesis, gen func(*core.BlockG
 	}
 	defer chain.Stop()
 
-	_, blocks, _ := core.GenerateChainWithGenesis(genesis, engine, 1, func(i int, b *core.BlockGen) {
+	_, blocks, _ := core.GenerateChainWithGenesis(genesis, engine, numBlocks, func(i int, b *core.BlockGen) {
 		b.SetCoinbase(common.Address{1})
 		gen(b)
 	})

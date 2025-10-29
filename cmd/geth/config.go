@@ -36,7 +36,7 @@ import (
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/catalyst"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/internal/flags"
@@ -208,8 +208,8 @@ func constructDevModeBanner(ctx *cli.Context, cfg gethConfig) string {
        ------------------
        0x%x (10^49 ETH)
 `, cfg.Eth.Miner.PendingFeeRecipient)
-		if cfg.Eth.Miner.PendingFeeRecipient == common.Address(utils.DeveloperAddr) {
-			devModeBanner += fmt.Sprintf(` 
+		if cfg.Eth.Miner.PendingFeeRecipient == utils.DeveloperAddr {
+			devModeBanner += fmt.Sprintf(`
        Private Key
        ------------------
        0x%x
@@ -226,6 +226,14 @@ func makeFullNode(ctx *cli.Context) *node.Node {
 	if ctx.IsSet(utils.OverrideOsaka.Name) {
 		v := ctx.Uint64(utils.OverrideOsaka.Name)
 		cfg.Eth.OverrideOsaka = &v
+	}
+	if ctx.IsSet(utils.OverrideBPO1.Name) {
+		v := ctx.Uint64(utils.OverrideBPO1.Name)
+		cfg.Eth.OverrideBPO1 = &v
+	}
+	if ctx.IsSet(utils.OverrideBPO2.Name) {
+		v := ctx.Uint64(utils.OverrideBPO2.Name)
+		cfg.Eth.OverrideBPO2 = &v
 	}
 	if ctx.IsSet(utils.OverrideVerkle.Name) {
 		v := ctx.Uint64(utils.OverrideVerkle.Name)

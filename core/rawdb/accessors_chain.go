@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
@@ -36,15 +36,26 @@ import (
 // ReadCanonicalHash retrieves the hash assigned to a canonical block number.
 func ReadCanonicalHash(db ethdb.Reader, number uint64) common.Hash {
 	var data []byte
-	db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
+	key := headerHashKey(number)
+	fmt.Printf("ReadCanonicalHash(%d): key=%x\n", number, key)
+
+	// Try to read from ancients first
+	err := db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
 		data, _ = reader.Ancient(ChainFreezerHashTable, number)
-		if len(data) == 0 {
-			// Get it by hash from leveldb
-			data, _ = db.Get(headerHashKey(number))
-		}
+		fmt.Printf("ReadCanonicalHash(%d): ancients returned %d bytes\n", number, len(data))
 		return nil
 	})
-	return common.BytesToHash(data)
+
+	// If ancients failed or returned no data, read from leveldb
+	if err != nil || len(data) == 0 {
+		fmt.Printf("ReadCanonicalHash(%d): ancients failed (err=%v) or empty, trying db.Get\n", number, err)
+		data, err = db.Get(key)
+		fmt.Printf("ReadCanonicalHash(%d): db.Get returned %d bytes, err=%v\n", number, len(data), err)
+	}
+
+	hash := common.BytesToHash(data)
+	fmt.Printf("ReadCanonicalHash(%d): final hash=%x\n", number, hash)
+	return hash
 }
 
 // WriteCanonicalHash stores the hash assigned to a canonical block number.
@@ -144,11 +155,15 @@ func ReadAllCanonicalHashes(db ethdb.Iteratee, from uint64, to uint64, limit int
 
 // ReadHeaderNumber returns the header number assigned to a hash.
 func ReadHeaderNumber(db ethdb.KeyValueReader, hash common.Hash) (uint64, bool) {
-	data, _ := db.Get(headerNumberKey(hash))
+	key := headerNumberKey(hash)
+	data, err := db.Get(key)
+	fmt.Printf("🔍 DEBUG ReadHeaderNumber: hash=%x, dataLen=%d, err=%v\n", hash, len(data), err)
 	if len(data) != 8 {
+		fmt.Printf("🔍 DEBUG ReadHeaderNumber: WRONG LENGTH OR MISSING hash=%x, dataLen=%d\n", hash, len(data))
 		return 0, false
 	}
 	number := binary.BigEndian.Uint64(data)
+	fmt.Printf("🔍 DEBUG ReadHeaderNumber: got number=%d for hash=%x\n", number, hash)
 	return number, true
 }
 
@@ -170,11 +185,15 @@ func DeleteHeaderNumber(db ethdb.KeyValueWriter, hash common.Hash) {
 
 // ReadHeadHeaderHash retrieves the hash of the current canonical head header.
 func ReadHeadHeaderHash(db ethdb.KeyValueReader) common.Hash {
-	data, _ := db.Get(headHeaderKey)
+	data, err := db.Get(headHeaderKey)
+	fmt.Printf("🔍 DEBUG ReadHeadHeaderHash: key=%s, dataLen=%d, err=%v\n", headHeaderKey, len(data), err)
 	if len(data) == 0 {
+		fmt.Printf("🔍 DEBUG ReadHeadHeaderHash: EMPTY - returning zero hash\n")
 		return common.Hash{}
 	}
-	return common.BytesToHash(data)
+	hash := common.BytesToHash(data)
+	fmt.Printf("🔍 DEBUG ReadHeadHeaderHash: got hash=%x\n", hash)
+	return hash
 }
 
 // WriteHeadHeaderHash stores the hash of the current canonical head header.
@@ -186,11 +205,15 @@ func WriteHeadHeaderHash(db ethdb.KeyValueWriter, hash common.Hash) {
 
 // ReadHeadBlockHash retrieves the hash of the current canonical head block.
 func ReadHeadBlockHash(db ethdb.KeyValueReader) common.Hash {
-	data, _ := db.Get(headBlockKey)
+	data, err := db.Get(headBlockKey)
+	log.Info("🔍 DEBUG ReadHeadBlockHash", "key", string(headBlockKey), "dataLen", len(data), "err", err)
 	if len(data) == 0 {
+		log.Info("🔍 DEBUG ReadHeadBlockHash: EMPTY DATA")
 		return common.Hash{}
 	}
-	return common.BytesToHash(data)
+	hash := common.BytesToHash(data)
+	log.Info("🔍 DEBUG ReadHeadBlockHash: got hash", "hash", hash)
+	return hash
 }
 
 // WriteHeadBlockHash stores the head block's hash.
@@ -343,18 +366,17 @@ func ReadHeaderRange(db ethdb.Reader, number uint64, count uint64) []rlp.RawValu
 // ReadHeaderRLP retrieves a block header in its raw RLP database encoding.
 func ReadHeaderRLP(db ethdb.Reader, hash common.Hash, number uint64) rlp.RawValue {
 	var data []byte
-	db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
+	err := db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
 		// First try to look up the data in ancient database. Extra hash
 		// comparison is necessary since ancient database only maintains
 		// the canonical data.
 		data, _ = reader.Ancient(ChainFreezerHeaderTable, number)
-		if len(data) > 0 && common.Hash(crypto.Keccak256Hash(data)) == hash {
-			return nil
-		}
-		// If not, try reading from leveldb
-		data, _ = db.Get(headerKey(number, hash))
 		return nil
 	})
+	// If ancients failed or returned no data or hash doesn't match, read from leveldb
+	if err != nil || len(data) == 0 || (len(data) > 0 && crypto.Keccak256Hash(data) != hash) {
+		data, _ = db.Get(headerKey(number, hash))
+	}
 	return data
 }
 
@@ -370,16 +392,25 @@ func HasHeader(db ethdb.Reader, hash common.Hash, number uint64) bool {
 }
 
 // ReadHeader retrieves the block header corresponding to the hash.
+// Supports both modern geth/coreth headers and legacy SubnetEVM headers.
 func ReadHeader(db ethdb.Reader, hash common.Hash, number uint64) *types.Header {
+	fmt.Printf("🔍 DEBUG ReadHeader: START hash=%x, number=%d\n", hash, number)
 	data := ReadHeaderRLP(db, hash, number)
+	fmt.Printf("🔍 DEBUG ReadHeader: ReadHeaderRLP returned %d bytes\n", len(data))
 	if len(data) == 0 {
+		fmt.Printf("🔍 DEBUG ReadHeader: NO DATA - returning nil\n")
 		return nil
 	}
-	header := new(types.Header)
-	if err := rlp.DecodeBytes(data, header); err != nil {
+
+	// Try backward-compatible decoding (handles both modern and legacy formats)
+	header, err := types.DecodeRLPBytesWithLegacySupport(data)
+	if err != nil {
+		fmt.Printf("🔍 DEBUG ReadHeader: RLP DECODE ERROR (both formats failed): %v\n", err)
 		log.Error("Invalid block header RLP", "hash", hash, "err", err)
 		return nil
 	}
+
+	fmt.Printf("🔍 DEBUG ReadHeader: SUCCESS decoded header for block %d\n", header.Number.Uint64())
 	return header
 }
 
@@ -436,16 +467,18 @@ func ReadBodyRLP(db ethdb.Reader, hash common.Hash, number uint64) rlp.RawValue 
 	// comparison is necessary since ancient database only maintains
 	// the canonical data.
 	var data []byte
-	db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
+	err := db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
 		// Check if the data is in ancients
 		if isCanon(reader, number, hash) {
 			data, _ = reader.Ancient(ChainFreezerBodiesTable, number)
 			return nil
 		}
-		// If not, try reading from leveldb
-		data, _ = db.Get(blockBodyKey(number, hash))
 		return nil
 	})
+	// If ancients failed or returned no data, try reading from leveldb
+	if err != nil || len(data) == 0 {
+		data, _ = db.Get(blockBodyKey(number, hash))
+	}
 	return data
 }
 
@@ -454,11 +487,12 @@ func ReadBodyRLP(db ethdb.Reader, hash common.Hash, number uint64) rlp.RawValue 
 // to avoid looking it up
 func ReadCanonicalBodyRLP(db ethdb.Reader, number uint64, hash *common.Hash) rlp.RawValue {
 	var data []byte
-	db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
+	err := db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
 		data, _ = reader.Ancient(ChainFreezerBodiesTable, number)
-		if len(data) > 0 {
-			return nil
-		}
+		return nil
+	})
+	// If ancients failed or returned no data, read from leveldb
+	if err != nil || len(data) == 0 {
 		// Block is not in ancients, read from leveldb by hash and number.
 		if hash != nil {
 			data, _ = db.Get(blockBodyKey(number, *hash))
@@ -468,8 +502,7 @@ func ReadCanonicalBodyRLP(db ethdb.Reader, number uint64, hash *common.Hash) rlp
 			hashBytes, _ := db.Get(headerHashKey(number))
 			data, _ = db.Get(blockBodyKey(number, common.BytesToHash(hashBytes)))
 		}
-		return nil
-	})
+	}
 	return data
 }
 
@@ -536,16 +569,18 @@ func HasReceipts(db ethdb.Reader, hash common.Hash, number uint64) bool {
 // ReadReceiptsRLP retrieves all the transaction receipts belonging to a block in RLP encoding.
 func ReadReceiptsRLP(db ethdb.Reader, hash common.Hash, number uint64) rlp.RawValue {
 	var data []byte
-	db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
+	err := db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
 		// Check if the data is in ancients
 		if isCanon(reader, number, hash) {
 			data, _ = reader.Ancient(ChainFreezerReceiptTable, number)
 			return nil
 		}
-		// If not, try reading from leveldb
-		data, _ = db.Get(blockReceiptsKey(number, hash))
 		return nil
 	})
+	// If ancients failed or returned no data, try reading from leveldb
+	if err != nil || len(data) == 0 {
+		data, _ = db.Get(blockReceiptsKey(number, hash))
+	}
 	return data
 }
 
@@ -553,11 +588,12 @@ func ReadReceiptsRLP(db ethdb.Reader, hash common.Hash, number uint64) rlp.RawVa
 // number, in RLP encoding. Optionally it takes the block hash to avoid looking it up.
 func ReadCanonicalReceiptsRLP(db ethdb.Reader, number uint64, hash *common.Hash) rlp.RawValue {
 	var data []byte
-	db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
+	err := db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
 		data, _ = reader.Ancient(ChainFreezerReceiptTable, number)
-		if len(data) > 0 {
-			return nil
-		}
+		return nil
+	})
+	// If ancients failed or returned no data, read from leveldb
+	if err != nil || len(data) == 0 {
 		// Block is not in ancients, read from leveldb by hash and number.
 		if hash != nil {
 			data, _ = db.Get(blockReceiptsKey(number, *hash))
@@ -567,8 +603,7 @@ func ReadCanonicalReceiptsRLP(db ethdb.Reader, number uint64, hash *common.Hash)
 			hashBytes, _ := db.Get(headerHashKey(number))
 			data, _ = db.Get(blockReceiptsKey(number, common.BytesToHash(hashBytes)))
 		}
-		return nil
-	})
+	}
 	return data
 }
 
@@ -664,15 +699,6 @@ func DeleteReceipts(db ethdb.KeyValueWriter, hash common.Hash, number uint64) {
 	}
 }
 
-// storedReceiptRLP is the storage encoding of a receipt.
-// Re-definition in core/types/receipt.go.
-// TODO: Re-use the existing definition.
-type storedReceiptRLP struct {
-	PostStateOrStatus []byte
-	CumulativeGasUsed uint64
-	Logs              []*types.Log
-}
-
 // ReceiptLogs is a barebone version of ReceiptForStorage which only keeps
 // the list of logs. When decoding a stored receipt into this object we
 // avoid creating the bloom filter.
@@ -682,11 +708,11 @@ type receiptLogs struct {
 
 // DecodeRLP implements rlp.Decoder.
 func (r *receiptLogs) DecodeRLP(s *rlp.Stream) error {
-	var stored storedReceiptRLP
-	if err := s.Decode(&stored); err != nil {
+	var rs types.ReceiptForStorage
+	if err := rs.DecodeRLP(s); err != nil {
 		return err
 	}
-	r.Logs = stored.Logs
+	r.Logs = rs.Logs
 	return nil
 }
 
@@ -931,14 +957,21 @@ func FindCommonAncestor(db ethdb.Reader, a, b *types.Header) *types.Header {
 
 // ReadHeadHeader returns the current canonical head header.
 func ReadHeadHeader(db ethdb.Reader) *types.Header {
+	fmt.Printf("🔍 DEBUG ReadHeadHeader: START\n")
 	headHeaderHash := ReadHeadHeaderHash(db)
+	fmt.Printf("🔍 DEBUG ReadHeadHeader: got headHeaderHash=%x, isEmpty=%v\n", headHeaderHash, headHeaderHash == (common.Hash{}))
 	if headHeaderHash == (common.Hash{}) {
+		fmt.Printf("🔍 DEBUG ReadHeadHeader: hash is empty, returning nil\n")
 		return nil
 	}
+	fmt.Printf("🔍 DEBUG ReadHeadHeader: calling ReadHeaderNumber hash=%x\n", headHeaderHash)
 	headHeaderNumber, ok := ReadHeaderNumber(db, headHeaderHash)
+	fmt.Printf("🔍 DEBUG ReadHeadHeader: ReadHeaderNumber returned number=%d, ok=%v\n", headHeaderNumber, ok)
 	if !ok {
+		fmt.Printf("🔍 DEBUG ReadHeadHeader: ReadHeaderNumber failed, returning nil\n")
 		return nil
 	}
+	fmt.Printf("🔍 DEBUG ReadHeadHeader: calling ReadHeader hash=%x, number=%d\n", headHeaderHash, headHeaderNumber)
 	return ReadHeader(db, headHeaderHash, headHeaderNumber)
 }
 

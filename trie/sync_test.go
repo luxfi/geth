@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/ethdb/memorydb"
 	"github.com/luxfi/geth/trie/trienode"
@@ -570,7 +570,7 @@ func testIncompleteSync(t *testing.T, scheme string) {
 		batch.Write()
 
 		for _, result := range results {
-			hash := common.Hash(crypto.Keccak256Hash(result.Data))
+			hash := crypto.Keccak256Hash(result.Data)
 			if hash != root {
 				addedKeys = append(addedKeys, result.Path)
 				addedHashes = append(addedHashes, hash)
