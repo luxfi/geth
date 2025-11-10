@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/luxfi/consensus"
-	luxvalidators "github.com/luxfi/consensus/validators"
+	luxvalidators "github.com/luxfi/consensus/validator"
 	"github.com/luxfi/database"
 	validators "github.com/luxfi/evm/plugin/evm/validators/state"
 	stateinterfaces "github.com/luxfi/evm/plugin/evm/validators/state/interfaces"
