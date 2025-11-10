@@ -4,142 +4,121 @@
 package gossip
 
 import (
+	"context"
+	"log/slog"
+
 	"github.com/luxfi/log"
-	"github.com/luxfi/node/utils/logging"
-	"go.uber.org/zap"
 )
 
-// loggerAdapter adapts luxfi/log.Logger to node/utils/logging.Logger
+// loggerAdapter adapts luxfi/log.Logger
 type loggerAdapter struct {
 	logger log.Logger
 }
 
 // NewLoggerAdapter creates a new logger adapter
-func NewLoggerAdapter(logger log.Logger) logging.Logger {
+func NewLoggerAdapter(logger log.Logger) log.Logger {
 	return &loggerAdapter{logger: logger}
 }
 
+// Write implements io.Writer
 func (l *loggerAdapter) Write(p []byte) (n int, err error) {
 	l.logger.Info(string(p))
 	return len(p), nil
 }
 
+// Stop implements log.Logger
 func (l *loggerAdapter) Stop() {
-	// No-op for this adapter
+	l.logger.Stop()
 }
 
+// StopOnPanic implements log.Logger
 func (l *loggerAdapter) StopOnPanic() {
-	// No-op for this adapter
+	l.logger.StopOnPanic()
 }
 
+// RecoverAndPanic implements log.Logger
 func (l *loggerAdapter) RecoverAndPanic(f func()) {
-	defer func() {
-		if r := recover(); r != nil {
-			l.logger.Error("panic recovered", "error", r)
-			panic(r)
-		}
-	}()
-	f()
+	l.logger.RecoverAndPanic(f)
 }
 
+// RecoverAndExit implements log.Logger
 func (l *loggerAdapter) RecoverAndExit(f func(), exit func()) {
-	defer func() {
-		if r := recover(); r != nil {
-			l.logger.Error("panic recovered, exiting", "error", r)
-			exit()
-		}
-	}()
-	f()
+	l.logger.RecoverAndExit(f, exit)
 }
 
-func (l *loggerAdapter) GetLevel() logging.Level {
-	return logging.Info
+// Delegate all other methods to the underlying logger
+func (l *loggerAdapter) With(ctx ...interface{}) log.Logger {
+	return &loggerAdapter{logger: l.logger.With(ctx...)}
 }
 
-func (l *loggerAdapter) SetLevel(level logging.Level) {
-	// No-op for this adapter
+func (l *loggerAdapter) New(ctx ...interface{}) log.Logger {
+	return &loggerAdapter{logger: l.logger.New(ctx...)}
 }
 
-func (l *loggerAdapter) GetDisplayLevel() logging.Level {
-	return logging.Info
+func (l *loggerAdapter) Log(level slog.Level, msg string, ctx ...interface{}) {
+	l.logger.Log(level, msg, ctx...)
 }
 
-func (l *loggerAdapter) SetDisplayLevel(level logging.Level) {
-	// No-op for this adapter
+func (l *loggerAdapter) Trace(msg string, ctx ...interface{}) {
+	l.logger.Trace(msg, ctx...)
 }
 
-func (l *loggerAdapter) GetLogLevel() logging.Level {
-	return logging.Info
+func (l *loggerAdapter) Debug(msg string, ctx ...interface{}) {
+	l.logger.Debug(msg, ctx...)
 }
 
-func (l *loggerAdapter) SetLogLevel(level logging.Level) {
-	// No-op for this adapter
+func (l *loggerAdapter) Info(msg string, ctx ...interface{}) {
+	l.logger.Info(msg, ctx...)
 }
 
-func (l *loggerAdapter) Log(level logging.Level, msg string, fields ...zap.Field) {
-	// Extract key-value pairs from zap.Field
-	args := make([]interface{}, 0, len(fields)*2)
-	for _, field := range fields {
-		args = append(args, field.Key, field.Interface)
-	}
-
-	switch level {
-	case logging.Fatal:
-		l.logger.Error(msg, args...)
-	case logging.Error:
-		l.logger.Error(msg, args...)
-	case logging.Warn:
-		l.logger.Warn(msg, args...)
-	case logging.Info:
-		l.logger.Info(msg, args...)
-	case logging.Debug:
-		l.logger.Debug(msg, args...)
-	case logging.Trace:
-		l.logger.Debug(msg, args...)
-	default:
-		l.logger.Info(msg, args...)
-	}
+func (l *loggerAdapter) Warn(msg string, ctx ...interface{}) {
+	l.logger.Warn(msg, ctx...)
 }
 
-func (l *loggerAdapter) Fatal(msg string, fields ...zap.Field) {
-	l.Log(logging.Fatal, msg, fields...)
+func (l *loggerAdapter) Error(msg string, ctx ...interface{}) {
+	l.logger.Error(msg, ctx...)
 }
 
-func (l *loggerAdapter) Error(msg string, fields ...zap.Field) {
-	l.Log(logging.Error, msg, fields...)
+func (l *loggerAdapter) Crit(msg string, ctx ...interface{}) {
+	l.logger.Crit(msg, ctx...)
 }
 
-func (l *loggerAdapter) Warn(msg string, fields ...zap.Field) {
-	l.Log(logging.Warn, msg, fields...)
+func (l *loggerAdapter) Fatal(msg string, fields ...log.Field) {
+	l.logger.Fatal(msg, fields...)
 }
 
-func (l *loggerAdapter) Info(msg string, fields ...zap.Field) {
-	l.Log(logging.Info, msg, fields...)
+func (l *loggerAdapter) Verbo(msg string, fields ...log.Field) {
+	l.logger.Verbo(msg, fields...)
 }
 
-func (l *loggerAdapter) Debug(msg string, fields ...zap.Field) {
-	l.Log(logging.Debug, msg, fields...)
+func (l *loggerAdapter) WithFields(fields ...log.Field) log.Logger {
+	return &loggerAdapter{logger: l.logger.WithFields(fields...)}
 }
 
-func (l *loggerAdapter) Trace(msg string, fields ...zap.Field) {
-	l.Log(logging.Trace, msg, fields...)
+func (l *loggerAdapter) WithOptions(opts ...log.Option) log.Logger {
+	return &loggerAdapter{logger: l.logger.WithOptions(opts...)}
 }
 
-func (l *loggerAdapter) Verbo(msg string, fields ...zap.Field) {
-	l.Log(logging.Verbo, msg, fields...)
+func (l *loggerAdapter) SetLevel(level slog.Level) {
+	l.logger.SetLevel(level)
 }
 
-func (l *loggerAdapter) Enabled(level logging.Level) bool {
-	// For now, always return true - all log levels are enabled
-	return true
+func (l *loggerAdapter) GetLevel() slog.Level {
+	return l.logger.GetLevel()
 }
 
-func (l *loggerAdapter) With(fields ...zap.Field) logging.Logger {
-	// For now, return the same logger - field accumulation not supported
-	return l
+func (l *loggerAdapter) EnabledLevel(lvl slog.Level) bool {
+	return l.logger.EnabledLevel(lvl)
 }
 
-func (l *loggerAdapter) WithOptions(opts ...zap.Option) logging.Logger {
-	// For now, return the same logger - options not supported
-	return l
+func (l *loggerAdapter) WriteLog(level slog.Level, msg string, attrs ...any) {
+	l.logger.WriteLog(level, msg, attrs...)
+}
+
+func (l *loggerAdapter) Enabled(ctx context.Context, level slog.Level) bool {
+	return l.logger.Enabled(ctx, level)
+}
+
+func (l *loggerAdapter) Handler() slog.Handler {
+	return l.logger.Handler()
 }

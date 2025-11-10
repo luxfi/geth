@@ -4,10 +4,16 @@
 package badgerdb
 
 import (
+	"errors"
 	"fmt"
 
 	badger "github.com/dgraph-io/badger/v4"
 	"github.com/luxfi/geth/ethdb"
+)
+
+var (
+	// errNotSupported is returned if the database doesn't support a requested operation.
+	errNotSupported = errors.New("this operation is not supported")
 )
 
 // Database is a badgerdb implementation of ethdb.Database
@@ -307,7 +313,12 @@ func (d *Database) AncientSize(kind string) (uint64, error) {
 }
 
 func (d *Database) AncientRange(kind string, start, count, maxBytes uint64) ([][]byte, error) {
-	return nil, nil
+	return nil, errNotSupported
+}
+
+// AncientBytes retrieves the value segment of the element specified by the id and value offsets.
+func (d *Database) AncientBytes(kind string, id, offset, length uint64) ([]byte, error) {
+	return nil, errNotSupported
 }
 
 func (d *Database) HasAncient(kind string, number uint64) (bool, error) {
@@ -315,7 +326,7 @@ func (d *Database) HasAncient(kind string, number uint64) (bool, error) {
 }
 
 func (d *Database) Ancient(kind string, number uint64) ([]byte, error) {
-	return nil, nil
+	return nil, errNotSupported
 }
 
 func (d *Database) AncientBatch() ethdb.AncientWriteOp {
