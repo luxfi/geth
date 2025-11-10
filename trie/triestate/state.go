@@ -150,7 +150,7 @@ func Apply(prevRoot common.Hash, postRoot common.Hash, accounts map[common.Addre
 	if err := ctx.nodes.Merge(result); err != nil {
 		return nil, err
 	}
-	return ctx.nodes.Flatten(), nil
+	return ctx.nodes.Nodes(), nil
 }
 
 // updateAccount the account was present in prev-state, and may or may not
