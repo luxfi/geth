@@ -29,6 +29,7 @@ import (
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
+	"github.com/luxfi/geth/trie/transitiontrie"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/holiman/uint256"
 )
@@ -501,7 +502,7 @@ func (s *stateObject) deepCopy(db *StateDB) *stateObject {
 		// Verkle uses only one tree, and the copy has already been
 		// made in mustCopyTrie.
 		obj.trie = db.trie
-	case *trie.TransitionTrie:
+	case *transitiontrie.TransitionTrie:
 		// Same thing for the transition tree, since the MPT is
 		// read-only.
 		obj.trie = db.trie
