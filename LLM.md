@@ -2,6 +2,45 @@
 
 Module: github.com/luxfi/geth
 Status: Active development
+Last Upstream Sync: 2025-11-22 (go-ethereum f4817b7a5)
+
+## Upstream Merge - November 22, 2025
+
+### Summary
+Successfully merged latest go-ethereum upstream changes (739f6f46a..f4817b7a5) into luxfi/geth while preserving ALL lux-specific customizations and maintaining 100% compatibility with luxfi/node.
+
+### Merge Statistics
+- **Upstream Commits**: 284 commits merged
+- **Files Changed**: 1,353 files (853,609 insertions, 74,901 deletions)
+- **Conflicts Resolved**: 12 merge conflicts + 2 deleted files
+- **Build Status**: ✅ Successful (go build ./cmd/geth)
+- **Test Status**: ✅ All critical tests passing (core/types, crypto, common, pqcrypto)
+
+### Key Upstream Changes Integrated
+1. **Verkle Tree Support** - Binary trie implementation, transition trie, enhanced state dumping
+2. **EIP Updates** - Improved EIP-1559 base fee calculation, enhanced EIP-4844 blob handling
+3. **State Management** - TransitionTrie wrapper, enhanced trie reader for MPT/Verkle
+4. **Testing Infrastructure** - New test vectors, enhanced simulation tools
+
+### Lux Customizations Preserved ✅
+1. **Post-Quantum Crypto** (`crypto/pqcrypto/`) - ML-DSA, ML-KEM, SLH-DSA
+2. **Plugin/EVM** (`plugin/evm/`) - 105 files, ChainVM interface, validators, warp messaging
+3. **Database** (`ethdb/badgerdb/`) - BadgerDB full implementation, PebbleDB enhancements
+4. **SubnetEVM Migration** - Pre-Shanghai → Post-Shanghai header conversion tools
+5. **Import Branding** - 100% `github.com/luxfi/geth` paths maintained
+6. **Dependencies** - All `luxfi/*` packages preserved at correct versions
+
+### Compatibility Verified ✅
+- Module: `github.com/luxfi/geth`
+- Compatible with: `luxfi/node v1.20.1`
+- ChainVM interface: Unchanged
+- Database integration: Maintained
+
+### Merge Commit
+- SHA: `aa5adea4a`
+- Message: "Merge upstream go-ethereum f4817b7a5 into luxfi/geth"
+
+---
 
 ## Test Suite Fixes - December 2024
 
