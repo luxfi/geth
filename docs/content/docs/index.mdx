@@ -1,0 +1,745 @@
+---
+title: Lux Geth Documentation
+description: High-performance Ethereum execution layer fork optimized for the Lux network with post-quantum cryptography support
+---
+
+# Lux Geth
+
+Lux Geth is a high-performance fork of go-ethereum (Geth) optimized specifically for the Lux blockchain network. This implementation features enhanced database backends, post-quantum cryptography support, and improved consensus mechanisms.
+
+## Overview
+
+Lux Geth is a high-performance fork of go-ethereum specifically optimized for the Lux blockchain ecosystem. It serves as the execution layer implementation for Lux's C-Chain (Contract Chain), providing full EVM compatibility while incorporating significant enhancements in database performance, post-quantum cryptography, and consensus integration.
+
+### What Makes Lux Geth Different
+
+**1. Native Multi-Database Support**
+- First-class support for BadgerDB with 85K+ writes/sec performance
+- PebbleDB integration for balanced workloads
+- Seamless database migration tools
+
+**2. Post-Quantum Ready**
+- NIST FIPS-compliant quantum-resistant algorithms (ML-DSA, ML-KEM, SLH-DSA)
+- Hybrid classical/post-quantum signature schemes
+- Smart contract precompiles for PQ operations
+
+**3. Lux Network Integration**
+- Native plugin system for Lux consensus engine
+- Cross-chain messaging support
+- Validator management and uptime tracking
+- Dynamic fee adjustments optimized for Lux
+
+**4. Enhanced State Management**
+- Path-based state storage for improved efficiency
+- Advanced pruning with parallel processing
+- Snapshot acceleration for faster sync
+
+**5. Enterprise Features**
+- Comprehensive Prometheus metrics
+- Multiple database backend options
+- Production-grade configuration templates
+- Extensive RPC API extensions
+
+## Key Features
+
+### Performance Enhancements
+- **BadgerDB Integration**: High-performance key-value store with better write performance than LevelDB
+- **PebbleDB Support**: Modern RocksDB-inspired storage engine with improved compaction
+- **Optimized State Management**: Enhanced state pruning and caching mechanisms
+- **Parallel Transaction Processing**: Improved throughput for high-volume networks
+
+### Post-Quantum Cryptography
+- **ML-DSA (Dilithium)**: FIPS 204 compliant quantum-resistant signatures
+- **ML-KEM (Kyber)**: FIPS 203 compliant key encapsulation
+- **SLH-DSA (SPHINCS+)**: Hash-based signatures for long-term security
+- **Hybrid Signatures**: Support for both classical and post-quantum signatures
+
+### Lux-Specific Modifications
+- **Custom Genesis Configuration**: Lux network-specific parameters
+- **Modified Gas Economics**: Optimized for Lux's fee structure
+- **Enhanced RPC APIs**: Additional endpoints for Lux-specific operations
+- **Cross-Chain Communication**: Native support for Lux's multi-chain architecture
+
+### Database Backends
+- **BadgerDB**: Default backend for optimal performance
+- **PebbleDB**: Alternative modern storage engine
+- **LevelDB**: Legacy support for compatibility
+- **MemoryDB**: In-memory option for testing
+
+## Quick Start
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/luxfi/geth
+cd geth
+
+# Build the binary
+make geth
+
+# Or build all tools
+make all
+```
+
+### Running a Node
+
+```bash
+# Start with default configuration
+./build/bin/geth
+
+# Start with custom data directory
+./build/bin/geth --datadir /path/to/data
+
+# Start with Lux mainnet configuration
+./build/bin/geth --networkid 1 --lux-mainnet
+
+# Start with BadgerDB (default)
+./build/bin/geth --db.engine=badger
+
+# Start with PebbleDB
+./build/bin/geth --db.engine=pebble
+```
+
+## Configuration
+
+### Network Configuration
+
+```yaml
+# config.yaml
+NetworkId: 1
+ChainId: 43114
+Genesis:
+  Timestamp: 1638360000
+  GasLimit: 8000000
+  Difficulty: 1
+  Alloc:
+    "0x...":
+      Balance: "1000000000000000000000"
+```
+
+### Database Configuration
+
+#### BadgerDB (Default - Optimized for Lux)
+```bash
+# BadgerDB with optimal settings
+--db.engine=badger
+--db.badger.truncate=true
+--db.badger.compactL0OnClose=true
+--db.badger.valueLogFileSize=1073741824  # 1GB
+--db.badger.valueLogMaxEntries=1000000
+--db.badger.numMemtables=5
+--db.badger.numLevelZeroTables=5
+--db.badger.numLevelZeroTablesStall=10
+--db.badger.levelOneSize=268435456       # 256MB
+--db.badger.valueTreshold=1024           # 1KB
+```
+
+**BadgerDB Performance Characteristics:**
+- Write Speed: ~85,000 ops/sec
+- Read Speed: ~200,000 ops/sec
+- Compression: Built-in Snappy/ZSTD
+- Memory Usage: Configurable LSM tree
+- Best For: High write throughput, large datasets
+
+#### PebbleDB (Alternative - RocksDB-inspired)
+```bash
+# PebbleDB configuration
+--db.engine=pebble
+--db.pebble.cache=512                    # MB
+--db.pebble.handles=500
+--db.pebble.compaction.concurrency=3
+--db.pebble.memtable.size=64             # MB
+--db.pebble.max.open.files=1000
+--db.pebble.block.size=4096
+--db.pebble.filter.policy=bloom:10
+```
+
+**PebbleDB Performance Characteristics:**
+- Write Speed: ~70,000 ops/sec
+- Read Speed: ~150,000 ops/sec
+- Compression: Snappy by default
+- Memory Usage: Efficient caching
+- Best For: Balanced read/write, stable performance
+
+#### LevelDB (Legacy - Compatibility)
+```bash
+# LevelDB configuration
+--db.engine=leveldb
+--db.leveldb.cache=768                   # MB
+--db.leveldb.handles=1024
+--db.leveldb.compaction=8
+--db.leveldb.writebuffer=32              # MB
+```
+
+**LevelDB Performance Characteristics:**
+- Write Speed: ~50,000 ops/sec
+- Read Speed: ~100,000 ops/sec
+- Compression: Snappy
+- Memory Usage: Moderate
+- Best For: Compatibility, smaller datasets
+
+#### Database Selection Guide
+
+| Use Case | Recommended | Rationale |
+|----------|-------------|-----------|
+| Validator Node | BadgerDB | Optimal write performance for block production |
+| Archive Node | PebbleDB | Balanced performance for historical queries |
+| Light Client | LevelDB | Lower resource usage |
+| Development | MemoryDB | Fast iteration, no persistence |
+
+### RPC Configuration
+
+```bash
+# Enable RPC endpoints
+--http
+--http.api=eth,net,web3,personal,admin,debug,miner,txpool
+--http.addr=0.0.0.0
+--http.port=8545
+--http.corsdomain=*
+
+# WebSocket support
+--ws
+--ws.api=eth,net,web3
+--ws.addr=0.0.0.0
+--ws.port=8546
+```
+
+## API Reference
+
+### Lux-Specific RPC Methods
+
+#### lux_getValidators
+Returns the current validator set for the network with detailed information.
+
+```json
+// Request
+{
+  "jsonrpc": "2.0",
+  "method": "lux_getValidators",
+  "params": [{
+    "subnetID": "11111111111111111111111111111111LpoYY",
+    "height": "latest"
+  }],
+  "id": 1
+}
+
+// Response
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "validators": [
+      {
+        "nodeID": "NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg",
+        "startTime": "1600000000",
+        "endTime": "1700000000",
+        "stakeAmount": "2000000000000000",
+        "nodeAddress": "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC",
+        "delegationFee": "20000",
+        "uptime": "99.98",
+        "connected": true
+      }
+    ],
+    "delegators": [],
+    "totalStake": "2000000000000000"
+  },
+  "id": 1
+}
+```
+
+#### lux_getCrossChainMessage
+Retrieves cross-chain messages for interoperability between Lux chains.
+
+```json
+// Request
+{
+  "jsonrpc": "2.0",
+  "method": "lux_getCrossChainMessage",
+  "params": [{
+    "messageID": "0xabc123...",
+    "sourceChainID": "C",
+    "destinationChainID": "X"
+  }],
+  "id": 1
+}
+
+// Response
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "message": {
+      "id": "0xabc123...",
+      "sourceChain": "C",
+      "destinationChain": "X",
+      "nonce": 42,
+      "payload": "0x...",
+      "timestamp": "1700000000",
+      "status": "pending"
+    }
+  },
+  "id": 1
+}
+```
+
+#### lux_getUptimeInfo
+Returns validator uptime information for rewards calculation.
+
+```json
+// Request
+{
+  "jsonrpc": "2.0",
+  "method": "lux_getUptimeInfo",
+  "params": ["NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg"],
+  "id": 1
+}
+
+// Response
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "rewardingStakePercentage": "80.00",
+    "weightedAveragePercentage": "99.98",
+    "uptimeSeconds": 8640000,
+    "totalSeconds": 8640000
+  },
+  "id": 1
+}
+```
+
+#### lux_estimateBaseFee
+Estimates the base fee for the next block using Lux's dynamic fee algorithm.
+
+```json
+// Request
+{
+  "jsonrpc": "2.0",
+  "method": "lux_estimateBaseFee",
+  "params": [{
+    "numBlocks": 10
+  }],
+  "id": 1
+}
+
+// Response
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "baseFee": "0x3b9aca00",
+    "minBaseFee": "0x2540be400",
+    "maxBaseFee": "0x746a528800",
+    "trend": "increasing"
+  },
+  "id": 1
+}
+```
+
+### Standard Ethereum RPC Methods
+
+All standard Ethereum JSON-RPC methods are supported:
+- `eth_blockNumber`
+- `eth_getBalance`
+- `eth_getTransactionByHash`
+- `eth_sendRawTransaction`
+- `eth_call`
+- `eth_estimateGas`
+- And many more...
+
+## Performance Optimization
+
+### State Management Enhancements
+
+Lux Geth includes advanced state management optimizations:
+
+#### Path-Based State Scheme
+```bash
+# Enable path-based storage (more efficient than hash-based)
+--state.scheme=path
+--state.history=90000     # Keep 90k blocks of history
+--state.cache=4096        # 4GB state cache
+```
+
+#### Advanced State Pruning
+```bash
+# Full pruning configuration
+--state.pruning=full
+--state.pruning.memory=1024      # MB for pruning operations
+--state.pruning.threads=4        # Parallel pruning threads
+--state.pruning.interval=3600    # Prune every hour
+
+# Garbage collection tuning
+--cache.gc=25             # GC when cache is 25% full
+--cache.trie=15           # Trie cache percentage
+--cache.trie.journal=/path/to/journal  # Persistent trie journal
+--cache.trie.rejournal=1h        # Rejournal interval
+--cache.snapshot=10       # Snapshot cache percentage
+--cache.preimages=true    # Cache preimages for debugging
+```
+
+#### Snapshot Acceleration
+```bash
+# Enable snapshot generation for faster sync
+--snapshot=true
+--snapshot.cache=256      # MB for snapshot cache
+--snapshot.async=true     # Async snapshot generation
+--snapshot.recover=true   # Auto-recover corrupted snapshots
+```
+
+### Transaction Pool Tuning
+
+```bash
+# Optimize transaction pool
+--txpool.accountslots=16
+--txpool.globalslots=8192
+--txpool.accountqueue=64
+--txpool.globalqueue=2048
+--txpool.lifetime=3h
+--txpool.pricebump=10
+```
+
+### Memory Management
+
+```bash
+# Configure memory limits
+--cache=4096
+--cache.database=2048
+--cache.trie.journal=1024
+--cache.trie.rejournal=1h
+```
+
+## Post-Quantum Features
+
+### Supported Algorithms
+
+Lux Geth implements NIST-standardized post-quantum algorithms:
+
+#### ML-DSA (Module-Lattice Digital Signature Algorithm - FIPS 204)
+- **ML-DSA-44**: 128-bit security level, ~2.4KB signatures
+- **ML-DSA-65**: 192-bit security level, ~3.3KB signatures (default)
+- **ML-DSA-87**: 256-bit security level, ~4.6KB signatures
+
+#### ML-KEM (Module-Lattice Key Encapsulation - FIPS 203)
+- **ML-KEM-512**: 128-bit security, 768-byte ciphertext
+- **ML-KEM-768**: 192-bit security, 1,088-byte ciphertext
+- **ML-KEM-1024**: 256-bit security, 1,568-byte ciphertext
+
+#### SLH-DSA (Stateless Hash-Based Signatures - FIPS 205)
+- **SLH-DSA-128s**: 128-bit security, small signatures
+- **SLH-DSA-192s**: 192-bit security, small signatures
+- **SLH-DSA-256s**: 256-bit security, small signatures
+
+### Enabling Post-Quantum Signatures
+
+```bash
+# Enable PQ crypto with specific algorithm
+--pq.enabled=true
+--pq.algorithm=ML-DSA-65
+--pq.hybrid=true
+
+# Configure hybrid mode (classical + PQ)
+--pq.hybrid.classical=secp256k1
+--pq.hybrid.postquantum=ML-DSA-65
+
+# Enable signature caching for performance
+--pq.cache.size=10000
+--pq.cache.ttl=1h
+```
+
+### Quantum-Safe Transaction Example
+
+```go
+import (
+    "github.com/luxfi/geth/crypto/pqcrypto"
+    "github.com/luxfi/geth/core/types"
+)
+
+// Create quantum-safe transaction
+tx := types.NewTransaction(
+    nonce,
+    to,
+    value,
+    gasLimit,
+    gasPrice,
+    data,
+)
+
+// Sign with ML-DSA-65
+signer := pqcrypto.NewMLDSASigner(pqcrypto.AlgoMLDSA65)
+signedTx, err := signer.SignTx(tx, privateKey)
+
+// Verify signature
+valid, err := pqcrypto.VerifyMLDSA(
+    signedTx.Hash().Bytes(),
+    signature,
+    publicKey,
+)
+
+// Hybrid signing (classical + PQ)
+hybridSigner := pqcrypto.NewHybridSigner(
+    pqcrypto.AlgoHybridSecp256k1MLDSA,
+)
+hybridTx, err := hybridSigner.SignTx(tx, classicalKey, pqKey)
+```
+
+### Post-Quantum Smart Contract Precompiles
+
+```solidity
+// Post-quantum signature verification precompile
+contract PQVerify {
+    // Address: 0x0000000000000000000000000000000000000100
+    function verifyMLDSA(
+        bytes32 message,
+        bytes memory signature,
+        bytes memory publicKey
+    ) external view returns (bool);
+
+    // Address: 0x0000000000000000000000000000000000000101
+    function verifySLHDSA(
+        bytes32 message,
+        bytes memory signature,
+        bytes memory publicKey
+    ) external view returns (bool);
+}
+```
+
+## Monitoring & Metrics
+
+### Prometheus Metrics
+
+```bash
+# Enable metrics
+--metrics
+--metrics.addr=127.0.0.1
+--metrics.port=6060
+--metrics.influxdb
+--metrics.influxdb.endpoint=http://localhost:8086
+--metrics.influxdb.database=geth
+```
+
+### Available Metrics
+- `chain/head/block`: Current block number
+- `chain/head/receipt`: Receipt processing time
+- `chain/head/header`: Header processing time
+- `txpool/pending`: Pending transactions count
+- `txpool/queued`: Queued transactions count
+- `p2p/peers`: Connected peer count
+- `db/chaindata/disk/read`: Database read operations
+- `db/chaindata/disk/write`: Database write operations
+
+## Development
+
+### Building from Source
+
+```bash
+# Requirements
+# Go 1.23+
+# GCC compiler
+# Make
+
+# Clone and build
+git clone https://github.com/luxfi/geth
+cd geth
+make geth
+
+# Run tests
+make test
+
+# Run with race detector
+make test-race
+
+# Generate bindings
+make abigen
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+go test ./...
+
+# Run specific package tests
+go test ./core/...
+go test ./consensus/...
+
+# Run with coverage
+go test -cover ./...
+
+# Run benchmarks
+go test -bench=. ./core/state/...
+```
+
+## Migration Guide
+
+### From go-ethereum
+
+1. **Database Migration**:
+```bash
+# Export from go-ethereum
+geth export chaindata.rlp
+
+# Import to Lux Geth
+./build/bin/geth import chaindata.rlp --datadir /new/path
+```
+
+2. **Configuration Changes**:
+- Replace `subnet` with `net` in configurations
+- Update chain ID to Lux network values
+- Configure Lux-specific RPC endpoints
+
+3. **API Adjustments**:
+- Use `lux_*` prefixed methods for Lux-specific features
+- Standard `eth_*` methods remain compatible
+
+## Security Considerations
+
+### Best Practices
+- Always run with `--pq.enabled=true` for quantum resistance
+- Use hardware security modules for validator keys
+- Enable rate limiting on RPC endpoints
+- Regular security updates and patches
+- Monitor for unusual network activity
+
+### Secure Configuration
+
+```bash
+# Security hardening
+--rpc.gascap=50000000
+--rpc.evmtimeout=5s
+--rpc.txfeecap=1
+--rpc.allow-unprotected-txs=false
+--authrpc.jwtsecret=/path/to/jwt.hex
+```
+
+## Troubleshooting
+
+### Common Issues
+
+#### Database Corruption
+```bash
+# Repair BadgerDB
+./build/bin/geth db repair --datadir /path/to/data
+
+# Rebuild state
+./build/bin/geth db rebuild-state --datadir /path/to/data
+```
+
+#### Sync Issues
+```bash
+# Reset to specific block
+./build/bin/geth rollback --block 12345
+
+# Clear pending transactions
+./build/bin/geth txpool clear
+```
+
+#### Performance Problems
+- Check disk I/O: `iostat -x 1`
+- Monitor memory: `free -h`
+- Review cache settings
+- Consider switching database backend
+
+## Architecture
+
+### Component Overview
+
+```
+┌─────────────────────────────────────┐
+│          JSON-RPC API Layer         │
+├─────────────────────────────────────┤
+│      Lux Plugin EVM Interface      │
+├─────────────────────────────────────┤
+│         Transaction Pool            │
+├─────────────────────────────────────┤
+│            EVM Engine               │
+├─────────────────────────────────────┤
+│         State Management            │
+├─────────────────────────────────────┤
+│     Consensus (BFT/Chain/DAG)      │
+├─────────────────────────────────────┤
+│         P2P Networking              │
+├─────────────────────────────────────┤
+│      Database (BadgerDB/Pebble)    │
+└─────────────────────────────────────┘
+```
+
+### Key Packages
+- `/core`: Blockchain core, state management, EVM
+- `/consensus`: Consensus engines and algorithms
+- `/crypto`: Cryptographic primitives including PQ crypto
+- `/crypto/pqcrypto`: Post-quantum cryptography implementation
+- `/eth`: Ethereum protocol implementation
+- `/ethdb`: Database interfaces and implementations
+- `/ethdb/badgerdb`: BadgerDB backend implementation
+- `/ethdb/pebble`: PebbleDB backend implementation
+- `/node`: Node management and services
+- `/p2p`: Peer-to-peer networking
+- `/plugin/evm`: Lux VM plugin integration
+- `/rpc`: JSON-RPC server implementation
+
+### Lux Plugin System
+
+The Lux Geth fork includes a plugin system for integration with the Lux node:
+
+#### Plugin EVM Package (`/plugin/evm`)
+```go
+// VM interface implementation for Lux consensus
+type VM struct {
+    backend     *eth.Ethereum
+    validators  *validators.Manager
+    uptime      *uptime.Manager
+    chainConfig *params.ChainConfig
+}
+
+// Core VM functions
+func (vm *VM) Initialize(
+    ctx context.Context,
+    dbManager database.Manager,
+    genesisBytes []byte,
+    upgradeBytes []byte,
+    configBytes []byte,
+    toEngine chan<- common.Message,
+) error
+
+func (vm *VM) BuildBlock(ctx context.Context) (snowman.Block, error)
+func (vm *VM) ParseBlock(ctx context.Context, bytes []byte) (snowman.Block, error)
+func (vm *VM) GetBlock(ctx context.Context, id ids.ID) (snowman.Block, error)
+```
+
+#### Validator Management (`/plugin/evm/validators`)
+- Manages validator sets for consensus
+- Tracks validator uptime and performance
+- Handles validator state transitions
+- Integrates with Lux P-Chain for validator info
+
+#### Block Integration (`/plugin/evm/block.go`)
+- Implements Lux consensus block interface
+- Handles block verification and acceptance
+- Manages state transitions during consensus
+
+## Contributing
+
+Contributions are welcome! Please see our [Contributing Guide](https://github.com/luxfi/geth/blob/main/CONTRIBUTING.md) for details.
+
+### Development Workflow
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+## License
+
+Lux Geth is licensed under the GNU Lesser General Public License v3.0. See [LICENSE](https://github.com/luxfi/geth/blob/main/COPYING.LESSER) for details.
+
+## Resources
+
+- [Lux Network Documentation](https://docs.lux.network)
+- [GitHub Repository](https://github.com/luxfi/geth)
+- [Discord Community](https://discord.gg/lux)
+- [Bug Reports](https://github.com/luxfi/geth/issues)
+
+## Support
+
+For support and questions:
+- GitHub Issues: [https://github.com/luxfi/geth/issues](https://github.com/luxfi/geth/issues)
+- Discord: [https://discord.gg/lux](https://discord.gg/lux)
+- Email: support@lux.network

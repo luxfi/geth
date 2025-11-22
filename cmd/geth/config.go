@@ -35,7 +35,6 @@ import (
 	"github.com/luxfi/geth/beacon/blsync"
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/eth/catalyst"
 	"github.com/luxfi/geth/eth/ethconfig"
@@ -273,11 +272,11 @@ func makeFullNode(ctx *cli.Context) *node.Node {
 	// Configure synchronization override service
 	var synctarget common.Hash
 	if ctx.IsSet(utils.SyncTargetFlag.Name) {
-		hex := hexutil.MustDecode(ctx.String(utils.SyncTargetFlag.Name))
-		if len(hex) != common.HashLength {
-			utils.Fatalf("invalid sync target length: have %d, want %d", len(hex), common.HashLength)
+		target := ctx.String(utils.SyncTargetFlag.Name)
+		if !common.IsHexHash(target) {
+			utils.Fatalf("sync target hash is not a valid hex hash: %s", target)
 		}
-		synctarget = common.BytesToHash(hex)
+		synctarget = common.HexToHash(target)
 	}
 	utils.RegisterSyncOverrideService(stack, eth, synctarget, ctx.Bool(utils.ExitWhenSyncedFlag.Name))
 

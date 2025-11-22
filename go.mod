@@ -23,8 +23,9 @@ require (
 	github.com/dgraph-io/badger/v4 v4.8.0
 	github.com/donovanhide/eventsource v0.0.0-20210830082556-c59027999da0
 	github.com/dop251/goja v0.0.0-20230806174421-c933cf95e127
-	github.com/ethereum/c-kzg-4844/v2 v2.1.3
+	github.com/ethereum/c-kzg-4844/v2 v2.1.5
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab
+	github.com/ethereum/go-ethereum v1.16.7
 	github.com/ethereum/go-verkle v0.2.2
 	github.com/fatih/color v1.18.0
 	github.com/ferranbt/fastssz v1.0.0
@@ -49,7 +50,7 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20230811132847-661be99b8267
 	github.com/karalabe/hid v1.0.1-0.20240306101548-573246063e52
 	github.com/kylelemons/godebug v1.1.0
-	github.com/luxfi/consensus v1.21.1
+	github.com/luxfi/consensus v1.21.2
 	github.com/luxfi/crypto v1.17.6
 	github.com/luxfi/database v1.2.7
 	github.com/luxfi/evm v1.16.19
@@ -92,7 +93,7 @@ require (
 
 require (
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
-	github.com/cloudflare/circl v1.6.1 // indirect
+	github.com/cloudflare/circl v1.6.2-0.20251027185721-da1faa40b98c // indirect
 	github.com/google/renameio/v2 v2.0.0 // indirect
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1 // indirect
