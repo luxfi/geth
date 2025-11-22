@@ -40,6 +40,23 @@ Successfully merged latest go-ethereum upstream changes (739f6f46a..f4817b7a5) i
 - SHA: `aa5adea4a`
 - Message: "Merge upstream go-ethereum f4817b7a5 into luxfi/geth"
 
+### Post-Merge Fixes - November 22, 2025
+
+#### Import Path Fix in bintrie_witness_test.go
+**Problem**: Test file `core/bintrie_witness_test.go` introduced in upstream merge still used `github.com/ethereum/go-ethereum` imports causing compilation failures.
+
+**Error**:
+```
+core/bintrie_witness_test.go:77:12: cannot use testVerkleChainConfig (variable of type *"github.com/ethereum/go-ethereum/params".ChainConfig) as *"github.com/luxfi/geth/params".ChainConfig value in struct literal
+```
+
+**Fix**: Updated all 12 import paths from `github.com/ethereum/go-ethereum/*` to `github.com/luxfi/geth/*`
+
+**Files Modified**:
+- `core/bintrie_witness_test.go` - Fixed imports for: common, consensus/beacon, consensus/ethash, core/rawdb, core/state, core/tracing, core/types, core/vm, crypto, params, triedb
+
+**Result**: ✅ Build successful, all core tests compile cleanly
+
 ---
 
 ## Test Suite Fixes - December 2024
