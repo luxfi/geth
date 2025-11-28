@@ -94,15 +94,27 @@ func (d *Database) NewBatchWithSize(size int) ethdb.Batch {
 
 // NewIterator creates a new iterator
 func (d *Database) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
+	if d.db == nil {
+		// Return empty iterator if database is nil
+		return &iterator{iter: nil, txn: nil}
+	}
+
 	txn := d.db.NewTransaction(false)
+	if txn == nil {
+		// Return empty iterator if transaction creation failed
+		return &iterator{iter: nil, txn: nil}
+	}
+
 	opts := badger.DefaultIteratorOptions
 	opts.Prefix = prefix
 	iter := txn.NewIterator(opts)
 
-	if start != nil {
-		iter.Seek(start)
-	} else {
-		iter.Rewind()
+	if iter != nil {
+		if start != nil {
+			iter.Seek(start)
+		} else {
+			iter.Rewind()
+		}
 	}
 
 	return &iterator{
@@ -179,6 +191,9 @@ type iterator struct {
 }
 
 func (i *iterator) Next() bool {
+	if i.iter == nil {
+		return false
+	}
 	i.iter.Next()
 	return i.iter.Valid()
 }
@@ -188,17 +203,27 @@ func (i *iterator) Error() error {
 }
 
 func (i *iterator) Key() []byte {
+	if i.iter == nil {
+		return nil
+	}
 	return i.iter.Item().KeyCopy(nil)
 }
 
 func (i *iterator) Value() []byte {
+	if i.iter == nil {
+		return nil
+	}
 	val, _ := i.iter.Item().ValueCopy(nil)
 	return val
 }
 
 func (i *iterator) Release() {
-	i.iter.Close()
-	i.txn.Discard()
+	if i.iter != nil {
+		i.iter.Close()
+	}
+	if i.txn != nil {
+		i.txn.Discard()
+	}
 }
 
 // Ancients/Freezer stubs
