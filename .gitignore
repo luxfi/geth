@@ -45,6 +45,8 @@ profile.cov
 tests/spec-tests/
 
 # binaries
+/bin/
+/build/geth
 cmd/abidump/abidump
 cmd/abigen/abigen
 cmd/blsync/blsync
@@ -57,4 +59,11 @@ cmd/geth/geth
 cmd/rlpdump/rlpdump
 cmd/workload/workload
 cmd/keeper/keeper
+cmd/replay/replay
+cmd/fix-head/fix-head
+cmd/rehash-state/rehash-state
+cmd/scan-badger/scan-badger
+cmd/strip-namespace/strip-namespace
+cmd/verify-headers/verify-headers
+test-badger-persist
 geth
