@@ -29,7 +29,7 @@ import (
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/internal/utesting"
 	"github.com/luxfi/geth/p2p"
