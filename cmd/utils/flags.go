@@ -45,7 +45,7 @@ import (
 	"github.com/luxfi/geth/core/txpool/legacypool"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/eth/filters"

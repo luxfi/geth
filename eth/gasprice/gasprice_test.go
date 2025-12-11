@@ -31,7 +31,7 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/crypto"
-	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
