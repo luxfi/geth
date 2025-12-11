@@ -37,7 +37,7 @@ import (
 	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/crypto/blake2b"
 	"github.com/luxfi/geth/crypto/bn256"
-	"github.com/luxfi/geth/crypto/kzg4844"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/crypto/secp256r1"
 	"github.com/luxfi/geth/params"
 	"github.com/holiman/uint256"
