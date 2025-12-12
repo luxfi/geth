@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
@@ -158,14 +157,4 @@ func decodeBlockEntry(entry *BlockEntry) (*types.Block, error) {
 func hexToBytes(s string) ([]byte, error) {
 	s = strings.TrimPrefix(s, "0x")
 	return hex.DecodeString(s)
-}
-
-// hasAllBlocks checks if all blocks already exist
-func hasAllBlocks(chain *core.BlockChain, blocks []*types.Block) bool {
-	for _, b := range blocks {
-		if !chain.HasBlock(b.Hash(), b.NumberU64()) {
-			return false
-		}
-	}
-	return true
 }
