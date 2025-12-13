@@ -2,10 +2,6 @@ module github.com/luxfi/geth
 
 go 1.25.5
 
-replace github.com/luxfi/crypto => /Users/z/work/lux/crypto
-
-replace github.com/luxfi/bitutil => /Users/z/work/lux/bitutil
-
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.2.0
 	github.com/Microsoft/go-winio v0.6.2
@@ -27,7 +23,6 @@ require (
 	github.com/donovanhide/eventsource v0.0.0-20210830082556-c59027999da0
 	github.com/dop251/goja v0.0.0-20230806174421-c933cf95e127
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab
-	github.com/ethereum/go-ethereum v1.16.7
 	github.com/ethereum/go-verkle v0.2.2
 	github.com/fatih/color v1.18.0
 	github.com/ferranbt/fastssz v1.0.0
@@ -51,7 +46,9 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20230811132847-661be99b8267
 	github.com/karalabe/hid v1.0.1-0.20240306101548-573246063e52
 	github.com/kylelemons/godebug v1.1.0
+	github.com/luxfi/consensus v1.21.2
 	github.com/luxfi/crypto v1.17.15
+	github.com/luxfi/log v1.1.22
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
@@ -84,15 +81,16 @@ require (
 require (
 	github.com/crate-crypto/go-eth-kzg v1.4.0 // indirect
 	github.com/ethereum/c-kzg-4844/v2 v2.1.5 // indirect
-	github.com/luxfi/bitutil v0.0.0-00010101000000-000000000000 // indirect
+	github.com/gorilla/rpc v1.2.1 // indirect
+	github.com/luxfi/database v1.2.7 // indirect
+	github.com/luxfi/metric v1.4.5 // indirect
 	github.com/luxfi/mock v0.1.0 // indirect
 	github.com/luxfi/node v1.20.3 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/olekukonko/errors v1.1.0 // indirect
-	github.com/olekukonko/ll v0.0.9 // indirect
-	github.com/olekukonko/tablewriter v1.0.9 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/mock v0.6.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.27.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 )
 
@@ -143,7 +141,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/luxfi/ids v1.1.2 // indirect
+	github.com/luxfi/ids v1.1.2
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
