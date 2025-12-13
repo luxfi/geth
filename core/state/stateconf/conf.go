@@ -74,3 +74,27 @@ func ExtractTrieDBUpdatePayload(opts ...TrieDBUpdateOption) (common.Hash, common
 	}
 	return common.Hash{}, common.Hash{}, false
 }
+
+// StateDBStateOption is a placeholder for state DB state options.
+// This is used to pass options to state read/write operations.
+type StateDBStateOption interface{}
+
+// skipStateKeyTransformation is a marker option to skip state key transformation
+type skipStateKeyTransformation struct{}
+
+// SkipStateKeyTransformation returns a StateDBStateOption that signals
+// to skip state key transformation during state operations.
+func SkipStateKeyTransformation() StateDBStateOption {
+	return &skipStateKeyTransformation{}
+}
+
+// ShouldSkipStateKeyTransformation checks if any of the provided options
+// indicates that state key transformation should be skipped.
+func ShouldSkipStateKeyTransformation(opts ...StateDBStateOption) bool {
+	for _, opt := range opts {
+		if _, ok := opt.(*skipStateKeyTransformation); ok {
+			return true
+		}
+	}
+	return false
+}

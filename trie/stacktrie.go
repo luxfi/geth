@@ -66,6 +66,32 @@ func NewStackTrie(onTrieNode OnTrieNode) *StackTrie {
 	}
 }
 
+// StackTrieOptions represents options for creating a StackTrie.
+type StackTrieOptions struct {
+	writer OnTrieNode
+}
+
+// NewStackTrieOptions creates a new StackTrieOptions with default values.
+func NewStackTrieOptions() *StackTrieOptions {
+	return &StackTrieOptions{}
+}
+
+// WithWriter sets the writer callback for the StackTrie.
+// The writer is called when a trie node is committed.
+func (o *StackTrieOptions) WithWriter(writer OnTrieNode) *StackTrieOptions {
+	o.writer = writer
+	return o
+}
+
+// NewStackTrieWithOptions creates a new StackTrie with the given options.
+func NewStackTrieWithOptions(options *StackTrieOptions) *StackTrie {
+	var onTrieNode OnTrieNode
+	if options != nil {
+		onTrieNode = options.writer
+	}
+	return NewStackTrie(onTrieNode)
+}
+
 func (t *StackTrie) grow(key []byte) {
 	if cap(t.kBuf) < 2*len(key) {
 		t.kBuf = make([]byte, 2*len(key))
