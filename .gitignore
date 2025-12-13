@@ -67,3 +67,8 @@ cmd/strip-namespace/strip-namespace
 cmd/verify-headers/verify-headers
 test-badger-persist
 geth
+
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+QWEN.md
