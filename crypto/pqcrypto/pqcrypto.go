@@ -10,7 +10,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/crypto"
 )
 
 // Algorithm represents post-quantum cryptographic algorithm types
