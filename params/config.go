@@ -1452,6 +1452,21 @@ type Rules struct {
 	IsBerlin, IsLondon                                      bool
 	IsMerge, IsShanghai, IsCancun, IsPrague, IsOsaka        bool
 	IsAmsterdam, IsVerkle                                   bool
+	// Payload allows storing extra chain-specific rules data (used by coreth/subnet-evm)
+	Payload any
+}
+
+// RulesHook is a callback type that allows external code (like coreth) to populate
+// the Rules.Payload field with chain-specific rules data.
+type RulesHook func(c *ChainConfig, rules *Rules, num *big.Int, isMerge bool, timestamp uint64)
+
+// rulesHook is the registered callback for populating Rules.Payload
+var rulesHook RulesHook
+
+// SetRulesHook registers a callback to populate Rules.Payload when Rules() is called.
+// This should be called during init() by packages like coreth.
+func SetRulesHook(hook RulesHook) {
+	rulesHook = hook
 }
 
 // Rules ensures c's ChainID is not nil.
@@ -1463,7 +1478,7 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 	// disallow setting Merge out of order
 	isMerge = isMerge && c.IsLondon(num)
 	isVerkle := isMerge && c.IsVerkle(num, timestamp)
-	return Rules{
+	rules := Rules{
 		ChainID:          new(big.Int).Set(chainID),
 		IsHomestead:      c.IsHomestead(num),
 		IsEIP150:         c.IsEIP150(num),
@@ -1485,4 +1500,9 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 		IsVerkle:         isVerkle,
 		IsEIP4762:        isVerkle,
 	}
+	// Call the hook to populate Payload with chain-specific rules data
+	if rulesHook != nil {
+		rulesHook(c, &rules, num, isMerge, timestamp)
+	}
+	return rules
 }

@@ -72,6 +72,7 @@ type ExecutionWitness struct {
 //go:generate go run ../../rlp/rlpgen -type Header -out gen_header_rlp.go
 
 // Header represents a block header in the Ethereum blockchain.
+// Note: Field order includes Lux-specific fields (ExtDataHash, ExtDataGasUsed, BlockGasCost).
 type Header struct {
 	ParentHash  common.Hash    `json:"parentHash"       gencodec:"required"`
 	UncleHash   common.Hash    `json:"sha3Uncles"       gencodec:"required"`
@@ -89,11 +90,17 @@ type Header struct {
 	MixDigest   common.Hash    `json:"mixHash"`
 	Nonce       BlockNonce     `json:"nonce"`
 
+	// ExtDataHash is a Lux-specific field for external data hash.
+	ExtDataHash common.Hash `json:"extDataHash" gencodec:"required"`
+
 	// BaseFee was added by EIP-1559 and is ignored in legacy headers.
 	BaseFee *big.Int `json:"baseFeePerGas" rlp:"optional"`
 
-	// WithdrawalsHash was added by EIP-4895 and is ignored in legacy headers.
-	WithdrawalsHash *common.Hash `json:"withdrawalsRoot" rlp:"optional"`
+	// ExtDataGasUsed is a Lux-specific field.
+	ExtDataGasUsed *big.Int `json:"extDataGasUsed" rlp:"optional"`
+
+	// BlockGasCost is a Lux-specific field.
+	BlockGasCost *big.Int `json:"blockGasCost" rlp:"optional"`
 
 	// BlobGasUsed was added by EIP-4844 and is ignored in legacy headers.
 	BlobGasUsed *uint64 `json:"blobGasUsed" rlp:"optional"`
@@ -104,22 +111,27 @@ type Header struct {
 	// ParentBeaconRoot was added by EIP-4788 and is ignored in legacy headers.
 	ParentBeaconRoot *common.Hash `json:"parentBeaconBlockRoot" rlp:"optional"`
 
+	// WithdrawalsHash was added by EIP-4895 and is ignored in legacy headers.
+	WithdrawalsHash *common.Hash `json:"withdrawalsRoot" rlp:"optional"`
+
 	// RequestsHash was added by EIP-7685 and is ignored in legacy headers.
 	RequestsHash *common.Hash `json:"requestsHash" rlp:"optional"`
 }
 
 // field type overrides for gencodec
 type headerMarshaling struct {
-	Difficulty    *hexutil.Big
-	Number        *hexutil.Big
-	GasLimit      hexutil.Uint64
-	GasUsed       hexutil.Uint64
-	Time          hexutil.Uint64
-	Extra         hexutil.Bytes
-	BaseFee       *hexutil.Big
-	Hash          common.Hash `json:"hash"` // adds call to Hash() in MarshalJSON
-	BlobGasUsed   *hexutil.Uint64
-	ExcessBlobGas *hexutil.Uint64
+	Difficulty     *hexutil.Big
+	Number         *hexutil.Big
+	GasLimit       hexutil.Uint64
+	GasUsed        hexutil.Uint64
+	Time           hexutil.Uint64
+	Extra          hexutil.Bytes
+	BaseFee        *hexutil.Big
+	ExtDataGasUsed *hexutil.Big
+	BlockGasCost   *hexutil.Big
+	Hash           common.Hash `json:"hash"` // adds call to Hash() in MarshalJSON
+	BlobGasUsed    *hexutil.Uint64
+	ExcessBlobGas  *hexutil.Uint64
 }
 
 // Hash returns the block hash of the header, which is simply the keccak256 hash of its
@@ -133,11 +145,14 @@ var headerSize = common.StorageSize(reflect.TypeFor[Header]().Size())
 // Size returns the approximate memory used by all internal contents. It is used
 // to approximate and limit the memory consumption of various caches.
 func (h *Header) Size() common.StorageSize {
-	var baseFeeBits int
+	var baseFeeBits, blockGasCostBits int
 	if h.BaseFee != nil {
 		baseFeeBits = h.BaseFee.BitLen()
 	}
-	return headerSize + common.StorageSize(len(h.Extra)+(h.Difficulty.BitLen()+h.Number.BitLen()+baseFeeBits)/8)
+	if h.BlockGasCost != nil {
+		blockGasCostBits = h.BlockGasCost.BitLen()
+	}
+	return headerSize + common.StorageSize(len(h.Extra)+(h.Difficulty.BitLen()+h.Number.BitLen()+baseFeeBits+blockGasCostBits)/8)
 }
 
 // SanityCheck checks a few basic things -- these checks are way beyond what
@@ -159,6 +174,11 @@ func (h *Header) SanityCheck() error {
 	if h.BaseFee != nil {
 		if bfLen := h.BaseFee.BitLen(); bfLen > 256 {
 			return fmt.Errorf("too large base fee: bitlen %d", bfLen)
+		}
+	}
+	if h.BlockGasCost != nil {
+		if bgcLen := h.BlockGasCost.BitLen(); bgcLen > 256 {
+			return fmt.Errorf("too large block gas cost: bitlen %d", bgcLen)
 		}
 	}
 	return nil
@@ -304,6 +324,9 @@ func CopyHeader(h *Header) *Header {
 	}
 	if h.BaseFee != nil {
 		cpy.BaseFee = new(big.Int).Set(h.BaseFee)
+	}
+	if h.BlockGasCost != nil {
+		cpy.BlockGasCost = new(big.Int).Set(h.BlockGasCost)
 	}
 	if len(h.Extra) > 0 {
 		cpy.Extra = make([]byte, len(h.Extra))

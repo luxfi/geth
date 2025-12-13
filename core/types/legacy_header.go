@@ -1,7 +1,6 @@
 package types
 
 import (
-	"fmt"
 	"io"
 	"math/big"
 
@@ -75,6 +74,63 @@ type LegacyHeader16 struct {
 	MixDigest   common.Hash    `json:"mixHash"`
 	Nonce       BlockNonce     `json:"nonce"`
 	BaseFee     *big.Int       `json:"baseFeePerGas"`
+}
+
+// CorethHeader matches coreth's HeaderSerializable format exactly.
+// This is the format used by coreth for RLP encoding headers.
+// Field order: 16 base fields + ExtDataHash + optional fields
+// Note: ExtDataHash comes BEFORE BaseFee (different from LegacyHeader types)
+type CorethHeader struct {
+	ParentHash  common.Hash    `json:"parentHash"`
+	UncleHash   common.Hash    `json:"sha3Uncles"`
+	Coinbase    common.Address `json:"miner"`
+	Root        common.Hash    `json:"stateRoot"`
+	TxHash      common.Hash    `json:"transactionsRoot"`
+	ReceiptHash common.Hash    `json:"receiptsRoot"`
+	Bloom       Bloom          `json:"logsBloom"`
+	Difficulty  *big.Int       `json:"difficulty"`
+	Number      *big.Int       `json:"number"`
+	GasLimit    uint64         `json:"gasLimit"`
+	GasUsed     uint64         `json:"gasUsed"`
+	Time        uint64         `json:"timestamp"`
+	Extra       []byte         `json:"extraData"`
+	MixDigest   common.Hash    `json:"mixHash"`
+	Nonce       BlockNonce     `json:"nonce"`
+	ExtDataHash common.Hash    `json:"extDataHash"` // Position 16 - before BaseFee!
+
+	// Optional fields (rlp:"optional" tag)
+	BaseFee          *big.Int     `json:"baseFeePerGas"         rlp:"optional"`
+	ExtDataGasUsed   *big.Int     `json:"extDataGasUsed"        rlp:"optional"`
+	BlockGasCost     *big.Int     `json:"blockGasCost"          rlp:"optional"`
+	BlobGasUsed      *uint64      `json:"blobGasUsed"           rlp:"optional"`
+	ExcessBlobGas    *uint64      `json:"excessBlobGas"         rlp:"optional"`
+	ParentBeaconRoot *common.Hash `json:"parentBeaconBlockRoot" rlp:"optional"`
+}
+
+// ToHeader converts a CorethHeader to a modern Header
+func (ch *CorethHeader) ToHeader() *Header {
+	return &Header{
+		ParentHash:       ch.ParentHash,
+		UncleHash:        ch.UncleHash,
+		Coinbase:         ch.Coinbase,
+		Root:             ch.Root,
+		TxHash:           ch.TxHash,
+		ReceiptHash:      ch.ReceiptHash,
+		Bloom:            ch.Bloom,
+		Difficulty:       ch.Difficulty,
+		Number:           ch.Number,
+		GasLimit:         ch.GasLimit,
+		GasUsed:          ch.GasUsed,
+		Time:             ch.Time,
+		Extra:            ch.Extra,
+		MixDigest:        ch.MixDigest,
+		Nonce:            ch.Nonce,
+		BaseFee:          ch.BaseFee,
+		WithdrawalsHash:  nil, // Coreth doesn't use this field
+		BlobGasUsed:      ch.BlobGasUsed,
+		ExcessBlobGas:    ch.ExcessBlobGas,
+		ParentBeaconRoot: ch.ParentBeaconRoot,
+	}
 }
 
 // ToHeader converts a LegacyHeader to a modern Header
@@ -183,50 +239,50 @@ func DecodeRLPWithLegacySupport(s *rlp.Stream) (*Header, error) {
 }
 
 // DecodeRLPBytesWithLegacySupport decodes header bytes with backward compatibility
-// Supports four formats:
-// 1. Modern (22 fields): Full post-Shanghai header
-// 2. Legacy 18-field: Pre-Shanghai + ExtDataHash + BlockGasCost
-// 3. Legacy 17-field: Pre-Shanghai + ExtDataHash only (actual SubnetEVM format!)
-// 4. Legacy 16-field: Pre-Shanghai only (standard Ethereum)
+// Supports multiple formats in order of preference:
+// 1. Coreth format: 16 base + ExtDataHash + optional fields (BaseFee, ExtDataGasUsed, etc.)
+// 2. Modern geth (22 fields): Full post-Shanghai header
+// 3. Legacy 18-field: Pre-Shanghai + BaseFee + ExtDataHash + BlockGasCost
+// 4. Legacy 17-field: Pre-Shanghai + BaseFee + ExtDataHash only
+// 5. Legacy 16-field: Pre-Shanghai only (standard Ethereum)
 func DecodeRLPBytesWithLegacySupport(data []byte) (*Header, error) {
-	// Try modern format first
-	var h Header
-	err := rlp.DecodeBytes(data, &h)
+	// Try coreth format first (this is the primary format for Lux chains)
+	// Coreth format has ExtDataHash at position 16, before BaseFee
+	var ch CorethHeader
+	err := rlp.DecodeBytes(data, &ch)
 	if err == nil {
-		fmt.Printf("🔍 Legacy decoder: SUCCESS with modern 22-field header\n")
+		return ch.ToHeader(), nil
+	}
+
+	// Try modern geth format
+	var h Header
+	err = rlp.DecodeBytes(data, &h)
+	if err == nil {
 		return &h, nil
 	}
-	fmt.Printf("🔍 Legacy decoder: 22-field failed: %v\n", err)
 
 	// Try 18-field legacy format (with both SubnetEVM fields)
 	var lh18 LegacyHeader
 	err = rlp.DecodeBytes(data, &lh18)
 	if err == nil {
-		fmt.Printf("🔍 Legacy decoder: SUCCESS with 18-field header\n")
 		return lh18.ToHeader(), nil
 	}
-	fmt.Printf("🔍 Legacy decoder: 18-field failed: %v\n", err)
 
-	// Try 17-field legacy format (with ExtDataHash only - actual SubnetEVM!)
+	// Try 17-field legacy format (with ExtDataHash only)
 	var lh17 LegacyHeader17
 	err = rlp.DecodeBytes(data, &lh17)
 	if err == nil {
-		fmt.Printf("🔍 Legacy decoder: SUCCESS with 17-field header\n")
 		return lh17.ToHeader(), nil
 	}
-	fmt.Printf("🔍 Legacy decoder: 17-field failed: %v\n", err)
 
 	// Try 16-field legacy format (standard pre-Shanghai)
 	var lh16 LegacyHeader16
 	err = rlp.DecodeBytes(data, &lh16)
-	if err != nil {
-		fmt.Printf("🔍 Legacy decoder: 16-field failed: %v\n", err)
-		return nil, err
+	if err == nil {
+		return lh16.ToHeader(), nil
 	}
 
-	fmt.Printf("🔍 Legacy decoder: SUCCESS with 16-field header\n")
-	// Convert to modern header
-	return lh16.ToHeader(), nil
+	return nil, err
 }
 
 // EncodeRLP implements rlp.Encoder for LegacyHeader

@@ -275,6 +275,14 @@ func (s *hookedStateDB) AddLog(log *types.Log) {
 	}
 }
 
+func (s *hookedStateDB) Logs() []*types.Log {
+	return s.inner.Logs()
+}
+
+func (s *hookedStateDB) TxHash() common.Hash {
+	return s.inner.TxHash()
+}
+
 func (s *hookedStateDB) Finalise(deleteEmptyObjects bool) {
 	defer s.inner.Finalise(deleteEmptyObjects)
 	if s.hooks.OnBalanceChange == nil {

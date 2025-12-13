@@ -981,6 +981,11 @@ func (s *StateDB) SetTxContext(thash common.Hash, ti int) {
 	s.txIndex = ti
 }
 
+// TxHash returns the current transaction hash being processed.
+func (s *StateDB) TxHash() common.Hash {
+	return s.thash
+}
+
 func (s *StateDB) clearJournalAndRefund() {
 	s.journal.reset()
 	s.refund = 0

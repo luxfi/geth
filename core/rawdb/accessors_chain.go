@@ -36,25 +36,19 @@ import (
 func ReadCanonicalHash(db ethdb.Reader, number uint64) common.Hash {
 	var data []byte
 	key := headerHashKey(number)
-	fmt.Printf("ReadCanonicalHash(%d): key=%x\n", number, key)
 
 	// Try to read from ancients first
 	err := db.ReadAncients(func(reader ethdb.AncientReaderOp) error {
 		data, _ = reader.Ancient(ChainFreezerHashTable, number)
-		fmt.Printf("ReadCanonicalHash(%d): ancients returned %d bytes\n", number, len(data))
 		return nil
 	})
 
 	// If ancients failed or returned no data, read from leveldb
 	if err != nil || len(data) == 0 {
-		fmt.Printf("ReadCanonicalHash(%d): ancients failed (err=%v) or empty, trying db.Get\n", number, err)
-		data, err = db.Get(key)
-		fmt.Printf("ReadCanonicalHash(%d): db.Get returned %d bytes, err=%v\n", number, len(data), err)
+		data, _ = db.Get(key)
 	}
 
-	hash := common.BytesToHash(data)
-	fmt.Printf("ReadCanonicalHash(%d): final hash=%x\n", number, hash)
-	return hash
+	return common.BytesToHash(data)
 }
 
 // WriteCanonicalHash stores the hash assigned to a canonical block number.
@@ -95,16 +89,11 @@ type NumberHash struct {
 
 // ReadHeaderNumber returns the header number assigned to a hash.
 func ReadHeaderNumber(db ethdb.KeyValueReader, hash common.Hash) (uint64, bool) {
-	key := headerNumberKey(hash)
-	data, err := db.Get(key)
-	fmt.Printf("🔍 DEBUG ReadHeaderNumber: hash=%x, dataLen=%d, err=%v\n", hash, len(data), err)
+	data, _ := db.Get(headerNumberKey(hash))
 	if len(data) != 8 {
-		fmt.Printf("🔍 DEBUG ReadHeaderNumber: WRONG LENGTH OR MISSING hash=%x, dataLen=%d\n", hash, len(data))
 		return 0, false
 	}
-	number := binary.BigEndian.Uint64(data)
-	fmt.Printf("🔍 DEBUG ReadHeaderNumber: got number=%d for hash=%x\n", number, hash)
-	return number, true
+	return binary.BigEndian.Uint64(data), true
 }
 
 // WriteHeaderNumber stores the hash->number mapping.
@@ -125,15 +114,11 @@ func DeleteHeaderNumber(db ethdb.KeyValueWriter, hash common.Hash) {
 
 // ReadHeadHeaderHash retrieves the hash of the current canonical head header.
 func ReadHeadHeaderHash(db ethdb.KeyValueReader) common.Hash {
-	data, err := db.Get(headHeaderKey)
-	fmt.Printf("🔍 DEBUG ReadHeadHeaderHash: key=%s, dataLen=%d, err=%v\n", headHeaderKey, len(data), err)
+	data, _ := db.Get(headHeaderKey)
 	if len(data) == 0 {
-		fmt.Printf("🔍 DEBUG ReadHeadHeaderHash: EMPTY - returning zero hash\n")
 		return common.Hash{}
 	}
-	hash := common.BytesToHash(data)
-	fmt.Printf("🔍 DEBUG ReadHeadHeaderHash: got hash=%x\n", hash)
-	return hash
+	return common.BytesToHash(data)
 }
 
 // WriteHeadHeaderHash stores the hash of the current canonical head header.
@@ -145,15 +130,11 @@ func WriteHeadHeaderHash(db ethdb.KeyValueWriter, hash common.Hash) {
 
 // ReadHeadBlockHash retrieves the hash of the current canonical head block.
 func ReadHeadBlockHash(db ethdb.KeyValueReader) common.Hash {
-	data, err := db.Get(headBlockKey)
-	log.Info("🔍 DEBUG ReadHeadBlockHash", "key", string(headBlockKey), "dataLen", len(data), "err", err)
+	data, _ := db.Get(headBlockKey)
 	if len(data) == 0 {
-		log.Info("🔍 DEBUG ReadHeadBlockHash: EMPTY DATA")
 		return common.Hash{}
 	}
-	hash := common.BytesToHash(data)
-	log.Info("🔍 DEBUG ReadHeadBlockHash: got hash", "hash", hash)
-	return hash
+	return common.BytesToHash(data)
 }
 
 // WriteHeadBlockHash stores the head block's hash.
@@ -334,23 +315,18 @@ func HasHeader(db ethdb.Reader, hash common.Hash, number uint64) bool {
 // ReadHeader retrieves the block header corresponding to the hash.
 // Supports both modern geth/coreth headers and legacy SubnetEVM headers.
 func ReadHeader(db ethdb.Reader, hash common.Hash, number uint64) *types.Header {
-	fmt.Printf("🔍 DEBUG ReadHeader: START hash=%x, number=%d\n", hash, number)
 	data := ReadHeaderRLP(db, hash, number)
-	fmt.Printf("🔍 DEBUG ReadHeader: ReadHeaderRLP returned %d bytes\n", len(data))
 	if len(data) == 0 {
-		fmt.Printf("🔍 DEBUG ReadHeader: NO DATA - returning nil\n")
 		return nil
 	}
 
 	// Try backward-compatible decoding (handles both modern and legacy formats)
 	header, err := types.DecodeRLPBytesWithLegacySupport(data)
 	if err != nil {
-		fmt.Printf("🔍 DEBUG ReadHeader: RLP DECODE ERROR (both formats failed): %v\n", err)
 		log.Error("Invalid block header RLP", "hash", hash, "err", err)
 		return nil
 	}
 
-	fmt.Printf("🔍 DEBUG ReadHeader: SUCCESS decoded header for block %d\n", header.Number.Uint64())
 	return header
 }
 
@@ -863,21 +839,14 @@ func WriteBadBlock(db ethdb.KeyValueStore, block *types.Block) {
 
 // ReadHeadHeader returns the current canonical head header.
 func ReadHeadHeader(db ethdb.Reader) *types.Header {
-	fmt.Printf("🔍 DEBUG ReadHeadHeader: START\n")
 	headHeaderHash := ReadHeadHeaderHash(db)
-	fmt.Printf("🔍 DEBUG ReadHeadHeader: got headHeaderHash=%x, isEmpty=%v\n", headHeaderHash, headHeaderHash == (common.Hash{}))
 	if headHeaderHash == (common.Hash{}) {
-		fmt.Printf("🔍 DEBUG ReadHeadHeader: hash is empty, returning nil\n")
 		return nil
 	}
-	fmt.Printf("🔍 DEBUG ReadHeadHeader: calling ReadHeaderNumber hash=%x\n", headHeaderHash)
 	headHeaderNumber, ok := ReadHeaderNumber(db, headHeaderHash)
-	fmt.Printf("🔍 DEBUG ReadHeadHeader: ReadHeaderNumber returned number=%d, ok=%v\n", headHeaderNumber, ok)
 	if !ok {
-		fmt.Printf("🔍 DEBUG ReadHeadHeader: ReadHeaderNumber failed, returning nil\n")
 		return nil
 	}
-	fmt.Printf("🔍 DEBUG ReadHeadHeader: calling ReadHeader hash=%x, number=%d\n", headHeaderHash, headHeaderNumber)
 	return ReadHeader(db, headHeaderHash, headHeaderNumber)
 }
 
