@@ -91,3 +91,23 @@ func VerifyTestData(t *testing.T, tr *trie.Trie, keys, values [][]byte) {
 		}
 	}
 }
+
+// RandBytes is an alias for RandomData for backward compatibility
+func RandBytes(n int) []byte {
+	return RandomData(n)
+}
+
+// TestNode is a simple wrapper around a hash and blob for testing purposes
+type TestNode struct {
+	Hash common.Hash
+	Blob []byte
+}
+
+// RandomNode generates a random node for testing
+func RandomNode() *TestNode {
+	blob := RandomData(rand.Intn(100) + 10)
+	return &TestNode{
+		Hash: common.Keccak256Hash(blob),
+		Blob: blob,
+	}
+}
