@@ -77,6 +77,17 @@ type Genesis struct {
 	// AcceptExistingState indicates whether to accept existing blockchain state
 	// without checking genesis mismatch. Used for migrated SubnetEVM data.
 	AcceptExistingState bool `json:"acceptExistingState,omitempty"`
+
+	// StateRoot allows specifying a pre-computed state root for imported genesis.
+	// When set, this overrides the computed state root from allocations.
+	// This is used when importing genesis from external chains (like SubnetEVM)
+	// to preserve the exact genesis hash.
+	StateRoot *common.Hash `json:"stateRoot,omitempty"`
+
+	// SkipPostMergeFields disables adding Shanghai/Cancun/Prague header fields.
+	// This is used when importing genesis from pre-Shanghai chains (like SubnetEVM)
+	// to preserve the exact genesis hash without WithdrawalsHash etc.
+	SkipPostMergeFields bool `json:"skipPostMergeFields,omitempty"`
 }
 
 // copy copies the genesis.
@@ -510,34 +521,38 @@ func (g *Genesis) toBlockWithRoot(root common.Hash) *types.Block {
 	var (
 		withdrawals []*types.Withdrawal
 	)
-	if conf := g.Config; conf != nil {
-		num := big.NewInt(int64(g.Number))
-		if conf.IsShanghai(num, g.Timestamp) {
-			head.WithdrawalsHash = &types.EmptyWithdrawalsHash
-			withdrawals = make([]*types.Withdrawal, 0)
-		}
-		if conf.IsCancun(num, g.Timestamp) {
-			// EIP-4788: The parentBeaconBlockRoot of the genesis block is always
-			// the zero hash. This is because the genesis block does not have a parent
-			// by definition.
-			head.ParentBeaconRoot = new(common.Hash)
-			// EIP-4844 fields
-			head.ExcessBlobGas = g.ExcessBlobGas
-			head.BlobGasUsed = g.BlobGasUsed
-			if head.ExcessBlobGas == nil {
-				head.ExcessBlobGas = new(uint64)
+	// Skip post-merge fields if SkipPostMergeFields is set.
+	// This is used for importing genesis from pre-Shanghai chains (like SubnetEVM).
+	if !g.SkipPostMergeFields {
+		if conf := g.Config; conf != nil {
+			num := big.NewInt(int64(g.Number))
+			if conf.IsShanghai(num, g.Timestamp) {
+				head.WithdrawalsHash = &types.EmptyWithdrawalsHash
+				withdrawals = make([]*types.Withdrawal, 0)
 			}
-			if head.BlobGasUsed == nil {
-				head.BlobGasUsed = new(uint64)
-			}
-		} else {
-			if g.ExcessBlobGas != nil {
-				log.Warn("Invalid genesis, unexpected ExcessBlobGas set before Cancun, allowing it for testing purposes")
+			if conf.IsCancun(num, g.Timestamp) {
+				// EIP-4788: The parentBeaconBlockRoot of the genesis block is always
+				// the zero hash. This is because the genesis block does not have a parent
+				// by definition.
+				head.ParentBeaconRoot = new(common.Hash)
+				// EIP-4844 fields
 				head.ExcessBlobGas = g.ExcessBlobGas
+				head.BlobGasUsed = g.BlobGasUsed
+				if head.ExcessBlobGas == nil {
+					head.ExcessBlobGas = new(uint64)
+				}
+				if head.BlobGasUsed == nil {
+					head.BlobGasUsed = new(uint64)
+				}
+			} else {
+				if g.ExcessBlobGas != nil {
+					log.Warn("Invalid genesis, unexpected ExcessBlobGas set before Cancun, allowing it for testing purposes")
+					head.ExcessBlobGas = g.ExcessBlobGas
+				}
 			}
-		}
-		if conf.IsPrague(num, g.Timestamp) {
-			head.RequestsHash = &types.EmptyRequestsHash
+			if conf.IsPrague(num, g.Timestamp) {
+				head.RequestsHash = &types.EmptyRequestsHash
+			}
 		}
 	}
 	return types.NewBlock(head, &types.Body{Withdrawals: withdrawals}, nil, trie.NewStackTrie(nil))
@@ -563,6 +578,14 @@ func (g *Genesis) Commit(db ethdb.Database, triedb *triedb.Database) (*types.Blo
 	root, err := flushAlloc(&g.Alloc, triedb)
 	if err != nil {
 		return nil, err
+	}
+
+	// If a pre-computed StateRoot is specified, use it instead of the computed one.
+	// This is used when importing genesis from external chains (like SubnetEVM)
+	// to preserve the exact genesis hash.
+	if g.StateRoot != nil {
+		log.Info("Using pre-computed state root for genesis", "computed", root.Hex(), "specified", g.StateRoot.Hex())
+		root = *g.StateRoot
 	}
 	block := g.toBlockWithRoot(root)
 
@@ -591,6 +614,44 @@ func (g *Genesis) MustCommit(db ethdb.Database, triedb *triedb.Database) *types.
 		panic(err)
 	}
 	return block
+}
+
+// CommitWithStateRoot writes the genesis block with a pre-computed state root.
+// This is used for importing genesis from external sources (like SubnetEVM)
+// where the state root is already known and we want to preserve the exact hash.
+func (g *Genesis) CommitWithStateRoot(db ethdb.Database, triedb *triedb.Database, stateRoot common.Hash) (*types.Block, error) {
+	if g.Number != 0 {
+		return nil, errors.New("can't commit genesis block with number > 0")
+	}
+	config := g.Config
+	if config == nil {
+		return nil, errors.New("invalid genesis without chain config")
+	}
+
+	// Flush allocations to disk
+	_, err := flushAlloc(&g.Alloc, triedb)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create block with the specified state root (not the computed one)
+	block := g.toBlockWithRoot(stateRoot)
+
+	// Marshal the genesis state specification and persist
+	blob, err := json.Marshal(g.Alloc)
+	if err != nil {
+		return nil, err
+	}
+	batch := db.NewBatch()
+	rawdb.WriteGenesisStateSpec(batch, block.Hash(), blob)
+	rawdb.WriteBlock(batch, block)
+	rawdb.WriteReceipts(batch, block.Hash(), block.NumberU64(), nil)
+	rawdb.WriteCanonicalHash(batch, block.Hash(), block.NumberU64())
+	rawdb.WriteHeadBlockHash(batch, block.Hash())
+	rawdb.WriteHeadFastBlockHash(batch, block.Hash())
+	rawdb.WriteHeadHeaderHash(batch, block.Hash())
+	rawdb.WriteChainConfig(batch, block.Hash(), config)
+	return block, batch.Write()
 }
 
 // EnableVerkleAtGenesis indicates whether the verkle fork should be activated
