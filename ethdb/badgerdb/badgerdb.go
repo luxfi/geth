@@ -118,8 +118,9 @@ func (d *Database) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
 	}
 
 	return &iterator{
-		iter: iter,
-		txn:  txn,
+		iter:  iter,
+		txn:   txn,
+		first: true, // First call to Next() should check Valid() without advancing
 	}
 }
 
@@ -186,14 +187,22 @@ func (b *batch) Replay(w ethdb.KeyValueWriter) error {
 
 // iterator implements ethdb.Iterator
 type iterator struct {
-	iter *badger.Iterator
-	txn  *badger.Txn
+	iter  *badger.Iterator
+	txn   *badger.Txn
+	first bool // true if we haven't returned the first item yet
 }
 
 func (i *iterator) Next() bool {
 	if i.iter == nil {
 		return false
 	}
+	// On first call after NewIterator, the iterator is already positioned
+	// at the first item (via Rewind/Seek), so just check Valid()
+	if i.first {
+		i.first = false
+		return i.iter.Valid()
+	}
+	// On subsequent calls, advance and check
 	i.iter.Next()
 	return i.iter.Valid()
 }
