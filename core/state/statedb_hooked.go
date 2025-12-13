@@ -23,7 +23,6 @@ import (
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie/utils"
 	"github.com/holiman/uint256"
@@ -193,8 +192,8 @@ func (s *hookedStateDB) SetCode(address common.Address, code []byte, reason trac
 	prev := s.inner.SetCode(address, code, reason)
 
 	if s.hooks.OnCodeChangeV2 != nil || s.hooks.OnCodeChange != nil {
-		prevHash := crypto.Keccak256Hash(prev)
-		codeHash := crypto.Keccak256Hash(code)
+		prevHash := common.Keccak256Hash(prev)
+		codeHash := common.Keccak256Hash(code)
 
 		// Invoke the hooks only if the contract code is changed
 		if prevHash != codeHash {

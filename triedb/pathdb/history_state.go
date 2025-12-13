@@ -28,7 +28,6 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 )
@@ -286,7 +285,7 @@ func (h *stateHistory) typ() historyType {
 func (h *stateHistory) forEach() iter.Seq[stateIdent] {
 	return func(yield func(stateIdent) bool) {
 		for _, addr := range h.accountList {
-			addrHash := crypto.Keccak256Hash(addr.Bytes())
+			addrHash := common.Keccak256Hash(addr.Bytes())
 			if !yield(newAccountIdent(addrHash)) {
 				return
 			}
@@ -296,7 +295,7 @@ func (h *stateHistory) forEach() iter.Seq[stateIdent] {
 				// conversion from storage key to hash is necessary for non-v0 histories.
 				slotHash := slotKey
 				if h.meta.version != stateHistoryV0 {
-					slotHash = crypto.Keccak256Hash(slotKey.Bytes())
+					slotHash = common.Keccak256Hash(slotKey.Bytes())
 				}
 				if !yield(newStorageIdent(addrHash, slotHash)) {
 					return
@@ -314,7 +313,7 @@ func (h *stateHistory) stateSet() (map[common.Hash][]byte, map[common.Hash]map[c
 		storages = make(map[common.Hash]map[common.Hash][]byte)
 	)
 	for addr, blob := range h.accounts {
-		addrHash := crypto.Keccak256Hash(addr.Bytes())
+		addrHash := common.Keccak256Hash(addr.Bytes())
 		accounts[addrHash] = blob
 
 		storage, exist := h.storages[addr]
@@ -326,7 +325,7 @@ func (h *stateHistory) stateSet() (map[common.Hash][]byte, map[common.Hash]map[c
 		} else {
 			subset := make(map[common.Hash][]byte)
 			for key, slot := range storage {
-				subset[crypto.Keccak256Hash(key.Bytes())] = slot
+				subset[common.Keccak256Hash(key.Bytes())] = slot
 			}
 			storages[addrHash] = subset
 		}

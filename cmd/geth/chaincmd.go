@@ -38,7 +38,6 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/debug"
 	"github.com/luxfi/geth/internal/era"
@@ -618,7 +617,7 @@ func parseDumpConfig(ctx *cli.Context, db ethdb.Database) (*state.DumpConfig, co
 	case 32:
 		start = common.BytesToHash(startArg)
 	case 20:
-		start = crypto.Keccak256Hash(startArg)
+		start = common.Keccak256Hash(startArg)
 		log.Info("Converting start-address to hash", "address", common.BytesToAddress(startArg), "hash", start.Hex())
 	default:
 		return nil, common.Hash{}, fmt.Errorf("invalid start argument: %x. 20 or 32 hex-encoded bytes required", startArg)

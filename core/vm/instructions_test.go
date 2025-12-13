@@ -669,7 +669,7 @@ func TestCreate2Addresses(t *testing.T) {
 		salt := common.BytesToHash(common.FromHex(tt.salt))
 		code := common.FromHex(tt.code)
 		codeHash := crypto.Keccak256(code)
-		address := crypto.CreateAddress2(origin, salt, codeHash)
+		address := common.CreateAddress2(origin, salt, codeHash)
 		/*
 			stack          := newstack()
 			// salt, but we don't need that for this test
@@ -696,7 +696,7 @@ func TestRandom(t *testing.T) {
 		{name: "empty hash", random: common.Hash{}},
 		{name: "1", random: common.Hash{0}},
 		{name: "emptyCodeHash", random: types.EmptyCodeHash},
-		{name: "hash(0x010203)", random: crypto.Keccak256Hash([]byte{0x01, 0x02, 0x03})},
+		{name: "hash(0x010203)", random: common.Keccak256Hash([]byte{0x01, 0x02, 0x03})},
 	} {
 		var (
 			evm   = NewEVM(BlockContext{Random: &tt.random}, nil, params.TestChainConfig, Config{})

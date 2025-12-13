@@ -21,14 +21,13 @@ import (
 	"math/big"
 	"sync/atomic"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 type (
@@ -125,7 +124,7 @@ type EVM struct {
 	// jumpDests stores results of JUMPDEST analysis.
 	jumpDests JumpDestCache
 
-	hasher    crypto.KeccakState // Keccak256 hasher instance shared across opcodes
+	hasher    common.KeccakState // Keccak256 hasher instance shared across opcodes
 	hasherBuf common.Hash        // Keccak256 hasher result array shared across opcodes
 
 	readOnly   bool   // Whether to throw on stateful modifications
@@ -144,7 +143,7 @@ func NewEVM(blockCtx BlockContext, statedb StateDB, chainConfig *params.ChainCon
 		chainConfig: chainConfig,
 		chainRules:  chainConfig.Rules(blockCtx.BlockNumber, blockCtx.Random != nil, blockCtx.Time),
 		jumpDests:   newMapJumpDests(),
-		hasher:      crypto.NewKeccakState(),
+		hasher:      common.NewKeccakState(),
 	}
 	evm.precompiles = activePrecompiledContracts(evm.chainRules)
 
@@ -609,7 +608,7 @@ func (evm *EVM) initNewContract(contract *Contract, address common.Address) ([]b
 
 // Create creates a new contract using code as deployment code.
 func (evm *EVM) Create(caller common.Address, code []byte, gas uint64, value *uint256.Int) (ret []byte, contractAddr common.Address, leftOverGas uint64, err error) {
-	contractAddr = crypto.CreateAddress(caller, evm.StateDB.GetNonce(caller))
+	contractAddr = common.CreateAddress(caller, evm.StateDB.GetNonce(caller))
 	return evm.create(caller, code, gas, value, contractAddr, CREATE)
 }
 
@@ -618,8 +617,8 @@ func (evm *EVM) Create(caller common.Address, code []byte, gas uint64, value *ui
 // The different between Create2 with Create is Create2 uses keccak256(0xff ++ msg.sender ++ salt ++ keccak256(init_code))[12:]
 // instead of the usual sender-and-nonce-hash as the address where the contract is initialized at.
 func (evm *EVM) Create2(caller common.Address, code []byte, gas uint64, endowment *uint256.Int, salt *uint256.Int) (ret []byte, contractAddr common.Address, leftOverGas uint64, err error) {
-	inithash := crypto.HashData(evm.hasher, code)
-	contractAddr = crypto.CreateAddress2(caller, salt.Bytes32(), inithash[:])
+	inithash := common.HashData(evm.hasher, code)
+	contractAddr = common.CreateAddress2(caller, salt.Bytes32(), inithash[:])
 	return evm.create(caller, code, gas, endowment, contractAddr, CREATE2)
 }
 
