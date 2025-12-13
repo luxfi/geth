@@ -2,6 +2,10 @@ module github.com/luxfi/geth
 
 go 1.25.5
 
+replace github.com/luxfi/crypto => /Users/z/work/lux/crypto
+
+replace github.com/luxfi/bitutil => /Users/z/work/lux/bitutil
+
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/storage/azblob v1.2.0
 	github.com/Microsoft/go-winio v0.6.2
@@ -80,6 +84,7 @@ require (
 require (
 	github.com/crate-crypto/go-eth-kzg v1.4.0 // indirect
 	github.com/ethereum/c-kzg-4844/v2 v2.1.5 // indirect
+	github.com/luxfi/bitutil v0.0.0-00010101000000-000000000000 // indirect
 	github.com/luxfi/mock v0.1.0 // indirect
 	github.com/luxfi/node v1.20.3 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
