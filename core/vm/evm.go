@@ -40,7 +40,21 @@ type (
 	GetHashFunc func(uint64) common.Hash
 )
 
+// PrecompileOverrider is an interface that Rules.Payload can implement
+// to provide custom precompile overrides (used by coreth/subnet-evm for
+// stateful precompiles).
+type PrecompileOverrider interface {
+	PrecompileOverride(addr common.Address) (PrecompiledContract, bool)
+}
+
 func (evm *EVM) precompile(addr common.Address) (PrecompiledContract, bool) {
+	// Check if Rules payload has custom precompile overrides
+	if overrider, ok := evm.chainRules.Payload.(PrecompileOverrider); ok {
+		if p, found := overrider.PrecompileOverride(addr); found {
+			return p, true
+		}
+	}
+	// Fall back to standard precompiles
 	p, ok := evm.precompiles[addr]
 	return p, ok
 }
@@ -282,7 +296,13 @@ func (evm *EVM) Call(caller common.Address, addr common.Address, input []byte, g
 	evm.Context.Transfer(evm.StateDB, caller, addr, value)
 
 	if isPrecompile {
-		ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		// Check if this is a stateful precompile
+		if stateful, ok := p.(StatefulPrecompiledContract); ok {
+			env := NewPrecompileEnvironment(evm, caller, addr, gas, evm.readOnly)
+			ret, gas, err = stateful.RunStateful(env, input, gas)
+		} else {
+			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		}
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
 		code := evm.resolveCode(addr)
@@ -346,7 +366,13 @@ func (evm *EVM) CallCode(caller common.Address, addr common.Address, input []byt
 
 	// It is allowed to call precompiles, even via delegatecall
 	if p, isPrecompile := evm.precompile(addr); isPrecompile {
-		ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		// Check if this is a stateful precompile
+		if stateful, ok := p.(StatefulPrecompiledContract); ok {
+			env := NewPrecompileEnvironment(evm, caller, addr, gas, evm.readOnly)
+			ret, gas, err = stateful.RunStateful(env, input, gas)
+		} else {
+			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		}
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
 		// The contract is a scoped environment for this execution context only.
@@ -389,7 +415,14 @@ func (evm *EVM) DelegateCall(originCaller common.Address, caller common.Address,
 
 	// It is allowed to call precompiles, even via delegatecall
 	if p, isPrecompile := evm.precompile(addr); isPrecompile {
-		ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		// Check if this is a stateful precompile
+		if stateful, ok := p.(StatefulPrecompiledContract); ok {
+			// In delegate call, originCaller is the original caller, caller is the context
+			env := NewPrecompileEnvironment(evm, originCaller, caller, gas, evm.readOnly)
+			ret, gas, err = stateful.RunStateful(env, input, gas)
+		} else {
+			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		}
 	} else {
 		// Initialise a new contract and make initialise the delegate values
 		//
@@ -441,7 +474,14 @@ func (evm *EVM) StaticCall(caller common.Address, addr common.Address, input []b
 	evm.StateDB.AddBalance(addr, new(uint256.Int), tracing.BalanceChangeTouchAccount)
 
 	if p, isPrecompile := evm.precompile(addr); isPrecompile {
-		ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		// Check if this is a stateful precompile
+		if stateful, ok := p.(StatefulPrecompiledContract); ok {
+			// StaticCall is always readOnly
+			env := NewPrecompileEnvironment(evm, caller, addr, gas, true)
+			ret, gas, err = stateful.RunStateful(env, input, gas)
+		} else {
+			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+		}
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
 		// The contract is a scoped environment for this execution context only.

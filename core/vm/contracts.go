@@ -53,6 +53,16 @@ type PrecompiledContract interface {
 	Name() string
 }
 
+// StatefulPrecompiledContract is an interface for precompiles that need access
+// to the execution environment (state, caller, addresses, gas, etc.).
+// Used by coreth/subnet-evm for custom precompiles.
+type StatefulPrecompiledContract interface {
+	PrecompiledContract
+	// RunStateful runs the precompile with full execution context.
+	// Returns the output bytes, remaining gas, and any error.
+	RunStateful(env PrecompileEnvironment, input []byte, suppliedGas uint64) ([]byte, uint64, error)
+}
+
 // PrecompiledContracts contains the precompiled contracts supported at the given fork.
 type PrecompiledContracts map[common.Address]PrecompiledContract
 

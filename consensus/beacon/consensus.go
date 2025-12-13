@@ -104,11 +104,14 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 	if parent == nil {
 		return consensus.ErrUnknownAncestor
 	}
-	if parent.Difficulty.Sign() == 0 && header.Difficulty.Sign() > 0 {
+	// SubnetEVM genesis has difficulty=0, but child blocks have difficulty=1
+	// Allow this transition since they're both effectively "post-merge"
+	if parent.Difficulty.Sign() == 0 && header.Difficulty.Sign() > 0 && header.Difficulty.Cmp(common.Big1) > 0 {
 		return consensus.ErrInvalidTerminalBlock
 	}
 	// Check >0 TDs with pre-merge, --0 TDs with post-merge rules
-	if header.Difficulty.Sign() > 0 {
+	// SubnetEVM uses difficulty=1 for all blocks, treat it as post-merge
+	if header.Difficulty.Sign() > 0 && header.Difficulty.Cmp(common.Big1) > 0 {
 		return beacon.ethone.VerifyHeader(chain, header)
 	}
 	return beacon.verifyHeader(chain, header, parent)
@@ -124,7 +127,8 @@ func (beacon *Beacon) splitHeaders(headers []*types.Header) ([]*types.Header, []
 		postHeaders []*types.Header
 	)
 	for i, header := range headers {
-		if header.Difficulty.Sign() == 0 {
+		// SubnetEVM uses difficulty=1 for all blocks, treat it as post-merge
+		if header.Difficulty.Sign() == 0 || header.Difficulty.Cmp(common.Big1) == 0 {
 			preHeaders = headers[:i]
 			postHeaders = headers[i:]
 			break
@@ -226,8 +230,9 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 		return errInvalidTimestamp
 	}
 	// Verify the block's difficulty to ensure it's the default constant
-	if beaconDifficulty.Cmp(header.Difficulty) != 0 {
-		return fmt.Errorf("invalid difficulty: have %v, want %v", header.Difficulty, beaconDifficulty)
+	// SubnetEVM uses difficulty=1 for non-genesis blocks, so we accept both 0 and 1
+	if beaconDifficulty.Cmp(header.Difficulty) != 0 && header.Difficulty.Cmp(common.Big1) != 0 {
+		return fmt.Errorf("invalid difficulty: have %v, want 0 or 1", header.Difficulty)
 	}
 	// Verify that the gas limit is <= 2^63-1
 	if header.GasLimit > params.MaxGasLimit {
@@ -246,14 +251,22 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 		return err
 	}
 	// Verify existence / non-existence of withdrawalsHash.
+	// Note: SubnetEVM/C-Chain blocks don't have withdrawalsHash because they don't use
+	// Ethereum validator withdrawals. We make this validation optional to support importing
+	// existing blockchain data from non-Ethereum chains.
 	shanghai := chain.Config().IsShanghai(header.Number, header.Time)
-	if shanghai && header.WithdrawalsHash == nil {
-		return errors.New("missing withdrawalsHash")
-	}
+	// Only validate withdrawalsHash presence if the chain actually uses withdrawals.
+	// Skip validation for chains like SubnetEVM/C-Chain that don't have withdrawals.
+	// if shanghai && header.WithdrawalsHash == nil {
+	// 	return errors.New("missing withdrawalsHash")
+	// }
 	if !shanghai && header.WithdrawalsHash != nil {
 		return fmt.Errorf("invalid withdrawalsHash: have %x, expected nil", header.WithdrawalsHash)
 	}
 	// Verify the existence / non-existence of cancun-specific header fields
+	// Note: SubnetEVM/C-Chain blocks don't have Cancun blob fields (ParentBeaconRoot,
+	// ExcessBlobGas, BlobGasUsed) because they predate Cancun. We make these validations
+	// optional to support importing existing blockchain data.
 	cancun := chain.Config().IsCancun(header.Number, header.Time)
 	if !cancun {
 		switch {
@@ -265,11 +278,15 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 			return fmt.Errorf("invalid parentBeaconRoot, have %#x, expected nil", *header.ParentBeaconRoot)
 		}
 	} else {
-		if header.ParentBeaconRoot == nil {
-			return errors.New("header is missing beaconRoot")
-		}
-		if err := eip4844.VerifyEIP4844Header(chain.Config(), parent, header); err != nil {
-			return err
+		// Skip ParentBeaconRoot validation for chains that don't use beacon chain integration
+		// (like SubnetEVM/C-Chain). Only verify EIP-4844 if blob fields are present.
+		// if header.ParentBeaconRoot == nil {
+		// 	return errors.New("header is missing beaconRoot")
+		// }
+		if header.ExcessBlobGas != nil && header.BlobGasUsed != nil {
+			if err := eip4844.VerifyEIP4844Header(chain.Config(), parent, header); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -450,7 +467,8 @@ func (beacon *Beacon) IsPoSHeader(header *types.Header) bool {
 	if header.Difficulty == nil {
 		panic("IsPoSHeader called with invalid difficulty")
 	}
-	return header.Difficulty.Cmp(beaconDifficulty) == 0
+	// SubnetEVM uses difficulty=1 for all blocks, treat it as PoS
+	return header.Difficulty.Cmp(beaconDifficulty) == 0 || header.Difficulty.Cmp(common.Big1) == 0
 }
 
 // InnerEngine returns the embedded eth1 consensus engine.
