@@ -27,7 +27,6 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/trie/trienode"
 )
 
@@ -169,7 +168,7 @@ func testNodeIteratorCoverage(t *testing.T, scheme string) {
 			continue
 		}
 		count += 1
-		if elem, ok := elements[crypto.Keccak256Hash(it.Value())]; !ok {
+		if elem, ok := elements[common.Keccak256Hash(it.Value())]; !ok {
 			t.Error("state entry not reported")
 		} else if !bytes.Equal(it.Value(), elem.blob) {
 			t.Errorf("node blob is different, want %v got %v", elem.blob, it.Value())
@@ -586,7 +585,7 @@ func testIteratorNodeBlob(t *testing.T, scheme string) {
 		if !ok {
 			continue
 		}
-		got, present := found[crypto.Keccak256Hash(dbIter.Value())]
+		got, present := found[common.Keccak256Hash(dbIter.Value())]
 		if !present {
 			t.Fatal("Miss trie node")
 		}
@@ -621,7 +620,7 @@ func isTrieNode(scheme string, key, val []byte) (bool, []byte, common.Hash) {
 			return false, nil, common.Hash{}
 		}
 		path = common.CopyBytes(remain)
-		hash = crypto.Keccak256Hash(val)
+		hash = common.Keccak256Hash(val)
 	}
 	return true, path, hash
 }

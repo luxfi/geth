@@ -26,8 +26,8 @@ import (
 
 	"github.com/luxfi/geth/accounts/abi/abigen"
 	"github.com/luxfi/geth/cmd/utils"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/compiler"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/internal/flags"
 	"github.com/luxfi/geth/log"
 	"github.com/urfave/cli/v2"
@@ -194,7 +194,7 @@ func generate(c *cli.Context) error {
 			// hex encoding of the keccak256 hash of the fully qualified library name.
 			// Note that the fully qualified library name is the path of its source
 			// file and the library name separated by ":".
-			libPattern := crypto.Keccak256Hash([]byte(name)).String()[2:36] // the first 2 chars are 0x
+			libPattern := common.Keccak256Hash([]byte(name)).String()[2:36] // the first 2 chars are 0x
 			libs[libPattern] = typeName
 		}
 	}

@@ -24,7 +24,6 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/trie/utils"
 	"github.com/holiman/uint256"
 )
@@ -110,7 +109,7 @@ func TestVerkleRollBack(t *testing.T) {
 				t.Fatalf("Failed to update storage, %v", err)
 			}
 		}
-		hash := crypto.Keccak256Hash(code)
+		hash := common.Keccak256Hash(code)
 		if err := tr.UpdateContractCode(addr, hash, code); err != nil {
 			t.Fatalf("Failed to update contract, %v", err)
 		}

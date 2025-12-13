@@ -24,7 +24,6 @@ import (
 
 	"github.com/VictoriaMetrics/fastcache"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb/memorydb"
 )
 
