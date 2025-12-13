@@ -513,13 +513,13 @@ func NewKeccakState() KeccakState {
 
 // CreateAddress creates an ethereum address given the bytes and the nonce.
 func CreateAddress(addr Address, nonce uint64) Address {
-	return Address(crypto.CreateAddress(cryptoCommon.Address(addr), nonce))
+	return Address(crypto.CreateAddress(crypto.Address(addr), nonce))
 }
 
 // CreateAddress2 creates an ethereum address given the address bytes, initial
 // contract code hash and a salt.
 func CreateAddress2(addr Address, salt [32]byte, inithash []byte) Address {
-	return Address(crypto.CreateAddress2(cryptoCommon.Address(addr), salt, inithash))
+	return Address(crypto.CreateAddress2(crypto.Address(addr), salt, inithash))
 }
 
 // PubkeyToAddress returns the Ethereum address of the given public key.
