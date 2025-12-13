@@ -26,8 +26,9 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/geth/p2p/enr"
 )
 
@@ -201,5 +202,5 @@ func PubkeyToIDV4(key *ecdsa.PublicKey) ID {
 	e := make([]byte, 64)
 	math.ReadBits(key.X, e[:len(e)/2])
 	math.ReadBits(key.Y, e[len(e)/2:])
-	return ID(crypto.Keccak256Hash(e))
+	return ID(common.Keccak256Hash(e))
 }

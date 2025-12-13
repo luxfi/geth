@@ -249,7 +249,7 @@ func TestOnCodeChangeV2(t *testing.T) {
 	code := []byte{1, 2, 3}
 	{
 		wr.OnEnter(2, 0, addr, addr, nil, 1000, big.NewInt(0))
-		wr.OnCodeChangeV2(addr, common.Hash{}, nil, crypto.Keccak256Hash(code), code, CodeChangeContractCreation)
+		wr.OnCodeChangeV2(addr, common.Hash{}, nil, common.Keccak256Hash(code), code, CodeChangeContractCreation)
 		wr.OnExit(2, nil, 100, nil, true)
 	}
 

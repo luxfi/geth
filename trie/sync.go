@@ -27,7 +27,6 @@ import (
 	"github.com/luxfi/geth/common/prque"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/metrics"
@@ -730,7 +729,7 @@ func (s *Sync) hasNode(owner common.Hash, path []byte, hash common.Hash) (exists
 	} else {
 		blob = rawdb.ReadStorageTrieNode(s.database, owner, path)
 	}
-	exists = hash == crypto.Keccak256Hash(blob)
+	exists = hash == common.Keccak256Hash(blob)
 	inconsistent = !exists && len(blob) != 0
 	return exists, inconsistent
 }

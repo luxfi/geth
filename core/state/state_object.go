@@ -25,7 +25,6 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
@@ -101,7 +100,7 @@ func newObject(db *StateDB, address common.Address, acct *types.StateAccount) *s
 	return &stateObject{
 		db:                 db,
 		address:            address,
-		addrHash:           crypto.Keccak256Hash(address[:]),
+		addrHash:           common.Keccak256Hash(address[:]),
 		origin:             origin,
 		data:               *acct,
 		originStorage:      make(Storage),
@@ -396,7 +395,7 @@ func (s *stateObject) commitStorage(op *accountUpdate) {
 		if val == s.originStorage[key] {
 			continue
 		}
-		hash := crypto.Keccak256Hash(key[:])
+		hash := common.Keccak256Hash(key[:])
 		if op.storages == nil {
 			op.storages = make(map[common.Hash][]byte)
 		}

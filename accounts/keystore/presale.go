@@ -25,9 +25,10 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/accounts"
-	"github.com/luxfi/crypto"
 	"github.com/google/uuid"
+	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/accounts"
+	"github.com/luxfi/geth/common"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -90,7 +91,7 @@ func decryptPreSaleKey(fileContent []byte, password string) (key *Key, err error
 
 	key = &Key{
 		Id:         uuid.UUID{},
-		Address:    crypto.PubkeyToAddress(ecKey.PublicKey),
+		Address:    common.PubkeyToAddress(ecKey.PublicKey),
 		PrivateKey: ecKey,
 	}
 	derivedAddr := hex.EncodeToString(key.Address.Bytes()) // needed because .Hex() gives leading "0x"

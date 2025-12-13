@@ -26,7 +26,6 @@ import (
 	"github.com/VictoriaMetrics/fastcache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
@@ -168,7 +167,7 @@ func (s *nodeSet) revertTo(db ethdb.KeyValueReader, nodes map[common.Hash]map[st
 					if bytes.Equal(blob, n.Blob) {
 						continue
 					}
-					panic(fmt.Sprintf("non-existent account node (%v) blob: %v", path, crypto.Keccak256Hash(n.Blob).Hex()))
+					panic(fmt.Sprintf("non-existent account node (%v) blob: %v", path, common.Keccak256Hash(n.Blob).Hex()))
 				}
 				s.accountNodes[path] = n
 				delta += int64(len(n.Blob)) - int64(len(orig.Blob))
@@ -186,7 +185,7 @@ func (s *nodeSet) revertTo(db ethdb.KeyValueReader, nodes map[common.Hash]map[st
 					if bytes.Equal(blob, n.Blob) {
 						continue
 					}
-					panic(fmt.Sprintf("non-existent storage node (%x %v) blob: %v", owner, path, crypto.Keccak256Hash(n.Blob).Hex()))
+					panic(fmt.Sprintf("non-existent storage node (%x %v) blob: %v", owner, path, common.Keccak256Hash(n.Blob).Hex()))
 				}
 				current[path] = n
 				delta += int64(len(n.Blob)) - int64(len(orig.Blob))
@@ -252,7 +251,7 @@ func (s *nodeSet) decode(r *rlp.Stream) error {
 			// Account nodes
 			for _, n := range entry.Nodes {
 				if len(n.Blob) > 0 {
-					s.accountNodes[string(n.Path)] = trienode.New(crypto.Keccak256Hash(n.Blob), n.Blob)
+					s.accountNodes[string(n.Path)] = trienode.New(common.Keccak256Hash(n.Blob), n.Blob)
 				} else {
 					s.accountNodes[string(n.Path)] = trienode.NewDeleted()
 				}
@@ -262,7 +261,7 @@ func (s *nodeSet) decode(r *rlp.Stream) error {
 			subset := make(map[string]*trienode.Node)
 			for _, n := range entry.Nodes {
 				if len(n.Blob) > 0 {
-					subset[string(n.Path)] = trienode.New(crypto.Keccak256Hash(n.Blob), n.Blob)
+					subset[string(n.Path)] = trienode.New(common.Keccak256Hash(n.Blob), n.Blob)
 				} else {
 					subset[string(n.Path)] = trienode.NewDeleted()
 				}

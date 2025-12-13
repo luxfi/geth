@@ -718,19 +718,19 @@ func TestOpenDrops(t *testing.T) {
 
 	// Create a blob pool out of the pre-seeded data
 	statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
-	statedb.AddBalance(crypto.PubkeyToAddress(gapper.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(dangler.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(filler.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.SetNonce(crypto.PubkeyToAddress(filler.PublicKey), 3, tracing.NonceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(overlapper.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.SetNonce(crypto.PubkeyToAddress(overlapper.PublicKey), 2, tracing.NonceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(underpayer.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(outpricer.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(exceeder.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(overdrafter.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(overcapper.PublicKey), uint256.NewInt(10000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(duplicater.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
-	statedb.AddBalance(crypto.PubkeyToAddress(repeater.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(gapper.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(dangler.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(filler.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.SetNonce(common.PubkeyToAddress(filler.PublicKey), 3, tracing.NonceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(overlapper.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.SetNonce(common.PubkeyToAddress(overlapper.PublicKey), 2, tracing.NonceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(underpayer.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(outpricer.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(exceeder.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(overdrafter.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(overcapper.PublicKey), uint256.NewInt(10000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(duplicater.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
+	statedb.AddBalance(common.PubkeyToAddress(repeater.PublicKey), uint256.NewInt(1000000), tracing.BalanceChangeUnspecified)
 	statedb.Commit(0, true, false)
 
 	chain := &testBlockChain{
@@ -824,7 +824,7 @@ func TestOpenIndex(t *testing.T) {
 	// the cumulative minimum will be maintained.
 	var (
 		key, _ = crypto.GenerateKey()
-		addr   = crypto.PubkeyToAddress(key.PublicKey)
+		addr   = common.PubkeyToAddress(key.PublicKey)
 
 		txExecTipCaps = []uint64{10, 25, 5, 7, 1, 100}
 		txExecFeeCaps = []uint64{100, 90, 200, 10, 80, 300}
@@ -915,9 +915,9 @@ func TestOpenHeap(t *testing.T) {
 		key2, _ = crypto.GenerateKey()
 		key3, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
-		addr3 = crypto.PubkeyToAddress(key3.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
+		addr3 = common.PubkeyToAddress(key3.PublicKey)
 	)
 	if bytes.Compare(addr1[:], addr2[:]) > 0 {
 		key1, addr1, key2, addr2 = key2, addr2, key1, addr1
@@ -1000,9 +1000,9 @@ func TestOpenCap(t *testing.T) {
 		key2, _ = crypto.GenerateKey()
 		key3, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
-		addr3 = crypto.PubkeyToAddress(key3.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
+		addr3 = common.PubkeyToAddress(key3.PublicKey)
 
 		tx1 = makeTx(0, 1, 1000, 100, key1)
 		tx2 = makeTx(0, 1, 800, 70, key2)
@@ -1089,9 +1089,9 @@ func TestChangingSlotterSize(t *testing.T) {
 		key2, _ = crypto.GenerateKey()
 		key3, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
-		addr3 = crypto.PubkeyToAddress(key3.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
+		addr3 = common.PubkeyToAddress(key3.PublicKey)
 
 		tx1 = makeMultiBlobTx(0, 1, 1000, 100, 6, 0, key1, types.BlobSidecarVersion0)
 		tx2 = makeMultiBlobTx(0, 1, 800, 70, 6, 0, key2, types.BlobSidecarVersion0)
@@ -1192,9 +1192,9 @@ func TestBillyMigration(t *testing.T) {
 		key2, _ = crypto.GenerateKey()
 		key3, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
-		addr3 = crypto.PubkeyToAddress(key3.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
+		addr3 = common.PubkeyToAddress(key3.PublicKey)
 
 		tx1 = makeMultiBlobTx(0, 1, 1000, 100, 6, 0, key1, types.BlobSidecarVersion0)
 		tx2 = makeMultiBlobTx(0, 1, 800, 70, 6, 0, key2, types.BlobSidecarVersion0)
@@ -1286,8 +1286,8 @@ func TestBlobCountLimit(t *testing.T) {
 		key1, _ = crypto.GenerateKey()
 		key2, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
 	)
 
 	statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
@@ -1726,7 +1726,7 @@ func TestAdd(t *testing.T) {
 		for acc, seed := range tt.seeds {
 			// Generate a new random key/address for the seed account
 			keys[acc], _ = crypto.GenerateKey()
-			addrs[acc] = crypto.PubkeyToAddress(keys[acc].PublicKey)
+			addrs[acc] = common.PubkeyToAddress(keys[acc].PublicKey)
 
 			// Seed the state database with this account
 			statedb.AddBalance(addrs[acc], new(uint256.Int).SetUint64(seed.balance), tracing.BalanceChangeUnspecified)
@@ -1818,8 +1818,8 @@ func testAddLegacyBlobTx(t *testing.T, accept bool) {
 		key1, _ = crypto.GenerateKey()
 		key2, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
 	)
 
 	statedb, _ := state.New(types.EmptyRootHash, state.NewDatabaseForTesting())
@@ -1881,9 +1881,9 @@ func TestGetBlobs(t *testing.T) {
 		key2, _ = crypto.GenerateKey()
 		key3, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
-		addr3 = crypto.PubkeyToAddress(key3.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
+		addr3 = common.PubkeyToAddress(key3.PublicKey)
 
 		tx1 = makeMultiBlobTx(0, 1, 1000, 100, 6, 0, key1, types.BlobSidecarVersion0) // [0, 6)
 		tx2 = makeMultiBlobTx(0, 1, 800, 70, 6, 6, key2, types.BlobSidecarVersion1)   // [6, 12)
@@ -2116,7 +2116,7 @@ func TestSidecarConversion(t *testing.T) {
 	)
 	for i := range keys {
 		keys[i], _ = crypto.GenerateKey()
-		addrs[i] = crypto.PubkeyToAddress(keys[i].PublicKey)
+		addrs[i] = common.PubkeyToAddress(keys[i].PublicKey)
 		statedb.AddBalance(addrs[i], uint256.NewInt(1_000_000_000), tracing.BalanceChangeUnspecified)
 	}
 	for i := range preOsakaTxs {

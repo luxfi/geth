@@ -448,7 +448,7 @@ Lux Geth implements NIST-standardized post-quantum algorithms:
 
 ```go
 import (
-    "github.com/luxfi/geth/crypto/pqcrypto"
+    "github.com/luxfi/geth/crypto"
     "github.com/luxfi/geth/core/types"
 )
 
@@ -463,11 +463,11 @@ tx := types.NewTransaction(
 )
 
 // Sign with ML-DSA-65
-signer := pqcrypto.NewMLDSASigner(pqcrypto.AlgoMLDSA65)
+signer := crypto.NewMLDSASigner(crypto.AlgoMLDSA65)
 signedTx, err := signer.SignTx(tx, privateKey)
 
 // Verify signature
-valid, err := pqcrypto.VerifyMLDSA(
+valid, err := crypto.VerifyMLDSA(
     signedTx.Hash().Bytes(),
     signature,
     publicKey,

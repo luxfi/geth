@@ -23,7 +23,6 @@ import (
 	"sort"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
 	"github.com/holiman/uint256"
 )
 
@@ -381,7 +380,7 @@ func (ch nonceChange) copy() journalEntry {
 }
 
 func (ch codeChange) revert(s *StateDB) {
-	s.getStateObject(ch.account).setCode(crypto.Keccak256Hash(ch.prevCode), ch.prevCode)
+	s.getStateObject(ch.account).setCode(common.Keccak256Hash(ch.prevCode), ch.prevCode)
 }
 
 func (ch codeChange) dirtied() *common.Address {

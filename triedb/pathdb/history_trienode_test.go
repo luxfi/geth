@@ -57,7 +57,7 @@ func randomTrienodes(n int) (map[common.Hash]map[string][]byte, common.Hash) {
 		rnode := testrand.Bytes(256)
 		nodes[owner][""] = rnode
 		if owner == (common.Hash{}) {
-			root = crypto.Keccak256Hash(rnode)
+			root = common.Keccak256Hash(rnode)
 		}
 	}
 	return nodes, root

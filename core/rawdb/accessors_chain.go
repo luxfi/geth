@@ -26,7 +26,6 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
@@ -315,7 +314,7 @@ func ReadHeaderRLP(db ethdb.Reader, hash common.Hash, number uint64) rlp.RawValu
 		return nil
 	})
 	// If ancients failed or returned no data or hash doesn't match, read from leveldb
-	if err != nil || len(data) == 0 || (len(data) > 0 && crypto.Keccak256Hash(data) != hash) {
+	if err != nil || len(data) == 0 || (len(data) > 0 && common.Keccak256Hash(data) != hash) {
 		data, _ = db.Get(headerKey(number, hash))
 	}
 	return data
