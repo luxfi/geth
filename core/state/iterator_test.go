@@ -21,7 +21,6 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
 )
 
 // Tests that the node iterator indeed walks over the entire database contents.
