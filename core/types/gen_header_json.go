@@ -31,11 +31,14 @@ func (h Header) MarshalJSON() ([]byte, error) {
 		Extra            hexutil.Bytes   `json:"extraData"        gencodec:"required"`
 		MixDigest        common.Hash     `json:"mixHash"`
 		Nonce            BlockNonce      `json:"nonce"`
+		ExtDataHash      common.Hash     `json:"extDataHash" gencodec:"required"`
 		BaseFee          *hexutil.Big    `json:"baseFeePerGas" rlp:"optional"`
-		WithdrawalsHash  *common.Hash    `json:"withdrawalsRoot" rlp:"optional"`
+		ExtDataGasUsed   *hexutil.Big    `json:"extDataGasUsed" rlp:"optional"`
+		BlockGasCost     *hexutil.Big    `json:"blockGasCost" rlp:"optional"`
 		BlobGasUsed      *hexutil.Uint64 `json:"blobGasUsed" rlp:"optional"`
 		ExcessBlobGas    *hexutil.Uint64 `json:"excessBlobGas" rlp:"optional"`
 		ParentBeaconRoot *common.Hash    `json:"parentBeaconBlockRoot" rlp:"optional"`
+		WithdrawalsHash  *common.Hash    `json:"withdrawalsRoot" rlp:"optional"`
 		RequestsHash     *common.Hash    `json:"requestsHash" rlp:"optional"`
 		Hash             common.Hash     `json:"hash"`
 	}
@@ -55,11 +58,14 @@ func (h Header) MarshalJSON() ([]byte, error) {
 	enc.Extra = h.Extra
 	enc.MixDigest = h.MixDigest
 	enc.Nonce = h.Nonce
+	enc.ExtDataHash = h.ExtDataHash
 	enc.BaseFee = (*hexutil.Big)(h.BaseFee)
-	enc.WithdrawalsHash = h.WithdrawalsHash
+	enc.ExtDataGasUsed = (*hexutil.Big)(h.ExtDataGasUsed)
+	enc.BlockGasCost = (*hexutil.Big)(h.BlockGasCost)
 	enc.BlobGasUsed = (*hexutil.Uint64)(h.BlobGasUsed)
 	enc.ExcessBlobGas = (*hexutil.Uint64)(h.ExcessBlobGas)
 	enc.ParentBeaconRoot = h.ParentBeaconRoot
+	enc.WithdrawalsHash = h.WithdrawalsHash
 	enc.RequestsHash = h.RequestsHash
 	enc.Hash = h.Hash()
 	return json.Marshal(&enc)
@@ -83,11 +89,14 @@ func (h *Header) UnmarshalJSON(input []byte) error {
 		Extra            *hexutil.Bytes  `json:"extraData"        gencodec:"required"`
 		MixDigest        *common.Hash    `json:"mixHash"`
 		Nonce            *BlockNonce     `json:"nonce"`
+		ExtDataHash      *common.Hash    `json:"extDataHash" gencodec:"required"`
 		BaseFee          *hexutil.Big    `json:"baseFeePerGas" rlp:"optional"`
-		WithdrawalsHash  *common.Hash    `json:"withdrawalsRoot" rlp:"optional"`
+		ExtDataGasUsed   *hexutil.Big    `json:"extDataGasUsed" rlp:"optional"`
+		BlockGasCost     *hexutil.Big    `json:"blockGasCost" rlp:"optional"`
 		BlobGasUsed      *hexutil.Uint64 `json:"blobGasUsed" rlp:"optional"`
 		ExcessBlobGas    *hexutil.Uint64 `json:"excessBlobGas" rlp:"optional"`
 		ParentBeaconRoot *common.Hash    `json:"parentBeaconBlockRoot" rlp:"optional"`
+		WithdrawalsHash  *common.Hash    `json:"withdrawalsRoot" rlp:"optional"`
 		RequestsHash     *common.Hash    `json:"requestsHash" rlp:"optional"`
 	}
 	var dec Header
@@ -151,11 +160,18 @@ func (h *Header) UnmarshalJSON(input []byte) error {
 	if dec.Nonce != nil {
 		h.Nonce = *dec.Nonce
 	}
+	if dec.ExtDataHash == nil {
+		return errors.New("missing required field 'extDataHash' for Header")
+	}
+	h.ExtDataHash = *dec.ExtDataHash
 	if dec.BaseFee != nil {
 		h.BaseFee = (*big.Int)(dec.BaseFee)
 	}
-	if dec.WithdrawalsHash != nil {
-		h.WithdrawalsHash = dec.WithdrawalsHash
+	if dec.ExtDataGasUsed != nil {
+		h.ExtDataGasUsed = (*big.Int)(dec.ExtDataGasUsed)
+	}
+	if dec.BlockGasCost != nil {
+		h.BlockGasCost = (*big.Int)(dec.BlockGasCost)
 	}
 	if dec.BlobGasUsed != nil {
 		h.BlobGasUsed = (*uint64)(dec.BlobGasUsed)
@@ -165,6 +181,9 @@ func (h *Header) UnmarshalJSON(input []byte) error {
 	}
 	if dec.ParentBeaconRoot != nil {
 		h.ParentBeaconRoot = dec.ParentBeaconRoot
+	}
+	if dec.WithdrawalsHash != nil {
+		h.WithdrawalsHash = dec.WithdrawalsHash
 	}
 	if dec.RequestsHash != nil {
 		h.RequestsHash = dec.RequestsHash

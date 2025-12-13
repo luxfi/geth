@@ -2336,6 +2336,7 @@ func (bc *BlockChain) insertSideChain(block *types.Block, it *insertIterator, ma
 		numbers []uint64
 	)
 	parent := it.previous()
+	reachedGenesis := false
 	for parent != nil && !bc.HasState(parent.Root) {
 		if bc.stateRecoverable(parent.Root) {
 			if err := bc.triedb.Recover(parent.Root); err != nil {
@@ -2346,11 +2347,56 @@ func (bc *BlockChain) insertSideChain(block *types.Block, it *insertIterator, ma
 		hashes = append(hashes, parent.Hash())
 		numbers = append(numbers, parent.Number.Uint64())
 
+		// Check if we've reached genesis (block 0)
+		if parent.Number.Uint64() == 0 {
+			reachedGenesis = true
+			log.Info("Migration mode: reached genesis without state, will import blocks trusting state roots",
+				"genesisHash", parent.Hash(), "stateRoot", parent.Root)
+			break
+		}
+
 		parent = bc.GetHeader(parent.ParentHash, parent.Number.Uint64()-1)
 	}
 	if parent == nil {
 		return nil, it.index, errors.New("missing parent")
 	}
+
+	// Migration mode: If we reached genesis without state, we can't re-execute blocks.
+	// Instead, write blocks directly and update the canonical chain.
+	// This is used when migrating from another chain (e.g., SubnetEVM to C-Chain).
+	if reachedGenesis && !bc.HasState(parent.Root) {
+		log.Info("Migration mode: importing blocks without state re-execution",
+			"blocks", len(hashes), "from", hashes[len(hashes)-1], "to", hashes[0])
+		
+		// Write all blocks without state execution, from oldest to newest
+		for i := len(hashes) - 1; i >= 0; i-- {
+			block := bc.GetBlock(hashes[i], numbers[i])
+			if block == nil {
+				return nil, it.index, fmt.Errorf("migration: block %d not found", numbers[i])
+			}
+			
+			// Write block and update canonical chain
+			if err := bc.writeBlockWithoutState(block); err != nil {
+				return nil, it.index, err
+			}
+			rawdb.WriteCanonicalHash(bc.db, block.Hash(), block.NumberU64())
+			rawdb.WriteHeadBlockHash(bc.db, block.Hash())
+			rawdb.WriteHeadHeaderHash(bc.db, block.Hash())
+			
+			if numbers[i]%10000 == 0 {
+				log.Info("Migration progress", "block", numbers[i])
+			}
+		}
+		
+		// Now continue with the remaining blocks in the iterator
+		// They will be written without state as well
+		lastBlock := bc.GetBlock(hashes[0], numbers[0])
+		if lastBlock != nil {
+			log.Info("Migration: updated head block", "number", lastBlock.NumberU64(), "hash", lastBlock.Hash())
+		}
+		return nil, it.index, nil
+	}
+
 	// Import all the pruned blocks to make the state available
 	var (
 		blocks []*types.Block
