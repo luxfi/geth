@@ -39,7 +39,7 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/geth/crypto"
+	"github.com/luxfi/crypto"
 )
 
 func TestKDF(t *testing.T) {
