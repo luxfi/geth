@@ -68,3 +68,6 @@ type StateDatabase interface {
 	// An error will be returned if the specified state is not available.
 	StateReader(stateRoot common.Hash) (StateReader, error)
 }
+
+// Reader is an alias for NodeReader for compatibility with coreth
+type Reader = NodeReader
