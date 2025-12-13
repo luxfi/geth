@@ -1460,14 +1460,14 @@ func key32(i uint64) []byte {
 
 var (
 	codehashes = []common.Hash{
-		crypto.Keccak256Hash([]byte{0}),
-		crypto.Keccak256Hash([]byte{1}),
-		crypto.Keccak256Hash([]byte{2}),
-		crypto.Keccak256Hash([]byte{3}),
-		crypto.Keccak256Hash([]byte{4}),
-		crypto.Keccak256Hash([]byte{5}),
-		crypto.Keccak256Hash([]byte{6}),
-		crypto.Keccak256Hash([]byte{7}),
+		common.Keccak256Hash([]byte{0}),
+		common.Keccak256Hash([]byte{1}),
+		common.Keccak256Hash([]byte{2}),
+		common.Keccak256Hash([]byte{3}),
+		common.Keccak256Hash([]byte{4}),
+		common.Keccak256Hash([]byte{5}),
+		common.Keccak256Hash([]byte{6}),
+		common.Keccak256Hash([]byte{7}),
 	}
 )
 
@@ -1723,7 +1723,7 @@ func makeStorageTrieWithSeed(owner common.Hash, n, seed uint64, db *triedb.Datab
 		rlpSlotValue, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(slotValue[:]))
 
 		slotKey := key32(i)
-		key := crypto.Keccak256Hash(slotKey[:])
+		key := common.Keccak256Hash(slotKey[:])
 
 		elem := &kv{key[:], rlpSlotValue}
 		trie.MustUpdate(elem.k, elem.v)
@@ -1771,7 +1771,7 @@ func makeBoundaryStorageTrie(owner common.Hash, n int, db *triedb.Database) (com
 	// Fill other slots if required
 	for i := uint64(1); i <= uint64(n); i++ {
 		slotKey := key32(i)
-		key := crypto.Keccak256Hash(slotKey[:])
+		key := common.Keccak256Hash(slotKey[:])
 
 		slotValue := key32(i)
 		rlpSlotValue, _ := rlp.EncodeToBytes(common.TrimLeftZeroes(slotValue[:]))

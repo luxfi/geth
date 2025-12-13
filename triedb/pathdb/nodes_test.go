@@ -30,14 +30,14 @@ import (
 func TestNodeSetEncode(t *testing.T) {
 	nodes := make(map[common.Hash]map[string]*trienode.Node)
 	nodes[common.Hash{}] = map[string]*trienode.Node{
-		"":  trienode.New(crypto.Keccak256Hash([]byte{0x0}), []byte{0x0}),
-		"1": trienode.New(crypto.Keccak256Hash([]byte{0x1}), []byte{0x1}),
-		"2": trienode.New(crypto.Keccak256Hash([]byte{0x2}), []byte{0x2}),
+		"":  trienode.New(common.Keccak256Hash([]byte{0x0}), []byte{0x0}),
+		"1": trienode.New(common.Keccak256Hash([]byte{0x1}), []byte{0x1}),
+		"2": trienode.New(common.Keccak256Hash([]byte{0x2}), []byte{0x2}),
 	}
 	nodes[common.Hash{0x1}] = map[string]*trienode.Node{
-		"":  trienode.New(crypto.Keccak256Hash([]byte{0x0}), []byte{0x0}),
-		"1": trienode.New(crypto.Keccak256Hash([]byte{0x1}), []byte{0x1}),
-		"2": trienode.New(crypto.Keccak256Hash([]byte{0x2}), []byte{0x2}),
+		"":  trienode.New(common.Keccak256Hash([]byte{0x0}), []byte{0x0}),
+		"1": trienode.New(common.Keccak256Hash([]byte{0x1}), []byte{0x1}),
+		"2": trienode.New(common.Keccak256Hash([]byte{0x2}), []byte{0x2}),
 	}
 	s := newNodeSet(nodes)
 
@@ -60,14 +60,14 @@ func TestNodeSetEncode(t *testing.T) {
 func TestNodeSetWithOriginEncode(t *testing.T) {
 	nodes := make(map[common.Hash]map[string]*trienode.Node)
 	nodes[common.Hash{}] = map[string]*trienode.Node{
-		"":  trienode.New(crypto.Keccak256Hash([]byte{0x0}), []byte{0x0}),
-		"1": trienode.New(crypto.Keccak256Hash([]byte{0x1}), []byte{0x1}),
-		"2": trienode.New(crypto.Keccak256Hash([]byte{0x2}), []byte{0x2}),
+		"":  trienode.New(common.Keccak256Hash([]byte{0x0}), []byte{0x0}),
+		"1": trienode.New(common.Keccak256Hash([]byte{0x1}), []byte{0x1}),
+		"2": trienode.New(common.Keccak256Hash([]byte{0x2}), []byte{0x2}),
 	}
 	nodes[common.Hash{0x1}] = map[string]*trienode.Node{
-		"":  trienode.New(crypto.Keccak256Hash([]byte{0x0}), []byte{0x0}),
-		"1": trienode.New(crypto.Keccak256Hash([]byte{0x1}), []byte{0x1}),
-		"2": trienode.New(crypto.Keccak256Hash([]byte{0x2}), []byte{0x2}),
+		"":  trienode.New(common.Keccak256Hash([]byte{0x0}), []byte{0x0}),
+		"1": trienode.New(common.Keccak256Hash([]byte{0x1}), []byte{0x1}),
+		"2": trienode.New(common.Keccak256Hash([]byte{0x2}), []byte{0x2}),
 	}
 	origins := make(map[common.Hash]map[string][]byte)
 	origins[common.Hash{}] = map[string][]byte{

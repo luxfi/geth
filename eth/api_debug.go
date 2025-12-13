@@ -28,7 +28,6 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
@@ -235,7 +234,7 @@ func storageRangeAt(statedb *state.StateDB, root common.Hash, address common.Add
 	if storageRoot == types.EmptyRootHash || storageRoot == (common.Hash{}) {
 		return StorageRangeResult{}, nil // empty storage
 	}
-	id := trie.StorageTrieID(root, crypto.Keccak256Hash(address.Bytes()), storageRoot)
+	id := trie.StorageTrieID(root, common.Keccak256Hash(address.Bytes()), storageRoot)
 	tr, err := trie.NewStateTrie(id, statedb.Database().TrieDB())
 	if err != nil {
 		return StorageRangeResult{}, err

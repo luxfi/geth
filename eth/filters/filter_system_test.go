@@ -795,7 +795,7 @@ func TestTransactionReceiptsSubscription(t *testing.T) {
 		backend, sys = newTestFilterSystem(db, Config{})
 		api          = NewFilterAPI(sys)
 		key1, _      = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		addr1        = crypto.PubkeyToAddress(key1.PublicKey)
+		addr1        = common.PubkeyToAddress(key1.PublicKey)
 		signer       = types.NewLondonSigner(big.NewInt(1))
 		genesis      = &core.Genesis{
 			Alloc:   types.GenesisAlloc{addr1: {Balance: big.NewInt(1000000000000000000)}}, // 1 ETH

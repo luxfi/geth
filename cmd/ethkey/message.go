@@ -119,7 +119,7 @@ It is possible to refer to a file containing the message.`,
 			utils.Fatalf("Signature verification failed: %v", err)
 		}
 		recoveredPubkeyBytes := crypto.FromECDSAPub(recoveredPubkey)
-		recoveredAddress := crypto.PubkeyToAddress(*recoveredPubkey)
+		recoveredAddress := common.PubkeyToAddress(*recoveredPubkey)
 		success := address == recoveredAddress
 
 		out := outputVerify{

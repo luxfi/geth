@@ -58,7 +58,7 @@ var (
 	testKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 
 	// testAddr is the Ethereum address of the tester account.
-	testAddr = crypto.PubkeyToAddress(testKey.PublicKey)
+	testAddr = common.PubkeyToAddress(testKey.PublicKey)
 
 	testBalance = big.NewInt(2e18)
 )
@@ -262,7 +262,7 @@ func TestInvalidPayloadTimestamp(t *testing.T) {
 		t.Run(fmt.Sprintf("Timestamp test: %v", i), func(t *testing.T) {
 			params := engine.PayloadAttributes{
 				Timestamp:             test.time,
-				Random:                crypto.Keccak256Hash([]byte{byte(123)}),
+				Random:                common.Keccak256Hash([]byte{byte(123)}),
 				SuggestedFeeRecipient: parent.Coinbase,
 			}
 			fcState := engine.ForkchoiceStateV1{
@@ -616,7 +616,7 @@ func TestNewPayloadOnInvalidChain(t *testing.T) {
 		var (
 			params = engine.PayloadAttributes{
 				Timestamp:             parent.Time + 1,
-				Random:                crypto.Keccak256Hash([]byte{byte(i)}),
+				Random:                common.Keccak256Hash([]byte{byte(i)}),
 				SuggestedFeeRecipient: parent.Coinbase,
 			}
 			fcState = engine.ForkchoiceStateV1{
@@ -757,7 +757,7 @@ func TestEmptyBlocks(t *testing.T) {
 func getNewEnvelope(t *testing.T, api *ConsensusAPI, parent *types.Header, withdrawals []*types.Withdrawal, beaconRoot *common.Hash) *engine.ExecutionPayloadEnvelope {
 	params := engine.PayloadAttributes{
 		Timestamp:             parent.Time + 1,
-		Random:                crypto.Keccak256Hash([]byte{byte(1)}),
+		Random:                common.Keccak256Hash([]byte{byte(1)}),
 		SuggestedFeeRecipient: parent.Coinbase,
 		Withdrawals:           withdrawals,
 		BeaconRoot:            beaconRoot,
@@ -1882,9 +1882,9 @@ func newGetBlobEnv(t testing.TB, version byte) (*node.Node, *ConsensusAPI) {
 		key2, _ = crypto.GenerateKey()
 		key3, _ = crypto.GenerateKey()
 
-		addr1 = crypto.PubkeyToAddress(key1.PublicKey)
-		addr2 = crypto.PubkeyToAddress(key2.PublicKey)
-		addr3 = crypto.PubkeyToAddress(key3.PublicKey)
+		addr1 = common.PubkeyToAddress(key1.PublicKey)
+		addr2 = common.PubkeyToAddress(key2.PublicKey)
+		addr3 = common.PubkeyToAddress(key3.PublicKey)
 	)
 	// Disable Osaka fork for GetBlobsV1
 	if version == 0 {

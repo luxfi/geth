@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/p2p/discover/v4wire"
 	"github.com/luxfi/geth/p2p/enode"
@@ -304,7 +305,7 @@ func (t *UDPv4) newRandomLookup(ctx context.Context) *lookup {
 }
 
 func (t *UDPv4) newLookup(ctx context.Context, targetKey v4wire.Pubkey) *lookup {
-	target := enode.ID(crypto.Keccak256Hash(targetKey[:]))
+	target := enode.ID(common.Keccak256Hash(targetKey[:]))
 	it := newLookup(ctx, t.tab, target, func(n *enode.Node) ([]*enode.Node, error) {
 		addr, ok := n.UDPEndpoint()
 		if !ok {
@@ -752,7 +753,7 @@ func (t *UDPv4) handleFindnode(h *packetHandlerV4, from netip.AddrPort, fromID e
 	req := h.Packet.(*v4wire.Findnode)
 
 	// Determine closest nodes.
-	target := enode.ID(crypto.Keccak256Hash(req.Target[:]))
+	target := enode.ID(common.Keccak256Hash(req.Target[:]))
 	preferLive := !t.tab.cfg.NoFindnodeLivenessCheck
 	closest := t.tab.findnodeByID(target, bucketSize, preferLive).entries
 

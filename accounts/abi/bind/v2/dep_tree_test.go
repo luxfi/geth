@@ -69,12 +69,12 @@ func makeLinkTestCase(input map[rune][]rune, overrides map[rune]common.Address) 
 	for contract, deps := range input {
 		inputMap[contract] = make(map[rune]struct{})
 		if _, ok := patternMap[contract]; !ok {
-			patternMap[contract] = crypto.Keccak256Hash([]byte(string(contract))).String()[2:36]
+			patternMap[contract] = common.Keccak256Hash([]byte(string(contract))).String()[2:36]
 		}
 
 		for _, dep := range deps {
 			if _, ok := patternMap[dep]; !ok {
-				patternMap[dep] = crypto.Keccak256Hash([]byte(string(dep))).String()[2:36]
+				patternMap[dep] = common.Keccak256Hash([]byte(string(dep))).String()[2:36]
 			}
 			codes[patternMap[contract]] = codes[patternMap[contract]] + fmt.Sprintf("__$%s$__", patternMap[dep])
 			inputMap[contract][dep] = struct{}{}
@@ -83,7 +83,7 @@ func makeLinkTestCase(input map[rune][]rune, overrides map[rune]common.Address) 
 	}
 	overridesPatterns := make(map[string]common.Address)
 	for contractId, overrideAddr := range overrides {
-		pattern := crypto.Keccak256Hash([]byte(string(contractId))).String()[2:36]
+		pattern := common.Keccak256Hash([]byte(string(contractId))).String()[2:36]
 		overridesPatterns[pattern] = overrideAddr
 	}
 
@@ -153,7 +153,7 @@ func internalLinkDeps(metadata *MetaData, depMap map[string]*MetaData, roots *ma
 
 func testLinkCase(tcInput linkTestCaseInput) error {
 	var (
-		testAddr       = crypto.PubkeyToAddress(testKey.PublicKey)
+		testAddr       = common.PubkeyToAddress(testKey.PublicKey)
 		overridesAddrs = make(map[common.Address]struct{})
 		overrideAddrs  = make(map[rune]common.Address)
 	)
@@ -178,7 +178,7 @@ func testLinkCase(tcInput linkTestCaseInput) error {
 
 	var testAddrNonce uint64
 	mockDeploy := func(input []byte, deployer []byte) (common.Address, *types.Transaction, error) {
-		contractAddr := crypto.CreateAddress(testAddr, testAddrNonce)
+		contractAddr := common.CreateAddress(testAddr, testAddrNonce)
 		testAddrNonce++
 
 		if len(deployer) >= 20 {
@@ -228,7 +228,7 @@ func testLinkCase(tcInput linkTestCaseInput) error {
 		return fmt.Errorf("got %d deployed contracts. expected %d.\n", len(res.Addresses), len(tcInput.expectDeployed))
 	}
 	for contract := range tcInput.expectDeployed {
-		pattern := crypto.Keccak256Hash([]byte(string(contract))).String()[2:36]
+		pattern := common.Keccak256Hash([]byte(string(contract))).String()[2:36]
 		if _, ok := res.Addresses[pattern]; !ok {
 			return fmt.Errorf("expected contract %s was not deployed\n", string(contract))
 		}
