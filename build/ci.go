@@ -61,7 +61,7 @@ import (
 
 	"github.com/cespare/cp"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/crypto/signify"
+	"github.com/luxfi/crypto/signify"
 	"github.com/luxfi/geth/internal/build"
 	"github.com/luxfi/geth/internal/download"
 	"github.com/luxfi/geth/internal/version"

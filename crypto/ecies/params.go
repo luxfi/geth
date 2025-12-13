@@ -43,7 +43,7 @@ import (
 	"fmt"
 	"hash"
 
-	ethcrypto "github.com/luxfi/geth/crypto"
+	ethcrypto "github.com/luxfi/crypto"
 )
 
 var (
