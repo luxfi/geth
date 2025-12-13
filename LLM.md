@@ -137,3 +137,68 @@ Used testing.Testing() to skip sender caching during test runs
 - **Before**: 0% pass rate, timeouts after 60s
 - **After**: 100% pass rate, ~70s full suite, ~48s with -short
 - **Packages**: All 17 core sub-packages passing
+
+---
+
+## External Crypto Integration - December 13, 2025
+
+### Summary
+Externalized crypto types and functions to use `github.com/luxfi/crypto` package while maintaining type compatibility across geth.
+
+### Changes Made
+
+#### common/types.go - Crypto Wrapper Functions
+Added wrapper functions to bridge the type difference between `github.com/luxfi/crypto` and `github.com/luxfi/geth/common`:
+
+```go
+// Address is defined as: type Address crypto.Address
+
+// Wrapper functions added:
+func CreateAddress(addr Address, nonce uint64) Address
+func CreateAddress2(addr Address, salt [32]byte, inithash []byte) Address
+func PubkeyToAddress(p ecdsa.PublicKey) Address
+func Keccak256(data ...[]byte) []byte
+func Keccak256Hash(data ...[]byte) Hash
+func HashData(kh KeccakState, data []byte) Hash
+func NewKeccakState() KeccakState
+
+// Type alias:
+type KeccakState = crypto.KeccakState
+```
+
+#### Files Updated
+The following patterns were replaced across the codebase:
+- `crypto.CreateAddress` → `common.CreateAddress`
+- `crypto.CreateAddress2` → `common.CreateAddress2`
+- `crypto.PubkeyToAddress` → `common.PubkeyToAddress`
+- `crypto.Keccak256Hash` → `common.Keccak256Hash`
+- `crypto.KeccakState` → `common.KeccakState`
+- `crypto.NewKeccakState` → `common.NewKeccakState`
+- `crypto.HashData` → `common.HashData`
+
+#### Key Files Modified
+- `core/types/receipt.go` - Contract address derivation
+- `core/state_processor.go` - Transaction processing
+- `core/vm/evm.go` - Contract creation (CREATE/CREATE2)
+- `core/types/hashes.go` - EmptyCodeHash constant
+- `core/rawdb/*.go` - Hash verification functions
+- `triedb/pathdb/*.go` - Trie node hashing
+- `accounts/keystore/*.go` - Key generation
+- `eth/tracers/*.go` - Address derivation in tracers
+- `internal/ethapi/api.go` - API contract address calculation
+- `p2p/discover/*.go` - Node ID generation
+- `cmd/geth/*.go` - CLI tools
+
+### Deleted Files
+The following crypto files were removed as they are now provided by `github.com/luxfi/crypto`:
+- `crypto/blake2b/*` - Blake2b implementation
+- `crypto/bn256/*` - BN256 pairing implementation
+- `crypto/ecies/*` - ECIES encryption
+- `crypto/secp256r1/*` - secp256r1 verifier
+- `crypto/signify/*` - Signify signatures
+- `crypto/*.go` - Core crypto functions (keccak, signatures, etc.)
+
+### Build Status
+- ✅ `make` builds successfully
+- ✅ All crypto functions now use external `github.com/luxfi/crypto` package
+- ✅ Type compatibility maintained via `common.Address` = `crypto.Address`

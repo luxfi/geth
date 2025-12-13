@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 )
@@ -110,7 +109,7 @@ func accountHistory(freezer ethdb.AncientReader, address common.Address, start, 
 
 // storageHistory inspects the storage history within the range.
 func storageHistory(freezer ethdb.AncientReader, address common.Address, slot common.Hash, start uint64, end uint64) (*HistoryStats, error) {
-	slotHash := crypto.Keccak256Hash(slot.Bytes())
+	slotHash := common.Keccak256Hash(slot.Bytes())
 	return inspectHistory(freezer, start, end, func(h *stateHistory, stats *HistoryStats) {
 		slots, exists := h.storages[address]
 		if !exists {

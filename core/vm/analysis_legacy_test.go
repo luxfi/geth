@@ -74,7 +74,7 @@ func BenchmarkJumpdestHashing_1200k(bench *testing.B) {
 	code := make([]byte, analysisCodeSize)
 	bench.SetBytes(analysisCodeSize)
 	for bench.Loop() {
-		crypto.Keccak256Hash(code)
+		common.Keccak256Hash(code)
 	}
 }
 

@@ -25,7 +25,6 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/math"
-	"github.com/luxfi/crypto"
 )
 
 // MakeTopics converts a filter query argument list into a filter topic set.
@@ -68,10 +67,10 @@ func MakeTopics(query ...[]interface{}) ([][]common.Hash, error) {
 				blob := new(big.Int).SetUint64(rule).Bytes()
 				copy(topic[common.HashLength-len(blob):], blob)
 			case string:
-				hash := crypto.Keccak256Hash([]byte(rule))
+				hash := common.Keccak256Hash([]byte(rule))
 				copy(topic[:], hash[:])
 			case []byte:
-				hash := crypto.Keccak256Hash(rule)
+				hash := common.Keccak256Hash(rule)
 				copy(topic[:], hash[:])
 
 			default:

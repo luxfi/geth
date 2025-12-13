@@ -96,7 +96,7 @@ If you want to encrypt an existing private key, it can be specified by setting
 		}
 		key := &keystore.Key{
 			Id:         UUID,
-			Address:    crypto.PubkeyToAddress(privateKey.PublicKey),
+			Address:    common.PubkeyToAddress(privateKey.PublicKey),
 			PrivateKey: privateKey,
 		}
 

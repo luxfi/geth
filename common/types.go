@@ -18,6 +18,7 @@ package common
 
 import (
 	"bytes"
+	"crypto/ecdsa"
 	"database/sql/driver"
 	"encoding/hex"
 	"encoding/json"
@@ -29,6 +30,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/hexutil"
 	"golang.org/x/crypto/sha3"
 )
@@ -219,7 +221,7 @@ func (h UnprefixedHash) MarshalText() ([]byte, error) {
 /////////// Address
 
 // Address represents the 20 byte address of an Ethereum account.
-type Address [AddressLength]byte
+type Address crypto.Address
 
 // BytesToAddress returns Address with value b.
 // If b is larger than len(h), b will be cropped from the left.
@@ -494,4 +496,48 @@ func (b PrettyBytes) TerminalString() string {
 		return fmt.Sprintf("%x", b)
 	}
 	return fmt.Sprintf("%#x...%x (%dB)", b[:3], b[len(b)-3:], len(b))
+}
+
+// Crypto wrapper functions
+// These wrap the github.com/luxfi/crypto functions to provide proper type conversions
+// between common.Address and crypto.Address types.
+
+// KeccakState wraps sha3.state. It is an alias to crypto.KeccakState.
+type KeccakState = crypto.KeccakState
+
+// NewKeccakState creates a new KeccakState.
+func NewKeccakState() KeccakState {
+	return crypto.NewKeccakState()
+}
+
+// CreateAddress creates an ethereum address given the bytes and the nonce.
+func CreateAddress(addr Address, nonce uint64) Address {
+	return Address(crypto.CreateAddress(crypto.Address(addr), nonce))
+}
+
+// CreateAddress2 creates an ethereum address given the address bytes, initial
+// contract code hash and a salt.
+func CreateAddress2(addr Address, salt [32]byte, inithash []byte) Address {
+	return Address(crypto.CreateAddress2(crypto.Address(addr), salt, inithash))
+}
+
+// PubkeyToAddress returns the Ethereum address of the given public key.
+func PubkeyToAddress(p ecdsa.PublicKey) Address {
+	return Address(crypto.PubkeyToAddress(p))
+}
+
+// Keccak256 calculates and returns the Keccak256 hash of the input data.
+func Keccak256(data ...[]byte) []byte {
+	return crypto.Keccak256(data...)
+}
+
+// Keccak256Hash calculates and returns the Keccak256 hash of the input data,
+// converting it to a Hash.
+func Keccak256Hash(data ...[]byte) Hash {
+	return Hash(crypto.Keccak256Hash(data...))
+}
+
+// HashData hashes the provided data using the KeccakState and returns a 32 byte hash.
+func HashData(kh KeccakState, data []byte) Hash {
+	return Hash(crypto.HashData(kh, data))
 }

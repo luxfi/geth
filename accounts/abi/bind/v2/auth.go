@@ -62,7 +62,7 @@ func NewKeyedTransactor(key *ecdsa.PrivateKey, chainID *big.Int) *TransactOpts {
 	if chainID == nil {
 		panic("nil chainID")
 	}
-	keyAddr := crypto.PubkeyToAddress(key.PublicKey)
+	keyAddr := common.PubkeyToAddress(key.PublicKey)
 	signer := types.LatestSignerForChainID(chainID)
 	return &TransactOpts{
 		From: keyAddr,

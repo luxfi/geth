@@ -27,7 +27,6 @@ import (
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rlp"
@@ -78,7 +77,7 @@ type diskStore struct {
 func (s *diskStore) NodeReader(stateRoot common.Hash) (database.NodeReader, error) {
 	root := types.EmptyRootHash
 	if blob := rawdb.ReadAccountTrieNode(s.db, nil); len(blob) > 0 {
-		root = crypto.Keccak256Hash(blob)
+		root = common.Keccak256Hash(blob)
 	}
 	if root != stateRoot {
 		return nil, fmt.Errorf("state %x is not available", stateRoot)

@@ -200,7 +200,7 @@ func TestBatchIndexerWrite(t *testing.T) {
 	)
 	for i, h := range histories {
 		for _, addr := range h.accountList {
-			addrHash := crypto.Keccak256Hash(addr.Bytes())
+			addrHash := common.Keccak256Hash(addr.Bytes())
 			accounts[addrHash] = append(accounts[addrHash], uint64(i+1))
 
 			if _, ok := storages[addrHash]; !ok {

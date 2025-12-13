@@ -34,7 +34,7 @@ import (
 )
 
 func hashData(input []byte) common.Hash {
-	return crypto.Keccak256Hash(input)
+	return common.Keccak256Hash(input)
 }
 
 type genTester struct {
