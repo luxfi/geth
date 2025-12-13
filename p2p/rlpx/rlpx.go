@@ -24,6 +24,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/hmac"
 	"crypto/rand"
+	"crypto/subtle"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -33,7 +34,6 @@ import (
 	"net"
 	"time"
 
-	"github.com/luxfi/geth/common/bitutil"
 	"github.com/luxfi/geth/crypto"
 	"github.com/luxfi/geth/crypto/ecies"
 	"github.com/luxfi/geth/rlp"
@@ -677,6 +677,6 @@ func exportPubkey(pub *ecies.PublicKey) []byte {
 
 func xor(one, other []byte) (xor []byte) {
 	xor = make([]byte, len(one))
-	bitutil.XORBytes(xor, one, other)
+	subtle.XORBytes(xor, one, other)
 	return xor
 }
