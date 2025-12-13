@@ -52,7 +52,7 @@ func bindCombinedJSON(test *bindV2Test) (string, error) {
 		// hex encoding of the keccak256 hash of the fully qualified library name.
 		// Note that the fully qualified library name is the path of its source
 		// file and the library name separated by ":".
-		libPattern := crypto.Keccak256Hash([]byte(typeName)).String()[2:36] // the first 2 chars are 0x
+		libPattern := common.Keccak256Hash([]byte(typeName)).String()[2:36] // the first 2 chars are 0x
 		libs[libPattern] = typeName
 	}
 	if test.aliases == nil {

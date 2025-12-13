@@ -72,7 +72,7 @@ func BenchmarkInsertChain_ring1000_diskdb(b *testing.B) {
 var (
 	// This is the content of the genesis block used by the benchmarks.
 	benchRootKey, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-	benchRootAddr   = crypto.PubkeyToAddress(benchRootKey.PublicKey)
+	benchRootAddr   = common.PubkeyToAddress(benchRootKey.PublicKey)
 	benchRootFunds  = math.BigPow(2, 200)
 )
 
@@ -117,7 +117,7 @@ func init() {
 	ringAddrs[0] = benchRootAddr
 	for i := 1; i < len(ringKeys); i++ {
 		ringKeys[i], _ = crypto.GenerateKey()
-		ringAddrs[i] = crypto.PubkeyToAddress(ringKeys[i].PublicKey)
+		ringAddrs[i] = common.PubkeyToAddress(ringKeys[i].PublicKey)
 	}
 }
 

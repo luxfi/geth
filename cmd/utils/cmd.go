@@ -40,7 +40,6 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/debug"
@@ -525,7 +524,7 @@ func ImportPreimages(db ethdb.Database, fn string) error {
 			return err
 		}
 		// Accumulate the preimages and flush when enough ws gathered
-		preimages[crypto.Keccak256Hash(blob)] = common.CopyBytes(blob)
+		preimages[common.Keccak256Hash(blob)] = common.CopyBytes(blob)
 		if len(preimages) > 1024 {
 			rawdb.WritePreimages(db, preimages)
 			preimages = make(map[common.Hash][]byte)

@@ -52,7 +52,7 @@ type Account struct {
 func newAccounts(n int) (accounts []Account) {
 	for i := 0; i < n; i++ {
 		key, _ := crypto.GenerateKey()
-		addr := crypto.PubkeyToAddress(key.PublicKey)
+		addr := common.PubkeyToAddress(key.PublicKey)
 		accounts = append(accounts, Account{key: key, addr: addr})
 	}
 	slices.SortFunc(accounts, func(a, b Account) int { return a.addr.Cmp(b.addr) })
@@ -121,7 +121,7 @@ func TestAccountRange(t *testing.T) {
 
 	for i := range addrs {
 		hash := common.HexToHash(fmt.Sprintf("%x", i))
-		addr := common.BytesToAddress(crypto.Keccak256Hash(hash.Bytes()).Bytes())
+		addr := common.BytesToAddress(common.Keccak256Hash(hash.Bytes()).Bytes())
 		addrs[i] = addr
 		sdb.SetBalance(addrs[i], uint256.NewInt(1), tracing.BalanceChangeUnspecified)
 		if _, ok := m[addr]; ok {
@@ -152,7 +152,7 @@ func TestAccountRange(t *testing.T) {
 		if _, duplicate := secondResult.Accounts[addr1]; duplicate {
 			t.Fatalf("pagination test failed:  results should not overlap")
 		}
-		hList = append(hList, crypto.Keccak256Hash(acc.Address.Bytes()))
+		hList = append(hList, common.Keccak256Hash(acc.Address.Bytes()))
 	}
 	// Test to see if it's possible to recover from the middle of the previous
 	// set and get an even split between the first and second sets.

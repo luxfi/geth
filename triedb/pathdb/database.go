@@ -28,7 +28,6 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/trie/bintrie"
@@ -94,7 +93,7 @@ func merkleNodeHasher(blob []byte) (common.Hash, error) {
 	if len(blob) == 0 {
 		return types.EmptyRootHash, nil
 	}
-	return crypto.Keccak256Hash(blob), nil
+	return common.Keccak256Hash(blob), nil
 }
 
 // binaryNodeHasher computes the hash of the given verkle node.

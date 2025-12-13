@@ -70,7 +70,7 @@ func (e *BlockAccessList) Hash() common.Hash {
 		// under reasonable conditions.
 		panic(err)
 	}
-	return crypto.Keccak256Hash(enc.Bytes())
+	return common.Keccak256Hash(enc.Bytes())
 }
 
 // encodeBalance encodes the provided balance into 16-bytes.

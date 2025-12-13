@@ -118,7 +118,7 @@ func TestEIP2718TransactionSigHash(t *testing.T) {
 func TestEIP2930Signer(t *testing.T) {
 	var (
 		key, _  = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
-		keyAddr = crypto.PubkeyToAddress(key.PublicKey)
+		keyAddr = common.PubkeyToAddress(key.PublicKey)
 		signer1 = NewEIP2930Signer(big.NewInt(1))
 		signer2 = NewEIP2930Signer(big.NewInt(2))
 		tx0     = NewTx(&AccessListTx{Nonce: 1})
@@ -223,7 +223,7 @@ func decodeTx(data []byte) (*Transaction, error) {
 
 func defaultTestKey() (*ecdsa.PrivateKey, common.Address) {
 	key, _ := crypto.HexToECDSA("45a915e4d060149eb4365960e6a7a45f334393093061116b197e3240065ff2d8")
-	addr := crypto.PubkeyToAddress(key.PublicKey)
+	addr := common.PubkeyToAddress(key.PublicKey)
 	return key, addr
 }
 

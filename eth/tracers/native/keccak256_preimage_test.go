@@ -122,7 +122,7 @@ func TestKeccak256PreimageTracerSingleKeccak(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify the hash and preimage
-	expectedHash := crypto.Keccak256Hash(testData)
+	expectedHash := common.Keccak256Hash(testData)
 	require.Len(t, hashes, 1)
 	require.Contains(t, hashes, expectedHash)
 	require.Equal(t, hexutil.Bytes(testData), hashes[expectedHash])
@@ -167,7 +167,7 @@ func TestKeccak256PreimageTracerMultipleKeccak(t *testing.T) {
 			// Call OnOpcode with KECCAK256
 			tracer.OnOpcode(0, byte(vm.KECCAK256), 0, 0, mockScope, nil, 0, nil)
 
-			expectedHash := crypto.Keccak256Hash(tc.data)
+			expectedHash := common.Keccak256Hash(tc.data)
 			expectedHashes[expectedHash] = hexutil.Bytes(tc.data)
 		})
 	}
@@ -256,7 +256,7 @@ func TestKeccak256PreimageTracerMemoryOffset(t *testing.T) {
 	require.NoError(t, err)
 
 	// Verify the hash matches the target data, not the prefix
-	expectedHash := crypto.Keccak256Hash(testData)
+	expectedHash := common.Keccak256Hash(testData)
 	require.Len(t, hashes, 1)
 	require.Contains(t, hashes, expectedHash)
 	require.Equal(t, hexutil.Bytes(testData), hashes[expectedHash])
@@ -299,7 +299,7 @@ func TestKeccak256PreimageTracerMemoryPadding(t *testing.T) {
 	copy(expectedData, testData)
 	// Rest is zero-padded by default
 
-	expectedHash := crypto.Keccak256Hash(expectedData)
+	expectedHash := common.Keccak256Hash(expectedData)
 	require.Len(t, hashes, 1)
 	require.Contains(t, hashes, expectedHash)
 	require.Equal(t, hexutil.Bytes(expectedData), hashes[expectedHash])
@@ -337,7 +337,7 @@ func TestKeccak256PreimageTracerDuplicateHashes(t *testing.T) {
 	require.NoError(t, err)
 
 	// Should only have one entry (duplicates overwrite)
-	expectedHash := crypto.Keccak256Hash(testData)
+	expectedHash := common.Keccak256Hash(testData)
 	require.Len(t, hashes, 1)
 	require.Contains(t, hashes, expectedHash)
 	require.Equal(t, hexutil.Bytes(testData), hashes[expectedHash])
@@ -372,7 +372,7 @@ func TestKeccak256PreimageTracerWithExecutionError(t *testing.T) {
 	err = json.Unmarshal(result, &hashes)
 	require.NoError(t, err)
 
-	expectedHash := crypto.Keccak256Hash(testData)
+	expectedHash := common.Keccak256Hash(testData)
 	require.Len(t, hashes, 1)
 	require.Contains(t, hashes, expectedHash)
 	require.Equal(t, hexutil.Bytes(testData), hashes[expectedHash])
@@ -435,7 +435,7 @@ func TestKeccak256PreimageTracerLargeData(t *testing.T) {
 	err = json.Unmarshal(result, &hashes)
 	require.NoError(t, err)
 
-	expectedHash := crypto.Keccak256Hash(largeData)
+	expectedHash := common.Keccak256Hash(largeData)
 	require.Len(t, hashes, 1)
 	require.Contains(t, hashes, expectedHash)
 	require.Equal(t, hexutil.Bytes(largeData), hashes[expectedHash])

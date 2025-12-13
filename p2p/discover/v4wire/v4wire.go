@@ -28,8 +28,9 @@ import (
 	"net/netip"
 	"time"
 
-	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/common/math"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/rlp"
@@ -132,7 +133,7 @@ type Pubkey [64]byte
 
 // ID returns the node ID corresponding to the public key.
 func (e Pubkey) ID() enode.ID {
-	return enode.ID(crypto.Keccak256Hash(e[:]))
+	return enode.ID(common.Keccak256Hash(e[:]))
 }
 
 // Node represents information about a node.

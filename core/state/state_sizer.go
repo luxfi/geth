@@ -28,7 +28,6 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/metrics"
@@ -133,7 +132,7 @@ func calSizeStats(update *stateUpdate) (SizeStats, error) {
 
 	// Measure the account changes
 	for addr, oldValue := range update.accountsOrigin {
-		addrHash := crypto.Keccak256Hash(addr.Bytes())
+		addrHash := common.Keccak256Hash(addr.Bytes())
 		newValue, exists := update.accounts[addrHash]
 		if !exists {
 			return SizeStats{}, fmt.Errorf("account %x not found", addr)
@@ -157,7 +156,7 @@ func calSizeStats(update *stateUpdate) (SizeStats, error) {
 
 	// Measure storage changes
 	for addr, slots := range update.storagesOrigin {
-		addrHash := crypto.Keccak256Hash(addr.Bytes())
+		addrHash := common.Keccak256Hash(addr.Bytes())
 		subset, exists := update.storages[addrHash]
 		if !exists {
 			return SizeStats{}, fmt.Errorf("storage %x not found", addr)
@@ -168,7 +167,7 @@ func calSizeStats(update *stateUpdate) (SizeStats, error) {
 				newValue []byte
 			)
 			if update.rawStorageKey {
-				newValue, exists = subset[crypto.Keccak256Hash(key.Bytes())]
+				newValue, exists = subset[common.Keccak256Hash(key.Bytes())]
 			} else {
 				newValue, exists = subset[key]
 			}

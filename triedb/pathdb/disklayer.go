@@ -25,7 +25,6 @@ import (
 	"github.com/VictoriaMetrics/fastcache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/log"
 )
 
@@ -140,7 +139,7 @@ func (dl *diskLayer) node(owner common.Hash, path []byte, depth int) ([]byte, co
 		if blob := dl.nodes.Get(nil, key); len(blob) > 0 {
 			cleanNodeHitMeter.Mark(1)
 			cleanNodeReadMeter.Mark(int64(len(blob)))
-			return blob, crypto.Keccak256Hash(blob), &nodeLoc{loc: locCleanCache, depth: depth}, nil
+			return blob, common.Keccak256Hash(blob), &nodeLoc{loc: locCleanCache, depth: depth}, nil
 		}
 		cleanNodeMissMeter.Mark(1)
 	}
@@ -160,7 +159,7 @@ func (dl *diskLayer) node(owner common.Hash, path []byte, depth int) ([]byte, co
 		dl.nodes.Set(key, blob)
 		cleanNodeWriteMeter.Mark(int64(len(blob)))
 	}
-	return blob, crypto.Keccak256Hash(blob), &nodeLoc{loc: locDiskLayer, depth: depth}, nil
+	return blob, common.Keccak256Hash(blob), &nodeLoc{loc: locDiskLayer, depth: depth}, nil
 }
 
 // account directly retrieves the account RLP associated with a particular
