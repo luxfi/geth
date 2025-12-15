@@ -192,9 +192,10 @@ func (h *Header) Hash() common.Hash {
 	if len(h.rawRLP) > 0 {
 		return rlpHashBytes(h.rawRLP)
 	}
-	// Lux block detection: has ExtDataGasUsed or BlockGasCost set
+	// Lux block detection: has ExtDataGasUsed or BlockGasCost set, but no Eth2 fields
 	// For newly constructed blocks (no rawRLP), use Hash19() to match coreth format
-	if h.ExtDataGasUsed != nil || h.BlockGasCost != nil {
+	// This must match the logic in isLux19Format() and EncodeRLP()
+	if h.isLux19Format() {
 		return h.Hash19()
 	}
 	return rlpHash(h)
@@ -301,6 +302,13 @@ func (h *Header) isLux19Format() bool {
 	hasEth2Fields := h.BlobGasUsed != nil || h.ExcessBlobGas != nil ||
 		h.ParentBeaconRoot != nil || h.WithdrawalsHash != nil || h.RequestsHash != nil
 	return hasLuxFields && !hasEth2Fields
+}
+
+// ClearInternalFields clears internal fields used for decode/encode operations.
+// This is useful for testing when comparing headers after roundtrip encoding.
+func (h *Header) ClearInternalFields() {
+	h.rawRLP = nil
+	h.rlpFormat = 0
 }
 
 // encodeRLP17 encodes using 17-field format (BaseFee + ExtDataHash).
