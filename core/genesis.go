@@ -88,6 +88,12 @@ type Genesis struct {
 	// This is used when importing genesis from pre-Shanghai chains (like SubnetEVM)
 	// to preserve the exact genesis hash without WithdrawalsHash etc.
 	SkipPostMergeFields bool `json:"skipPostMergeFields,omitempty"`
+
+	// GenesisHash allows specifying the exact hash for the genesis block.
+	// When set, this hash is used for all database keys instead of the computed hash.
+	// This is used when importing genesis from chains that used different header
+	// field ordering (like Lux C-chain which used 16-field format).
+	GenesisHash *common.Hash `json:"genesisHash,omitempty"`
 }
 
 // copy copies the genesis.
@@ -589,20 +595,29 @@ func (g *Genesis) Commit(db ethdb.Database, triedb *triedb.Database) (*types.Blo
 	}
 	block := g.toBlockWithRoot(root)
 
+	// Determine which hash to use for database keys.
+	// If GenesisHash is specified, use it instead of the computed hash.
+	// This is needed for chains like Lux C-chain that used different header formats.
+	hash := block.Hash()
+	if g.GenesisHash != nil {
+		log.Info("Using pre-computed genesis hash", "computed", hash.Hex(), "specified", g.GenesisHash.Hex())
+		hash = *g.GenesisHash
+	}
+
 	// Marshal the genesis state specification and persist.
 	blob, err := json.Marshal(g.Alloc)
 	if err != nil {
 		return nil, err
 	}
 	batch := db.NewBatch()
-	rawdb.WriteGenesisStateSpec(batch, block.Hash(), blob)
-	rawdb.WriteBlock(batch, block)
-	rawdb.WriteReceipts(batch, block.Hash(), block.NumberU64(), nil)
-	rawdb.WriteCanonicalHash(batch, block.Hash(), block.NumberU64())
-	rawdb.WriteHeadBlockHash(batch, block.Hash())
-	rawdb.WriteHeadFastBlockHash(batch, block.Hash())
-	rawdb.WriteHeadHeaderHash(batch, block.Hash())
-	rawdb.WriteChainConfig(batch, block.Hash(), config)
+	rawdb.WriteGenesisStateSpec(batch, hash, blob)
+	rawdb.WriteBlockWithHash(batch, block, hash)
+	rawdb.WriteReceipts(batch, hash, block.NumberU64(), nil)
+	rawdb.WriteCanonicalHash(batch, hash, block.NumberU64())
+	rawdb.WriteHeadBlockHash(batch, hash)
+	rawdb.WriteHeadFastBlockHash(batch, hash)
+	rawdb.WriteHeadHeaderHash(batch, hash)
+	rawdb.WriteChainConfig(batch, hash, config)
 	return block, batch.Write()
 }
 

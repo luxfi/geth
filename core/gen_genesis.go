@@ -37,6 +37,7 @@ func (g Genesis) MarshalJSON() ([]byte, error) {
 		AcceptExistingState bool                                       `json:"acceptExistingState,omitempty"`
 		StateRoot           *common.Hash                               `json:"stateRoot,omitempty"`
 		SkipPostMergeFields bool                                       `json:"skipPostMergeFields,omitempty"`
+		GenesisHash         *common.Hash                               `json:"genesisHash,omitempty"`
 	}
 	var enc Genesis
 	enc.Config = g.Config
@@ -62,6 +63,7 @@ func (g Genesis) MarshalJSON() ([]byte, error) {
 	enc.AcceptExistingState = g.AcceptExistingState
 	enc.StateRoot = g.StateRoot
 	enc.SkipPostMergeFields = g.SkipPostMergeFields
+	enc.GenesisHash = g.GenesisHash
 	return json.Marshal(&enc)
 }
 
@@ -86,6 +88,7 @@ func (g *Genesis) UnmarshalJSON(input []byte) error {
 		AcceptExistingState *bool                                      `json:"acceptExistingState,omitempty"`
 		StateRoot           *common.Hash                               `json:"stateRoot,omitempty"`
 		SkipPostMergeFields *bool                                      `json:"skipPostMergeFields,omitempty"`
+		GenesisHash         *common.Hash                               `json:"genesisHash,omitempty"`
 	}
 	var dec Genesis
 	if err := json.Unmarshal(input, &dec); err != nil {
@@ -150,6 +153,9 @@ func (g *Genesis) UnmarshalJSON(input []byte) error {
 	}
 	if dec.SkipPostMergeFields != nil {
 		g.SkipPostMergeFields = *dec.SkipPostMergeFields
+	}
+	if dec.GenesisHash != nil {
+		g.GenesisHash = dec.GenesisHash
 	}
 	return nil
 }

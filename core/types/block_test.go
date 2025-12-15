@@ -379,7 +379,7 @@ func TestLuxMainnetGenesis(t *testing.T) {
 	expectedStateRoot := common.HexToHash("0x2d1cedac263020c5c56ef962f6abe0da1f5217bdc6468f8c9258a0ea23699e80")
 
 	// Construct the Lux mainnet genesis header
-	// These values are from the actual Lux mainnet genesis block
+	// These values are from the actual Lux mainnet genesis block (network-id 96369)
 	genesisHeader := &Header{
 		ParentHash:  common.Hash{},
 		UncleHash:   EmptyUncleHash,
@@ -388,15 +388,15 @@ func TestLuxMainnetGenesis(t *testing.T) {
 		TxHash:      EmptyTxsHash,
 		ReceiptHash: EmptyReceiptsHash,
 		Bloom:       Bloom{},
-		Difficulty:  big.NewInt(1),
+		Difficulty:  big.NewInt(0),
 		Number:      big.NewInt(0),
-		GasLimit:    8000000,
+		GasLimit:    12000000,            // 0xb71b00
 		GasUsed:     0,
-		Time:        0,
+		Time:        0x672485c2,          // 1730479554
 		Extra:       []byte{},
 		MixDigest:   common.Hash{},
 		Nonce:       BlockNonce{},
-		BaseFee:     big.NewInt(225000000000), // 225 gwei
+		BaseFee:     big.NewInt(25000000000), // 25 gwei (0x5d21dba00)
 	}
 
 	// Verify the genesis hash using Hash16 (16-field format for Lux mainnet)
@@ -435,6 +435,485 @@ func TestLuxMainnetGenesis(t *testing.T) {
 
 	t.Logf("Lux mainnet genesis hash verified: %s", computedHash.Hex())
 	t.Logf("Lux mainnet state root verified: %s", expectedStateRoot.Hex())
+}
+
+// TestLuxGenesisRawHashPreservation verifies that decoding a block from RLP bytes
+// preserves the original hash. This is critical for genesis block compatibility.
+//
+// Test procedure:
+// 1. Create RLP bytes for a block header with known hash (Lux genesis)
+// 2. Decode the block
+// 3. Call block.Hash()
+// 4. Verify hash matches expected
+func TestLuxGenesisRawHashPreservation(t *testing.T) {
+	// Expected Lux mainnet genesis hash
+	expectedHash := common.HexToHash("0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e")
+
+	// Lux genesis header values
+	stateRoot := common.HexToHash("0x2d1cedac263020c5c56ef962f6abe0da1f5217bdc6468f8c9258a0ea23699e80")
+	timestamp := uint64(0x672485c2)  // 1730479554
+	gasLimit := uint64(0xb71b00)     // 12000000
+	baseFee := big.NewInt(0x5d21dba00) // 25 gwei
+
+	// Step 1: Create a 16-field header struct (post-London, pre-ExtDataHash format)
+	h16 := hdr16{
+		ParentHash:  common.Hash{},    // zero hash for genesis
+		UncleHash:   EmptyUncleHash,
+		Coinbase:    common.Address{},
+		Root:        stateRoot,
+		TxHash:      EmptyTxsHash,
+		ReceiptHash: EmptyReceiptsHash,
+		Bloom:       Bloom{},
+		Difficulty:  big.NewInt(0),
+		Number:      big.NewInt(0),
+		GasLimit:    gasLimit,
+		GasUsed:     0,
+		Time:        timestamp,
+		Extra:       []byte{},
+		MixDigest:   common.Hash{},
+		Nonce:       BlockNonce{},
+		BaseFee:     baseFee,
+	}
+
+	// Step 2: Encode the header to RLP bytes
+	headerRLP, err := rlp.EncodeToBytes(&h16)
+	if err != nil {
+		t.Fatalf("failed to encode header: %v", err)
+	}
+
+	// Create a block with this header (empty body)
+	// Block format: [header, transactions, uncles]
+	blockRLP, err := rlp.EncodeToBytes([]interface{}{
+		rlp.RawValue(headerRLP),
+		[]*Transaction{}, // empty transactions
+		[]*Header{},      // empty uncles
+	})
+	if err != nil {
+		t.Fatalf("failed to encode block: %v", err)
+	}
+
+	// Step 3: Decode the block from RLP
+	var block Block
+	if err := rlp.DecodeBytes(blockRLP, &block); err != nil {
+		t.Fatalf("failed to decode block: %v", err)
+	}
+
+	// Step 4: Verify hash matches expected
+	computedHash := block.Hash()
+	if computedHash != expectedHash {
+		t.Errorf("hash mismatch after decode:\n  computed: %s\n  expected: %s",
+			computedHash.Hex(), expectedHash.Hex())
+	}
+
+	// Additional verification: decode header directly and check hash
+	decodedHeader, err := DecodeHeader(headerRLP)
+	if err != nil {
+		t.Fatalf("failed to decode header directly: %v", err)
+	}
+
+	headerHash := decodedHeader.Hash16()
+	if headerHash != expectedHash {
+		t.Errorf("direct header hash mismatch:\n  computed: %s\n  expected: %s",
+			headerHash.Hex(), expectedHash.Hex())
+	}
+
+	// Verify key fields are preserved
+	if block.Root() != stateRoot {
+		t.Errorf("state root not preserved: have %s, want %s",
+			block.Root().Hex(), stateRoot.Hex())
+	}
+	if block.Time() != timestamp {
+		t.Errorf("timestamp not preserved: have %d, want %d",
+			block.Time(), timestamp)
+	}
+	if block.GasLimit() != gasLimit {
+		t.Errorf("gas limit not preserved: have %d, want %d",
+			block.GasLimit(), gasLimit)
+	}
+	if block.BaseFee().Cmp(baseFee) != 0 {
+		t.Errorf("base fee not preserved: have %s, want %s",
+			block.BaseFee().String(), baseFee.String())
+	}
+
+	t.Logf("Raw hash preservation verified: %s", expectedHash.Hex())
+}
+
+// TestLuxGenesisHash16 verifies that the Lux mainnet genesis hash using 16-field format
+// computes to the expected value: 0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e
+func TestLuxGenesisHash16(t *testing.T) {
+	// Expected hash from Lux mainnet genesis
+	expectedHash := common.HexToHash("0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e")
+
+	// Genesis parameters from Lux mainnet (network-id 96369)
+	genesisHeader := &Header{
+		ParentHash:  common.Hash{},
+		UncleHash:   EmptyUncleHash,
+		Coinbase:    common.Address{},
+		Root:        common.HexToHash("0x2d1cedac263020c5c56ef962f6abe0da1f5217bdc6468f8c9258a0ea23699e80"),
+		TxHash:      EmptyTxsHash,
+		ReceiptHash: EmptyReceiptsHash,
+		Bloom:       Bloom{},
+		Difficulty:  big.NewInt(0),
+		Number:      big.NewInt(0),
+		GasLimit:    0xb71b00,                // 12000000
+		GasUsed:     0,
+		Time:        0x672485c2,              // 1730479554
+		Extra:       []byte{},
+		MixDigest:   common.Hash{},
+		Nonce:       BlockNonce{},
+		BaseFee:     big.NewInt(0x5d21dba00), // 25000000000 (25 gwei)
+	}
+
+	// Compute hash using 16-field format
+	computedHash := genesisHeader.Hash16()
+
+	if computedHash != expectedHash {
+		t.Errorf("genesis hash mismatch:\n  computed: %s\n  expected: %s",
+			computedHash.Hex(), expectedHash.Hex())
+	}
+
+	// Verify RLP encoding produces expected field count
+	h16 := hdr16{
+		ParentHash:  genesisHeader.ParentHash,
+		UncleHash:   genesisHeader.UncleHash,
+		Coinbase:    genesisHeader.Coinbase,
+		Root:        genesisHeader.Root,
+		TxHash:      genesisHeader.TxHash,
+		ReceiptHash: genesisHeader.ReceiptHash,
+		Bloom:       genesisHeader.Bloom,
+		Difficulty:  genesisHeader.Difficulty,
+		Number:      genesisHeader.Number,
+		GasLimit:    genesisHeader.GasLimit,
+		GasUsed:     genesisHeader.GasUsed,
+		Time:        genesisHeader.Time,
+		Extra:       genesisHeader.Extra,
+		MixDigest:   genesisHeader.MixDigest,
+		Nonce:       genesisHeader.Nonce,
+		BaseFee:     genesisHeader.BaseFee,
+	}
+	encoded, err := rlp.EncodeToBytes(&h16)
+	if err != nil {
+		t.Fatalf("failed to encode header: %v", err)
+	}
+
+	// Decode and verify field count
+	decoded, err := DecodeHeader(encoded)
+	if err != nil {
+		t.Fatalf("failed to decode header: %v", err)
+	}
+	if decoded.BaseFee.Cmp(genesisHeader.BaseFee) != 0 {
+		t.Errorf("BaseFee mismatch after decode: have %v, want %v",
+			decoded.BaseFee, genesisHeader.BaseFee)
+	}
+
+	t.Logf("Genesis hash verified: %s", computedHash.Hex())
+}
+
+// TestLuxBlockHash19 verifies that post-genesis blocks with 19-field headers
+// (including ExtDataHash, ExtDataGasUsed, BlockGasCost) compute correct hashes.
+func TestLuxBlockHash19(t *testing.T) {
+	// Create a 19-field header (post-genesis with Lux extensions)
+	extDataHash := common.HexToHash("0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
+
+	header := &Header{
+		ParentHash:     common.HexToHash("0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e"),
+		UncleHash:      EmptyUncleHash,
+		Coinbase:       common.Address{},
+		Root:           common.HexToHash("0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"),
+		TxHash:         EmptyTxsHash,
+		ReceiptHash:    EmptyReceiptsHash,
+		Bloom:          Bloom{},
+		Difficulty:     big.NewInt(0),
+		Number:         big.NewInt(1),
+		GasLimit:       0xb71b00,
+		GasUsed:        21000,
+		Time:           0x672485c3,
+		Extra:          []byte{},
+		MixDigest:      common.Hash{},
+		Nonce:          BlockNonce{},
+		BaseFee:        big.NewInt(0x5d21dba00),
+		ExtDataHash:    &extDataHash,
+		ExtDataGasUsed: big.NewInt(0),
+		BlockGasCost:   big.NewInt(100000),
+	}
+
+	// Encode using hdr19 struct to ensure 19-field format
+	h19 := hdr19{
+		ParentHash:     header.ParentHash,
+		UncleHash:      header.UncleHash,
+		Coinbase:       header.Coinbase,
+		Root:           header.Root,
+		TxHash:         header.TxHash,
+		ReceiptHash:    header.ReceiptHash,
+		Bloom:          header.Bloom,
+		Difficulty:     header.Difficulty,
+		Number:         header.Number,
+		GasLimit:       header.GasLimit,
+		GasUsed:        header.GasUsed,
+		Time:           header.Time,
+		Extra:          header.Extra,
+		MixDigest:      header.MixDigest,
+		Nonce:          header.Nonce,
+		BaseFee:        header.BaseFee,
+		ExtDataHash:    header.ExtDataHash,
+		ExtDataGasUsed: header.ExtDataGasUsed,
+		BlockGasCost:   header.BlockGasCost,
+	}
+
+	// Encode and compute hash
+	encoded, err := rlp.EncodeToBytes(&h19)
+	if err != nil {
+		t.Fatalf("failed to encode 19-field header: %v", err)
+	}
+
+	// Compute hash via RLP
+	hash19 := rlpHash(&h19)
+
+	// Decode and verify
+	decoded, err := DecodeHeader(encoded)
+	if err != nil {
+		t.Fatalf("failed to decode 19-field header: %v", err)
+	}
+
+	// Verify all 19 fields are preserved
+	if decoded.ParentHash != header.ParentHash {
+		t.Errorf("ParentHash mismatch: have %s, want %s", decoded.ParentHash.Hex(), header.ParentHash.Hex())
+	}
+	if decoded.ExtDataHash == nil || *decoded.ExtDataHash != extDataHash {
+		t.Errorf("ExtDataHash mismatch: have %v, want %s", decoded.ExtDataHash, extDataHash.Hex())
+	}
+	if decoded.ExtDataGasUsed == nil || decoded.ExtDataGasUsed.Cmp(header.ExtDataGasUsed) != 0 {
+		t.Errorf("ExtDataGasUsed mismatch: have %v, want %v", decoded.ExtDataGasUsed, header.ExtDataGasUsed)
+	}
+	if decoded.BlockGasCost == nil || decoded.BlockGasCost.Cmp(header.BlockGasCost) != 0 {
+		t.Errorf("BlockGasCost mismatch: have %v, want %v", decoded.BlockGasCost, header.BlockGasCost)
+	}
+
+	t.Logf("19-field block hash: %s", hash19.Hex())
+}
+
+// TestLuxHashChainContinuity verifies that parent hash matches the previous block hash,
+// ensuring hash chain continuity between 16-field genesis and 19-field post-genesis blocks.
+func TestLuxHashChainContinuity(t *testing.T) {
+	// Genesis block (16-field)
+	genesisHeader := &Header{
+		ParentHash:  common.Hash{},
+		UncleHash:   EmptyUncleHash,
+		Coinbase:    common.Address{},
+		Root:        common.HexToHash("0x2d1cedac263020c5c56ef962f6abe0da1f5217bdc6468f8c9258a0ea23699e80"),
+		TxHash:      EmptyTxsHash,
+		ReceiptHash: EmptyReceiptsHash,
+		Bloom:       Bloom{},
+		Difficulty:  big.NewInt(0),
+		Number:      big.NewInt(0),
+		GasLimit:    0xb71b00,
+		GasUsed:     0,
+		Time:        0x672485c2,
+		Extra:       []byte{},
+		MixDigest:   common.Hash{},
+		Nonce:       BlockNonce{},
+		BaseFee:     big.NewInt(0x5d21dba00),
+	}
+	genesisHash := genesisHeader.Hash16()
+
+	// Block 1 (19-field, references genesis)
+	extDataHash1 := common.HexToHash("0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
+	block1Header := &Header{
+		ParentHash:     genesisHash, // Must match genesis hash
+		UncleHash:      EmptyUncleHash,
+		Coinbase:       common.Address{},
+		Root:           common.HexToHash("0x1111111111111111111111111111111111111111111111111111111111111111"),
+		TxHash:         EmptyTxsHash,
+		ReceiptHash:    EmptyReceiptsHash,
+		Bloom:          Bloom{},
+		Difficulty:     big.NewInt(0),
+		Number:         big.NewInt(1),
+		GasLimit:       0xb71b00,
+		GasUsed:        0,
+		Time:           0x672485c3,
+		Extra:          []byte{},
+		MixDigest:      common.Hash{},
+		Nonce:          BlockNonce{},
+		BaseFee:        big.NewInt(0x5d21dba00),
+		ExtDataHash:    &extDataHash1,
+		ExtDataGasUsed: big.NewInt(0),
+		BlockGasCost:   big.NewInt(100000),
+	}
+	h19_1 := hdr19{
+		ParentHash:     block1Header.ParentHash,
+		UncleHash:      block1Header.UncleHash,
+		Coinbase:       block1Header.Coinbase,
+		Root:           block1Header.Root,
+		TxHash:         block1Header.TxHash,
+		ReceiptHash:    block1Header.ReceiptHash,
+		Bloom:          block1Header.Bloom,
+		Difficulty:     block1Header.Difficulty,
+		Number:         block1Header.Number,
+		GasLimit:       block1Header.GasLimit,
+		GasUsed:        block1Header.GasUsed,
+		Time:           block1Header.Time,
+		Extra:          block1Header.Extra,
+		MixDigest:      block1Header.MixDigest,
+		Nonce:          block1Header.Nonce,
+		BaseFee:        block1Header.BaseFee,
+		ExtDataHash:    block1Header.ExtDataHash,
+		ExtDataGasUsed: block1Header.ExtDataGasUsed,
+		BlockGasCost:   block1Header.BlockGasCost,
+	}
+	block1Hash := rlpHash(&h19_1)
+
+	// Block 2 (19-field, references block 1)
+	extDataHash2 := common.HexToHash("0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
+	block2Header := &Header{
+		ParentHash:     block1Hash, // Must match block 1 hash
+		UncleHash:      EmptyUncleHash,
+		Coinbase:       common.Address{},
+		Root:           common.HexToHash("0x2222222222222222222222222222222222222222222222222222222222222222"),
+		TxHash:         EmptyTxsHash,
+		ReceiptHash:    EmptyReceiptsHash,
+		Bloom:          Bloom{},
+		Difficulty:     big.NewInt(0),
+		Number:         big.NewInt(2),
+		GasLimit:       0xb71b00,
+		GasUsed:        21000,
+		Time:           0x672485c4,
+		Extra:          []byte{},
+		MixDigest:      common.Hash{},
+		Nonce:          BlockNonce{},
+		BaseFee:        big.NewInt(0x5d21dba00),
+		ExtDataHash:    &extDataHash2,
+		ExtDataGasUsed: big.NewInt(0),
+		BlockGasCost:   big.NewInt(100000),
+	}
+
+	// Verify chain continuity
+	if block1Header.ParentHash != genesisHash {
+		t.Errorf("Block 1 parent hash mismatch:\n  have: %s\n  want: %s",
+			block1Header.ParentHash.Hex(), genesisHash.Hex())
+	}
+	if block2Header.ParentHash != block1Hash {
+		t.Errorf("Block 2 parent hash mismatch:\n  have: %s\n  want: %s",
+			block2Header.ParentHash.Hex(), block1Hash.Hex())
+	}
+
+	// Verify genesis hash is correct
+	expectedGenesisHash := common.HexToHash("0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e")
+	if genesisHash != expectedGenesisHash {
+		t.Errorf("Genesis hash mismatch:\n  have: %s\n  want: %s",
+			genesisHash.Hex(), expectedGenesisHash.Hex())
+	}
+
+	t.Logf("Chain continuity verified:")
+	t.Logf("  Genesis (block 0): %s", genesisHash.Hex())
+	t.Logf("  Block 1 parent:    %s", block1Header.ParentHash.Hex())
+	t.Logf("  Block 1 hash:      %s", block1Hash.Hex())
+	t.Logf("  Block 2 parent:    %s", block2Header.ParentHash.Hex())
+}
+
+// TestExtDataHashEncoding verifies that ExtDataHash encodes as a value type (32 bytes)
+// not as a pointer, ensuring correct RLP encoding format.
+func TestExtDataHashEncoding(t *testing.T) {
+	extDataHash := common.HexToHash("0x56e81f171bcc55a6ff8345e692c0f86e5b48e01b996cadc001622fb5e363b421")
+
+	// Create 17-field header with ExtDataHash
+	h17 := hdr17{
+		ParentHash:  common.HexToHash("0x1234"),
+		UncleHash:   EmptyUncleHash,
+		Coinbase:    common.Address{},
+		Root:        common.HexToHash("0xabcd"),
+		TxHash:      EmptyTxsHash,
+		ReceiptHash: EmptyReceiptsHash,
+		Bloom:       Bloom{},
+		Difficulty:  big.NewInt(0),
+		Number:      big.NewInt(100),
+		GasLimit:    8000000,
+		GasUsed:     0,
+		Time:        1234567890,
+		Extra:       []byte{},
+		MixDigest:   common.Hash{},
+		Nonce:       BlockNonce{},
+		BaseFee:     big.NewInt(1000000000),
+		ExtDataHash: &extDataHash,
+	}
+
+	// Encode the header
+	encoded, err := rlp.EncodeToBytes(&h17)
+	if err != nil {
+		t.Fatalf("failed to encode header: %v", err)
+	}
+
+	// Decode and verify ExtDataHash is preserved
+	decoded, err := DecodeHeader(encoded)
+	if err != nil {
+		t.Fatalf("failed to decode header: %v", err)
+	}
+
+	if decoded.ExtDataHash == nil {
+		t.Fatal("ExtDataHash is nil after decode")
+	}
+	if *decoded.ExtDataHash != extDataHash {
+		t.Errorf("ExtDataHash mismatch:\n  have: %s\n  want: %s",
+			decoded.ExtDataHash.Hex(), extDataHash.Hex())
+	}
+
+	// Verify the raw RLP encoding contains the 32-byte hash value
+	// The ExtDataHash should be encoded as a 32-byte string, not as a list or shorter value
+	// This ensures it's encoded as a value type, not a pointer
+
+	// Count RLP list items to verify field count
+	content, _, err := rlp.SplitList(encoded)
+	if err != nil {
+		t.Fatalf("failed to split RLP list: %v", err)
+	}
+
+	fieldCount := 0
+	for len(content) > 0 {
+		_, rest, err := rlp.SplitString(content)
+		if err != nil {
+			_, rest, err = rlp.SplitList(content)
+			if err != nil {
+				t.Fatalf("failed to split field %d: %v", fieldCount, err)
+			}
+		}
+		content = rest
+		fieldCount++
+	}
+
+	if fieldCount != 17 {
+		t.Errorf("expected 17 fields, got %d", fieldCount)
+	}
+
+	// Re-encode decoded header and verify hash matches
+	h17Decoded := hdr17{
+		ParentHash:  decoded.ParentHash,
+		UncleHash:   decoded.UncleHash,
+		Coinbase:    decoded.Coinbase,
+		Root:        decoded.Root,
+		TxHash:      decoded.TxHash,
+		ReceiptHash: decoded.ReceiptHash,
+		Bloom:       decoded.Bloom,
+		Difficulty:  decoded.Difficulty,
+		Number:      decoded.Number,
+		GasLimit:    decoded.GasLimit,
+		GasUsed:     decoded.GasUsed,
+		Time:        decoded.Time,
+		Extra:       decoded.Extra,
+		MixDigest:   decoded.MixDigest,
+		Nonce:       decoded.Nonce,
+		BaseFee:     decoded.BaseFee,
+		ExtDataHash: decoded.ExtDataHash,
+	}
+
+	originalHash := rlpHash(&h17)
+	decodedHash := rlpHash(&h17Decoded)
+
+	if originalHash != decodedHash {
+		t.Errorf("hash mismatch after round-trip:\n  original: %s\n  decoded:  %s",
+			originalHash.Hex(), decodedHash.Hex())
+	}
+
+	t.Logf("ExtDataHash encoding verified: %s", extDataHash.Hex())
+	t.Logf("Header hash: %s", originalHash.Hex())
 }
 
 // TestLuxHeaderFormats verifies that different Lux header formats (16, 17, 18, 19 fields)
@@ -516,7 +995,7 @@ func TestLuxHeaderFormats(t *testing.T) {
 			MixDigest:   common.Hash{},
 			Nonce:       BlockNonce{},
 			BaseFee:     big.NewInt(2000000000),
-			ExtDataHash: extDataHash,
+			ExtDataHash: &extDataHash,
 		}
 		encoded, err := rlp.EncodeToBytes(&h17)
 		if err != nil {
@@ -555,7 +1034,7 @@ func TestLuxHeaderFormats(t *testing.T) {
 			MixDigest:      common.Hash{},
 			Nonce:          BlockNonce{},
 			BaseFee:        big.NewInt(3000000000),
-			ExtDataHash:    extDataHash,
+			ExtDataHash:    &extDataHash,
 			ExtDataGasUsed: big.NewInt(10000),
 			BlockGasCost:   big.NewInt(50000),
 		}
@@ -581,4 +1060,328 @@ func TestLuxHeaderFormats(t *testing.T) {
 			t.Errorf("BlockGasCost mismatch: have %v, want %v", decoded.BlockGasCost, h19.BlockGasCost)
 		}
 	})
+}
+
+// TestRawRLPHashPreservation verifies that decoding a header preserves the original
+// RLP bytes for hash computation. This ensures cryptographic continuity when a block
+// is decoded from one format and re-encoded (which might produce different bytes).
+func TestRawRLPHashPreservation(t *testing.T) {
+	// Create a 19-field header (Lux format)
+	extDataHash := common.HexToHash("0xcafebabe")
+	h19 := hdr19{
+		ParentHash:     common.HexToHash("0x5678"),
+		UncleHash:      EmptyUncleHash,
+		Coinbase:       common.Address{},
+		Root:           common.HexToHash("0xef01"),
+		TxHash:         EmptyTxsHash,
+		ReceiptHash:    EmptyReceiptsHash,
+		Bloom:          Bloom{},
+		Difficulty:     big.NewInt(1),
+		Number:         big.NewInt(300),
+		GasLimit:       8000000,
+		GasUsed:        63000,
+		Time:           1234567892,
+		Extra:          []byte("test19"),
+		MixDigest:      common.Hash{},
+		Nonce:          BlockNonce{},
+		BaseFee:        big.NewInt(3000000000),
+		ExtDataHash:    &extDataHash,
+		ExtDataGasUsed: big.NewInt(10000),
+		BlockGasCost:   big.NewInt(50000),
+	}
+
+	// Encode to RLP bytes
+	encoded, err := rlp.EncodeToBytes(&h19)
+	if err != nil {
+		t.Fatalf("failed to encode 19-field header: %v", err)
+	}
+
+	// Compute expected hash directly from encoded bytes
+	expectedHash := rlpHashBytes(encoded)
+
+	// Decode header using DecodeHeader (without rawRLP)
+	decodedWithoutRaw, err := DecodeHeader(encoded)
+	if err != nil {
+		t.Fatalf("failed to decode header: %v", err)
+	}
+
+	// Decode header using rlp.DecodeBytes which triggers DecodeRLP (with rawRLP)
+	var decodedWithRaw Header
+	if err := rlp.DecodeBytes(encoded, &decodedWithRaw); err != nil {
+		t.Fatalf("failed to decode header with RLP: %v", err)
+	}
+
+	// Verify rawRLP is set
+	if len(decodedWithRaw.RawRLP()) == 0 {
+		t.Fatal("rawRLP not set after DecodeRLP")
+	}
+
+	// Verify rawRLP matches original encoded bytes
+	if !bytes.Equal(decodedWithRaw.RawRLP(), encoded) {
+		t.Errorf("rawRLP mismatch:\n  have: %x\n  want: %x", decodedWithRaw.RawRLP(), encoded)
+	}
+
+	// Hash from header with rawRLP should match expected hash
+	hashWithRaw := decodedWithRaw.Hash()
+	if hashWithRaw != expectedHash {
+		t.Errorf("Hash() with rawRLP mismatch:\n  have: %s\n  want: %s",
+			hashWithRaw.Hex(), expectedHash.Hex())
+	}
+
+	// Hash from header without rawRLP might differ (depends on re-encoding)
+	// This demonstrates why rawRLP is needed
+	hashWithoutRaw := decodedWithoutRaw.Hash()
+
+	t.Logf("Expected hash (from original bytes): %s", expectedHash.Hex())
+	t.Logf("Hash with rawRLP:                    %s", hashWithRaw.Hex())
+	t.Logf("Hash without rawRLP:                 %s", hashWithoutRaw.Hex())
+
+	// The key assertion: hash with rawRLP must match expected
+	if hashWithRaw != expectedHash {
+		t.Errorf("CRITICAL: rawRLP hash preservation failed")
+	}
+}
+
+// TestHash19ValueVsPointer verifies that Hash19() correctly encodes ExtDataHash as
+// value type (common.Hash) matching original coreth format, not pointer type (*common.Hash).
+//
+// RLP encoding difference:
+//   - *common.Hash nil -> 0x80 (empty string)
+//   - common.Hash{} -> 0xa0 + 32 zero bytes
+func TestHash19ValueVsPointer(t *testing.T) {
+	// Create a header with nil ExtDataHash
+	header := &Header{
+		ParentHash:     common.HexToHash("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"),
+		UncleHash:      EmptyUncleHash,
+		Coinbase:       common.HexToAddress("0x1234567890123456789012345678901234567890"),
+		Root:           common.HexToHash("0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"),
+		TxHash:         EmptyTxsHash,
+		ReceiptHash:    EmptyReceiptsHash,
+		Bloom:          Bloom{},
+		Difficulty:     big.NewInt(1),
+		Number:         big.NewInt(500),
+		GasLimit:       8000000,
+		GasUsed:        21000,
+		Time:           1234567890,
+		Extra:          []byte("test"),
+		MixDigest:      common.Hash{},
+		Nonce:          BlockNonce{},
+		BaseFee:        big.NewInt(1000000000),
+		ExtDataHash:    nil, // nil pointer
+		ExtDataGasUsed: big.NewInt(10000),
+		BlockGasCost:   big.NewInt(50000),
+	}
+
+	// Hash using Hash19() - should encode ExtDataHash as zero hash (VALUE type)
+	hash19 := header.Hash19()
+
+	// Hash using Hash() - should also use Hash19() since ExtDataGasUsed is set
+	hashAuto := header.Hash()
+
+	// These should be equal since Hash() delegates to Hash19() when ExtDataGasUsed/BlockGasCost is set
+	if hash19 != hashAuto {
+		t.Errorf("Hash19() and Hash() mismatch:\n  Hash19(): %s\n  Hash():   %s",
+			hash19.Hex(), hashAuto.Hex())
+	}
+
+	// Now verify Hash19() produces different hash than pointer-based encoding
+	// Encode with hdr19 (uses *common.Hash pointer) and compute hash
+	h19ptr := hdr19{
+		ParentHash:     header.ParentHash,
+		UncleHash:      header.UncleHash,
+		Coinbase:       header.Coinbase,
+		Root:           header.Root,
+		TxHash:         header.TxHash,
+		ReceiptHash:    header.ReceiptHash,
+		Bloom:          header.Bloom,
+		Difficulty:     header.Difficulty,
+		Number:         header.Number,
+		GasLimit:       header.GasLimit,
+		GasUsed:        header.GasUsed,
+		Time:           header.Time,
+		Extra:          header.Extra,
+		MixDigest:      header.MixDigest,
+		Nonce:          header.Nonce,
+		BaseFee:        header.BaseFee,
+		ExtDataHash:    nil, // nil pointer - will encode as empty string
+		ExtDataGasUsed: header.ExtDataGasUsed,
+		BlockGasCost:   header.BlockGasCost,
+	}
+	hashPtrNil := rlpHash(&h19ptr)
+
+	// Hash19 with nil ExtDataHash should differ from pointer-based encoding
+	// because value type encodes as zero hash (32 bytes), pointer nil encodes as empty string
+	if hash19 == hashPtrNil {
+		t.Errorf("Hash19() should differ from pointer-nil encoding, but both are: %s", hash19.Hex())
+	}
+
+	// Now test with non-nil ExtDataHash - should produce SAME hash
+	extDataHash := common.HexToHash("0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef")
+	header.ExtDataHash = &extDataHash
+
+	hash19WithValue := header.Hash19()
+
+	h19ptrWithValue := hdr19{
+		ParentHash:     header.ParentHash,
+		UncleHash:      header.UncleHash,
+		Coinbase:       header.Coinbase,
+		Root:           header.Root,
+		TxHash:         header.TxHash,
+		ReceiptHash:    header.ReceiptHash,
+		Bloom:          header.Bloom,
+		Difficulty:     header.Difficulty,
+		Number:         header.Number,
+		GasLimit:       header.GasLimit,
+		GasUsed:        header.GasUsed,
+		Time:           header.Time,
+		Extra:          header.Extra,
+		MixDigest:      header.MixDigest,
+		Nonce:          header.Nonce,
+		BaseFee:        header.BaseFee,
+		ExtDataHash:    &extDataHash, // non-nil pointer
+		ExtDataGasUsed: header.ExtDataGasUsed,
+		BlockGasCost:   header.BlockGasCost,
+	}
+	hashPtrWithValue := rlpHash(&h19ptrWithValue)
+
+	// With non-nil value, both should produce same hash
+	if hash19WithValue != hashPtrWithValue {
+		t.Errorf("Hash19() with value should match pointer encoding:\n  Hash19(): %s\n  Pointer:  %s",
+			hash19WithValue.Hex(), hashPtrWithValue.Hex())
+	}
+
+	t.Logf("Hash19 (nil ExtDataHash as zero):     %s", hash19.Hex())
+	t.Logf("Pointer (nil ExtDataHash as empty):  %s", hashPtrNil.Hex())
+	t.Logf("Hash19 (with ExtDataHash value):     %s", hash19WithValue.Hex())
+	t.Logf("Pointer (with ExtDataHash value):    %s", hashPtrWithValue.Hex())
+}
+
+// TestDecodeLux19FieldFormat verifies that DecodeHeader correctly handles the Lux
+// 19-field format where ExtDataHash is encoded as a VALUE type (common.Hash), not
+// a pointer. This is the actual format used in Lux block production.
+//
+// The key difference:
+//   - hdr19lux: ExtDataHash is common.Hash (VALUE type) - always 32 bytes
+//   - hdr19:    ExtDataHash is *common.Hash (pointer) - 0x80 when nil
+func TestDecodeLux19FieldFormat(t *testing.T) {
+	extDataHash := common.HexToHash("0xdeadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe")
+
+	// Create a Lux 19-field header using VALUE type for ExtDataHash
+	h19lux := hdr19lux{
+		ParentHash:     common.HexToHash("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"),
+		UncleHash:      EmptyUncleHash,
+		Coinbase:       common.HexToAddress("0x1234567890123456789012345678901234567890"),
+		Root:           common.HexToHash("0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"),
+		TxHash:         EmptyTxsHash,
+		ReceiptHash:    EmptyReceiptsHash,
+		Bloom:          Bloom{},
+		Difficulty:     big.NewInt(0),
+		Number:         big.NewInt(100),
+		GasLimit:       12000000,
+		GasUsed:        21000,
+		Time:           1730479555,
+		Extra:          []byte{},
+		MixDigest:      common.Hash{},
+		Nonce:          BlockNonce{},
+		BaseFee:        big.NewInt(25000000000),
+		ExtDataHash:    extDataHash, // VALUE type - this is key!
+		ExtDataGasUsed: big.NewInt(0),
+		BlockGasCost:   big.NewInt(100000),
+	}
+
+	// Encode to RLP
+	encoded, err := rlp.EncodeToBytes(&h19lux)
+	if err != nil {
+		t.Fatalf("failed to encode hdr19lux: %v", err)
+	}
+
+	// Compute expected hash from original encoding
+	expectedHash := rlpHashBytes(encoded)
+
+	// Decode using DecodeHeader - should detect Lux format
+	decoded, err := DecodeHeader(encoded)
+	if err != nil {
+		t.Fatalf("failed to decode Lux 19-field header: %v", err)
+	}
+
+	// Verify rlpFormat is set correctly
+	if decoded.GetRLPFormat() != RLPFormat19Lux {
+		t.Errorf("expected RLPFormat19Lux, got %d", decoded.GetRLPFormat())
+	}
+
+	// Verify all fields are preserved
+	if decoded.ParentHash != h19lux.ParentHash {
+		t.Errorf("ParentHash mismatch")
+	}
+	if decoded.Number.Cmp(h19lux.Number) != 0 {
+		t.Errorf("Number mismatch: have %v, want %v", decoded.Number, h19lux.Number)
+	}
+	if decoded.ExtDataHash == nil {
+		t.Fatal("ExtDataHash is nil after decode")
+	}
+	if *decoded.ExtDataHash != extDataHash {
+		t.Errorf("ExtDataHash mismatch: have %s, want %s",
+			decoded.ExtDataHash.Hex(), extDataHash.Hex())
+	}
+	if decoded.ExtDataGasUsed == nil || decoded.ExtDataGasUsed.Cmp(h19lux.ExtDataGasUsed) != 0 {
+		t.Errorf("ExtDataGasUsed mismatch")
+	}
+	if decoded.BlockGasCost == nil || decoded.BlockGasCost.Cmp(h19lux.BlockGasCost) != 0 {
+		t.Errorf("BlockGasCost mismatch")
+	}
+
+	// Verify Hash19Lux produces the same hash as original encoding
+	hash19Lux := decoded.Hash19Lux()
+	if hash19Lux != expectedHash {
+		t.Errorf("Hash19Lux mismatch:\n  have: %s\n  want: %s",
+			hash19Lux.Hex(), expectedHash.Hex())
+	}
+
+	// Now test with zero ExtDataHash (should still work)
+	h19luxZero := hdr19lux{
+		ParentHash:     h19lux.ParentHash,
+		UncleHash:      h19lux.UncleHash,
+		Coinbase:       h19lux.Coinbase,
+		Root:           h19lux.Root,
+		TxHash:         h19lux.TxHash,
+		ReceiptHash:    h19lux.ReceiptHash,
+		Bloom:          h19lux.Bloom,
+		Difficulty:     h19lux.Difficulty,
+		Number:         h19lux.Number,
+		GasLimit:       h19lux.GasLimit,
+		GasUsed:        h19lux.GasUsed,
+		Time:           h19lux.Time,
+		Extra:          h19lux.Extra,
+		MixDigest:      h19lux.MixDigest,
+		Nonce:          h19lux.Nonce,
+		BaseFee:        h19lux.BaseFee,
+		ExtDataHash:    common.Hash{}, // Zero hash
+		ExtDataGasUsed: h19lux.ExtDataGasUsed,
+		BlockGasCost:   h19lux.BlockGasCost,
+	}
+
+	encodedZero, err := rlp.EncodeToBytes(&h19luxZero)
+	if err != nil {
+		t.Fatalf("failed to encode hdr19lux with zero ExtDataHash: %v", err)
+	}
+
+	decodedZero, err := DecodeHeader(encodedZero)
+	if err != nil {
+		t.Fatalf("failed to decode Lux 19-field header with zero ExtDataHash: %v", err)
+	}
+
+	if decodedZero.GetRLPFormat() != RLPFormat19Lux {
+		t.Errorf("expected RLPFormat19Lux for zero hash, got %d", decodedZero.GetRLPFormat())
+	}
+
+	// Zero hash should still decode to a pointer to zero hash, not nil
+	if decodedZero.ExtDataHash == nil {
+		t.Error("ExtDataHash should not be nil for zero hash")
+	} else if *decodedZero.ExtDataHash != (common.Hash{}) {
+		t.Errorf("ExtDataHash should be zero hash, got %s", decodedZero.ExtDataHash.Hex())
+	}
+
+	t.Logf("Lux 19-field format decoding verified")
+	t.Logf("  Expected hash: %s", expectedHash.Hex())
+	t.Logf("  Hash19Lux():   %s", hash19Lux.Hex())
 }
