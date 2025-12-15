@@ -328,6 +328,10 @@ func ReadHeader(db ethdb.Reader, hash common.Hash, number uint64) *types.Header 
 
 // WriteHeader stores a block header into the database and also stores the hash-
 // to-number mapping.
+//
+// For Lux C-chain compatibility: If the header has rawRLP set (from decoding
+// legacy chain blocks), we store those bytes directly to preserve hash integrity.
+// This ensures blocks imported from other chains maintain cryptographic continuity.
 func WriteHeader(db ethdb.KeyValueWriter, header *types.Header) {
 	var (
 		hash   = header.Hash()
@@ -337,9 +341,18 @@ func WriteHeader(db ethdb.KeyValueWriter, header *types.Header) {
 	WriteHeaderNumber(db, hash, number)
 
 	// Write the encoded header
-	data, err := rlp.EncodeToBytes(header)
-	if err != nil {
-		log.Crit("Failed to RLP encode header", "err", err)
+	// IMPORTANT: Use rawRLP if available to preserve original encoding format.
+	// This is critical for Lux C-chain blocks that use different field counts
+	// or ExtDataHash encoding (value vs pointer type).
+	var data []byte
+	if rawRLP := header.RawRLP(); len(rawRLP) > 0 {
+		data = rawRLP
+	} else {
+		var err error
+		data, err = rlp.EncodeToBytes(header)
+		if err != nil {
+			log.Crit("Failed to RLP encode header", "err", err)
+		}
 	}
 
 	key := headerKey(number, hash)
@@ -673,6 +686,37 @@ func ReadBlock(db ethdb.Reader, hash common.Hash, number uint64) *types.Block {
 func WriteBlock(db ethdb.KeyValueWriter, block *types.Block) {
 	WriteBody(db, block.Hash(), block.NumberU64(), block.Body())
 	WriteHeader(db, block.Header())
+}
+
+// WriteBlockWithHash serializes a block into the database using a specific hash.
+// This is used when the block hash needs to differ from the computed one
+// (e.g., for Lux C-chain genesis which uses 16-field header format).
+func WriteBlockWithHash(db ethdb.KeyValueWriter, block *types.Block, hash common.Hash) {
+	WriteBody(db, hash, block.NumberU64(), block.Body())
+	WriteHeaderWithHash(db, block.Header(), hash)
+}
+
+// WriteHeaderWithHash stores a block header into the database using a specific hash.
+// This is used when the header hash needs to differ from the computed one.
+//
+// For Lux C-chain compatibility: The header's EncodeRLP method handles format detection
+// and uses the correct encoding format (e.g., 19-field Lux format with value-type ExtDataHash).
+func WriteHeaderWithHash(db ethdb.KeyValueWriter, header *types.Header, hash common.Hash) {
+	number := header.Number.Uint64()
+
+	// Write the hash -> number mapping
+	WriteHeaderNumber(db, hash, number)
+
+	// Write the encoded header using format-aware EncodeRLP
+	data, err := rlp.EncodeToBytes(header)
+	if err != nil {
+		log.Crit("Failed to RLP encode header", "err", err)
+	}
+
+	key := headerKey(number, hash)
+	if err := db.Put(key, data); err != nil {
+		log.Crit("Failed to store header", "err", err)
+	}
 }
 
 // WriteAncientBlocks writes entire block data into ancient store and returns the total written size.

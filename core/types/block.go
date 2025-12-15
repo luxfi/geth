@@ -71,39 +71,98 @@ type ExecutionWitness struct {
 //go:generate go run github.com/fjl/gencodec -type Header -field-override headerMarshaling -out gen_header_json.go
 //go:generate go run ../../rlp/rlpgen -type Header -out gen_header_rlp.go
 
-// Header represents a block header in the Ethereum blockchain.
-// RLP field order: 15 core, BaseFee, Lux fields, Ethereum 2.0 fields.
+// Header represents a block header in the Lux C-chain (EVM-compatible).
+//
+// IMPORTANT: Lux C-Chain Header Format Requirements
+//
+// The Lux C-chain uses different header formats depending on the block:
+//
+//   - Genesis (Block 0): 16 fields (post-London, pre-ExtDataHash)
+//   - Post-Genesis:      19 fields (with ExtDataHash, ExtDataGasUsed, BlockGasCost)
+//   - Future:            20-24 fields (adding Ethereum 2.0 fields)
+//
+// Critical Network Parameters:
+//
+//	Chain ID:     96369
+//	Genesis Hash: 0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e
+//	State Root:   0x2d1cedac263020c5c56ef962f6abe0da1f5217bdc6468f8c9258a0ea23699e80
+//
+// RLP Field Order (for hash computation):
+//
+//	Pos 0-14:  Core Ethereum fields (ParentHash through Nonce)
+//	Pos 15:    BaseFee (EIP-1559, added in London)
+//	Pos 16-18: Lux-specific fields (ExtDataHash, ExtDataGasUsed, BlockGasCost)
+//	Pos 19+:   Ethereum 2.0 fields (BlobGasUsed, ExcessBlobGas, etc.)
+//
+// CRITICAL: ExtDataHash Type Difference from Original Coreth
+//
+// The original coreth implementation used common.Hash (value type) for ExtDataHash:
+//
+//	ExtDataHash common.Hash `rlp:"optional"`  // WRONG - original coreth
+//
+// Lux geth uses *common.Hash (pointer type) to allow proper nil encoding:
+//
+//	ExtDataHash *common.Hash `rlp:"optional"` // CORRECT - Lux geth
+//
+// This is intentional: pointer types encode as absent when nil, while value types
+// encode as zero hash. The genesis block must NOT include ExtDataHash to produce
+// the correct 16-field hash.
+//
+// Hash Methods:
+//   - Hash():     Uses rawRLP if set, otherwise re-encodes (for decoded blocks)
+//   - Hash16():   Computes 16-field hash for genesis verification
+//
+// See LLM.md for comprehensive documentation on header formats.
 type Header struct {
-	ParentHash  common.Hash    `json:"parentHash"       gencodec:"required"`
-	UncleHash   common.Hash    `json:"sha3Uncles"       gencodec:"required"`
-	Coinbase    common.Address `json:"miner"`
-	Root        common.Hash    `json:"stateRoot"        gencodec:"required"`
-	TxHash      common.Hash    `json:"transactionsRoot" gencodec:"required"`
-	ReceiptHash common.Hash    `json:"receiptsRoot"     gencodec:"required"`
-	Bloom       Bloom          `json:"logsBloom"        gencodec:"required"`
-	Difficulty  *big.Int       `json:"difficulty"       gencodec:"required"`
-	Number      *big.Int       `json:"number"           gencodec:"required"`
-	GasLimit    uint64         `json:"gasLimit"         gencodec:"required"`
-	GasUsed     uint64         `json:"gasUsed"          gencodec:"required"`
-	Time        uint64         `json:"timestamp"        gencodec:"required"`
-	Extra       []byte         `json:"extraData"        gencodec:"required"`
-	MixDigest   common.Hash    `json:"mixHash"`
-	Nonce       BlockNonce     `json:"nonce"`
+	// Positions 0-14: Core Ethereum fields (unchanged since frontier)
+	ParentHash  common.Hash    `json:"parentHash"       gencodec:"required"` // Pos 0
+	UncleHash   common.Hash    `json:"sha3Uncles"       gencodec:"required"` // Pos 1
+	Coinbase    common.Address `json:"miner"`                                // Pos 2
+	Root        common.Hash    `json:"stateRoot"        gencodec:"required"` // Pos 3
+	TxHash      common.Hash    `json:"transactionsRoot" gencodec:"required"` // Pos 4
+	ReceiptHash common.Hash    `json:"receiptsRoot"     gencodec:"required"` // Pos 5
+	Bloom       Bloom          `json:"logsBloom"        gencodec:"required"` // Pos 6 (256 bytes)
+	Difficulty  *big.Int       `json:"difficulty"       gencodec:"required"` // Pos 7
+	Number      *big.Int       `json:"number"           gencodec:"required"` // Pos 8
+	GasLimit    uint64         `json:"gasLimit"         gencodec:"required"` // Pos 9
+	GasUsed     uint64         `json:"gasUsed"          gencodec:"required"` // Pos 10
+	Time        uint64         `json:"timestamp"        gencodec:"required"` // Pos 11
+	Extra       []byte         `json:"extraData"        gencodec:"required"` // Pos 12
+	MixDigest   common.Hash    `json:"mixHash"`                              // Pos 13
+	Nonce       BlockNonce     `json:"nonce"`                                // Pos 14 (8 bytes)
 
-	// Position 16: EIP-1559
-	BaseFee *big.Int `json:"baseFeePerGas" rlp:"optional"`
+	// Position 15: EIP-1559 (London fork)
+	// Present in 16-field genesis AND all post-genesis blocks.
+	BaseFee *big.Int `json:"baseFeePerGas" rlp:"optional"` // Pos 15
 
-	// Positions 17-19: Lux/coreth fields (before Eth 2.0 for hash compatibility)
-	ExtDataHash    *common.Hash `json:"extDataHash" rlp:"optional"`
-	ExtDataGasUsed *big.Int     `json:"extDataGasUsed" rlp:"optional"`
-	BlockGasCost   *big.Int     `json:"blockGasCost" rlp:"optional"`
+	// Positions 16-18: Lux/coreth-specific fields
+	// NOT present in genesis (16-field format), present in post-genesis (19+ fields).
+	// These MUST come before Ethereum 2.0 fields to maintain hash compatibility.
+	//
+	// IMPORTANT: ExtDataHash uses *common.Hash (pointer), NOT common.Hash (value).
+	// Original coreth used value type, but Lux geth uses pointer for proper nil encoding.
+	ExtDataHash    *common.Hash `json:"extDataHash" rlp:"optional"`    // Pos 16 (when present)
+	ExtDataGasUsed *big.Int     `json:"extDataGasUsed" rlp:"optional"` // Pos 17 (when present)
+	BlockGasCost   *big.Int     `json:"blockGasCost" rlp:"optional"`   // Pos 18 (when present)
 
-	// Positions 20+: Ethereum 2.0 fields
-	BlobGasUsed      *uint64      `json:"blobGasUsed" rlp:"optional"`
-	ExcessBlobGas    *uint64      `json:"excessBlobGas" rlp:"optional"`
-	ParentBeaconRoot *common.Hash `json:"parentBeaconBlockRoot" rlp:"optional"`
-	WithdrawalsHash  *common.Hash `json:"withdrawalsRoot" rlp:"optional"`
-	RequestsHash     *common.Hash `json:"requestsHash" rlp:"optional"`
+	// Positions 19+: Ethereum 2.0 fields (Shanghai/Cancun/Prague)
+	// Only present when chain upgrades to support these features.
+	// Note: These come AFTER Lux fields, unlike standard Ethereum order.
+	BlobGasUsed      *uint64      `json:"blobGasUsed" rlp:"optional"`           // Pos 19 (when present)
+	ExcessBlobGas    *uint64      `json:"excessBlobGas" rlp:"optional"`         // Pos 20 (when present)
+	ParentBeaconRoot *common.Hash `json:"parentBeaconBlockRoot" rlp:"optional"` // Pos 21 (when present)
+	WithdrawalsHash  *common.Hash `json:"withdrawalsRoot" rlp:"optional"`       // Pos 22 (when present)
+	RequestsHash     *common.Hash `json:"requestsHash" rlp:"optional"`          // Pos 23 (when present)
+
+	// rawRLP stores the original RLP bytes for hash computation.
+	// This ensures hash compatibility with blocks from different chain formats
+	// (e.g., Lux C-chain 19-field format vs Ethereum 20+ field format).
+	// When set, Hash() uses these bytes directly instead of re-encoding.
+	rawRLP []byte `json:"-" rlp:"-"`
+
+	// rlpFormat tracks the original RLP encoding format for this header.
+	// Used to ensure re-encoding produces the same bytes as the original.
+	rlpFormat RLPFormat `json:"-" rlp:"-"`
 }
 
 // field type overrides for gencodec
@@ -123,13 +182,207 @@ type headerMarshaling struct {
 }
 
 // Hash returns the block hash of the header, which is simply the keccak256 hash of its
-// RLP encoding.
+// RLP encoding. If rawRLP is set (from decoding), uses those bytes directly to preserve
+// hash compatibility with the original chain format.
+//
+// For Lux blocks (post-genesis with ExtDataGasUsed or BlockGasCost set),
+// uses 19-field format with ExtDataHash as value type (common.Hash, not *common.Hash)
+// to match original coreth encoding when rawRLP is not available.
 func (h *Header) Hash() common.Hash {
+	if len(h.rawRLP) > 0 {
+		return rlpHashBytes(h.rawRLP)
+	}
+	// Lux block detection: has ExtDataGasUsed or BlockGasCost set
+	// For newly constructed blocks (no rawRLP), use Hash19() to match coreth format
+	if h.ExtDataGasUsed != nil || h.BlockGasCost != nil {
+		return h.Hash19()
+	}
 	return rlpHash(h)
+}
+
+// hdr19val is the 19-field header format for Lux blocks with ExtDataHash as VALUE type.
+// Original coreth used common.Hash (value), not *common.Hash (pointer).
+// This affects RLP encoding: pointer nil -> empty string, value zero -> 32 zero bytes.
+type hdr19val struct {
+	ParentHash     common.Hash
+	UncleHash      common.Hash
+	Coinbase       common.Address
+	Root           common.Hash
+	TxHash         common.Hash
+	ReceiptHash    common.Hash
+	Bloom          Bloom
+	Difficulty     *big.Int
+	Number         *big.Int
+	GasLimit       uint64
+	GasUsed        uint64
+	Time           uint64
+	Extra          []byte
+	MixDigest      common.Hash
+	Nonce          BlockNonce
+	BaseFee        *big.Int
+	ExtDataHash    common.Hash // VALUE type, not pointer - matches original coreth
+	ExtDataGasUsed *big.Int
+	BlockGasCost   *big.Int
+}
+
+// Hash19 returns the hash using 19-field Lux format with ExtDataHash as value type.
+// This matches original coreth encoding where ExtDataHash was common.Hash (not pointer).
+// When h.ExtDataHash is nil, encodes as zero hash (32 zero bytes).
+func (h *Header) Hash19() common.Hash {
+	// Convert pointer to value, defaulting nil to zero hash
+	var extDataHash common.Hash
+	if h.ExtDataHash != nil {
+		extDataHash = *h.ExtDataHash
+	}
+
+	return rlpHash(&hdr19val{
+		ParentHash:     h.ParentHash,
+		UncleHash:      h.UncleHash,
+		Coinbase:       h.Coinbase,
+		Root:           h.Root,
+		TxHash:         h.TxHash,
+		ReceiptHash:    h.ReceiptHash,
+		Bloom:          h.Bloom,
+		Difficulty:     h.Difficulty,
+		Number:         h.Number,
+		GasLimit:       h.GasLimit,
+		GasUsed:        h.GasUsed,
+		Time:           h.Time,
+		Extra:          h.Extra,
+		MixDigest:      h.MixDigest,
+		Nonce:          h.Nonce,
+		BaseFee:        h.BaseFee,
+		ExtDataHash:    extDataHash,
+		ExtDataGasUsed: h.ExtDataGasUsed,
+		BlockGasCost:   h.BlockGasCost,
+	})
+}
+
+// SetRawRLP sets the raw RLP bytes for hash computation.
+// This is used when decoding blocks to preserve the original hash.
+func (h *Header) SetRawRLP(raw []byte) {
+	h.rawRLP = raw
+}
+
+// RawRLP returns the raw RLP bytes if set.
+func (h *Header) RawRLP() []byte {
+	return h.rawRLP
+}
+
+// EncodeRLP encodes the header to RLP using the appropriate format.
+// The format is determined by rlpFormat (set during decode) or detected from fields.
+//
+// Format handling:
+//   - RLPFormat17: 17 fields with ExtDataHash as pointer (nil -> 0x80)
+//   - RLPFormat18: 18 fields with ExtDataHash + ExtDataGasUsed
+//   - RLPFormat19Lux: 19 fields with ExtDataHash as VALUE type (original coreth)
+//   - Others: Use default encoding
+func (h *Header) EncodeRLP(w io.Writer) error {
+	switch h.rlpFormat {
+	case RLPFormat17:
+		return h.encodeRLP17(w)
+	case RLPFormat18:
+		return h.encodeRLP18(w)
+	case RLPFormat19Lux:
+		return h.encodeRLP19Lux(w)
+	default:
+		// Auto-detect format for new headers
+		if h.isLux19Format() {
+			return h.encodeRLP19Lux(w)
+		}
+		return h.encodeRLPDefault(w)
+	}
+}
+
+// isLux19Format returns true if this header appears to be a Lux 19-field format.
+// Detection: has ExtDataGasUsed or BlockGasCost set, but no Ethereum 2.0 fields.
+func (h *Header) isLux19Format() bool {
+	hasLuxFields := h.ExtDataGasUsed != nil || h.BlockGasCost != nil
+	hasEth2Fields := h.BlobGasUsed != nil || h.ExcessBlobGas != nil ||
+		h.ParentBeaconRoot != nil || h.WithdrawalsHash != nil || h.RequestsHash != nil
+	return hasLuxFields && !hasEth2Fields
+}
+
+// encodeRLP17 encodes using 17-field format (BaseFee + ExtDataHash).
+func (h *Header) encodeRLP17(w io.Writer) error {
+	return rlp.Encode(w, &hdr17{
+		ParentHash:  h.ParentHash,
+		UncleHash:   h.UncleHash,
+		Coinbase:    h.Coinbase,
+		Root:        h.Root,
+		TxHash:      h.TxHash,
+		ReceiptHash: h.ReceiptHash,
+		Bloom:       h.Bloom,
+		Difficulty:  h.Difficulty,
+		Number:      h.Number,
+		GasLimit:    h.GasLimit,
+		GasUsed:     h.GasUsed,
+		Time:        h.Time,
+		Extra:       h.Extra,
+		MixDigest:   h.MixDigest,
+		Nonce:       h.Nonce,
+		BaseFee:     h.BaseFee,
+		ExtDataHash: h.ExtDataHash,
+	})
+}
+
+// encodeRLP18 encodes using 18-field format (+ ExtDataGasUsed).
+func (h *Header) encodeRLP18(w io.Writer) error {
+	return rlp.Encode(w, &hdr18{
+		ParentHash:     h.ParentHash,
+		UncleHash:      h.UncleHash,
+		Coinbase:       h.Coinbase,
+		Root:           h.Root,
+		TxHash:         h.TxHash,
+		ReceiptHash:    h.ReceiptHash,
+		Bloom:          h.Bloom,
+		Difficulty:     h.Difficulty,
+		Number:         h.Number,
+		GasLimit:       h.GasLimit,
+		GasUsed:        h.GasUsed,
+		Time:           h.Time,
+		Extra:          h.Extra,
+		MixDigest:      h.MixDigest,
+		Nonce:          h.Nonce,
+		BaseFee:        h.BaseFee,
+		ExtDataHash:    h.ExtDataHash,
+		ExtDataGasUsed: h.ExtDataGasUsed,
+	})
+}
+
+// encodeRLP19Lux encodes using Lux 19-field format with value-type ExtDataHash.
+func (h *Header) encodeRLP19Lux(w io.Writer) error {
+	var extHash common.Hash
+	if h.ExtDataHash != nil {
+		extHash = *h.ExtDataHash
+	}
+	return rlp.Encode(w, &hdr19val{
+		ParentHash:     h.ParentHash,
+		UncleHash:      h.UncleHash,
+		Coinbase:       h.Coinbase,
+		Root:           h.Root,
+		TxHash:         h.TxHash,
+		ReceiptHash:    h.ReceiptHash,
+		Bloom:          h.Bloom,
+		Difficulty:     h.Difficulty,
+		Number:         h.Number,
+		GasLimit:       h.GasLimit,
+		GasUsed:        h.GasUsed,
+		Time:           h.Time,
+		Extra:          h.Extra,
+		MixDigest:      h.MixDigest,
+		Nonce:          h.Nonce,
+		BaseFee:        h.BaseFee,
+		ExtDataHash:    extHash,
+		ExtDataGasUsed: h.ExtDataGasUsed,
+		BlockGasCost:   h.BlockGasCost,
+	})
 }
 
 // DecodeRLP decodes a header from RLP with format detection.
 // Supports 15-21 field formats for legacy, London, Shanghai, and Lux chains.
+// Stores the original RLP bytes for hash computation to ensure cryptographic
+// continuity regardless of format differences during re-encoding.
 func (h *Header) DecodeRLP(s *rlp.Stream) error {
 	raw, err := s.Raw()
 	if err != nil {
@@ -140,6 +393,10 @@ func (h *Header) DecodeRLP(s *rlp.Stream) error {
 		return err
 	}
 	*h = *decoded
+	// Store original RLP bytes for hash computation.
+	// This ensures Hash() returns the correct hash even if re-encoding
+	// would produce different bytes (e.g., different field order or format).
+	h.rawRLP = raw
 	return nil
 }
 
@@ -354,6 +611,13 @@ func CopyHeader(h *Header) *Header {
 	if h.BlockGasCost != nil {
 		cpy.BlockGasCost = new(big.Int).Set(h.BlockGasCost)
 	}
+	if h.ExtDataGasUsed != nil {
+		cpy.ExtDataGasUsed = new(big.Int).Set(h.ExtDataGasUsed)
+	}
+	if h.ExtDataHash != nil {
+		cpy.ExtDataHash = new(common.Hash)
+		*cpy.ExtDataHash = *h.ExtDataHash
+	}
 	if len(h.Extra) > 0 {
 		cpy.Extra = make([]byte, len(h.Extra))
 		copy(cpy.Extra, h.Extra)
@@ -378,6 +642,12 @@ func CopyHeader(h *Header) *Header {
 		cpy.RequestsHash = new(common.Hash)
 		*cpy.RequestsHash = *h.RequestsHash
 	}
+	// Copy rawRLP to preserve hash computation capability
+	if len(h.rawRLP) > 0 {
+		cpy.rawRLP = make([]byte, len(h.rawRLP))
+		copy(cpy.rawRLP, h.rawRLP)
+	}
+	// rlpFormat is already copied by value assignment (cpy := *h)
 	return &cpy
 }
 
