@@ -658,15 +658,12 @@ func (bc *BlockChain) empty() bool {
 func (bc *BlockChain) loadLastState() error {
 	// Restore the last known head block
 	head := rawdb.ReadHeadBlockHash(bc.db)
-	log.Info("🔍 DEBUG loadLastState: ReadHeadBlockHash returned", "hash", head)
 	if head == (common.Hash{}) {
 		// Corrupt or empty database, init from scratch
 		log.Warn("Empty database, resetting chain")
 		return bc.Reset()
 	}
-	log.Info("🔍 DEBUG loadLastState: Calling GetHeaderByHash", "hash", head)
 	headHeader := bc.GetHeaderByHash(head)
-	log.Info("🔍 DEBUG loadLastState: GetHeaderByHash returned", "header", headHeader)
 	if headHeader == nil {
 		// Corrupt or empty database, init from scratch
 		log.Warn("Head header missing, resetting chain", "hash", head)
