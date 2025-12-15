@@ -345,12 +345,23 @@ func NewMemoryDatabase() ethdb.Database {
 const (
 	DBPebble  = "pebble"
 	DBLeveldb = "leveldb"
+	DBBadger  = "badger"
 )
 
 // PreexistingDatabase checks the given data directory whether a database is already
 // instantiated at that location, and if so, returns the type of database (or the
 // empty string).
 func PreexistingDatabase(path string) string {
+	// Check for BadgerDB (has MANIFEST and *.vlog files)
+	if _, err := os.Stat(filepath.Join(path, "MANIFEST")); err == nil {
+		if matches, err := filepath.Glob(filepath.Join(path, "*.vlog")); len(matches) > 0 || err != nil {
+			if err != nil {
+				panic(err)
+			}
+			return DBBadger
+		}
+	}
+	// Check for LevelDB/PebbleDB (has CURRENT file)
 	if _, err := os.Stat(filepath.Join(path, "CURRENT")); err != nil {
 		return "" // No pre-existing db
 	}
