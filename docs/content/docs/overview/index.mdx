@@ -1,0 +1,247 @@
+---
+title: Architecture Overview
+description: Understanding the Lux Geth architecture and key components
+---
+
+# Architecture Overview
+
+Lux Geth is a fork of go-ethereum optimized for the Lux blockchain ecosystem. It provides EVM compatibility while incorporating enhancements specific to Lux's multi-chain architecture.
+
+## Component Architecture
+
+```
+                    ┌─────────────────────────────────────┐
+                    │          JSON-RPC API Layer         │
+                    │   (HTTP, WebSocket, IPC transports) │
+                    └──────────────────┬──────────────────┘
+                                       │
+                    ┌──────────────────▼──────────────────┐
+                    │      Lux Plugin EVM Interface       │
+                    │   (plugin/evm - VM implementation)  │
+                    └──────────────────┬──────────────────┘
+                                       │
+          ┌────────────────────────────┼────────────────────────────┐
+          │                            │                            │
+          ▼                            ▼                            ▼
+┌─────────────────┐        ┌─────────────────┐        ┌─────────────────┐
+│ Transaction Pool│        │   EVM Engine    │        │ Consensus Layer │
+│   (core/txpool) │        │   (core/vm)     │        │  (consensus/)   │
+└────────┬────────┘        └────────┬────────┘        └────────┬────────┘
+         │                          │                          │
+         └──────────────────────────┼──────────────────────────┘
+                                    │
+                    ┌───────────────▼───────────────┐
+                    │      State Management         │
+                    │  (core/state, triedb, trie)   │
+                    └───────────────┬───────────────┘
+                                    │
+                    ┌───────────────▼───────────────┐
+                    │       Database Layer          │
+                    │ (BadgerDB, PebbleDB, LevelDB) │
+                    └───────────────────────────────┘
+```
+
+## Key Components
+
+### EVM Engine (`core/vm`)
+
+The Ethereum Virtual Machine implementation handles smart contract execution:
+
+- **Interpreter**: Stack-based bytecode execution
+- **Gas Metering**: Precise computational cost tracking
+- **Precompiles**: Optimized native contract implementations
+- **State Access**: Account and storage management
+
+```go
+// EVM creation with Lux-specific configuration
+evm := vm.NewEVM(blockContext, txContext, statedb, chainConfig, vmConfig)
+
+// Contract execution
+ret, leftOverGas, err := evm.Call(caller, addr, input, gas, value)
+```
+
+### State Management (`core/state`)
+
+Manages account states, storage, and state transitions:
+
+- **StateDB**: In-memory state cache with journaling
+- **Trie Database**: Merkle Patricia Trie storage
+- **Snapshots**: Fast state access without trie traversal
+- **Pruning**: Historical state cleanup
+
+```go
+// State operations
+statedb.SetBalance(addr, balance)
+statedb.SetCode(addr, code)
+statedb.SetState(addr, key, value)
+statedb.Commit(deleteEmptyObjects)
+```
+
+### Transaction Pool (`core/txpool`)
+
+Manages pending and queued transactions:
+
+- **Validation**: Signature and nonce verification
+- **Ordering**: Gas price-based prioritization
+- **Replacement**: Higher gas price transaction replacement
+- **Eviction**: Low-priority transaction removal
+
+```go
+// Transaction pool configuration
+pool := txpool.New(txpool.Config{
+    Locals:       locals,
+    NoLocals:     false,
+    Journal:      "transactions.rlp",
+    Rejournal:    time.Hour,
+    PriceLimit:   1,
+    PriceBump:    10,
+    AccountSlots: 16,
+    GlobalSlots:  4096,
+    AccountQueue: 64,
+    GlobalQueue:  1024,
+    Lifetime:     3 * time.Hour,
+})
+```
+
+### Database Layer (`ethdb`)
+
+Multiple backend support for different use cases:
+
+| Backend | Package | Best For |
+|---------|---------|----------|
+| BadgerDB | `ethdb/badgerdb` | High write throughput |
+| PebbleDB | `ethdb/pebble` | Balanced workloads |
+| LevelDB | `ethdb/leveldb` | Compatibility |
+| MemoryDB | `ethdb/memorydb` | Testing |
+
+### Plugin System (`plugin/evm`)
+
+Integration with Lux node consensus:
+
+```go
+// VM interface for Lux consensus
+type VM interface {
+    Initialize(ctx context.Context, ...) error
+    BuildBlock(ctx context.Context) (Block, error)
+    ParseBlock(ctx context.Context, bytes []byte) (Block, error)
+    GetBlock(ctx context.Context, id ids.ID) (Block, error)
+    SetPreference(ctx context.Context, id ids.ID) error
+    LastAccepted(ctx context.Context) (ids.ID, error)
+}
+```
+
+## Data Flow
+
+### Transaction Processing
+
+```
+1. Transaction received via RPC or P2P
+       │
+       ▼
+2. Signature verification
+       │
+       ▼
+3. Transaction pool admission
+       │
+       ▼
+4. Block builder selects transactions
+       │
+       ▼
+5. EVM execution for each transaction
+       │
+       ▼
+6. State transition and receipt generation
+       │
+       ▼
+7. Block proposal to consensus
+       │
+       ▼
+8. Consensus acceptance
+       │
+       ▼
+9. State committed to database
+```
+
+### State Access Pattern
+
+```
+Read Path:
+  Cache Hit → Return immediately
+  Cache Miss → Snapshot lookup → Trie lookup → Database read
+
+Write Path:
+  Journal write → Memory update → Commit → Trie update → Database write
+```
+
+## Module Dependencies
+
+```
+                    ┌─────────┐
+                    │   cmd   │ (CLI tools)
+                    └────┬────┘
+                         │
+          ┌──────────────┼──────────────┐
+          │              │              │
+          ▼              ▼              ▼
+    ┌──────────┐   ┌──────────┐   ┌──────────┐
+    │   eth    │   │   node   │   │   rpc    │
+    └────┬─────┘   └────┬─────┘   └────┬─────┘
+         │              │              │
+         └──────────────┼──────────────┘
+                        │
+                   ┌────▼────┐
+                   │  core   │
+                   └────┬────┘
+                        │
+         ┌──────────────┼──────────────┐
+         │              │              │
+         ▼              ▼              ▼
+   ┌──────────┐   ┌──────────┐   ┌──────────┐
+   │  crypto  │   │  common  │   │  ethdb   │
+   └──────────┘   └──────────┘   └──────────┘
+```
+
+## Lux-Specific Extensions
+
+### Cross-Chain Messaging
+
+Support for Lux's multi-chain architecture through warp messaging:
+
+```go
+// Warp message handling
+type WarpMessage struct {
+    SourceChainID      ids.ID
+    DestinationChainID ids.ID
+    Payload            []byte
+    Signature          []byte
+}
+```
+
+### Validator Integration
+
+Direct integration with Lux's validator set:
+
+```go
+// Validator state management
+type ValidatorState interface {
+    GetValidatorSet(height uint64) (ValidatorSet, error)
+    GetMinimumHeight() uint64
+    GetCurrentHeight() uint64
+}
+```
+
+### Dynamic Fee Model
+
+Lux-optimized fee calculations:
+
+```go
+// Fee estimation with Lux parameters
+baseFee := CalcBaseFee(config, parent)
+priorityFee := suggestPriorityFee(config, head, signer)
+```
+
+## Next Steps
+
+- [Configuration Guide](/docs/config) - Detailed configuration options
+- [API Reference](/docs/api) - Complete RPC API documentation
+- [Performance Tuning](/docs/performance) - Optimization strategies

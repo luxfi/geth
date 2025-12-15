@@ -1,0 +1,419 @@
+---
+title: Development Guide
+description: Building and developing with Lux Geth
+---
+
+# Development Guide
+
+This guide covers building, testing, and contributing to Lux Geth.
+
+## Prerequisites
+
+- Go 1.23 or later
+- GCC or compatible C compiler
+- Make
+- Git
+
+## Building from Source
+
+### Clone Repository
+
+```bash
+git clone https://github.com/luxfi/geth.git
+cd geth
+```
+
+### Build Commands
+
+```bash
+# Build geth binary
+make geth
+
+# Build all utilities
+make all
+
+# Build with race detector (for development)
+make geth-race
+
+# Cross-compile for Linux
+make geth-linux
+make geth-linux-arm64
+
+# Cross-compile for macOS
+make geth-darwin
+make geth-darwin-arm64
+
+# Cross-compile for Windows
+make geth-windows
+```
+
+### Build Output
+
+Binaries are placed in `build/bin/`:
+
+```
+build/bin/
+├── geth          # Main client
+├── clef          # Account signer
+├── devp2p        # P2P utilities
+├── abigen        # ABI binding generator
+├── evm           # EVM interpreter
+└── rlpdump       # RLP decoder
+```
+
+## Project Structure
+
+```
+geth/
+├── cmd/                # Command-line tools
+│   ├── geth/           # Main client
+│   ├── clef/           # Signer
+│   └── evm/            # EVM tools
+├── core/               # Blockchain core
+│   ├── state/          # State management
+│   ├── types/          # Block/tx types
+│   ├── vm/             # EVM implementation
+│   └── txpool/         # Transaction pool
+├── crypto/             # Cryptographic primitives
+│   └── pqcrypto/       # Post-quantum crypto
+├── eth/                # Ethereum protocol
+│   ├── downloader/     # Sync implementation
+│   ├── fetcher/        # Block/tx fetching
+│   └── tracers/        # EVM tracers
+├── ethdb/              # Database interfaces
+│   ├── badgerdb/       # BadgerDB backend
+│   ├── pebble/         # PebbleDB backend
+│   └── leveldb/        # LevelDB backend
+├── node/               # Node management
+├── p2p/                # P2P networking
+├── params/             # Chain parameters
+├── plugin/             # Lux VM plugin
+│   └── evm/            # EVM integration
+├── rpc/                # JSON-RPC server
+└── trie/               # Merkle Patricia Trie
+```
+
+## Running Tests
+
+### Unit Tests
+
+```bash
+# Run all tests
+go test ./...
+
+# Run specific package
+go test ./core/...
+go test ./eth/...
+go test ./crypto/...
+
+# Run with verbose output
+go test -v ./core/types/...
+
+# Run with race detector
+go test -race ./...
+
+# Run short tests only
+go test -short ./...
+```
+
+### Integration Tests
+
+```bash
+# Run integration tests
+go test -tags=integration ./...
+
+# Run specific integration test
+go test -tags=integration ./eth/downloader/...
+```
+
+### Coverage
+
+```bash
+# Generate coverage report
+go test -coverprofile=coverage.out ./...
+
+# View coverage in browser
+go tool cover -html=coverage.out
+
+# Package-level coverage
+go test -cover ./core/... ./eth/...
+```
+
+### Benchmarks
+
+```bash
+# Run benchmarks
+go test -bench=. ./...
+
+# Run specific benchmark
+go test -bench=BenchmarkEVMCall ./core/vm/...
+
+# With memory stats
+go test -bench=. -benchmem ./core/state/...
+
+# Multiple iterations
+go test -bench=. -count=5 ./...
+```
+
+## Development Workflow
+
+### Code Style
+
+Follow Go conventions and existing codebase style:
+
+```bash
+# Format code
+gofmt -w .
+
+# Lint code
+golangci-lint run
+
+# Check for issues
+go vet ./...
+```
+
+### Pre-commit Checks
+
+```bash
+# Run before committing
+make lint
+make test
+make build
+```
+
+### Commit Messages
+
+Follow conventional commit format:
+
+```
+<package>: <description>
+
+<body>
+
+Examples:
+- core/vm: add EIP-4844 blob precompile
+- eth/downloader: fix snap sync race condition
+- crypto/pqcrypto: implement ML-DSA-65 signing
+```
+
+## Adding New Features
+
+### Adding a New RPC Method
+
+1. Define the method in the appropriate API:
+
+```go
+// eth/api.go
+func (s *PublicBlockChainAPI) NewMethod(ctx context.Context, arg string) (string, error) {
+    // Implementation
+    return result, nil
+}
+```
+
+2. Register in API namespace:
+
+```go
+// eth/backend.go
+func (s *Ethereum) APIs() []rpc.API {
+    return []rpc.API{
+        {
+            Namespace: "eth",
+            Service:   NewPublicBlockChainAPI(s.APIBackend),
+        },
+    }
+}
+```
+
+3. Add tests:
+
+```go
+// eth/api_test.go
+func TestNewMethod(t *testing.T) {
+    // Test implementation
+}
+```
+
+### Adding a Database Backend
+
+1. Implement the `ethdb.Database` interface:
+
+```go
+// ethdb/newdb/database.go
+type Database struct {
+    // Implementation
+}
+
+func (db *Database) Has(key []byte) (bool, error)
+func (db *Database) Get(key []byte) ([]byte, error)
+func (db *Database) Put(key []byte, value []byte) error
+func (db *Database) Delete(key []byte) error
+func (db *Database) NewBatch() ethdb.Batch
+func (db *Database) NewIterator(prefix []byte, start []byte) ethdb.Iterator
+func (db *Database) Stat(property string) (string, error)
+func (db *Database) Compact(start []byte, limit []byte) error
+func (db *Database) Close() error
+```
+
+2. Add factory function:
+
+```go
+func New(path string, cache int, handles int, namespace string) (*Database, error)
+```
+
+3. Register in configuration:
+
+```go
+// cmd/geth/config.go
+case "newdb":
+    return ethdb.NewNewDB(...)
+```
+
+### Adding EVM Precompile
+
+1. Implement the precompile:
+
+```go
+// core/vm/contracts.go
+type newPrecompile struct{}
+
+func (c *newPrecompile) RequiredGas(input []byte) uint64 {
+    return 100 // Gas cost
+}
+
+func (c *newPrecompile) Run(input []byte) ([]byte, error) {
+    // Implementation
+    return output, nil
+}
+```
+
+2. Register in precompile map:
+
+```go
+// core/vm/contracts.go
+var PrecompiledContractsLondon = map[common.Address]PrecompiledContract{
+    common.BytesToAddress([]byte{0x10}): &newPrecompile{},
+}
+```
+
+## Debugging
+
+### Using Delve
+
+```bash
+# Start debugger
+dlv debug ./cmd/geth
+
+# Attach to running process
+dlv attach <pid>
+
+# Set breakpoint
+(dlv) break core/state_processor.go:100
+(dlv) continue
+```
+
+### EVM Tracing
+
+```bash
+# Trace transaction execution
+geth attach --exec 'debug.traceTransaction("0x...")'
+
+# Custom tracer
+geth attach --exec 'debug.traceTransaction("0x...", {tracer: "callTracer"})'
+```
+
+### Logging
+
+```go
+// Add debug logging
+log.Debug("Processing block", "number", block.Number(), "hash", block.Hash())
+log.Info("State committed", "root", root)
+log.Warn("High gas usage", "gas", gasUsed)
+log.Error("Failed to process", "err", err)
+```
+
+Enable verbose logging:
+
+```bash
+geth --verbosity=5 --log.vmodule="core/*=4,eth/*=4"
+```
+
+## Docker Development
+
+### Build Image
+
+```dockerfile
+# Dockerfile
+FROM golang:1.23-alpine AS builder
+WORKDIR /app
+COPY . .
+RUN make geth
+
+FROM alpine:latest
+COPY --from=builder /app/build/bin/geth /usr/local/bin/
+ENTRYPOINT ["geth"]
+```
+
+```bash
+docker build -t luxfi/geth .
+```
+
+### Development Container
+
+```yaml
+# compose.yml
+services:
+  geth-dev:
+    build: .
+    volumes:
+      - .:/app
+      - geth-data:/data
+    ports:
+      - "8545:8545"
+      - "30303:30303"
+    command: >
+      --datadir=/data
+      --http
+      --http.addr=0.0.0.0
+
+volumes:
+  geth-data:
+```
+
+## CI/CD
+
+### GitHub Actions
+
+```yaml
+# .github/workflows/build.yml
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+      - run: make all
+      - run: make test
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/my-feature`
+3. Make changes with tests
+4. Run checks: `make lint test`
+5. Commit: `git commit -m "core: add my feature"`
+6. Push: `git push origin feature/my-feature`
+7. Open pull request
+
+### Review Process
+
+- Code must pass CI checks
+- Tests required for new features
+- Documentation for public APIs
+- One approval required for merge
