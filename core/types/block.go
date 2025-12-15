@@ -367,6 +367,75 @@ func (b *Block) DecodeRLP(s *rlp.Stream) error {
 	return nil
 }
 
+// legacyExtblock is used for decoding blocks with legacy (pre-Shanghai) headers
+type legacyExtblock struct {
+	Header      []byte // Raw header bytes for flexible decoding
+	Txs         []*Transaction
+	Uncles      []*Header
+	Withdrawals []*Withdrawal `rlp:"optional"`
+}
+
+// DecodeBlockRLPWithLegacySupport decodes a block from RLP with support for legacy headers.
+// This is used for importing blocks from older chains that use pre-Shanghai header format.
+func DecodeBlockRLPWithLegacySupport(data []byte) (*Block, error) {
+	// First try standard decoding
+	var block Block
+	if err := rlp.DecodeBytes(data, &block); err == nil {
+		return &block, nil
+	}
+
+	// Try decoding with legacy header support
+	// We need to decode the list items manually
+	var items []rlp.RawValue
+	if err := rlp.DecodeBytes(data, &items); err != nil {
+		return nil, err
+	}
+
+	if len(items) < 3 {
+		return nil, fmt.Errorf("invalid block: expected at least 3 items, got %d", len(items))
+	}
+
+	// Decode header using legacy support
+	header, err := DecodeRLPBytesWithLegacySupport(items[0])
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode header: %v", err)
+	}
+
+	// Decode transactions
+	var txs []*Transaction
+	if err := rlp.DecodeBytes(items[1], &txs); err != nil {
+		return nil, fmt.Errorf("failed to decode transactions: %v", err)
+	}
+
+	// Decode uncles (using legacy support for uncle headers too)
+	var uncleRaws []rlp.RawValue
+	if err := rlp.DecodeBytes(items[2], &uncleRaws); err != nil {
+		return nil, fmt.Errorf("failed to decode uncles list: %v", err)
+	}
+	uncles := make([]*Header, len(uncleRaws))
+	for i, raw := range uncleRaws {
+		uncles[i], err = DecodeRLPBytesWithLegacySupport(raw)
+		if err != nil {
+			return nil, fmt.Errorf("failed to decode uncle %d: %v", i, err)
+		}
+	}
+
+	// Decode withdrawals if present
+	var withdrawals []*Withdrawal
+	if len(items) > 3 {
+		if err := rlp.DecodeBytes(items[3], &withdrawals); err != nil {
+			// Withdrawals are optional, ignore decode errors
+			withdrawals = nil
+		}
+	}
+
+	return NewBlockWithHeader(header).WithBody(Body{
+		Transactions: txs,
+		Uncles:       uncles,
+		Withdrawals:  withdrawals,
+	}), nil
+}
+
 // EncodeRLP serializes a block as RLP.
 func (b *Block) EncodeRLP(w io.Writer) error {
 	return rlp.Encode(w, &extblock{
