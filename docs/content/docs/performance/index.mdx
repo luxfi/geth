@@ -1,0 +1,402 @@
+---
+title: Performance Tuning
+description: Optimization strategies for Lux Geth nodes
+---
+
+# Performance Tuning
+
+This guide covers optimization strategies for running high-performance Lux Geth nodes.
+
+## Hardware Recommendations
+
+### Validator Nodes
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| CPU | 8 cores | 16+ cores |
+| RAM | 16 GB | 32+ GB |
+| Storage | 1 TB NVMe SSD | 2+ TB NVMe SSD |
+| Network | 100 Mbps | 1 Gbps |
+
+### Archive Nodes
+
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| CPU | 16 cores | 32+ cores |
+| RAM | 64 GB | 128+ GB |
+| Storage | 4 TB NVMe SSD | 8+ TB NVMe SSD RAID |
+| Network | 1 Gbps | 10 Gbps |
+
+## Database Selection
+
+### Performance Comparison
+
+| Backend | Write Speed | Read Speed | Memory Usage | Best For |
+|---------|-------------|------------|--------------|----------|
+| BadgerDB | ~85K ops/s | ~200K ops/s | Moderate | Validators |
+| PebbleDB | ~70K ops/s | ~150K ops/s | Efficient | Archive |
+| LevelDB | ~50K ops/s | ~100K ops/s | Low | Light nodes |
+
+### BadgerDB Optimization
+
+For write-heavy workloads (validators, block producers):
+
+```bash
+geth \
+  --db.engine=badger \
+  --db.badger.numMemtables=5 \
+  --db.badger.numLevelZeroTables=5 \
+  --db.badger.numLevelZeroTablesStall=15 \
+  --db.badger.levelOneSize=268435456 \
+  --db.badger.valueLogFileSize=1073741824 \
+  --db.badger.valueThreshold=1024 \
+  --db.badger.compression=snappy
+```
+
+### PebbleDB Optimization
+
+For balanced workloads (archive nodes, API servers):
+
+```bash
+geth \
+  --db.engine=pebble \
+  --db.pebble.cache=1024 \
+  --db.pebble.handles=1000 \
+  --db.pebble.compaction.concurrency=4 \
+  --db.pebble.memtable.size=128 \
+  --db.pebble.max.open.files=2000
+```
+
+## Cache Configuration
+
+### Memory Allocation Strategy
+
+Total cache should be ~25-50% of available RAM:
+
+```bash
+# For 32GB RAM system
+geth \
+  --cache=8192 \
+  --cache.database=50 \
+  --cache.trie=25 \
+  --cache.gc=15 \
+  --cache.snapshot=10
+```
+
+### Cache Component Breakdown
+
+```
+Total Cache (8GB)
+├── Database Cache (50%) = 4GB
+│   └── Block/state storage reads
+├── Trie Cache (25%) = 2GB
+│   └── State trie nodes
+├── GC Cache (15%) = 1.2GB
+│   └── Garbage collection
+└── Snapshot Cache (10%) = 0.8GB
+    └── State snapshots
+```
+
+### Trie Cache Tuning
+
+```bash
+# Persistent trie journal for faster restarts
+--cache.trie.journal="/data/geth/triecache"
+--cache.trie.rejournal="30m"
+
+# Enable preimages for debugging (increases memory)
+--cache.preimages=true
+```
+
+## State Management
+
+### Path-Based Storage
+
+Recommended for new deployments:
+
+```bash
+geth \
+  --state.scheme=path \
+  --state.history=90000
+```
+
+Benefits:
+- Faster state access
+- More efficient pruning
+- Reduced disk I/O
+
+### Snapshot Acceleration
+
+Enable snapshots for faster state reads:
+
+```bash
+geth \
+  --snapshot=true \
+  --snapshot.cache=512
+```
+
+### Pruning Strategy
+
+```bash
+# Full pruning (recommended)
+--gcmode=full
+
+# Archive mode (keep all state)
+--gcmode=archive
+
+# Ancient data pruning
+--datadir.ancient="/data/ancient"
+```
+
+## Transaction Pool Optimization
+
+### High-Throughput Configuration
+
+```bash
+geth \
+  --txpool.accountslots=64 \
+  --txpool.globalslots=16384 \
+  --txpool.accountqueue=128 \
+  --txpool.globalqueue=4096 \
+  --txpool.lifetime="1h" \
+  --txpool.pricebump=5
+```
+
+### Local Transaction Priority
+
+```bash
+# Prioritize transactions from local accounts
+--txpool.locals="0x...,0x..."
+--txpool.nolocals=false
+```
+
+## Network Optimization
+
+### Peer Configuration
+
+```bash
+# Increase peer limits for better connectivity
+--maxpeers=100
+--maxpendpeers=100
+
+# Disable discovery for private networks
+--nodiscover
+```
+
+### Connection Tuning
+
+```bash
+# Optimize for high-bandwidth connections
+--nat=any
+--port=30303
+```
+
+## RPC Performance
+
+### Concurrent Request Handling
+
+```bash
+# Increase execution timeout
+--rpc.evmtimeout="30s"
+
+# Gas cap for expensive calls
+--rpc.gascap=100000000
+
+# Transaction fee cap
+--rpc.txfeecap=10
+```
+
+### Batch Request Limits
+
+```bash
+# Configure batch limits
+--rpc.batch-request-limit=1000
+--rpc.batch-response-max-size=25000000
+```
+
+## Benchmarking
+
+### Database Performance
+
+```go
+// Benchmark database operations
+func BenchmarkDatabaseWrite(b *testing.B) {
+    db := ethdb.NewBadgerDB(path, nil)
+    defer db.Close()
+
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        key := []byte(fmt.Sprintf("key-%d", i))
+        value := make([]byte, 1024)
+        db.Put(key, value)
+    }
+}
+```
+
+### State Access
+
+```go
+// Benchmark state reads
+func BenchmarkStateRead(b *testing.B) {
+    statedb, _ := state.New(root, database, nil)
+
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        statedb.GetBalance(addr)
+    }
+}
+```
+
+### Run Benchmarks
+
+```bash
+# Core package benchmarks
+go test -bench=. -benchmem ./core/...
+
+# State benchmarks
+go test -bench=. -benchmem ./core/state/...
+
+# Database benchmarks
+go test -bench=. -benchmem ./ethdb/...
+```
+
+## Monitoring Performance
+
+### Key Metrics
+
+Monitor these Prometheus metrics:
+
+```
+# Block processing
+chain/head/block
+chain/head/receipt
+chain/reorg/adds
+chain/reorg/drops
+
+# Database
+db/chaindata/disk/read
+db/chaindata/disk/write
+db/chaindata/disk/size
+
+# Transaction pool
+txpool/pending
+txpool/queued
+txpool/slots
+
+# Network
+p2p/peers
+p2p/ingress
+p2p/egress
+
+# Memory
+system/memory/allocs
+system/memory/frees
+system/memory/used
+```
+
+### Grafana Dashboard
+
+Import Lux Geth dashboard for visualization:
+
+```json
+{
+  "dashboard": {
+    "title": "Lux Geth Performance",
+    "panels": [
+      {
+        "title": "Block Processing Time",
+        "targets": [
+          {"expr": "rate(chain_head_block[5m])"}
+        ]
+      },
+      {
+        "title": "Database I/O",
+        "targets": [
+          {"expr": "rate(db_chaindata_disk_read[5m])"},
+          {"expr": "rate(db_chaindata_disk_write[5m])"}
+        ]
+      }
+    ]
+  }
+}
+```
+
+## Troubleshooting Performance Issues
+
+### High Disk I/O
+
+1. Check database compaction:
+```bash
+geth db stats --datadir /data/geth
+```
+
+2. Adjust compaction settings:
+```bash
+--db.pebble.compaction.concurrency=2
+```
+
+3. Move ancient data to separate disk:
+```bash
+--datadir.ancient="/slow-disk/ancient"
+```
+
+### Memory Pressure
+
+1. Reduce cache sizes:
+```bash
+--cache=4096
+```
+
+2. Disable expensive features:
+```bash
+--cache.preimages=false
+--cache.noprefetch=true
+```
+
+3. Increase swap (temporary):
+```bash
+sudo swapon /swapfile
+```
+
+### Slow Sync
+
+1. Use snap sync:
+```bash
+--syncmode=snap
+```
+
+2. Add more bootnodes:
+```bash
+--bootnodes="enode://...,enode://..."
+```
+
+3. Increase peers:
+```bash
+--maxpeers=100
+```
+
+### Transaction Pool Issues
+
+1. Clear stale transactions:
+```bash
+geth txpool clear --datadir /data/geth
+```
+
+2. Adjust limits:
+```bash
+--txpool.globalslots=4096
+--txpool.lifetime="1h"
+```
+
+## Production Checklist
+
+- [ ] Use NVMe SSD storage
+- [ ] Configure appropriate cache sizes
+- [ ] Enable metrics and monitoring
+- [ ] Set up alerting for key metrics
+- [ ] Regular database maintenance
+- [ ] Monitor disk space
+- [ ] Configure log rotation
+- [ ] Test failover procedures
+- [ ] Document configuration
+- [ ] Regular backup strategy

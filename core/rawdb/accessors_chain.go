@@ -45,7 +45,7 @@ func ReadCanonicalHash(db ethdb.Reader, number uint64) common.Hash {
 
 	// If ancients failed or returned no data, read from leveldb
 	if err != nil || len(data) == 0 {
-		data, _ = db.Get(headerHashKey(number))
+		data, _ = db.Get(key)
 	}
 
 	return common.BytesToHash(data)
@@ -313,20 +313,16 @@ func HasHeader(db ethdb.Reader, hash common.Hash, number uint64) bool {
 }
 
 // ReadHeader retrieves the block header corresponding to the hash.
-// Supports both modern geth/coreth headers and legacy SubnetEVM headers.
 func ReadHeader(db ethdb.Reader, hash common.Hash, number uint64) *types.Header {
 	data := ReadHeaderRLP(db, hash, number)
 	if len(data) == 0 {
 		return nil
 	}
-
-	// Try backward-compatible decoding (handles both modern and legacy formats)
-	header, err := types.DecodeRLPBytesWithLegacySupport(data)
+	header, err := types.DecodeHeader(data)
 	if err != nil {
 		log.Error("Invalid block header RLP", "hash", hash, "err", err)
 		return nil
 	}
-
 	return header
 }
 

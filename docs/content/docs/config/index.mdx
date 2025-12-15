@@ -1,0 +1,420 @@
+---
+title: Configuration Guide
+description: Complete configuration options for Lux Geth
+---
+
+# Configuration Guide
+
+Lux Geth supports configuration through command-line flags, configuration files, and environment variables.
+
+## Configuration File
+
+Create a TOML configuration file:
+
+```toml
+# config.toml
+
+[Eth]
+NetworkId = 43114
+SyncMode = "snap"
+NoPruning = false
+NoPrefetch = false
+
+[Eth.TxPool]
+Locals = []
+NoLocals = false
+Journal = "transactions.rlp"
+Rejournal = "1h0m0s"
+PriceLimit = 1
+PriceBump = 10
+AccountSlots = 16
+GlobalSlots = 5120
+AccountQueue = 64
+GlobalQueue = 1024
+Lifetime = "3h0m0s"
+
+[Eth.Miner]
+GasCeil = 30000000
+GasPrice = "1000000000"
+
+[Eth.GPO]
+Blocks = 20
+Percentile = 60
+MaxHeaderHistory = 1024
+MaxBlockHistory = 1024
+MaxPrice = "500000000000"
+IgnorePrice = "2"
+
+[Node]
+DataDir = "/data/geth"
+IPCPath = "geth.ipc"
+HTTPHost = "0.0.0.0"
+HTTPPort = 8545
+HTTPVirtualHosts = ["*"]
+HTTPModules = ["eth", "net", "web3"]
+WSHost = "0.0.0.0"
+WSPort = 8546
+WSModules = ["eth", "net", "web3"]
+
+[Node.P2P]
+MaxPeers = 50
+NoDiscovery = false
+ListenAddr = ":30303"
+```
+
+Load configuration:
+
+```bash
+geth --config config.toml
+```
+
+## Database Configuration
+
+### BadgerDB (Default)
+
+Optimized for high write throughput:
+
+```bash
+# Basic configuration
+--db.engine=badger
+
+# Advanced tuning
+--db.badger.truncate=true
+--db.badger.compactL0OnClose=true
+--db.badger.valueLogFileSize=1073741824    # 1GB
+--db.badger.valueLogMaxEntries=1000000
+--db.badger.numMemtables=5
+--db.badger.numLevelZeroTables=5
+--db.badger.numLevelZeroTablesStall=10
+--db.badger.levelOneSize=268435456         # 256MB
+--db.badger.valueThreshold=1024            # 1KB
+--db.badger.compression=snappy             # or zstd
+```
+
+Configuration file:
+
+```toml
+[Eth.DatabaseConfig]
+Engine = "badger"
+
+[Eth.DatabaseConfig.Badger]
+Truncate = true
+CompactL0OnClose = true
+ValueLogFileSize = 1073741824
+ValueLogMaxEntries = 1000000
+NumMemtables = 5
+NumLevelZeroTables = 5
+NumLevelZeroTablesStall = 10
+LevelOneSize = 268435456
+ValueThreshold = 1024
+Compression = "snappy"
+```
+
+### PebbleDB
+
+Balanced read/write performance:
+
+```bash
+--db.engine=pebble
+--db.pebble.cache=512                      # MB
+--db.pebble.handles=500
+--db.pebble.compaction.concurrency=3
+--db.pebble.memtable.size=64               # MB
+--db.pebble.max.open.files=1000
+--db.pebble.block.size=4096
+--db.pebble.l0.compaction.concurrency=2
+```
+
+### LevelDB
+
+Legacy compatibility:
+
+```bash
+--db.engine=leveldb
+--db.leveldb.cache=768                     # MB
+--db.leveldb.handles=1024
+--db.leveldb.compaction=8
+--db.leveldb.writebuffer=32                # MB
+```
+
+## Network Configuration
+
+### P2P Settings
+
+```bash
+# Peer configuration
+--maxpeers=50
+--maxpendpeers=50
+--nodiscover                               # Disable discovery
+--netrestrict="10.0.0.0/8"                 # Restrict network
+
+# Listening
+--port=30303
+--nat=any                                  # NAT traversal
+
+# Bootnodes
+--bootnodes="enode://...,enode://..."
+```
+
+### RPC Configuration
+
+```bash
+# HTTP RPC
+--http
+--http.addr="0.0.0.0"
+--http.port=8545
+--http.api="eth,net,web3,debug"
+--http.corsdomain="*"
+--http.vhosts="*"
+
+# WebSocket
+--ws
+--ws.addr="0.0.0.0"
+--ws.port=8546
+--ws.api="eth,net,web3"
+--ws.origins="*"
+
+# IPC
+--ipcpath="/path/to/geth.ipc"
+--ipcdisable                               # Disable IPC
+
+# Authentication
+--authrpc.addr="localhost"
+--authrpc.port=8551
+--authrpc.jwtsecret="/path/to/jwt.hex"
+```
+
+## State Management
+
+### Sync Modes
+
+```bash
+# Snap sync (default, fastest)
+--syncmode=snap
+
+# Full sync (process all blocks)
+--syncmode=full
+
+# Light sync (headers only)
+--syncmode=light
+```
+
+### State Scheme
+
+```bash
+# Path-based storage (recommended)
+--state.scheme=path
+
+# Hash-based storage (legacy)
+--state.scheme=hash
+```
+
+### Pruning Configuration
+
+```bash
+# State pruning
+--gcmode=full                              # full or archive
+--state.history=90000                      # Blocks of history
+
+# Cache configuration
+--cache=4096                               # Total cache MB
+--cache.database=50                        # Percentage for database
+--cache.trie=15                            # Percentage for trie
+--cache.trie.journal=""                    # Trie journal path
+--cache.trie.rejournal="1h"               # Rejournal interval
+--cache.gc=25                              # GC percentage
+--cache.snapshot=10                        # Snapshot percentage
+--cache.noprefetch                         # Disable prefetching
+--cache.preimages                          # Cache preimages
+```
+
+### Snapshot Configuration
+
+```bash
+--snapshot                                 # Enable snapshots
+--snapshot.cache=256                       # Snapshot cache MB
+```
+
+## Transaction Pool
+
+```bash
+--txpool.locals=""                         # Local accounts (comma-separated)
+--txpool.nolocals=false                    # Disable local tx exemptions
+--txpool.journal="transactions.rlp"        # Journal path
+--txpool.rejournal="1h"                   # Rejournal interval
+--txpool.pricelimit=1                      # Minimum gas price
+--txpool.pricebump=10                      # Price bump percentage
+--txpool.accountslots=16                   # Per-account slots
+--txpool.globalslots=5120                  # Global slot limit
+--txpool.accountqueue=64                   # Per-account queue
+--txpool.globalqueue=1024                  # Global queue limit
+--txpool.lifetime="3h"                     # Maximum tx lifetime
+```
+
+## Mining/Block Production
+
+```bash
+--mine                                     # Enable mining
+--miner.etherbase="0x..."                  # Block reward address
+--miner.extradata=""                       # Extra block data
+--miner.gasprice="1000000000"              # Minimum gas price
+--miner.gaslimit=30000000                  # Target gas limit
+--miner.recommit="3s"                      # Block recommit interval
+--miner.newpayload-timeout="2s"            # Payload timeout
+```
+
+## Post-Quantum Cryptography
+
+```bash
+# Enable PQ crypto
+--pq.enabled=true
+--pq.algorithm=ML-DSA-65                   # ML-DSA-44, ML-DSA-65, ML-DSA-87
+
+# Hybrid mode
+--pq.hybrid=true
+--pq.hybrid.classical=secp256k1
+--pq.hybrid.postquantum=ML-DSA-65
+
+# Performance
+--pq.cache.size=10000
+--pq.cache.ttl="1h"
+```
+
+## Metrics and Monitoring
+
+```bash
+# Prometheus metrics
+--metrics
+--metrics.addr="127.0.0.1"
+--metrics.port=6060
+--metrics.expensive                        # Enable expensive metrics
+
+# InfluxDB
+--metrics.influxdb
+--metrics.influxdb.endpoint="http://localhost:8086"
+--metrics.influxdb.database="geth"
+--metrics.influxdb.username=""
+--metrics.influxdb.password=""
+--metrics.influxdb.tags="host=localhost"
+
+# Pprof
+--pprof
+--pprof.addr="127.0.0.1"
+--pprof.port=6061
+```
+
+## Logging
+
+```bash
+# Log level
+--verbosity=3                              # 0=silent, 5=detail
+
+# Log format
+--log.format=json                          # json or logfmt
+
+# Log file
+--log.file="/var/log/geth.log"
+--log.maxsize=100                          # MB per file
+--log.maxbackups=10                        # Number of backups
+--log.compress=true                        # Compress old logs
+
+# Vmodule (per-module verbosity)
+--log.vmodule="eth/*=4,p2p=3"
+```
+
+## Security Settings
+
+```bash
+# RPC security
+--rpc.gascap=50000000                      # Gas cap for calls
+--rpc.evmtimeout="5s"                      # EVM timeout
+--rpc.txfeecap=1                           # Fee cap (ether)
+--rpc.allow-unprotected-txs=false          # Block unprotected txs
+
+# Network security
+--netrestrict="10.0.0.0/8"                 # IP whitelist
+--nodiscover                               # Disable discovery
+```
+
+## Environment Variables
+
+All flags can be set via environment variables with `GETH_` prefix:
+
+```bash
+export GETH_DATADIR="/data/geth"
+export GETH_HTTP="true"
+export GETH_HTTP_ADDR="0.0.0.0"
+export GETH_HTTP_PORT="8545"
+export GETH_CACHE="4096"
+export GETH_SYNCMODE="snap"
+```
+
+## Example Configurations
+
+### Validator Node
+
+```toml
+[Eth]
+NetworkId = 43114
+SyncMode = "full"
+NoPruning = false
+
+[Eth.TxPool]
+AccountSlots = 64
+GlobalSlots = 10240
+
+[Node]
+DataDir = "/data/validator"
+HTTPHost = "127.0.0.1"
+HTTPPort = 8545
+HTTPModules = ["eth", "net", "web3"]
+
+[Node.P2P]
+MaxPeers = 100
+ListenAddr = ":30303"
+
+[Metrics]
+Enabled = true
+HTTP = "127.0.0.1"
+Port = 6060
+```
+
+### Archive Node
+
+```toml
+[Eth]
+NetworkId = 43114
+SyncMode = "full"
+NoPruning = true
+NoPrefetch = false
+
+[Eth.DatabaseConfig]
+Engine = "pebble"
+
+[Node]
+DataDir = "/data/archive"
+HTTPHost = "0.0.0.0"
+HTTPPort = 8545
+HTTPModules = ["eth", "net", "web3", "debug", "trace"]
+
+[Node.P2P]
+MaxPeers = 50
+```
+
+### Development Node
+
+```toml
+[Eth]
+NetworkId = 1337
+SyncMode = "full"
+
+[Eth.Miner]
+GasCeil = 30000000
+Etherbase = "0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC"
+
+[Node]
+DataDir = "/tmp/geth-dev"
+HTTPHost = "127.0.0.1"
+HTTPPort = 8545
+HTTPModules = ["eth", "net", "web3", "debug", "personal", "admin", "miner"]
+```
