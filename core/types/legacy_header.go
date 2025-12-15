@@ -245,44 +245,32 @@ func DecodeRLPWithLegacySupport(s *rlp.Stream) (*Header, error) {
 // 3. Legacy 18-field: Pre-Shanghai + BaseFee + ExtDataHash + BlockGasCost
 // 4. Legacy 17-field: Pre-Shanghai + BaseFee + ExtDataHash only
 // 5. Legacy 16-field: Pre-Shanghai only (standard Ethereum)
-func DecodeRLPBytesWithLegacySupport(data []byte) (*Header, error) {
-	// Try coreth format first (this is the primary format for Lux chains)
-	// Coreth format has ExtDataHash at position 16, before BaseFee
-	var ch CorethHeader
-	err := rlp.DecodeBytes(data, &ch)
-	if err == nil {
-		return ch.ToHeader(), nil
-	}
-
-	// Try modern geth format
+	// Try modern format first
 	var h Header
-	err = rlp.DecodeBytes(data, &h)
-	if err == nil {
+	if err := rlp.DecodeBytes(data, &h); err == nil {
 		return &h, nil
 	}
 
 	// Try 18-field legacy format (with both SubnetEVM fields)
 	var lh18 LegacyHeader
-	err = rlp.DecodeBytes(data, &lh18)
-	if err == nil {
+	if err := rlp.DecodeBytes(data, &lh18); err == nil {
 		return lh18.ToHeader(), nil
 	}
 
 	// Try 17-field legacy format (with ExtDataHash only)
 	var lh17 LegacyHeader17
-	err = rlp.DecodeBytes(data, &lh17)
-	if err == nil {
+	if err := rlp.DecodeBytes(data, &lh17); err == nil {
 		return lh17.ToHeader(), nil
 	}
 
 	// Try 16-field legacy format (standard pre-Shanghai)
 	var lh16 LegacyHeader16
-	err = rlp.DecodeBytes(data, &lh16)
-	if err == nil {
-		return lh16.ToHeader(), nil
+	if err := rlp.DecodeBytes(data, &lh16); err != nil {
+		return nil, err
 	}
 
-	return nil, err
+	// Convert to modern header
+	return lh16.ToHeader(), nil
 }
 
 // EncodeRLP implements rlp.Encoder for LegacyHeader
