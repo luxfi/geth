@@ -72,7 +72,7 @@ type ExecutionWitness struct {
 //go:generate go run ../../rlp/rlpgen -type Header -out gen_header_rlp.go
 
 // Header represents a block header in the Ethereum blockchain.
-// Note: Field order includes Lux-specific fields (ExtDataHash, ExtDataGasUsed, BlockGasCost).
+// RLP field order: 15 core, BaseFee, Lux fields, Ethereum 2.0 fields.
 type Header struct {
 	ParentHash  common.Hash    `json:"parentHash"       gencodec:"required"`
 	UncleHash   common.Hash    `json:"sha3Uncles"       gencodec:"required"`
@@ -90,32 +90,20 @@ type Header struct {
 	MixDigest   common.Hash    `json:"mixHash"`
 	Nonce       BlockNonce     `json:"nonce"`
 
-	// ExtDataHash is a Lux-specific field for external data hash.
-	ExtDataHash common.Hash `json:"extDataHash" gencodec:"required"`
-
-	// BaseFee was added by EIP-1559 and is ignored in legacy headers.
+	// Position 16: EIP-1559
 	BaseFee *big.Int `json:"baseFeePerGas" rlp:"optional"`
 
-	// ExtDataGasUsed is a Lux-specific field.
-	ExtDataGasUsed *big.Int `json:"extDataGasUsed" rlp:"optional"`
+	// Positions 17-19: Lux/coreth fields (before Eth 2.0 for hash compatibility)
+	ExtDataHash    *common.Hash `json:"extDataHash" rlp:"optional"`
+	ExtDataGasUsed *big.Int     `json:"extDataGasUsed" rlp:"optional"`
+	BlockGasCost   *big.Int     `json:"blockGasCost" rlp:"optional"`
 
-	// BlockGasCost is a Lux-specific field.
-	BlockGasCost *big.Int `json:"blockGasCost" rlp:"optional"`
-
-	// BlobGasUsed was added by EIP-4844 and is ignored in legacy headers.
-	BlobGasUsed *uint64 `json:"blobGasUsed" rlp:"optional"`
-
-	// ExcessBlobGas was added by EIP-4844 and is ignored in legacy headers.
-	ExcessBlobGas *uint64 `json:"excessBlobGas" rlp:"optional"`
-
-	// ParentBeaconRoot was added by EIP-4788 and is ignored in legacy headers.
+	// Positions 20+: Ethereum 2.0 fields
+	BlobGasUsed      *uint64      `json:"blobGasUsed" rlp:"optional"`
+	ExcessBlobGas    *uint64      `json:"excessBlobGas" rlp:"optional"`
 	ParentBeaconRoot *common.Hash `json:"parentBeaconBlockRoot" rlp:"optional"`
-
-	// WithdrawalsHash was added by EIP-4895 and is ignored in legacy headers.
-	WithdrawalsHash *common.Hash `json:"withdrawalsRoot" rlp:"optional"`
-
-	// RequestsHash was added by EIP-7685 and is ignored in legacy headers.
-	RequestsHash *common.Hash `json:"requestsHash" rlp:"optional"`
+	WithdrawalsHash  *common.Hash `json:"withdrawalsRoot" rlp:"optional"`
+	RequestsHash     *common.Hash `json:"requestsHash" rlp:"optional"`
 }
 
 // field type overrides for gencodec
@@ -138,6 +126,44 @@ type headerMarshaling struct {
 // RLP encoding.
 func (h *Header) Hash() common.Hash {
 	return rlpHash(h)
+}
+
+// DecodeRLP decodes a header from RLP with format detection.
+// Supports 15-21 field formats for legacy, London, Shanghai, and Lux chains.
+func (h *Header) DecodeRLP(s *rlp.Stream) error {
+	raw, err := s.Raw()
+	if err != nil {
+		return err
+	}
+	decoded, err := DecodeHeader(raw)
+	if err != nil {
+		return err
+	}
+	*h = *decoded
+	return nil
+}
+
+// Hash16 returns the hash using 16-field format (post-London, pre-ExtDataHash).
+// Used for Lux mainnet genesis compatibility.
+func (h *Header) Hash16() common.Hash {
+	return rlpHash(&hdr16{
+		ParentHash:  h.ParentHash,
+		UncleHash:   h.UncleHash,
+		Coinbase:    h.Coinbase,
+		Root:        h.Root,
+		TxHash:      h.TxHash,
+		ReceiptHash: h.ReceiptHash,
+		Bloom:       h.Bloom,
+		Difficulty:  h.Difficulty,
+		Number:      h.Number,
+		GasLimit:    h.GasLimit,
+		GasUsed:     h.GasUsed,
+		Time:        h.Time,
+		Extra:       h.Extra,
+		MixDigest:   h.MixDigest,
+		Nonce:       h.Nonce,
+		BaseFee:     h.BaseFee,
+	})
 }
 
 var headerSize = common.StorageSize(reflect.TypeFor[Header]().Size())
@@ -355,15 +381,21 @@ func CopyHeader(h *Header) *Header {
 	return &cpy
 }
 
-// DecodeRLP decodes a block from RLP.
+// DecodeRLP decodes a block from RLP with format detection.
 func (b *Block) DecodeRLP(s *rlp.Stream) error {
-	var eb extblock
-	_, size, _ := s.Kind()
-	if err := s.Decode(&eb); err != nil {
+	raw, err := s.Raw()
+	if err != nil {
 		return err
 	}
-	b.header, b.uncles, b.transactions, b.withdrawals = eb.Header, eb.Uncles, eb.Txs, eb.Withdrawals
-	b.size.Store(rlp.ListSize(size))
+	block, err := DecodeBlock(raw)
+	if err != nil {
+		return err
+	}
+	b.header = block.header
+	b.uncles = block.uncles
+	b.transactions = block.transactions
+	b.withdrawals = block.withdrawals
+	b.size.Store(uint64(len(raw)))
 	return nil
 }
 
@@ -395,28 +427,25 @@ func DecodeBlockRLPWithLegacySupport(data []byte) (*Block, error) {
 		return nil, fmt.Errorf("invalid block: expected at least 3 items, got %d", len(items))
 	}
 
-	// Decode header using legacy support
-	header, err := DecodeRLPBytesWithLegacySupport(items[0])
+	header, err := DecodeHeader(items[0])
 	if err != nil {
-		return nil, fmt.Errorf("failed to decode header: %v", err)
+		return nil, fmt.Errorf("header: %v", err)
 	}
 
-	// Decode transactions
 	var txs []*Transaction
 	if err := rlp.DecodeBytes(items[1], &txs); err != nil {
-		return nil, fmt.Errorf("failed to decode transactions: %v", err)
+		return nil, fmt.Errorf("transactions: %v", err)
 	}
 
-	// Decode uncles (using legacy support for uncle headers too)
 	var uncleRaws []rlp.RawValue
 	if err := rlp.DecodeBytes(items[2], &uncleRaws); err != nil {
-		return nil, fmt.Errorf("failed to decode uncles list: %v", err)
+		return nil, fmt.Errorf("uncles: %v", err)
 	}
 	uncles := make([]*Header, len(uncleRaws))
 	for i, raw := range uncleRaws {
-		uncles[i], err = DecodeRLPBytesWithLegacySupport(raw)
+		uncles[i], err = DecodeHeader(raw)
 		if err != nil {
-			return nil, fmt.Errorf("failed to decode uncle %d: %v", i, err)
+			return nil, fmt.Errorf("uncle %d: %v", i, err)
 		}
 	}
 
