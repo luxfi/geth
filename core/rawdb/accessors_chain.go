@@ -45,7 +45,7 @@ func ReadCanonicalHash(db ethdb.Reader, number uint64) common.Hash {
 
 	// If ancients failed or returned no data, read from leveldb
 	if err != nil || len(data) == 0 {
-		data, _ = db.Get(key)
+		data, _ = db.Get(headerHashKey(number))
 	}
 
 	return common.BytesToHash(data)
@@ -345,6 +345,7 @@ func WriteHeader(db ethdb.KeyValueWriter, header *types.Header) {
 	if err != nil {
 		log.Crit("Failed to RLP encode header", "err", err)
 	}
+
 	key := headerKey(number, hash)
 	if err := db.Put(key, data); err != nil {
 		log.Crit("Failed to store header", "err", err)
