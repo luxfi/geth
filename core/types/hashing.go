@@ -63,6 +63,18 @@ func rlpHash(x interface{}) (h common.Hash) {
 	return h
 }
 
+// rlpHashBytes hashes pre-encoded RLP bytes directly.
+// This is used for hash computation when we want to preserve
+// the original encoding (e.g., for cross-chain compatibility).
+func rlpHashBytes(data []byte) (h common.Hash) {
+	sha := hasherPool.Get().(crypto.KeccakState)
+	defer hasherPool.Put(sha)
+	sha.Reset()
+	sha.Write(data)
+	sha.Read(h[:])
+	return h
+}
+
 // prefixedRlpHash writes the prefix into the hasher before rlp-encoding x.
 // It's used for typed transactions.
 func prefixedRlpHash(prefix byte, x interface{}) (h common.Hash) {
