@@ -187,6 +187,9 @@ var (
 
 	// LuxMainnetChainConfig contains the chain parameters for Lux mainnet (network ID 96369).
 	// This genesis matches the migrated SubnetEVM blockchain data.
+	// IMPORTANT: Shanghai/Cancun/Prague are disabled (nil) to match the original
+	// SubnetEVM chain which was pre-Shanghai (2024). This ensures proper state root
+	// verification when importing historical blocks.
 	LuxMainnetChainConfig = &ChainConfig{
 		ChainID:                 big.NewInt(96369),
 		HomesteadBlock:          big.NewInt(0),
@@ -206,16 +209,14 @@ var (
 		GrayGlacierBlock:        nil,
 		TerminalTotalDifficulty: big.NewInt(0),
 		MergeNetsplitBlock:      big.NewInt(0),
-		ShanghaiTime:            newUint64(0),
-		CancunTime:              newUint64(0),
-		PragueTime:              newUint64(0),
+		ShanghaiTime:            nil,       // Pre-Shanghai chain (SubnetEVM 2024)
+		CancunTime:              nil,       // Not activated
+		PragueTime:              nil,       // Not activated
 		OsakaTime:               nil,
-		VerkleTime:              newUint64(0),
+		VerkleTime:              nil,       // Not activated
+		SubnetEVMTimestamp:      newUint64(0), // SubnetEVM gas accounting from genesis
+		DurangoTimestamp:        newUint64(0), // Durango upgrade from genesis
 		Ethash:                  new(EthashConfig),
-		BlobScheduleConfig: &BlobScheduleConfig{
-			Cancun: DefaultCancunBlobConfig,
-			Prague: DefaultPragueBlobConfig,
-		},
 	}
 
 	// LuxTestnetChainConfig contains the chain parameters for Lux testnet (network ID 96368).
@@ -537,6 +538,13 @@ type ChainConfig struct {
 	BPO5Time      *uint64 `json:"bpo5Time,omitempty"`      // BPO5 switch time (nil = no fork, 0 = already on bpo5)
 	AmsterdamTime *uint64 `json:"amsterdamTime,omitempty"` // Amsterdam switch time (nil = no fork, 0 = already on amsterdam)
 	VerkleTime    *uint64 `json:"verkleTime,omitempty"`    // Verkle switch time (nil = no fork, 0 = already on verkle)
+
+	// SubnetEVM compatibility fields - for chains migrated from ava-labs/subnet-evm
+	// When SubnetEVMTimestamp is set, the chain uses SubnetEVM gas accounting:
+	// - Coinbase receives full gas payment (no EIP-1559 burning)
+	// - Gas refunds are disabled (ApricotPhase1 behavior)
+	SubnetEVMTimestamp *uint64 `json:"subnetEVMTimestamp,omitempty"` // SubnetEVM activation time (nil = standard geth, 0 = always SubnetEVM)
+	DurangoTimestamp   *uint64 `json:"durangoTimestamp,omitempty"`   // Durango upgrade time (for future compatibility)
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
 	// the network that triggers the consensus upgrade.
@@ -953,6 +961,19 @@ func (c *ChainConfig) IsVerkle(num *big.Int, time uint64) bool {
 // those cases.
 func (c *ChainConfig) IsVerkleGenesis() bool {
 	return c.EnableVerkleAtGenesis
+}
+
+// IsSubnetEVM returns whether time is either equal to the SubnetEVM activation time or greater.
+// When active, the chain uses SubnetEVM-compatible gas accounting:
+// - Coinbase receives full gas payment (no EIP-1559 base fee burning)
+// - Gas refunds are disabled (ApricotPhase1 behavior)
+func (c *ChainConfig) IsSubnetEVM(time uint64) bool {
+	return isTimestampForked(c.SubnetEVMTimestamp, time)
+}
+
+// IsDurango returns whether time is either equal to the Durango upgrade time or greater.
+func (c *ChainConfig) IsDurango(time uint64) bool {
+	return isTimestampForked(c.DurangoTimestamp, time)
 }
 
 // IsEIP4762 returns whether eip 4762 has been activated at given block.
@@ -1492,7 +1513,9 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 		IsEIP2929:        c.IsBerlin(num) && !isVerkle,
 		IsLondon:         c.IsLondon(num),
 		IsMerge:          isMerge,
-		IsShanghai:       isMerge && c.IsShanghai(num, timestamp),
+		// SubnetEVM compatibility: Durango upgrade brings Shanghai EIPs (EIP-3651, EIP-3860)
+		// For SubnetEVM chains, IsShanghai is true if either Shanghai or Durango is active
+		IsShanghai:       (isMerge && c.IsShanghai(num, timestamp)) || c.IsDurango(timestamp),
 		IsCancun:         isMerge && c.IsCancun(num, timestamp),
 		IsPrague:         isMerge && c.IsPrague(num, timestamp),
 		IsOsaka:          isMerge && c.IsOsaka(num, timestamp),
