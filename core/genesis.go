@@ -323,6 +323,26 @@ func SetupGenesisBlock(db ethdb.Database, triedb *triedb.Database, genesis *Gene
 func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *triedb.Database, genesis *Genesis, overrides *ChainOverrides) (*params.ChainConfig, common.Hash, *params.ConfigCompatError, error) {
 	// Copy the genesis, so we can operate on a copy.
 	genesis = genesis.copy()
+	// DEBUG: Print fork times
+	if genesis != nil && genesis.Config != nil {
+		var s, c, p string
+		if genesis.Config.ShanghaiTime != nil {
+			s = fmt.Sprintf("%d", *genesis.Config.ShanghaiTime)
+		} else {
+			s = "nil"
+		}
+		if genesis.Config.CancunTime != nil {
+			c = fmt.Sprintf("%d", *genesis.Config.CancunTime)
+		} else {
+			c = "nil"
+		}
+		if genesis.Config.PragueTime != nil {
+			p = fmt.Sprintf("%d", *genesis.Config.PragueTime)
+		} else {
+			p = "nil"
+		}
+		log.Info("DEBUG: Genesis config fork times", "shanghai", s, "cancun", c, "prague", p)
+	}
 	// Sanitize the supplied genesis, ensuring it has the associated chain
 	// config attached.
 	if genesis != nil && genesis.Config == nil {
@@ -580,11 +600,14 @@ func (g *Genesis) Commit(db ethdb.Database, triedb *triedb.Database) (*types.Blo
 	if config.Clique != nil && len(g.ExtraData) < 32+crypto.SignatureLength {
 		return nil, errors.New("can't start clique chain without signers")
 	}
+	// DEBUG: Print alloc size
+	log.Info("DEBUG: Genesis Commit called", "alloc_size", len(g.Alloc))
 	// flush the data to disk and compute the state root
 	root, err := flushAlloc(&g.Alloc, triedb)
 	if err != nil {
 		return nil, err
 	}
+	log.Info("DEBUG: flushAlloc completed", "root", root.Hex())
 
 	// If a pre-computed StateRoot is specified, use it instead of the computed one.
 	// This is used when importing genesis from external chains (like SubnetEVM)
@@ -617,6 +640,12 @@ func (g *Genesis) Commit(db ethdb.Database, triedb *triedb.Database) (*types.Blo
 	rawdb.WriteHeadBlockHash(batch, hash)
 	rawdb.WriteHeadFastBlockHash(batch, hash)
 	rawdb.WriteHeadHeaderHash(batch, hash)
+	// DEBUG: Check config before writing
+	if config.ShanghaiTime != nil {
+		log.Info("DEBUG: Writing config with shanghaiTime", "value", *config.ShanghaiTime)
+	} else {
+		log.Info("DEBUG: Writing config with shanghaiTime=nil")
+	}
 	rawdb.WriteChainConfig(batch, hash, config)
 	return block, batch.Write()
 }
