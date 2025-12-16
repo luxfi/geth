@@ -406,9 +406,6 @@ func (s *Ethereum) APIs() []rpc.API {
 		}, {
 			Namespace: "net",
 			Service:   s.netRPCService,
-		}, {
-			Namespace: "migrate",
-			Service:   NewMigrateAPI(s),
 		},
 	}...)
 }
