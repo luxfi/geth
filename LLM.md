@@ -1052,3 +1052,28 @@ For successful block import from SubnetEVM chains:
 2. SubnetEVM timestamp must be set in chain config
 3. Durango timestamp must be set to enable Shanghai EIPs
 4. State roots will now match exactly with proper gas accounting
+
+
+## Disaster Recovery - Block Import/Export
+
+### Quick Reference
+```bash
+# Export chain to RLP
+curl -X POST http://127.0.0.1:8545 -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","method":"admin_exportChain","params":["/path/chain.rlp.gz"],"id":1}'
+
+# Import chain from RLP  
+curl -X POST http://127.0.0.1:8545 -H 'Content-Type: application/json' \
+  -d '{"jsonrpc":"2.0","method":"admin_importChain","params":["/path/chain.rlp.gz"],"id":1}'
+```
+
+### Chain Status (December 2024)
+| Chain | Chain ID | Blocks | Export File |
+|-------|----------|--------|-------------|
+| Zoo   | 200200   | 800    | zoo-chain.rlp (1.3MB) |
+| Lux   | 96369    | 1,082,780 | lux-chain.rlp.gz |
+
+### Verified Encoding
+- All Zoo (800) and Lux (1,082,781) blocks encode/decode with identical hashes
+- Header RLP encoding matches between geth and SubnetEVM/EVM
+
