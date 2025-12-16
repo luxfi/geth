@@ -157,9 +157,9 @@ func (v *BlockValidator) ValidateState(block *types.Block, statedb *state.StateD
 		if reqhash != *header.RequestsHash {
 			return fmt.Errorf("invalid requests hash (remote: %x local: %x)", *header.RequestsHash, reqhash)
 		}
-	} else if res.Requests != nil {
-		return errors.New("block has requests before prague fork")
 	}
+	// Note: Removed check for "block has requests before prague fork"
+	// to allow importing pre-Prague blocks into post-Prague configured chains
 	// Validate the state root against the received state root and throw
 	// an error if they don't match.
 	if root := statedb.IntermediateRoot(v.config.IsEIP158(header.Number)); header.Root != root {

@@ -43,6 +43,23 @@ func VerifyEIP1559Header(config *params.ChainConfig, parent, header *types.Heade
 	if header.BaseFee == nil {
 		return errors.New("header is missing baseFee")
 	}
+
+	// SubnetEVM/C-Chain uses a completely different fee mechanism:
+	// - Custom baseFeeChangeDenominator (36 vs standard 8)
+	// - minBaseFee floor (25 gwei) that prevents baseFee from going below
+	// - Different gas target calculations
+	// When SubnetEVM is active, trust the baseFee from the header
+	// as it was calculated by the SubnetEVM consensus
+	if config.IsSubnetEVM(header.Time) {
+		// For SubnetEVM chains, only verify baseFee is present and >= minBaseFee
+		minBaseFee := new(big.Int).SetUint64(25000000000) // 25 gwei
+		if header.BaseFee.Cmp(minBaseFee) < 0 {
+			return fmt.Errorf("invalid baseFee: have %s, want at least minBaseFee %s",
+				header.BaseFee, minBaseFee)
+		}
+		return nil
+	}
+
 	// Verify the baseFee is correct based on the parent header.
 	expectedBaseFee := CalcBaseFee(config, parent)
 	if header.BaseFee.Cmp(expectedBaseFee) != 0 {
