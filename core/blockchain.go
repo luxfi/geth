@@ -1282,6 +1282,45 @@ func (bc *BlockChain) ExportN(w io.Writer, first uint64, last uint64) error {
 	return nil
 }
 
+// InsertBlockWithoutState inserts a block into the chain without executing transactions
+// or validating state. This is a MIGRATION-ONLY method for importing historical blocks
+// when the genesis state differs from the source chain.
+// WARNING: This bypasses state validation and should only be used for trusted data import.
+func (bc *BlockChain) InsertBlockWithoutState(block *types.Block) error {
+	// Verify parent exists (except for genesis)
+	if block.NumberU64() > 0 {
+		parent := bc.GetHeader(block.ParentHash(), block.NumberU64()-1)
+		if parent == nil {
+			return fmt.Errorf("unknown ancestor: block %d parent %s not found", block.NumberU64(), block.ParentHash().Hex())
+		}
+	}
+
+	// Write block to database
+	batch := bc.db.NewBatch()
+	rawdb.WriteBlock(batch, block)
+	rawdb.WriteReceipts(batch, block.Hash(), block.NumberU64(), nil)
+	rawdb.WriteCanonicalHash(batch, block.Hash(), block.NumberU64())
+	rawdb.WriteTxLookupEntriesByBlock(batch, block)
+	if err := batch.Write(); err != nil {
+		return fmt.Errorf("write block data: %w", err)
+	}
+
+	// Update head pointers
+	if !bc.chainmu.TryLock() {
+		return errors.New("chain mutex locked")
+	}
+	defer bc.chainmu.Unlock()
+
+	bc.writeHeadBlock(block)
+
+	log.Debug("Inserted block without state",
+		"number", block.NumberU64(),
+		"hash", block.Hash().Hex(),
+		"txs", len(block.Transactions()))
+
+	return nil
+}
+
 // writeHeadBlock injects a new head block into the current block chain. This method
 // assumes that the block is indeed a true head. It will also reset the head
 // header and the head snap sync block to this very same block if they are older

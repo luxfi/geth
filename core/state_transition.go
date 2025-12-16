@@ -22,13 +22,13 @@ import (
 	"math"
 	"math/big"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 // ExecutionResult includes all output after executing given evm
@@ -556,7 +556,16 @@ func (st *stateTransition) execute() (*ExecutionResult, error) {
 		// the coinbase when simulating calls.
 	} else {
 		fee := new(uint256.Int).SetUint64(st.gasUsed())
-		fee.Mul(fee, effectiveTipU256)
+		// SubnetEVM compatibility: coinbase receives full gas payment (no EIP-1559 burning)
+		// Standard geth: coinbase receives only the tip (base fee is burned)
+		if st.evm.ChainConfig().IsSubnetEVM(st.evm.Context.Time) {
+			// SubnetEVM: fee = gasUsed * gasPrice (full payment, no burning)
+			gasPriceU256, _ := uint256.FromBig(msg.GasPrice)
+			fee.Mul(fee, gasPriceU256)
+		} else {
+			// Standard EIP-1559: fee = gasUsed * effectiveTip (base fee burned)
+			fee.Mul(fee, effectiveTipU256)
+		}
 		st.state.AddBalance(st.evm.Context.Coinbase, fee, tracing.BalanceIncreaseRewardTransactionFee)
 
 		// add the coinbase to the witness iff the fee is greater than 0
@@ -633,6 +642,12 @@ func (st *stateTransition) applyAuthorization(auth *types.SetCodeAuthorization) 
 
 // calcRefund computes refund counter, capped to a refund quotient.
 func (st *stateTransition) calcRefund() uint64 {
+	// SubnetEVM compatibility: gas refunds are disabled (ApricotPhase1 behavior)
+	// This matches coreth/subnet-evm where refunds were disabled from genesis
+	if st.evm.ChainConfig().IsSubnetEVM(st.evm.Context.Time) {
+		return 0
+	}
+
 	var refund uint64
 	if !st.evm.ChainConfig().IsLondon(st.evm.Context.BlockNumber) {
 		// Before EIP-3529: refunds were capped to gasUsed / 2

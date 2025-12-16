@@ -162,27 +162,38 @@ if chainConfig.IsUpgradeActive(header.Number) {
 
 ### Block Import/Export
 
-The format-aware encoding enables seamless import/export:
+The format-aware encoding enables seamless import/export **with full state verification**:
 
 ```bash
 # Export blocks (preserves original format in RLP)
 geth export blocks.rlp 0 1000000
 
-# Import blocks (format detected from RLP, preserved during storage)
+# Import blocks - REQUIRES initialized genesis state
+# State re-execution happens for every block
 geth import --datadir /path/to/db blocks.rlp
 ```
 
-### Migration Mode
+### State Verification Requirements
 
-When genesis state is missing, import runs in "migration mode":
-- Blocks imported without state re-execution
-- State roots from headers are trusted
-- Useful for disaster recovery from RLP exports
+**CRITICAL**: Block import ALWAYS requires proper state re-execution:
 
-```
-INFO Migration mode: importing blocks without state re-execution
-INFO Migration: updated head block number=250000 hash=...
-```
+1. **Genesis state must be initialized first**
+   ```bash
+   geth init --datadir /path/to/db genesis.json
+   ```
+
+2. **Every block's state transition is re-executed**
+   - Transactions are re-processed
+   - State root is verified against header
+   - Invalid state roots cause import failure
+
+3. **No "migration mode" or state-skipping is allowed**
+   - If genesis state is missing, import will error:
+   ```
+   ERROR: genesis state missing: cannot import blocks without proper state re-execution. Initialize chain with genesis state first
+   ```
+
+This ensures cryptographic integrity of the entire chain from genesis to head.
 
 ---
 
@@ -923,3 +934,121 @@ go test ./core/types/... -v -run "TestLux|TestBlock"
 The actual Lux mainnet blocks have 17 fields, not 19 as previously documented. The 17th field (field 16) is an empty string `0x80`, which appears to be ExtDataHash encoded as "absent/nil" in the original format. The remaining fields (ExtDataGasUsed, BlockGasCost) are not present in the actual block data.
 
 This is different from the theoretical 19-field format documented earlier. The solution of preserving raw RLP bytes handles both cases correctly without needing to understand the exact field semantics.
+
+---
+
+## SubnetEVM Gas Accounting Compatibility - December 15, 2025
+
+### Overview
+
+SubnetEVM (ava-labs/subnet-evm) uses different gas accounting rules than standard Ethereum EIP-1559. To import blocks from SubnetEVM chains into geth with exact state root matching, we implement SubnetEVM-compatible gas accounting.
+
+### Key Differences from Standard EIP-1559
+
+| Feature | Standard EIP-1559 | SubnetEVM |
+|---------|------------------|-----------|
+| Coinbase Payment | `gasUsed * effectiveTip` | `gasUsed * gasPrice` (full) |
+| Base Fee Burning | Yes (base fee burned) | No (all gas goes to coinbase) |
+| Gas Refunds | Enabled (capped to gasUsed/5 post-EIP-3529) | Disabled (ApricotPhase1) |
+
+### Implementation
+
+#### 1. ChainConfig Fields Added
+
+```go
+// params/config.go
+type ChainConfig struct {
+    // ... existing fields ...
+
+    // SubnetEVM compatibility fields
+    SubnetEVMTimestamp *uint64 `json:"subnetEVMTimestamp,omitempty"` // nil = standard geth, 0 = always SubnetEVM
+    DurangoTimestamp   *uint64 `json:"durangoTimestamp,omitempty"`   // Durango upgrade time
+}
+
+// Check methods
+func (c *ChainConfig) IsSubnetEVM(time uint64) bool
+func (c *ChainConfig) IsDurango(time uint64) bool
+```
+
+#### 2. Coinbase Payment (core/state_transition.go)
+
+```go
+// In TransitionDb(), coinbase payment section:
+fee := new(uint256.Int).SetUint64(st.gasUsed())
+if st.evm.ChainConfig().IsSubnetEVM(st.evm.Context.Time) {
+    // SubnetEVM: fee = gasUsed * gasPrice (full payment, no burning)
+    gasPriceU256, _ := uint256.FromBig(msg.GasPrice)
+    fee.Mul(fee, gasPriceU256)
+} else {
+    // Standard EIP-1559: fee = gasUsed * effectiveTip (base fee burned)
+    fee.Mul(fee, effectiveTipU256)
+}
+st.state.AddBalance(st.evm.Context.Coinbase, fee, ...)
+```
+
+#### 3. Gas Refund Disable (core/state_transition.go)
+
+```go
+func (st *stateTransition) calcRefund() uint64 {
+    // SubnetEVM: gas refunds disabled (ApricotPhase1 behavior)
+    if st.evm.ChainConfig().IsSubnetEVM(st.evm.Context.Time) {
+        return 0
+    }
+    // Standard refund calculation follows...
+}
+```
+
+### Genesis Configuration
+
+For SubnetEVM chains (like Lux Mainnet), include these fields in genesis.json:
+
+```json
+{
+  "config": {
+    "chainId": 96369,
+    "subnetEVMTimestamp": 0,
+    "durangoTimestamp": 0,
+    // ... other fields
+  }
+}
+```
+
+### Testing
+
+```bash
+# Run SubnetEVM gas accounting test
+go test -v ./core/... -run "TestSubnetEVMGasAccounting"
+```
+
+### Files Modified
+
+1. `params/config.go` - Added SubnetEVMTimestamp and DurangoTimestamp fields, IsSubnetEVM() and IsDurango() methods
+2. `core/state_transition.go` - Modified coinbase payment and gas refund calculation
+3. `core/state_processor_test.go` - Added TestSubnetEVMGasAccounting test
+
+### Durango Upgrade: Shanghai EIPs Activation (876 Gas Fix)
+
+The Durango upgrade in SubnetEVM brings Shanghai EIPs to the chain. This includes:
+- **EIP-3651**: Warm COINBASE (coinbase is added to access list at transaction start)
+- **EIP-3860**: Init code metering (extra gas for contract creation based on init code size)
+
+The 876 gas difference in block 4 contract deployment was caused by EIP-3860 init code metering:
+- Init code word gas: 2 gas per 32-byte word
+- 438 words * 2 gas = 876 gas
+
+Fix in `params/config.go` Rules() function:
+```go
+// SubnetEVM compatibility: Durango upgrade brings Shanghai EIPs (EIP-3651, EIP-3860)
+// For SubnetEVM chains, IsShanghai is true if either Shanghai or Durango is active
+IsShanghai: (isMerge && c.IsShanghai(num, timestamp)) || c.IsDurango(timestamp),
+```
+
+This ensures that when `DurangoTimestamp` is set (active from genesis with value 0), Shanghai EIPs are enabled even if `ShanghaiTime` is nil.
+
+### Note on Block Import
+
+For successful block import from SubnetEVM chains:
+1. Genesis state must be properly initialized (all account balances in alloc)
+2. SubnetEVM timestamp must be set in chain config
+3. Durango timestamp must be set to enable Shanghai EIPs
+4. State roots will now match exactly with proper gas accounting
