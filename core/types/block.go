@@ -182,13 +182,26 @@ type headerMarshaling struct {
 }
 
 // Hash returns the block hash of the header, which is simply the keccak256 hash of its
-// RLP encoding. If rawRLP is set (from decoding), uses those bytes directly to preserve
-// hash compatibility with the original chain format.
+// RLP encoding.
 //
-// For Lux blocks (post-genesis with ExtDataGasUsed or BlockGasCost set),
-// uses 19-field format with ExtDataHash as value type (common.Hash, not *common.Hash)
-// to match original coreth encoding when rawRLP is not available.
+// Special handling (in order of priority):
+//  1. Genesis blocks (Number == 0): ALWAYS uses 16-field format to match original Lux
+//     mainnet genesis hash. This takes priority over rawRLP because genesis blocks may
+//     be stored with extra fork fields (WithdrawalsHash, etc.) but must hash correctly.
+//  2. rawRLP set (from decoding): Uses stored bytes to preserve hash compatibility with
+//     the original chain format for imported/historic blocks.
+//  3. Lux blocks (ExtDataGasUsed or BlockGasCost set): Uses 19-field format with
+//     ExtDataHash as value type to match original coreth encoding.
+//  4. Default: Uses standard RLP encoding.
 func (h *Header) Hash() common.Hash {
+	// Genesis block: ALWAYS use 16-field format to match original chain genesis hash.
+	// This MUST come first because genesis blocks loaded from DB have rawRLP set,
+	// but we need consistent hashing regardless of how the block was stored.
+	// The original Lux mainnet genesis was computed with only 16 fields (15 base + BaseFee).
+	if h.Number != nil && h.Number.Sign() == 0 {
+		return h.Hash16()
+	}
+	// For non-genesis blocks, use rawRLP if set (preserves imported block hashes)
 	if len(h.rawRLP) > 0 {
 		return rlpHashBytes(h.rawRLP)
 	}
@@ -273,12 +286,21 @@ func (h *Header) RawRLP() []byte {
 // EncodeRLP encodes the header to RLP using the appropriate format.
 // The format is determined by rlpFormat (set during decode) or detected from fields.
 //
-// Format handling:
-//   - RLPFormat17: 17 fields with ExtDataHash as pointer (nil -> 0x80)
-//   - RLPFormat18: 18 fields with ExtDataHash + ExtDataGasUsed
-//   - RLPFormat19Lux: 19 fields with ExtDataHash as VALUE type (original coreth)
-//   - Others: Use default encoding
+// Format handling (in priority order):
+//  1. Genesis blocks (Number == 0): ALWAYS uses 16-field format to match original
+//     Lux mainnet genesis. This ensures cryptographic compatibility regardless of
+//     what fork fields are set in the header struct.
+//  2. rlpFormat set (from decode): Uses the format detected during decode
+//  3. Lux 19-field format: If ExtDataGasUsed or BlockGasCost set (but no Eth2 fields)
+//  4. Default: Standard encoding with all non-nil fields
 func (h *Header) EncodeRLP(w io.Writer) error {
+	// Genesis blocks: ALWAYS use 16-field format for cryptographic compatibility.
+	// The original Lux mainnet genesis was created with only 16 fields, and we must
+	// maintain this encoding regardless of fork fields set by newer chain configs.
+	if h.Number != nil && h.Number.Sign() == 0 {
+		return h.encodeRLP16(w)
+	}
+
 	switch h.rlpFormat {
 	case RLPFormat17:
 		return h.encodeRLP17(w)
@@ -309,6 +331,29 @@ func (h *Header) isLux19Format() bool {
 func (h *Header) ClearInternalFields() {
 	h.rawRLP = nil
 	h.rlpFormat = 0
+}
+
+// encodeRLP16 encodes using 16-field format (post-London, pre-ExtDataHash).
+// This is used for Lux mainnet genesis to produce the correct hash.
+func (h *Header) encodeRLP16(w io.Writer) error {
+	return rlp.Encode(w, &hdr16{
+		ParentHash:  h.ParentHash,
+		UncleHash:   h.UncleHash,
+		Coinbase:    h.Coinbase,
+		Root:        h.Root,
+		TxHash:      h.TxHash,
+		ReceiptHash: h.ReceiptHash,
+		Bloom:       h.Bloom,
+		Difficulty:  h.Difficulty,
+		Number:      h.Number,
+		GasLimit:    h.GasLimit,
+		GasUsed:     h.GasUsed,
+		Time:        h.Time,
+		Extra:       h.Extra,
+		MixDigest:   h.MixDigest,
+		Nonce:       h.Nonce,
+		BaseFee:     h.BaseFee,
+	})
 }
 
 // encodeRLP17 encodes using 17-field format (BaseFee + ExtDataHash).
