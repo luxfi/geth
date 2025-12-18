@@ -1385,3 +1385,88 @@ func TestDecodeLux19FieldFormat(t *testing.T) {
 	t.Logf("  Expected hash: %s", expectedHash.Hex())
 	t.Logf("  Hash19Lux():   %s", hash19Lux.Hex())
 }
+
+// TestDecodeCoreth19FieldFormat tests that headers encoded with coreth's
+// HeaderSerializable format (ExtDataHash at pos 15, BaseFee at pos 16) are
+// correctly decoded with BlockGasCost preserved.
+func TestDecodeCoreth19FieldFormat(t *testing.T) {
+	extDataHash := common.HexToHash("0xdeadbeefcafebabedeadbeefcafebabedeadbeefcafebabedeadbeefcafebabe")
+
+	// Create a coreth 19-field header using their field order
+	// This matches coreth's HeaderSerializable: ExtDataHash at pos 15, BaseFee at pos 16
+	h19coreth := hdr19coreth{
+		ParentHash:     common.HexToHash("0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"),
+		UncleHash:      EmptyUncleHash,
+		Coinbase:       common.HexToAddress("0x1234567890123456789012345678901234567890"),
+		Root:           common.HexToHash("0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"),
+		TxHash:         EmptyTxsHash,
+		ReceiptHash:    EmptyReceiptsHash,
+		Bloom:          Bloom{},
+		Difficulty:     big.NewInt(0),
+		Number:         big.NewInt(1080013), // Block number that was failing
+		GasLimit:       12000000,
+		GasUsed:        21000,
+		Time:           1730479555,
+		Extra:          []byte{},
+		MixDigest:      common.Hash{},
+		Nonce:          BlockNonce{},
+		ExtDataHash:    extDataHash,          // Position 15 in coreth format
+		BaseFee:        big.NewInt(25000000), // Position 16 in coreth format
+		ExtDataGasUsed: big.NewInt(0),        // Position 17
+		BlockGasCost:   big.NewInt(0),        // Position 18 - THIS IS KEY!
+	}
+
+	// Encode using coreth field order
+	encoded, err := rlp.EncodeToBytes(&h19coreth)
+	if err != nil {
+		t.Fatalf("failed to encode hdr19coreth: %v", err)
+	}
+
+	// Decode using DecodeHeader - should try coreth format first
+	decoded, err := DecodeHeader(encoded)
+	if err != nil {
+		t.Fatalf("failed to decode coreth 19-field header: %v", err)
+	}
+
+	// Verify all fields are preserved
+	if decoded.ParentHash != h19coreth.ParentHash {
+		t.Errorf("ParentHash mismatch")
+	}
+	if decoded.Number.Cmp(h19coreth.Number) != 0 {
+		t.Errorf("Number mismatch: have %v, want %v", decoded.Number, h19coreth.Number)
+	}
+
+	// Critical: ExtDataHash must be preserved
+	if decoded.ExtDataHash == nil {
+		t.Fatal("ExtDataHash is nil after decode")
+	}
+	if *decoded.ExtDataHash != extDataHash {
+		t.Errorf("ExtDataHash mismatch: have %s, want %s",
+			decoded.ExtDataHash.Hex(), extDataHash.Hex())
+	}
+
+	// Critical: BaseFee must be preserved
+	if decoded.BaseFee == nil || decoded.BaseFee.Cmp(h19coreth.BaseFee) != 0 {
+		t.Errorf("BaseFee mismatch: have %v, want %v", decoded.BaseFee, h19coreth.BaseFee)
+	}
+
+	// Critical: ExtDataGasUsed must be preserved
+	if decoded.ExtDataGasUsed == nil || decoded.ExtDataGasUsed.Cmp(h19coreth.ExtDataGasUsed) != 0 {
+		t.Errorf("ExtDataGasUsed mismatch: have %v, want %v", decoded.ExtDataGasUsed, h19coreth.ExtDataGasUsed)
+	}
+
+	// MOST CRITICAL: BlockGasCost must be preserved (this was nil before the fix)
+	if decoded.BlockGasCost == nil {
+		t.Fatal("BlockGasCost is nil after decode - this is the bug we fixed!")
+	}
+	if decoded.BlockGasCost.Cmp(h19coreth.BlockGasCost) != 0 {
+		t.Errorf("BlockGasCost mismatch: have %v, want %v", decoded.BlockGasCost, h19coreth.BlockGasCost)
+	}
+
+	t.Logf("Coreth 19-field format decoding verified successfully")
+	t.Logf("  Block number: %v", decoded.Number)
+	t.Logf("  ExtDataHash: %s", decoded.ExtDataHash.Hex())
+	t.Logf("  BaseFee: %v", decoded.BaseFee)
+	t.Logf("  ExtDataGasUsed: %v", decoded.ExtDataGasUsed)
+	t.Logf("  BlockGasCost: %v", decoded.BlockGasCost)
+}
