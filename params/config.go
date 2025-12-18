@@ -1513,9 +1513,11 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 		IsEIP2929:        c.IsBerlin(num) && !isVerkle,
 		IsLondon:         c.IsLondon(num),
 		IsMerge:          isMerge,
-		// SubnetEVM compatibility: Durango upgrade brings Shanghai EIPs (EIP-3651, EIP-3860)
-		// For SubnetEVM chains, IsShanghai is true if either Shanghai or Durango is active
-		IsShanghai:       (isMerge && c.IsShanghai(num, timestamp)) || c.IsDurango(timestamp),
+		// For Lux networks: If ShanghaiTime is explicitly set in genesis config,
+		// Shanghai is active regardless of merge status. This handles importing
+		// historic blocks that were created with Shanghai EIPs (EIP-3860 init code gas)
+		// but before the merge. For SubnetEVM chains, Durango upgrade brings Shanghai EIPs.
+		IsShanghai:       c.IsShanghai(num, timestamp) || c.IsDurango(timestamp),
 		IsCancun:         isMerge && c.IsCancun(num, timestamp),
 		IsPrague:         isMerge && c.IsPrague(num, timestamp),
 		IsOsaka:          isMerge && c.IsOsaka(num, timestamp),
