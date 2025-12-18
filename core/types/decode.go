@@ -351,6 +351,77 @@ type hdr19 struct {
 	BlockGasCost   *big.Int
 }
 
+// hdr17coreth is the coreth/subnet-evm 17-field format with ExtDataHash BEFORE BaseFee.
+// Coreth's HeaderSerializable has ExtDataHash as a REQUIRED field at position 15.
+// Field order: Core(15) + ExtDataHash(pos 15) + BaseFee(pos 16)
+type hdr17coreth struct {
+	ParentHash  common.Hash
+	UncleHash   common.Hash
+	Coinbase    common.Address
+	Root        common.Hash
+	TxHash      common.Hash
+	ReceiptHash common.Hash
+	Bloom       Bloom
+	Difficulty  *big.Int
+	Number      *big.Int
+	GasLimit    uint64
+	GasUsed     uint64
+	Time        uint64
+	Extra       []byte
+	MixDigest   common.Hash
+	Nonce       BlockNonce
+	ExtDataHash common.Hash // Value type at pos 15 (REQUIRED in coreth)
+	BaseFee     *big.Int    // Optional at pos 16
+}
+
+// hdr18coreth is the coreth/subnet-evm 18-field format.
+// Field order: Core(15) + ExtDataHash(pos 15) + BaseFee(pos 16) + ExtDataGasUsed(pos 17)
+type hdr18coreth struct {
+	ParentHash     common.Hash
+	UncleHash      common.Hash
+	Coinbase       common.Address
+	Root           common.Hash
+	TxHash         common.Hash
+	ReceiptHash    common.Hash
+	Bloom          Bloom
+	Difficulty     *big.Int
+	Number         *big.Int
+	GasLimit       uint64
+	GasUsed        uint64
+	Time           uint64
+	Extra          []byte
+	MixDigest      common.Hash
+	Nonce          BlockNonce
+	ExtDataHash    common.Hash // Value type at pos 15 (REQUIRED in coreth)
+	BaseFee        *big.Int    // Optional at pos 16
+	ExtDataGasUsed *big.Int    // Optional at pos 17
+}
+
+// hdr19coreth is the coreth/subnet-evm 19-field format.
+// Field order: Core(15) + ExtDataHash(pos 15) + BaseFee(pos 16) + ExtDataGasUsed(pos 17) + BlockGasCost(pos 18)
+// This is the format used by Lux mainnet post-genesis blocks exported via coreth.
+type hdr19coreth struct {
+	ParentHash     common.Hash
+	UncleHash      common.Hash
+	Coinbase       common.Address
+	Root           common.Hash
+	TxHash         common.Hash
+	ReceiptHash    common.Hash
+	Bloom          Bloom
+	Difficulty     *big.Int
+	Number         *big.Int
+	GasLimit       uint64
+	GasUsed        uint64
+	Time           uint64
+	Extra          []byte
+	MixDigest      common.Hash
+	Nonce          BlockNonce
+	ExtDataHash    common.Hash // Value type at pos 15 (REQUIRED in coreth)
+	BaseFee        *big.Int    // Optional at pos 16
+	ExtDataGasUsed *big.Int    // Optional at pos 17
+	BlockGasCost   *big.Int    // Optional at pos 18
+}
+
 // hdr19lux is an alias for hdr19val (defined in block.go).
 // The Lux 19-field format uses ExtDataHash as VALUE type (common.Hash),
 // not a pointer. This is the actual format used in Lux block production.
@@ -630,6 +701,34 @@ func decodeExt(data []byte, count int) (*Header, error) {
 }
 
 func decode17(data []byte) (*Header, error) {
+	// Try coreth format first (ExtDataHash at pos 15, BaseFee at pos 16)
+	// Coreth's HeaderSerializable has ExtDataHash as REQUIRED field before BaseFee
+	var hc hdr17coreth
+	if err := rlp.DecodeBytes(data, &hc); err == nil {
+		extHash := hc.ExtDataHash
+		return &Header{
+			ParentHash:  hc.ParentHash,
+			UncleHash:   hc.UncleHash,
+			Coinbase:    hc.Coinbase,
+			Root:        hc.Root,
+			TxHash:      hc.TxHash,
+			ReceiptHash: hc.ReceiptHash,
+			Bloom:       hc.Bloom,
+			Difficulty:  hc.Difficulty,
+			Number:      hc.Number,
+			GasLimit:    hc.GasLimit,
+			GasUsed:     hc.GasUsed,
+			Time:        hc.Time,
+			Extra:       hc.Extra,
+			MixDigest:   hc.MixDigest,
+			Nonce:       hc.Nonce,
+			ExtDataHash: &extHash,
+			BaseFee:     hc.BaseFee,
+			rlpFormat:   RLPFormat17,
+		}, nil
+	}
+
+	// Fall back to geth format (BaseFee at pos 15, ExtDataHash at pos 16)
 	var h hdr17
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
@@ -652,11 +751,39 @@ func decode17(data []byte) (*Header, error) {
 		Nonce:       h.Nonce,
 		BaseFee:     h.BaseFee,
 		ExtDataHash: h.ExtDataHash,
-		rlpFormat:   RLPFormat17, // Track 17-field format for re-encoding
+		rlpFormat:   RLPFormat17,
 	}, nil
 }
 
 func decode18(data []byte) (*Header, error) {
+	// Try coreth format first (ExtDataHash at pos 15, then BaseFee, ExtDataGasUsed)
+	var hc hdr18coreth
+	if err := rlp.DecodeBytes(data, &hc); err == nil {
+		extHash := hc.ExtDataHash
+		return &Header{
+			ParentHash:     hc.ParentHash,
+			UncleHash:      hc.UncleHash,
+			Coinbase:       hc.Coinbase,
+			Root:           hc.Root,
+			TxHash:         hc.TxHash,
+			ReceiptHash:    hc.ReceiptHash,
+			Bloom:          hc.Bloom,
+			Difficulty:     hc.Difficulty,
+			Number:         hc.Number,
+			GasLimit:       hc.GasLimit,
+			GasUsed:        hc.GasUsed,
+			Time:           hc.Time,
+			Extra:          hc.Extra,
+			MixDigest:      hc.MixDigest,
+			Nonce:          hc.Nonce,
+			ExtDataHash:    &extHash,
+			BaseFee:        hc.BaseFee,
+			ExtDataGasUsed: hc.ExtDataGasUsed,
+			rlpFormat:      RLPFormat18,
+		}, nil
+	}
+
+	// Fall back to geth format (BaseFee first, then ExtDataHash)
 	var h hdr18
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
@@ -680,15 +807,44 @@ func decode18(data []byte) (*Header, error) {
 		BaseFee:        h.BaseFee,
 		ExtDataHash:    h.ExtDataHash,
 		ExtDataGasUsed: h.ExtDataGasUsed,
-		rlpFormat:      RLPFormat18, // Track 18-field format for re-encoding
+		rlpFormat:      RLPFormat18,
 	}, nil
 }
 
 func decode19(data []byte) (*Header, error) {
-	// Try Lux value-type format first (ExtDataHash as common.Hash, not pointer)
+	// Try coreth format first (ExtDataHash at pos 15, then BaseFee, ExtDataGasUsed, BlockGasCost)
+	// This is the format used by Lux mainnet post-genesis blocks exported via coreth.
+	var hc hdr19coreth
+	if err := rlp.DecodeBytes(data, &hc); err == nil {
+		extHash := hc.ExtDataHash
+		return &Header{
+			ParentHash:     hc.ParentHash,
+			UncleHash:      hc.UncleHash,
+			Coinbase:       hc.Coinbase,
+			Root:           hc.Root,
+			TxHash:         hc.TxHash,
+			ReceiptHash:    hc.ReceiptHash,
+			Bloom:          hc.Bloom,
+			Difficulty:     hc.Difficulty,
+			Number:         hc.Number,
+			GasLimit:       hc.GasLimit,
+			GasUsed:        hc.GasUsed,
+			Time:           hc.Time,
+			Extra:          hc.Extra,
+			MixDigest:      hc.MixDigest,
+			Nonce:          hc.Nonce,
+			ExtDataHash:    &extHash,
+			BaseFee:        hc.BaseFee,
+			ExtDataGasUsed: hc.ExtDataGasUsed,
+			BlockGasCost:   hc.BlockGasCost,
+			rlpFormat:      RLPFormat19Lux, // Track original format
+		}, nil
+	}
+
+	// Try geth value-type format (BaseFee at pos 15, ExtDataHash as common.Hash at pos 16)
 	var hlux hdr19lux
 	if err := rlp.DecodeBytes(data, &hlux); err == nil {
-		extHash := hlux.ExtDataHash // Copy to get pointer
+		extHash := hlux.ExtDataHash
 		return &Header{
 			ParentHash:     hlux.ParentHash,
 			UncleHash:      hlux.UncleHash,
@@ -709,11 +865,11 @@ func decode19(data []byte) (*Header, error) {
 			ExtDataHash:    &extHash,
 			ExtDataGasUsed: hlux.ExtDataGasUsed,
 			BlockGasCost:   hlux.BlockGasCost,
-			rlpFormat:      RLPFormat19Lux, // Track original format
+			rlpFormat:      RLPFormat19Lux,
 		}, nil
 	}
 
-	// Fall back to pointer format
+	// Fall back to geth pointer format
 	var h hdr19
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
@@ -738,7 +894,7 @@ func decode19(data []byte) (*Header, error) {
 		ExtDataHash:    h.ExtDataHash,
 		ExtDataGasUsed: h.ExtDataGasUsed,
 		BlockGasCost:   h.BlockGasCost,
-		rlpFormat:      RLPFormat19Ptr, // Track original format
+		rlpFormat:      RLPFormat19Ptr,
 	}, nil
 }
 
