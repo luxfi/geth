@@ -428,6 +428,7 @@ type hdr19coreth struct {
 type hdr19lux = hdr19val
 
 // Lux 20-field header (19 + BlobGasUsed)
+// Uses value type for BlobGasUsed to preserve zero values during roundtrip
 type hdr20 struct {
 	ParentHash     common.Hash
 	UncleHash      common.Hash
@@ -448,10 +449,11 @@ type hdr20 struct {
 	ExtDataHash    *common.Hash `rlp:"nil"`
 	ExtDataGasUsed *big.Int
 	BlockGasCost   *big.Int
-	BlobGasUsed    *uint64 `rlp:"nil"`
+	BlobGasUsed    uint64
 }
 
 // Lux 21-field header (20 + ExcessBlobGas)
+// Uses value types for BlobGasUsed and ExcessBlobGas to preserve zero values during roundtrip
 type hdr21 struct {
 	ParentHash     common.Hash
 	UncleHash      common.Hash
@@ -472,11 +474,12 @@ type hdr21 struct {
 	ExtDataHash    *common.Hash `rlp:"nil"`
 	ExtDataGasUsed *big.Int
 	BlockGasCost   *big.Int
-	BlobGasUsed    *uint64 `rlp:"nil"`
-	ExcessBlobGas  *uint64 `rlp:"nil"`
+	BlobGasUsed    uint64
+	ExcessBlobGas  uint64
 }
 
 // Lux 22-field header (21 + ParentBeaconRoot)
+// Uses value types for BlobGasUsed, ExcessBlobGas, ParentBeaconRoot to preserve zero values during roundtrip
 type hdr22 struct {
 	ParentHash       common.Hash
 	UncleHash        common.Hash
@@ -497,12 +500,13 @@ type hdr22 struct {
 	ExtDataHash      *common.Hash `rlp:"nil"`
 	ExtDataGasUsed   *big.Int
 	BlockGasCost     *big.Int
-	BlobGasUsed      *uint64 `rlp:"nil"`
-	ExcessBlobGas    *uint64 `rlp:"nil"`
-	ParentBeaconRoot *common.Hash `rlp:"nil"`
+	BlobGasUsed      uint64
+	ExcessBlobGas    uint64
+	ParentBeaconRoot common.Hash
 }
 
 // Lux 23-field header (22 + WithdrawalsHash)
+// Uses value types for BlobGasUsed and ExcessBlobGas to preserve zero values during roundtrip
 type hdr23 struct {
 	ParentHash       common.Hash
 	UncleHash        common.Hash
@@ -523,13 +527,14 @@ type hdr23 struct {
 	ExtDataHash      *common.Hash `rlp:"nil"`
 	ExtDataGasUsed   *big.Int
 	BlockGasCost     *big.Int
-	BlobGasUsed      *uint64 `rlp:"nil"`
-	ExcessBlobGas    *uint64 `rlp:"nil"`
-	ParentBeaconRoot *common.Hash `rlp:"nil"`
-	WithdrawalsHash  *common.Hash `rlp:"nil"`
+	BlobGasUsed      uint64
+	ExcessBlobGas    uint64
+	ParentBeaconRoot common.Hash
+	WithdrawalsHash  common.Hash
 }
 
 // Lux 24-field header (23 + RequestsHash)
+// Uses value types for BlobGasUsed and ExcessBlobGas to preserve zero values during roundtrip
 type hdr24 struct {
 	ParentHash       common.Hash
 	UncleHash        common.Hash
@@ -550,11 +555,11 @@ type hdr24 struct {
 	ExtDataHash      *common.Hash `rlp:"nil"`
 	ExtDataGasUsed   *big.Int
 	BlockGasCost     *big.Int
-	BlobGasUsed      *uint64 `rlp:"nil"`
-	ExcessBlobGas    *uint64 `rlp:"nil"`
-	ParentBeaconRoot *common.Hash `rlp:"nil"`
-	WithdrawalsHash  *common.Hash `rlp:"nil"`
-	RequestsHash     *common.Hash `rlp:"nil"`
+	BlobGasUsed      uint64
+	ExcessBlobGas    uint64
+	ParentBeaconRoot common.Hash
+	WithdrawalsHash  common.Hash
+	RequestsHash     common.Hash
 }
 
 // Standard Ethereum 20-field header (EIP-4844: Shanghai + Cancun)
@@ -903,6 +908,8 @@ func decode20(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
+	// Convert value type to pointer for Header
+	blobGasUsed := h.BlobGasUsed
 	return &Header{
 		ParentHash:     h.ParentHash,
 		UncleHash:      h.UncleHash,
@@ -923,7 +930,7 @@ func decode20(data []byte) (*Header, error) {
 		ExtDataHash:    h.ExtDataHash,
 		ExtDataGasUsed: h.ExtDataGasUsed,
 		BlockGasCost:   h.BlockGasCost,
-		BlobGasUsed:    h.BlobGasUsed,
+		BlobGasUsed:    &blobGasUsed,
 	}, nil
 }
 
@@ -932,6 +939,9 @@ func decode21(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
+	// Convert value types to pointers for Header
+	blobGasUsed := h.BlobGasUsed
+	excessBlobGas := h.ExcessBlobGas
 	return &Header{
 		ParentHash:     h.ParentHash,
 		UncleHash:      h.UncleHash,
@@ -952,8 +962,8 @@ func decode21(data []byte) (*Header, error) {
 		ExtDataHash:    h.ExtDataHash,
 		ExtDataGasUsed: h.ExtDataGasUsed,
 		BlockGasCost:   h.BlockGasCost,
-		BlobGasUsed:    h.BlobGasUsed,
-		ExcessBlobGas:  h.ExcessBlobGas,
+		BlobGasUsed:    &blobGasUsed,
+		ExcessBlobGas:  &excessBlobGas,
 	}, nil
 }
 
@@ -962,6 +972,9 @@ func decode22(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
+	// Convert value types to pointers for Header
+	blobGasUsed := h.BlobGasUsed
+	excessBlobGas := h.ExcessBlobGas
 	return &Header{
 		ParentHash:       h.ParentHash,
 		UncleHash:        h.UncleHash,
@@ -982,9 +995,9 @@ func decode22(data []byte) (*Header, error) {
 		ExtDataHash:      h.ExtDataHash,
 		ExtDataGasUsed:   h.ExtDataGasUsed,
 		BlockGasCost:     h.BlockGasCost,
-		BlobGasUsed:      h.BlobGasUsed,
-		ExcessBlobGas:    h.ExcessBlobGas,
-		ParentBeaconRoot: h.ParentBeaconRoot,
+		BlobGasUsed:      &blobGasUsed,
+		ExcessBlobGas:    &excessBlobGas,
+		ParentBeaconRoot: &h.ParentBeaconRoot,
 	}, nil
 }
 
@@ -993,6 +1006,9 @@ func decode23(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
+	// Convert value types to pointers for Header
+	blobGasUsed := h.BlobGasUsed
+	excessBlobGas := h.ExcessBlobGas
 	return &Header{
 		ParentHash:       h.ParentHash,
 		UncleHash:        h.UncleHash,
@@ -1013,10 +1029,10 @@ func decode23(data []byte) (*Header, error) {
 		ExtDataHash:      h.ExtDataHash,
 		ExtDataGasUsed:   h.ExtDataGasUsed,
 		BlockGasCost:     h.BlockGasCost,
-		BlobGasUsed:      h.BlobGasUsed,
-		ExcessBlobGas:    h.ExcessBlobGas,
-		ParentBeaconRoot: h.ParentBeaconRoot,
-		WithdrawalsHash:  h.WithdrawalsHash,
+		BlobGasUsed:      &blobGasUsed,
+		ExcessBlobGas:    &excessBlobGas,
+		ParentBeaconRoot: &h.ParentBeaconRoot,
+		WithdrawalsHash:  &h.WithdrawalsHash,
 	}, nil
 }
 
@@ -1025,6 +1041,9 @@ func decode24(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
+	// Convert value types to pointers for Header
+	blobGasUsed := h.BlobGasUsed
+	excessBlobGas := h.ExcessBlobGas
 	return &Header{
 		ParentHash:       h.ParentHash,
 		UncleHash:        h.UncleHash,
@@ -1045,11 +1064,11 @@ func decode24(data []byte) (*Header, error) {
 		ExtDataHash:      h.ExtDataHash,
 		ExtDataGasUsed:   h.ExtDataGasUsed,
 		BlockGasCost:     h.BlockGasCost,
-		BlobGasUsed:      h.BlobGasUsed,
-		ExcessBlobGas:    h.ExcessBlobGas,
-		ParentBeaconRoot: h.ParentBeaconRoot,
-		WithdrawalsHash:  h.WithdrawalsHash,
-		RequestsHash:     h.RequestsHash,
+		BlobGasUsed:      &blobGasUsed,
+		ExcessBlobGas:    &excessBlobGas,
+		ParentBeaconRoot: &h.ParentBeaconRoot,
+		WithdrawalsHash:  &h.WithdrawalsHash,
+		RequestsHash:     &h.RequestsHash,
 	}, nil
 }
 
