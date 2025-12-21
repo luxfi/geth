@@ -430,17 +430,17 @@ func GenerateBadBlock(parent *types.Block, engine consensus.Engine, txs types.Tr
 	return types.NewBlock(header, body, receipts, trie.NewStackTrie(nil))
 }
 
-// TestSubnetEVMGasAccounting tests that SubnetEVM chains have correct gas accounting:
+// TestEVMGasAccounting tests that EVM chains have correct gas accounting:
 // 1. Coinbase receives full gas payment (no EIP-1559 burning)
 // 2. Gas refunds are disabled
-func TestSubnetEVMGasAccounting(t *testing.T) {
+func TestEVMGasAccounting(t *testing.T) {
 	var (
 		key1, _ = crypto.HexToECDSA("b71c71a67e1177ad4e901695e1b4b9ee17ae16c6668d313eac2f96dbcda3f291")
 		addr1   = common.PubkeyToAddress(key1.PublicKey)
 	)
 
-	// Create a SubnetEVM config (subnetEVMTimestamp = 0 means always active)
-	subnetEVMConfig := &params.ChainConfig{
+	// Create a EVM config (evmTimestamp = 0 means always active)
+	evmConfig := &params.ChainConfig{
 		ChainID:                 big.NewInt(96369), // Lux mainnet
 		HomesteadBlock:          big.NewInt(0),
 		EIP150Block:             big.NewInt(0),
@@ -454,7 +454,7 @@ func TestSubnetEVMGasAccounting(t *testing.T) {
 		BerlinBlock:             big.NewInt(0),
 		LondonBlock:             big.NewInt(0),
 		TerminalTotalDifficulty: big.NewInt(0),
-		SubnetEVMTimestamp:      u64(0), // SubnetEVM active from genesis
+		EVMTimestamp:      u64(0), // EVM active from genesis
 	}
 
 	// Create standard EIP-1559 config for comparison
@@ -474,19 +474,19 @@ func TestSubnetEVMGasAccounting(t *testing.T) {
 		TerminalTotalDifficulty: big.NewInt(0),
 	}
 
-	// Verify IsSubnetEVM function works correctly
-	if !subnetEVMConfig.IsSubnetEVM(0) {
-		t.Error("SubnetEVM should be active at time 0")
+	// Verify IsEVM function works correctly
+	if !evmConfig.IsEVM(0) {
+		t.Error("EVM should be active at time 0")
 	}
-	if !subnetEVMConfig.IsSubnetEVM(1000000) {
-		t.Error("SubnetEVM should be active at time 1000000")
+	if !evmConfig.IsEVM(1000000) {
+		t.Error("EVM should be active at time 1000000")
 	}
-	if standardConfig.IsSubnetEVM(0) {
-		t.Error("Standard config should NOT have SubnetEVM active")
+	if standardConfig.IsEVM(0) {
+		t.Error("Standard config should NOT have EVM active")
 	}
 
 	t.Logf("addr1: %s", addr1.Hex())
-	t.Log("SubnetEVM config verified: coinbase receives full gas, refunds disabled")
+	t.Log("EVM config verified: coinbase receives full gas, refunds disabled")
 
 	// Test Durango -> Shanghai EIPs activation
 	// Durango upgrade brings Shanghai EIPs (EIP-3651 warm coinbase, EIP-3860 init code metering)
@@ -504,7 +504,7 @@ func TestSubnetEVMGasAccounting(t *testing.T) {
 		BerlinBlock:             big.NewInt(0),
 		LondonBlock:             big.NewInt(0),
 		TerminalTotalDifficulty: big.NewInt(0),
-		SubnetEVMTimestamp:      u64(0), // SubnetEVM active from genesis
+		EVMTimestamp:      u64(0), // EVM active from genesis
 		DurangoTimestamp:        u64(0), // Durango active from genesis
 		ShanghaiTime:            nil,    // Shanghai not explicitly set
 	}

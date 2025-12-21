@@ -41,7 +41,7 @@ type (
 )
 
 // PrecompileOverrider is an interface that Rules.Payload can implement
-// to provide custom precompile overrides (used by coreth/subnet-evm for
+// to provide custom precompile overrides (used by coreth/evm for
 // stateful precompiles).
 type PrecompileOverrider interface {
 	PrecompileOverride(addr common.Address) (PrecompiledContract, bool)

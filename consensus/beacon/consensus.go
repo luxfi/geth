@@ -104,13 +104,13 @@ func (beacon *Beacon) VerifyHeader(chain consensus.ChainHeaderReader, header *ty
 	if parent == nil {
 		return consensus.ErrUnknownAncestor
 	}
-	// SubnetEVM genesis has difficulty=0, but child blocks have difficulty=1
+	// EVM genesis has difficulty=0, but child blocks have difficulty=1
 	// Allow this transition since they're both effectively "post-merge"
 	if parent.Difficulty.Sign() == 0 && header.Difficulty.Sign() > 0 && header.Difficulty.Cmp(common.Big1) > 0 {
 		return consensus.ErrInvalidTerminalBlock
 	}
 	// Check >0 TDs with pre-merge, --0 TDs with post-merge rules
-	// SubnetEVM uses difficulty=1 for all blocks, treat it as post-merge
+	// EVM uses difficulty=1 for all blocks, treat it as post-merge
 	if header.Difficulty.Sign() > 0 && header.Difficulty.Cmp(common.Big1) > 0 {
 		return beacon.ethone.VerifyHeader(chain, header)
 	}
@@ -127,7 +127,7 @@ func (beacon *Beacon) splitHeaders(headers []*types.Header) ([]*types.Header, []
 		postHeaders []*types.Header
 	)
 	for i, header := range headers {
-		// SubnetEVM uses difficulty=1 for all blocks, treat it as post-merge
+		// EVM uses difficulty=1 for all blocks, treat it as post-merge
 		if header.Difficulty.Sign() == 0 || header.Difficulty.Cmp(common.Big1) == 0 {
 			preHeaders = headers[:i]
 			postHeaders = headers[i:]
@@ -230,7 +230,7 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 		return errInvalidTimestamp
 	}
 	// Verify the block's difficulty to ensure it's the default constant
-	// SubnetEVM uses difficulty=1 for non-genesis blocks, so we accept both 0 and 1
+	// EVM uses difficulty=1 for non-genesis blocks, so we accept both 0 and 1
 	if beaconDifficulty.Cmp(header.Difficulty) != 0 && header.Difficulty.Cmp(common.Big1) != 0 {
 		return fmt.Errorf("invalid difficulty: have %v, want 0 or 1", header.Difficulty)
 	}
@@ -251,12 +251,12 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 		return err
 	}
 	// Verify existence / non-existence of withdrawalsHash.
-	// Note: SubnetEVM/C-Chain blocks don't have withdrawalsHash because they don't use
+	// Note: EVM/C-Chain blocks don't have withdrawalsHash because they don't use
 	// Ethereum validator withdrawals. We make this validation optional to support importing
 	// existing blockchain data from non-Ethereum chains.
 	shanghai := chain.Config().IsShanghai(header.Number, header.Time)
 	// Only validate withdrawalsHash presence if the chain actually uses withdrawals.
-	// Skip validation for chains like SubnetEVM/C-Chain that don't have withdrawals.
+	// Skip validation for chains like EVM/C-Chain that don't have withdrawals.
 	// if shanghai && header.WithdrawalsHash == nil {
 	// 	return errors.New("missing withdrawalsHash")
 	// }
@@ -264,7 +264,7 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 		return fmt.Errorf("invalid withdrawalsHash: have %x, expected nil", header.WithdrawalsHash)
 	}
 	// Verify the existence / non-existence of cancun-specific header fields
-	// Note: SubnetEVM/C-Chain blocks don't have Cancun blob fields (ParentBeaconRoot,
+	// Note: EVM/C-Chain blocks don't have Cancun blob fields (ParentBeaconRoot,
 	// ExcessBlobGas, BlobGasUsed) because they predate Cancun. We make these validations
 	// optional to support importing existing blockchain data.
 	cancun := chain.Config().IsCancun(header.Number, header.Time)
@@ -279,7 +279,7 @@ func (beacon *Beacon) verifyHeader(chain consensus.ChainHeaderReader, header, pa
 		}
 	} else {
 		// Skip ParentBeaconRoot validation for chains that don't use beacon chain integration
-		// (like SubnetEVM/C-Chain). Only verify EIP-4844 if blob fields are present.
+		// (like EVM/C-Chain). Only verify EIP-4844 if blob fields are present.
 		// if header.ParentBeaconRoot == nil {
 		// 	return errors.New("header is missing beaconRoot")
 		// }
@@ -467,7 +467,7 @@ func (beacon *Beacon) IsPoSHeader(header *types.Header) bool {
 	if header.Difficulty == nil {
 		panic("IsPoSHeader called with invalid difficulty")
 	}
-	// SubnetEVM uses difficulty=1 for all blocks, treat it as PoS
+	// EVM uses difficulty=1 for all blocks, treat it as PoS
 	return header.Difficulty.Cmp(beaconDifficulty) == 0 || header.Difficulty.Cmp(common.Big1) == 0
 }
 
