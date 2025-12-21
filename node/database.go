@@ -18,12 +18,11 @@ package node
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/ethdb/badgerdb"
-	"github.com/luxfi/geth/ethdb/leveldb"
-	"github.com/luxfi/geth/ethdb/pebble"
 	"github.com/luxfi/geth/log"
 )
 
@@ -46,6 +45,26 @@ type internalOpenOptions struct {
 	directory string
 	dbEngine  string // "leveldb" | "pebble" | "badger"
 	DatabaseOptions
+}
+
+// DatabaseFactory is a function that creates a database
+type DatabaseFactory func(file string, cache int, handles int, namespace string, readonly bool) (ethdb.KeyValueStore, error)
+
+var (
+	factoryMu sync.RWMutex
+	factories = make(map[string]DatabaseFactory)
+)
+
+// RegisterDatabase registers a database factory for a given name
+func RegisterDatabase(name string, factory DatabaseFactory) {
+	factoryMu.Lock()
+	defer factoryMu.Unlock()
+	factories[name] = factory
+}
+
+func init() {
+	// badgerdb is always available (default)
+	RegisterDatabase(rawdb.DBBadger, newBadgerDBDatabase)
 }
 
 // openDatabase opens both a disk-based key-value database such as leveldb or pebble, but also
@@ -74,14 +93,19 @@ func openDatabase(o internalOpenOptions) (ethdb.Database, error) {
 
 // openKeyValueDatabase opens a disk-based key-value database, e.g. leveldb, pebble, or badger.
 //
-//						  type == null          type != null
-//					   +----------------------------------------
-//	db is non-existent |  pebble default  |  specified type
-//	db is existent     |  from db         |  specified type (if compatible)
+//	                      type == null          type != null
+//	               +----------------------------------------
+//	db is non-existent |  badger default   |  specified type
+//	db is existent     |  from db          |  specified type (if compatible)
 func openKeyValueDatabase(o internalOpenOptions) (ethdb.KeyValueStore, error) {
+	factoryMu.RLock()
+	defer factoryMu.RUnlock()
+
 	// Reject any unsupported database type
-	if len(o.dbEngine) != 0 && o.dbEngine != rawdb.DBLeveldb && o.dbEngine != rawdb.DBPebble && o.dbEngine != rawdb.DBBadger {
-		return nil, fmt.Errorf("unknown db.engine %v", o.dbEngine)
+	if len(o.dbEngine) != 0 {
+		if _, ok := factories[o.dbEngine]; !ok {
+			return nil, fmt.Errorf("unknown or unsupported db.engine %v (available: badger, leveldb with -tags=leveldb, pebble with -tags=pebble)", o.dbEngine)
+		}
 	}
 	// Retrieve any pre-existing database's type and use that or the requested one
 	// as long as there's no conflict between the two types
@@ -89,42 +113,25 @@ func openKeyValueDatabase(o internalOpenOptions) (ethdb.KeyValueStore, error) {
 	if len(existingDb) != 0 && len(o.dbEngine) != 0 && o.dbEngine != existingDb {
 		return nil, fmt.Errorf("db.engine choice was %v but found pre-existing %v database in specified data directory", o.dbEngine, existingDb)
 	}
-	if o.dbEngine == rawdb.DBBadger || existingDb == rawdb.DBBadger {
-		log.Info("Using badger as the backing database")
-		return newBadgerDBDatabase(o.directory, o.Cache, o.Handles, o.MetricsNamespace, o.ReadOnly)
-	}
-	if o.dbEngine == rawdb.DBPebble || existingDb == rawdb.DBPebble {
-		log.Info("Using pebble as the backing database")
-		return newPebbleDBDatabase(o.directory, o.Cache, o.Handles, o.MetricsNamespace, o.ReadOnly)
-	}
-	if o.dbEngine == rawdb.DBLeveldb || existingDb == rawdb.DBLeveldb {
-		log.Info("Using leveldb as the backing database")
-		return newLevelDBDatabase(o.directory, o.Cache, o.Handles, o.MetricsNamespace, o.ReadOnly)
-	}
-	// No pre-existing database, no user-requested one either. Default to Pebble.
-	log.Info("Defaulting to pebble as the backing database")
-	return newPebbleDBDatabase(o.directory, o.Cache, o.Handles, o.MetricsNamespace, o.ReadOnly)
-}
 
-// newLevelDBDatabase creates a persistent key-value database without a freezer
-// moving immutable chain segments into cold storage.
-func newLevelDBDatabase(file string, cache int, handles int, namespace string, readonly bool) (ethdb.KeyValueStore, error) {
-	db, err := leveldb.New(file, cache, handles, namespace, readonly)
-	if err != nil {
-		return nil, err
+	// Determine which database to use
+	dbType := o.dbEngine
+	if dbType == "" {
+		dbType = existingDb
 	}
-	log.Info("Using LevelDB as the backing database")
-	return db, nil
-}
+	if dbType == "" {
+		// Default to badger for new databases
+		dbType = rawdb.DBBadger
+	}
 
-// newPebbleDBDatabase creates a persistent key-value database without a freezer
-// moving immutable chain segments into cold storage.
-func newPebbleDBDatabase(file string, cache int, handles int, namespace string, readonly bool) (ethdb.KeyValueStore, error) {
-	db, err := pebble.New(file, cache, handles, namespace, readonly)
-	if err != nil {
-		return nil, err
+	// Check if the database type is available
+	factory, ok := factories[dbType]
+	if !ok {
+		return nil, fmt.Errorf("database type %v is not available (compile with appropriate build tags: -tags=leveldb or -tags=pebble)", dbType)
 	}
-	return db, nil
+
+	log.Info("Using database backend", "type", dbType)
+	return factory(o.directory, o.Cache, o.Handles, o.MetricsNamespace, o.ReadOnly)
 }
 
 // newBadgerDBDatabase creates a persistent key-value database without a freezer
