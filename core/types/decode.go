@@ -351,7 +351,7 @@ type hdr19 struct {
 	BlockGasCost   *big.Int
 }
 
-// hdr17coreth is the coreth/subnet-evm 17-field format with ExtDataHash BEFORE BaseFee.
+// hdr17coreth is the coreth/evm 17-field format with ExtDataHash BEFORE BaseFee.
 // Coreth's HeaderSerializable has ExtDataHash as a REQUIRED field at position 15.
 // Field order: Core(15) + ExtDataHash(pos 15) + BaseFee(pos 16)
 type hdr17coreth struct {
@@ -374,7 +374,7 @@ type hdr17coreth struct {
 	BaseFee     *big.Int    // Optional at pos 16
 }
 
-// hdr18coreth is the coreth/subnet-evm 18-field format.
+// hdr18coreth is the coreth/evm 18-field format.
 // Field order: Core(15) + ExtDataHash(pos 15) + BaseFee(pos 16) + ExtDataGasUsed(pos 17)
 type hdr18coreth struct {
 	ParentHash     common.Hash
@@ -397,7 +397,7 @@ type hdr18coreth struct {
 	ExtDataGasUsed *big.Int    // Optional at pos 17
 }
 
-// hdr19coreth is the coreth/subnet-evm 19-field format.
+// hdr19coreth is the coreth/evm 19-field format.
 // Field order: Core(15) + ExtDataHash(pos 15) + BaseFee(pos 16) + ExtDataGasUsed(pos 17) + BlockGasCost(pos 18)
 // This is the format used by Lux mainnet post-genesis blocks exported via coreth.
 type hdr19coreth struct {

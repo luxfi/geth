@@ -44,14 +44,14 @@ func VerifyEIP1559Header(config *params.ChainConfig, parent, header *types.Heade
 		return errors.New("header is missing baseFee")
 	}
 
-	// SubnetEVM/C-Chain uses a completely different fee mechanism:
+	// EVM/C-Chain uses a completely different fee mechanism:
 	// - Custom baseFeeChangeDenominator (36 vs standard 8)
 	// - minBaseFee floor (25 gwei) that prevents baseFee from going below
 	// - Different gas target calculations
-	// When SubnetEVM is active, trust the baseFee from the header
-	// as it was calculated by the SubnetEVM consensus
-	if config.IsSubnetEVM(header.Time) {
-		// For SubnetEVM chains, only verify baseFee is present and >= minBaseFee
+	// When EVM is active, trust the baseFee from the header
+	// as it was calculated by the EVM consensus
+	if config.IsEVM(header.Time) {
+		// For EVM chains, only verify baseFee is present and >= minBaseFee
 		minBaseFee := new(big.Int).SetUint64(25000000000) // 25 gwei
 		if header.BaseFee.Cmp(minBaseFee) < 0 {
 			return fmt.Errorf("invalid baseFee: have %s, want at least minBaseFee %s",
@@ -63,7 +63,7 @@ func VerifyEIP1559Header(config *params.ChainConfig, parent, header *types.Heade
 	// Verify the baseFee is correct based on the parent header.
 	expectedBaseFee := CalcBaseFee(config, parent)
 	if header.BaseFee.Cmp(expectedBaseFee) != 0 {
-		// SubnetEVM/C-Chain uses minBaseFee enforcement which may keep baseFee higher
+		// EVM/C-Chain uses minBaseFee enforcement which may keep baseFee higher
 		// than standard Ethereum calculations. Allow the actual fee to be >= expected.
 		if header.BaseFee.Cmp(expectedBaseFee) < 0 {
 			return fmt.Errorf("invalid baseFee: have %s, want at least %s, parentBaseFee %s, parentGasUsed %d",

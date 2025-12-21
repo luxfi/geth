@@ -75,17 +75,17 @@ type Genesis struct {
 	BlobGasUsed   *uint64     `json:"blobGasUsed"`   // EIP-4844
 
 	// AcceptExistingState indicates whether to accept existing blockchain state
-	// without checking genesis mismatch. Used for migrated SubnetEVM data.
+	// without checking genesis mismatch. Used for migrated EVM data.
 	AcceptExistingState bool `json:"acceptExistingState,omitempty"`
 
 	// StateRoot allows specifying a pre-computed state root for imported genesis.
 	// When set, this overrides the computed state root from allocations.
-	// This is used when importing genesis from external chains (like SubnetEVM)
+	// This is used when importing genesis from external chains (like EVM)
 	// to preserve the exact genesis hash.
 	StateRoot *common.Hash `json:"stateRoot,omitempty"`
 
 	// SkipPostMergeFields disables adding Shanghai/Cancun/Prague header fields.
-	// This is used when importing genesis from pre-Shanghai chains (like SubnetEVM)
+	// This is used when importing genesis from pre-Shanghai chains (like EVM)
 	// to preserve the exact genesis hash without WithdrawalsHash etc.
 	SkipPostMergeFields bool `json:"skipPostMergeFields,omitempty"`
 
@@ -548,7 +548,7 @@ func (g *Genesis) toBlockWithRoot(root common.Hash) *types.Block {
 		withdrawals []*types.Withdrawal
 	)
 	// Skip post-merge fields if SkipPostMergeFields is set.
-	// This is used for importing genesis from pre-Shanghai chains (like SubnetEVM).
+	// This is used for importing genesis from pre-Shanghai chains (like EVM).
 	if !g.SkipPostMergeFields {
 		if conf := g.Config; conf != nil {
 			num := big.NewInt(int64(g.Number))
@@ -610,7 +610,7 @@ func (g *Genesis) Commit(db ethdb.Database, triedb *triedb.Database) (*types.Blo
 	log.Info("DEBUG: flushAlloc completed", "root", root.Hex())
 
 	// If a pre-computed StateRoot is specified, use it instead of the computed one.
-	// This is used when importing genesis from external chains (like SubnetEVM)
+	// This is used when importing genesis from external chains (like EVM)
 	// to preserve the exact genesis hash.
 	if g.StateRoot != nil {
 		log.Info("Using pre-computed state root for genesis", "computed", root.Hex(), "specified", g.StateRoot.Hex())
@@ -661,7 +661,7 @@ func (g *Genesis) MustCommit(db ethdb.Database, triedb *triedb.Database) *types.
 }
 
 // CommitWithStateRoot writes the genesis block with a pre-computed state root.
-// This is used for importing genesis from external sources (like SubnetEVM)
+// This is used for importing genesis from external sources (like EVM)
 // where the state root is already known and we want to preserve the exact hash.
 func (g *Genesis) CommitWithStateRoot(db ethdb.Database, triedb *triedb.Database, stateRoot common.Hash) (*types.Block, error) {
 	if g.Number != 0 {
