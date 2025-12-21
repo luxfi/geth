@@ -15,7 +15,7 @@ import (
 )
 
 // PreShanghaiHeader represents a header before the Shanghai fork.
-// SubnetEVM uses this format (no WithdrawalsHash field).
+// EVM uses this format (no WithdrawalsHash field).
 type PreShanghaiHeader struct {
 	ParentHash  common.Hash
 	UncleHash   common.Hash
@@ -33,7 +33,7 @@ type PreShanghaiHeader struct {
 	MixDigest   common.Hash
 	Nonce       types.BlockNonce
 	BaseFee     *big.Int `rlp:"optional"` // EIP-1559
-	ExtDataHash []byte   `rlp:"optional"` // SubnetEVM specific
+	ExtDataHash []byte   `rlp:"optional"` // EVM specific
 }
 
 // ToPostShanghai converts pre-Shanghai header to post-Shanghai types.Header
@@ -60,17 +60,17 @@ func (h *PreShanghaiHeader) ToPostShanghai() *types.Header {
 	}
 }
 
-// ScanSubnetEVMHeaders scans a SubnetEVM database (with 32-byte namespace prefix)
+// ScanEVMHeaders scans a EVM database (with 32-byte namespace prefix)
 // and returns all headers found WITH POST-SHANGHAI HASHES.
 //
-// CRITICAL: SubnetEVM headers are in pre-Shanghai format (no WithdrawalsHash).
+// CRITICAL: EVM headers are in pre-Shanghai format (no WithdrawalsHash).
 // We convert them to post-Shanghai format and return the NEW hashes.
 // This ensures canonical mappings use post-Shanghai hashes that match what
 // the blockchain will compute when loading headers.
 //
-// SubnetEVM format: [32-byte namespace][h][8-byte num][32-byte hash]
+// EVM format: [32-byte namespace][h][8-byte num][32-byte hash]
 // We scan for keys starting with namespace+'h', extract the number and hash.
-func ScanSubnetEVMHeaders(rawDB ethdb.Database, namespace []byte) (map[uint64]common.Hash, error) {
+func ScanEVMHeaders(rawDB ethdb.Database, namespace []byte) (map[uint64]common.Hash, error) {
 	if len(namespace) != 32 {
 		return nil, fmt.Errorf("namespace must be exactly 32 bytes, got %d", len(namespace))
 	}
@@ -251,8 +251,8 @@ func WriteMappings(db ethdb.Database, headers map[uint64]common.Hash) error {
 	return batch.Write()
 }
 
-// WriteMappingsWithNamespace writes canonical mappings with SubnetEVM namespace prefix
-// For SubnetEVM databases: adds 32-byte namespace prefix to all keys
+// WriteMappingsWithNamespace writes canonical mappings with EVM namespace prefix
+// For EVM databases: adds 32-byte namespace prefix to all keys
 func WriteMappingsWithNamespace(db ethdb.Database, headers map[uint64]common.Hash, namespace []byte) error {
 	if len(namespace) != 32 {
 		return fmt.Errorf("namespace must be exactly 32 bytes, got %d", len(namespace))

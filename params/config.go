@@ -186,9 +186,9 @@ var (
 	}
 
 	// LuxMainnetChainConfig contains the chain parameters for Lux mainnet (network ID 96369).
-	// This genesis matches the migrated SubnetEVM blockchain data.
+	// This genesis matches the migrated EVM blockchain data.
 	// IMPORTANT: Shanghai/Cancun/Prague are disabled (nil) to match the original
-	// SubnetEVM chain which was pre-Shanghai (2024). This ensures proper state root
+	// EVM chain which was pre-Shanghai (2024). This ensures proper state root
 	// verification when importing historical blocks.
 	LuxMainnetChainConfig = &ChainConfig{
 		ChainID:                 big.NewInt(96369),
@@ -209,12 +209,12 @@ var (
 		GrayGlacierBlock:        nil,
 		TerminalTotalDifficulty: big.NewInt(0),
 		MergeNetsplitBlock:      big.NewInt(0),
-		ShanghaiTime:            nil,       // Pre-Shanghai chain (SubnetEVM 2024)
+		ShanghaiTime:            nil,       // Pre-Shanghai chain (EVM 2024)
 		CancunTime:              nil,       // Not activated
 		PragueTime:              nil,       // Not activated
 		OsakaTime:               nil,
 		VerkleTime:              nil,       // Not activated
-		SubnetEVMTimestamp:      newUint64(0), // SubnetEVM gas accounting from genesis
+		EVMTimestamp:      newUint64(0), // EVM gas accounting from genesis
 		DurangoTimestamp:        newUint64(0), // Durango upgrade from genesis
 		Ethash:                  new(EthashConfig),
 	}
@@ -539,11 +539,11 @@ type ChainConfig struct {
 	AmsterdamTime *uint64 `json:"amsterdamTime,omitempty"` // Amsterdam switch time (nil = no fork, 0 = already on amsterdam)
 	VerkleTime    *uint64 `json:"verkleTime,omitempty"`    // Verkle switch time (nil = no fork, 0 = already on verkle)
 
-	// SubnetEVM compatibility fields - for chains migrated from ava-labs/subnet-evm
-	// When SubnetEVMTimestamp is set, the chain uses SubnetEVM gas accounting:
+	// EVM compatibility fields - for chains migrated from ava-labs/evm
+	// When EVMTimestamp is set, the chain uses EVM gas accounting:
 	// - Coinbase receives full gas payment (no EIP-1559 burning)
 	// - Gas refunds are disabled (ApricotPhase1 behavior)
-	SubnetEVMTimestamp *uint64 `json:"subnetEVMTimestamp,omitempty"` // SubnetEVM activation time (nil = standard geth, 0 = always SubnetEVM)
+	EVMTimestamp *uint64 `json:"evmTimestamp,omitempty"` // EVM activation time (nil = standard geth, 0 = always EVM)
 	DurangoTimestamp   *uint64 `json:"durangoTimestamp,omitempty"`   // Durango upgrade time (for future compatibility)
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
@@ -963,12 +963,12 @@ func (c *ChainConfig) IsVerkleGenesis() bool {
 	return c.EnableVerkleAtGenesis
 }
 
-// IsSubnetEVM returns whether time is either equal to the SubnetEVM activation time or greater.
-// When active, the chain uses SubnetEVM-compatible gas accounting:
+// IsEVM returns whether time is either equal to the EVM activation time or greater.
+// When active, the chain uses EVM-compatible gas accounting:
 // - Coinbase receives full gas payment (no EIP-1559 base fee burning)
 // - Gas refunds are disabled (ApricotPhase1 behavior)
-func (c *ChainConfig) IsSubnetEVM(time uint64) bool {
-	return isTimestampForked(c.SubnetEVMTimestamp, time)
+func (c *ChainConfig) IsEVM(time uint64) bool {
+	return isTimestampForked(c.EVMTimestamp, time)
 }
 
 // IsDurango returns whether time is either equal to the Durango upgrade time or greater.
@@ -1473,7 +1473,7 @@ type Rules struct {
 	IsBerlin, IsLondon                                      bool
 	IsMerge, IsShanghai, IsCancun, IsPrague, IsOsaka        bool
 	IsAmsterdam, IsVerkle                                   bool
-	// Payload allows storing extra chain-specific rules data (used by coreth/subnet-evm)
+	// Payload allows storing extra chain-specific rules data (used by coreth/evm)
 	Payload any
 }
 
@@ -1516,7 +1516,7 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 		// For Lux networks: If ShanghaiTime is explicitly set in genesis config,
 		// Shanghai is active regardless of merge status. This handles importing
 		// historic blocks that were created with Shanghai EIPs (EIP-3860 init code gas)
-		// but before the merge. For SubnetEVM chains, Durango upgrade brings Shanghai EIPs.
+		// but before the merge. For EVM chains, Durango upgrade brings Shanghai EIPs.
 		IsShanghai:       c.IsShanghai(num, timestamp) || c.IsDurango(timestamp),
 		IsCancun:         isMerge && c.IsCancun(num, timestamp),
 		IsPrague:         isMerge && c.IsPrague(num, timestamp),

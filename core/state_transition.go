@@ -556,10 +556,10 @@ func (st *stateTransition) execute() (*ExecutionResult, error) {
 		// the coinbase when simulating calls.
 	} else {
 		fee := new(uint256.Int).SetUint64(st.gasUsed())
-		// SubnetEVM compatibility: coinbase receives full gas payment (no EIP-1559 burning)
+		// EVM compatibility: coinbase receives full gas payment (no EIP-1559 burning)
 		// Standard geth: coinbase receives only the tip (base fee is burned)
-		if st.evm.ChainConfig().IsSubnetEVM(st.evm.Context.Time) {
-			// SubnetEVM: fee = gasUsed * gasPrice (full payment, no burning)
+		if st.evm.ChainConfig().IsEVM(st.evm.Context.Time) {
+			// EVM: fee = gasUsed * gasPrice (full payment, no burning)
 			gasPriceU256, _ := uint256.FromBig(msg.GasPrice)
 			fee.Mul(fee, gasPriceU256)
 		} else {
@@ -642,9 +642,9 @@ func (st *stateTransition) applyAuthorization(auth *types.SetCodeAuthorization) 
 
 // calcRefund computes refund counter, capped to a refund quotient.
 func (st *stateTransition) calcRefund() uint64 {
-	// SubnetEVM compatibility: gas refunds are disabled (ApricotPhase1 behavior)
-	// This matches coreth/subnet-evm where refunds were disabled from genesis
-	if st.evm.ChainConfig().IsSubnetEVM(st.evm.Context.Time) {
+	// EVM compatibility: gas refunds are disabled (ApricotPhase1 behavior)
+	// This matches coreth/evm where refunds were disabled from genesis
+	if st.evm.ChainConfig().IsEVM(st.evm.Context.Time) {
 		return 0
 	}
 

@@ -20,19 +20,19 @@ func BuildCanonicalMappingsIfMissing(db ethdb.Database) error {
 	}
 
 	// For normal databases, mappings are built during blockchain operations
-	// This is just a compatibility check for SubnetEVM migration
+	// This is just a compatibility check for EVM migration
 	return nil
 }
 
-// BuildCanonicalMappingsFromSubnetEVM builds canonical hash mappings from SubnetEVM database.
-// For SubnetEVM migration: scans raw DB with namespace, writes to target DB without namespace.
+// BuildCanonicalMappingsFromEVM builds canonical hash mappings from EVM database.
+// For EVM migration: scans raw DB with namespace, writes to target DB without namespace.
 //
 // Simple composition:
 // 1. Check if already done
 // 2. Scan raw DB for headers (with namespace)
 // 3. Write mappings to target DB (without namespace)
 // 4. Verify
-func BuildCanonicalMappingsFromSubnetEVM(targetDB ethdb.Database, rawDB ethdb.Database, namespace []byte) error {
+func BuildCanonicalMappingsFromEVM(targetDB ethdb.Database, rawDB ethdb.Database, namespace []byte) error {
 	// Already have mappings?
 	testKey := append([]byte{headerNumberPrefix[0]}, make([]byte, 32)...)
 	if val, err := targetDB.Get(testKey); err == nil && len(val) > 0 {
@@ -40,10 +40,10 @@ func BuildCanonicalMappingsFromSubnetEVM(targetDB ethdb.Database, rawDB ethdb.Da
 		return nil
 	}
 
-	fmt.Printf("🔍 Building canonical mappings from SubnetEVM database\n")
+	fmt.Printf("🔍 Building canonical mappings from EVM database\n")
 
 	// Scan headers from raw DB (has namespace prefix)
-	headers, err := ScanSubnetEVMHeaders(rawDB, namespace)
+	headers, err := ScanEVMHeaders(rawDB, namespace)
 	if err != nil {
 		return fmt.Errorf("scan failed: %w", err)
 	}
