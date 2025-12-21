@@ -377,7 +377,7 @@ func NewBlockChain(db ethdb.Database, genesis *Genesis, engine consensus.Engine,
 	log.Info(strings.Repeat("-", 153))
 	log.Info("")
 
-	// SubnetEVM compatibility: Build canonical hash mappings if missing
+	// EVM compatibility: Build canonical hash mappings if missing
 	if err := rawdb.BuildCanonicalMappingsIfMissing(db); err != nil {
 		return nil, fmt.Errorf("failed to build canonical mappings: %w", err)
 	}
