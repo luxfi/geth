@@ -270,10 +270,12 @@ github.com/labstack/echo/v4 v4.2.1/go.mod h1:AA49e0DZ8kk5jTOOCKNuPR6oTnBS0dYiM4F
 github.com/labstack/gommon v0.3.0/go.mod h1:MULnywXg0yavhxWKc+lOruYdAhDwPK9wf0OL7NoOu+k=
 github.com/leanovate/gopter v0.2.11 h1:vRjThO1EKPb/1NsDXuDrzldR28RLkBflWYcU9CvzWu4=
 github.com/leanovate/gopter v0.2.11/go.mod h1:aK3tzZP/C+p1m3SPRE4SYZFGP7jjkuSI4f7Xvpt0S9c=
+github.com/luxfi/cache v1.0.0 h1:OcqGi/qs9ky+7O8fR6WMZtFsunvA40LBTg3QRQqJurs=
+github.com/luxfi/cache v1.0.0/go.mod h1:BEvpffvV3SXs/KSa9nUC1TszxKwUdIHwIaoXpeiYU+Y=
 github.com/luxfi/consensus v1.22.26 h1:q80Re+qPdkzYLxp+HLJLutcqM64AWsBC1eaN+XaDbV4=
 github.com/luxfi/consensus v1.22.26/go.mod h1:kFwUKSUwzlVpkvL0PJc0NhYMoBn8BSu8qwjlYl0Iizg=
-github.com/luxfi/crypto v1.17.22 h1:aYR0R4xTOqVy9q6mEFMrg7Oru7itveniWR8f4U5vea4=
-github.com/luxfi/crypto v1.17.22/go.mod h1:joL4xiznieeh61fs18bm/dF/HVrydzIPHDQk7HdZz9A=
+github.com/luxfi/crypto v1.17.25 h1:emTejQ17bGj/1tu0ETB196Hbn6fJfo8wUNGIOWit6RM=
+github.com/luxfi/crypto v1.17.25/go.mod h1:v6eaW5ejuzW2gecChWKQqx4CtVhoM1b+e40ro/6WVPg=
 github.com/luxfi/database v1.2.11 h1:xpw+WdIRtiVSa64RAM0BLPgHO1n40YArxTE1cJW6A5Q=
 github.com/luxfi/database v1.2.11/go.mod h1:jXWOHWgIrgE7W2fSJp0lqGNV9ghRx6Gzev2v51c4GLQ=
 github.com/luxfi/ids v1.2.4 h1:e0OaeSI6xWjS9JnxxxfvCCs9HHDUrwDc3M9ctIhjcDI=
@@ -337,9 +339,8 @@ github.com/onsi/ginkgo/v2 v2.1.3/go.mod h1:vw5CSIxN1JObi/U8gcbwft7ZxR2dgaR70JSE3
 github.com/onsi/gomega v1.7.1/go.mod h1:XdKZgCCFLUoM/7CFJVPcG8C1xQ1AJ0vpAezJrB7JYyY=
 github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1ybHNo=
 github.com/onsi/gomega v1.17.0/go.mod h1:HnhC7FXeEQY45zxNK3PPoIUhzk/80Xly9PcubAlGdZY=
+github.com/onsi/gomega v1.19.0 h1:4ieX6qQjPP/BfC3mpsAtIGGlxTWPeA3Inl/7DtXw1tw=
 github.com/onsi/gomega v1.19.0/go.mod h1:LY+I3pBVzYsTBU1AnDwOSxaYi9WoWiqgwooUqq9yPro=
-github.com/onsi/gomega v1.38.0 h1:c/WX+w8SLAinvuKKQFh77WEucCnPk4j2OTUr7lt7BeY=
-github.com/onsi/gomega v1.38.0/go.mod h1:OcXcwId0b9QsE7Y49u+BTrL4IdKOBOKnD6VQNTJEB6o=
 github.com/opentracing/opentracing-go v1.1.0 h1:pWlfV3Bxv7k65HYwkikxat0+s3pV4bsqf19k25Ur8rU=
 github.com/opentracing/opentracing-go v1.1.0/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFStlNbqXla1AfSYxPUl2o=
 github.com/peterh/liner v1.1.1-0.20190123174540-a2c9a5303de7 h1:oYW+YCJ1pachXTQmzR3rNLYGGz4g/UgFcjb28p/viDM=

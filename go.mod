@@ -47,7 +47,7 @@ require (
 	github.com/karalabe/hid v1.0.1-0.20240306101548-573246063e52
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/consensus v1.22.26
-	github.com/luxfi/crypto v1.17.22
+	github.com/luxfi/crypto v1.17.25
 	github.com/luxfi/log v1.1.26
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
@@ -84,6 +84,7 @@ require (
 	github.com/crate-crypto/go-eth-kzg v1.4.0 // indirect
 	github.com/ethereum/c-kzg-4844/v2 v2.1.5 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
+	github.com/luxfi/cache v1.0.0 // indirect
 	github.com/luxfi/database v1.2.11 // indirect
 	github.com/luxfi/math v1.0.1 // indirect
 	github.com/luxfi/metric v1.4.8 // indirect
