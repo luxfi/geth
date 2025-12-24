@@ -48,6 +48,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/consensus v1.22.26
 	github.com/luxfi/crypto v1.17.25
+	github.com/luxfi/database v1.2.15
 	github.com/luxfi/log v1.1.26
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
@@ -85,17 +86,15 @@ require (
 	github.com/ethereum/c-kzg-4844/v2 v2.1.5 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/luxfi/cache v1.0.0 // indirect
-	github.com/luxfi/database v1.2.11 // indirect
-	github.com/luxfi/math v1.0.1 // indirect
+	github.com/luxfi/math v1.0.5 // indirect
 	github.com/luxfi/metric v1.4.8 // indirect
-	github.com/luxfi/mock v0.1.0 // indirect
 	github.com/luxfi/node v1.22.14 // indirect
 	github.com/luxfi/p2p v1.4.6 // indirect
-	github.com/luxfi/utils v1.0.0 // indirect
+	github.com/luxfi/sampler v1.0.0 // indirect
+	github.com/luxfi/utils v1.0.3 // indirect
 	github.com/luxfi/warp v1.16.36 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	go.uber.org/mock v0.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
@@ -148,7 +147,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/luxfi/ids v1.2.4
+	github.com/luxfi/ids v1.2.5
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
