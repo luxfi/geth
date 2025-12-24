@@ -46,7 +46,7 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20230811132847-661be99b8267
 	github.com/karalabe/hid v1.0.1-0.20240306101548-573246063e52
 	github.com/kylelemons/godebug v1.1.0
-	github.com/luxfi/consensus v1.22.26
+	github.com/luxfi/consensus v1.22.44
 	github.com/luxfi/crypto v1.17.25
 	github.com/luxfi/database v1.2.15
 	github.com/luxfi/log v1.1.26
@@ -88,11 +88,10 @@ require (
 	github.com/luxfi/cache v1.0.0 // indirect
 	github.com/luxfi/math v1.0.5 // indirect
 	github.com/luxfi/metric v1.4.8 // indirect
-	github.com/luxfi/node v1.22.14 // indirect
-	github.com/luxfi/p2p v1.4.6 // indirect
+	github.com/luxfi/p2p v1.18.1 // indirect
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/utils v1.0.3 // indirect
-	github.com/luxfi/warp v1.16.36 // indirect
+	github.com/luxfi/vm v1.0.1 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
