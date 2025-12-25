@@ -47,9 +47,10 @@ require (
 	github.com/karalabe/hid v1.0.1-0.20240306101548-573246063e52
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/consensus v1.22.44
-	github.com/luxfi/crypto v1.17.25
+	github.com/luxfi/crypto v1.17.26
 	github.com/luxfi/database v1.2.15
 	github.com/luxfi/log v1.1.26
+	github.com/luxfi/precompiles v0.1.2
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
@@ -89,10 +90,10 @@ require (
 	github.com/luxfi/math v1.0.5 // indirect
 	github.com/luxfi/metric v1.4.8 // indirect
 	github.com/luxfi/p2p v1.18.1 // indirect
-	github.com/luxfi/precompiles v0.1.0 // indirect
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/utils v1.0.3 // indirect
 	github.com/luxfi/vm v1.0.1 // indirect
+	github.com/luxfi/warp v1.18.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
