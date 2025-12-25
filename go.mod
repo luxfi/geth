@@ -89,6 +89,7 @@ require (
 	github.com/luxfi/math v1.0.5 // indirect
 	github.com/luxfi/metric v1.4.8 // indirect
 	github.com/luxfi/p2p v1.18.1 // indirect
+	github.com/luxfi/precompiles v0.1.0 // indirect
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/utils v1.0.3 // indirect
 	github.com/luxfi/vm v1.0.1 // indirect
