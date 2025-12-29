@@ -76,7 +76,7 @@ func (a *accessibleStateAdapter) GetBlockContext() contract.BlockContext {
 }
 
 func (a *accessibleStateAdapter) GetConsensusContext() context.Context {
-	return context.Background()
+	return a.env.ConsensusContext()
 }
 
 func (a *accessibleStateAdapter) GetChainConfig() precompileconfig.ChainConfig {
