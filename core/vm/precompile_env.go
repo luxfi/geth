@@ -4,6 +4,7 @@
 package vm
 
 import (
+	"context"
 	"math/big"
 
 	"github.com/holiman/uint256"
@@ -40,6 +41,8 @@ type PrecompileEnvironment interface {
 	Gas() uint64
 	// Call executes a call to another contract
 	Call(addr common.Address, input []byte, gas uint64, value *big.Int, opts ...CallOption) ([]byte, uint64, error)
+	// ConsensusContext returns the consensus context with chain ID/network ID for warp
+	ConsensusContext() context.Context
 }
 
 // CallOption is an option for Call
@@ -163,4 +166,11 @@ func (e *evmPrecompileEnv) Call(addr common.Address, input []byte, gas uint64, v
 
 	ret, remainingGas, err := e.evm.Call(caller, addr, input, gas, val)
 	return ret, remainingGas, err
+}
+
+func (e *evmPrecompileEnv) ConsensusContext() context.Context {
+	if e.evm.Context.ConsensusContext != nil {
+		return e.evm.Context.ConsensusContext
+	}
+	return context.Background()
 }
