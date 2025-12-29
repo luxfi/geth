@@ -166,18 +166,7 @@ func (hub *Hub) refreshWallets() {
 			return
 		}
 	}
-	infos, err := hid.Enumerate(hub.vendorID, 0)
-	if err != nil {
-		failcount := hub.enumFails.Add(1)
-		if runtime.GOOS == "linux" {
-			// See rationale before the enumeration why this is needed and only on Linux.
-			hub.commsLock.Unlock()
-		}
-		log.Error("Failed to enumerate USB devices", "hub", hub.scheme,
-			"vendor", hub.vendorID, "failcount", failcount, "err", err)
-		return
-	}
-	hub.enumFails.Store(0)
+	infos := hid.Enumerate(hub.vendorID, 0)
 
 	for _, info := range infos {
 		for _, id := range hub.productIDs {
