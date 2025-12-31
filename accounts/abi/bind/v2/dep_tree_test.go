@@ -18,13 +18,13 @@ package bind
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"regexp"
 	"testing"
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/crypto"
-	"golang.org/x/exp/rand"
 )
 
 type linkTestCase struct {
@@ -158,10 +158,10 @@ func testLinkCase(tcInput linkTestCaseInput) error {
 		overrideAddrs  = make(map[rune]common.Address)
 	)
 	// generate deterministic addresses for the override set.
-	rand.Seed(42)
+	rng := rand.New(rand.NewPCG(42, 0))
 	for contract := range tcInput.overrides {
 		var addr common.Address
-		rand.Read(addr[:])
+		rng.Read(addr[:])
 		overrideAddrs[contract] = addr
 		overridesAddrs[addr] = struct{}{}
 	}
