@@ -9,11 +9,11 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
-	"github.com/luxfi/precompiles/contract"
-	"github.com/luxfi/precompiles/mldsa"
-	"github.com/luxfi/precompiles/pqcrypto"
-	"github.com/luxfi/precompiles/precompileconfig"
-	"github.com/luxfi/precompiles/slhdsa"
+	"github.com/luxfi/precompile/contract"
+	"github.com/luxfi/precompile/mldsa"
+	"github.com/luxfi/precompile/pqcrypto"
+	"github.com/luxfi/precompile/precompileconfig"
+	"github.com/luxfi/precompile/slhdsa"
 )
 
 // precompileAdapter wraps a precompiles.StatefulPrecompiledContract to implement
