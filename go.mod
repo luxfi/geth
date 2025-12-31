@@ -46,12 +46,11 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20241212093149-d2f9f49435c7
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/consensus v1.22.46
-	github.com/luxfi/crypto v1.17.27
+	github.com/luxfi/crypto v1.17.28
 	github.com/luxfi/database v1.2.17
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.5
 	github.com/luxfi/log v1.2.0
-	github.com/luxfi/precompiles v0.1.10
 	github.com/mattn/go-colorable v0.1.13
 	github.com/mattn/go-isatty v0.0.20
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
@@ -70,7 +69,6 @@ require (
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/goleak v1.3.0
 	golang.org/x/crypto v0.46.0
-	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93
 	golang.org/x/sync v0.19.0
 	golang.org/x/sys v0.39.0
 	golang.org/x/text v0.32.0
@@ -80,6 +78,8 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+require golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.7.0 // indirect
@@ -101,7 +101,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bits-and-blooms/bitset v1.24.4 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/cloudflare/circl v1.6.2-0.20251204010831-23491bd573cf // indirect
+	github.com/cloudflare/circl v1.6.2 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
 	github.com/cockroachdb/fifo v0.0.0-20240816210425-c5d0cb0b6fc0 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20241215232642-bb51bb14a506 // indirect
@@ -136,6 +136,7 @@ require (
 	github.com/luxfi/math v1.2.0 // indirect
 	github.com/luxfi/metric v1.4.8 // indirect
 	github.com/luxfi/p2p v1.18.2 // indirect
+	github.com/luxfi/precompile v0.2.0
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/utils v1.1.0 // indirect
 	github.com/luxfi/vm v1.0.1 // indirect
