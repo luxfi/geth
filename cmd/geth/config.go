@@ -287,6 +287,7 @@ func makeFullNode(ctx *cli.Context) *node.Node {
 			utils.Fatalf("failed to register dev mode catalyst service: %v", err)
 		}
 		catalyst.RegisterSimulatedBeaconAPIs(stack, simBeacon)
+		catalyst.RegisterDevAPIs(stack, eth, simBeacon) // Register Anvil/Hardhat compatible APIs
 		stack.RegisterLifecycle(simBeacon)
 
 		banner := constructDevModeBanner(ctx, cfg)
