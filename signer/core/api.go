@@ -32,7 +32,7 @@ import (
 	"github.com/luxfi/geth/accounts/usbwallet"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/math/math"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/rpc"
