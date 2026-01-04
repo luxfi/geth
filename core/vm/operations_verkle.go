@@ -20,7 +20,7 @@ import (
 	gomath "math"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 	"github.com/luxfi/geth/params"
 )
 
