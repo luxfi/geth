@@ -21,7 +21,7 @@ import (
 	"errors"
 	"io"
 
-	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/math/math"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/rlp"

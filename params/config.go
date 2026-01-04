@@ -743,34 +743,74 @@ func (c *ChainConfig) Description() string {
 		banner += fmt.Sprintf(" - Shanghai:                    @%-10v\n", *c.ShanghaiTime)
 	}
 	if c.CancunTime != nil {
-		banner += fmt.Sprintf(" - Cancun:                      @%-10v blob: (%s)\n", *c.CancunTime, c.BlobScheduleConfig.Cancun)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.Cancun)
+		}
+		banner += fmt.Sprintf(" - Cancun:                      @%-10v%s\n", *c.CancunTime, blobInfo)
 	}
 	if c.PragueTime != nil {
-		banner += fmt.Sprintf(" - Prague:                      @%-10v blob: (%s)\n", *c.PragueTime, c.BlobScheduleConfig.Prague)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.Prague)
+		}
+		banner += fmt.Sprintf(" - Prague:                      @%-10v%s\n", *c.PragueTime, blobInfo)
 	}
 	if c.OsakaTime != nil {
-		banner += fmt.Sprintf(" - Osaka:                       @%-10v blob: (%s)\n", *c.OsakaTime, c.BlobScheduleConfig.Osaka)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.Osaka)
+		}
+		banner += fmt.Sprintf(" - Osaka:                       @%-10v%s\n", *c.OsakaTime, blobInfo)
 	}
 	if c.BPO1Time != nil {
-		banner += fmt.Sprintf(" - BPO1:                        @%-10v blob: (%s)\n", *c.BPO1Time, c.BlobScheduleConfig.BPO1)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.BPO1)
+		}
+		banner += fmt.Sprintf(" - BPO1:                        @%-10v%s\n", *c.BPO1Time, blobInfo)
 	}
 	if c.BPO2Time != nil {
-		banner += fmt.Sprintf(" - BPO2:                        @%-10v blob: (%s)\n", *c.BPO2Time, c.BlobScheduleConfig.BPO2)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.BPO2)
+		}
+		banner += fmt.Sprintf(" - BPO2:                        @%-10v%s\n", *c.BPO2Time, blobInfo)
 	}
 	if c.BPO3Time != nil {
-		banner += fmt.Sprintf(" - BPO3:                        @%-10v blob: (%s)\n", *c.BPO3Time, c.BlobScheduleConfig.BPO3)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.BPO3)
+		}
+		banner += fmt.Sprintf(" - BPO3:                        @%-10v%s\n", *c.BPO3Time, blobInfo)
 	}
 	if c.BPO4Time != nil {
-		banner += fmt.Sprintf(" - BPO4:                        @%-10v blob: (%s)\n", *c.BPO4Time, c.BlobScheduleConfig.BPO4)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.BPO4)
+		}
+		banner += fmt.Sprintf(" - BPO4:                        @%-10v%s\n", *c.BPO4Time, blobInfo)
 	}
 	if c.BPO5Time != nil {
-		banner += fmt.Sprintf(" - BPO5:                        @%-10v blob: (%s)\n", *c.BPO5Time, c.BlobScheduleConfig.BPO5)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.BPO5)
+		}
+		banner += fmt.Sprintf(" - BPO5:                        @%-10v%s\n", *c.BPO5Time, blobInfo)
 	}
 	if c.AmsterdamTime != nil {
-		banner += fmt.Sprintf(" - Amsterdam:									 @%-10v blob: (%s)\n", *c.AmsterdamTime, c.BlobScheduleConfig.Amsterdam)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.Amsterdam)
+		}
+		banner += fmt.Sprintf(" - Amsterdam:                   @%-10v%s\n", *c.AmsterdamTime, blobInfo)
 	}
 	if c.VerkleTime != nil {
-		banner += fmt.Sprintf(" - Verkle:                      @%-10v blob: (%s)\n", *c.VerkleTime, c.BlobScheduleConfig.Verkle)
+		blobInfo := ""
+		if c.BlobScheduleConfig != nil {
+			blobInfo = fmt.Sprintf(" blob: (%s)", c.BlobScheduleConfig.Verkle)
+		}
+		banner += fmt.Sprintf(" - Verkle:                      @%-10v%s\n", *c.VerkleTime, blobInfo)
 	}
 	banner += fmt.Sprintf("\nAll fork specifications can be found at https://ethereum.github.io/execution-specs/src/ethereum/forks/\n")
 	return banner
