@@ -7,7 +7,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/math/math"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/holiman/uint256"
 )
