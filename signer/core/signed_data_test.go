@@ -30,7 +30,7 @@ import (
 	"github.com/luxfi/geth/accounts/keystore"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/signer/core"
 	"github.com/luxfi/geth/signer/core/apitypes"
