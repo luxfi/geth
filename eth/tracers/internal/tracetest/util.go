@@ -23,7 +23,7 @@ import (
 	"unicode"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
