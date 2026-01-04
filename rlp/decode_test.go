@@ -28,7 +28,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 	"github.com/holiman/uint256"
 )
 

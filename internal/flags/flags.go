@@ -27,7 +27,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 	"github.com/urfave/cli/v2"
 )
 

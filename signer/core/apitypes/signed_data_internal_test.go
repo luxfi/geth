@@ -26,7 +26,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

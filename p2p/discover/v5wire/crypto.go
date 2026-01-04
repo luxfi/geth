@@ -25,7 +25,7 @@ import (
 	"fmt"
 	"hash"
 
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/p2p/enode"
 	"golang.org/x/crypto/hkdf"
