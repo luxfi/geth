@@ -26,7 +26,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/math/math"
 	"github.com/holiman/uint256"
 )
 
