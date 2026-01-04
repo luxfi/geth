@@ -23,7 +23,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/luxfi/math/math"
+	math "github.com/luxfi/math/big"
 	"github.com/holiman/uint256"
 )
 

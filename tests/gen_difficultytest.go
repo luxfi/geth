@@ -7,7 +7,7 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math/math"
+	"github.com/luxfi/math"
 )
 
 var _ = (*difficultyTestMarshaling)(nil)
