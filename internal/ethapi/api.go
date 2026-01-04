@@ -30,7 +30,7 @@ import (
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/math/math"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip1559"
 	"github.com/luxfi/geth/core"

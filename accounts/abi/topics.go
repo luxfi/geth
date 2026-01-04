@@ -24,7 +24,7 @@ import (
 	"reflect"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/common/math"
+	"github.com/luxfi/math/math"
 )
 
 // MakeTopics converts a filter query argument list into a filter topic set.
