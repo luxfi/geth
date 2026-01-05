@@ -51,7 +51,7 @@ require (
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.5
 	github.com/luxfi/log v1.2.1
-	github.com/luxfi/math/big v0.0.0-00010101000000-000000000000
+	github.com/luxfi/math/big v0.1.0
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
@@ -197,7 +197,3 @@ exclude google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 
 // Unify HID libraries - karalabe/hid and luxfi/hid have same CGO code
 replace github.com/karalabe/hid => github.com/luxfi/hid v0.9.2
-
-replace github.com/luxfi/math/big => ../math/big
-
-replace github.com/luxfi/crypto => ../crypto
