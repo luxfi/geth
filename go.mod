@@ -33,7 +33,7 @@ require (
 	github.com/golang/snappy v1.0.0
 	github.com/google/gofuzz v1.2.0
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/websocket v1.5.3
+	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/graph-gophers/graphql-go v1.8.0
 	github.com/hashicorp/go-bexpr v0.1.15
 	github.com/holiman/billy v0.0.0-20250707135307-f2f9b9aae7db
@@ -81,8 +81,10 @@ require (
 )
 
 require (
+	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
+	github.com/onsi/gomega v1.38.3 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 )
@@ -197,3 +199,5 @@ exclude google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 replace github.com/karalabe/hid => github.com/luxfi/hid v0.9.2
 
 replace github.com/luxfi/math/big => ../math/big
+
+replace github.com/luxfi/crypto => ../crypto
