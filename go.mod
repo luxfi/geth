@@ -45,11 +45,11 @@ require (
 	github.com/jackpal/go-nat-pmp v1.0.2
 	github.com/jedisct1/go-minisign v0.0.0-20241212093149-d2f9f49435c7
 	github.com/kylelemons/godebug v1.1.0
-	github.com/luxfi/consensus v1.22.47
-	github.com/luxfi/crypto v1.17.31
+	github.com/luxfi/consensus v1.22.51
+	github.com/luxfi/crypto v1.17.36
 	github.com/luxfi/database v1.2.17
 	github.com/luxfi/hid v0.9.3
-	github.com/luxfi/ids v1.2.5
+	github.com/luxfi/ids v1.2.7
 	github.com/luxfi/log v1.2.1
 	github.com/luxfi/math/big v0.1.0
 	github.com/mattn/go-colorable v0.1.14
@@ -84,8 +84,8 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
-	github.com/onsi/gomega v1.38.3 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 )
 
@@ -141,13 +141,13 @@ require (
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/luxfi/cache v1.1.0 // indirect
-	github.com/luxfi/math v1.2.0
+	github.com/luxfi/math v1.2.2
 	github.com/luxfi/metric v1.4.8 // indirect
-	github.com/luxfi/p2p v1.18.2 // indirect
+	github.com/luxfi/p2p v1.18.4 // indirect
 	github.com/luxfi/precompile v0.4.0
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/utils v1.1.0 // indirect
-	github.com/luxfi/vm v1.0.1 // indirect
+	github.com/luxfi/vm v1.0.2 // indirect
 	github.com/luxfi/warp v1.18.2 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
