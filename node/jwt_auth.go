@@ -21,8 +21,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/luxfi/geth/rpc"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/luxfi/geth/rpc"
 )
 
 // NewJWTAuth creates an rpc client authentication provider that uses JWT. The

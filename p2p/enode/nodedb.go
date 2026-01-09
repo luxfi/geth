@@ -455,7 +455,7 @@ seek:
 		ctr := id[0]
 		rand.Read(id[:])
 		id[0] = ctr + id[0]%16
-		
+
 		// Create iterator starting from the target key
 		targetKey := nodeKey(id)
 		it := db.db.NewIteratorWithStart(targetKey)

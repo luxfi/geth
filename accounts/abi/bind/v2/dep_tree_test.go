@@ -22,9 +22,9 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 )
 
 type linkTestCase struct {

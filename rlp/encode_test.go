@@ -26,8 +26,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/luxfi/math"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/math"
 )
 
 type testEncoder struct {

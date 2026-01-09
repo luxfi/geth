@@ -24,18 +24,18 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/beacon"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/holiman/uint256"
 )
 
 const testHead = 32

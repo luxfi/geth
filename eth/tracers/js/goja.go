@@ -25,17 +25,17 @@ import (
 	"sync"
 
 	"github.com/dop251/goja"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/internal"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
 	jsassets "github.com/luxfi/geth/eth/tracers/js/internal/tracers"
 )
 

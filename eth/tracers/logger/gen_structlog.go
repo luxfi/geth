@@ -5,11 +5,11 @@ package logger
 import (
 	"encoding/json"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/math"
 )
 
 var _ = (*structLogMarshaling)(nil)

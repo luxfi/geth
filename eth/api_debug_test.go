@@ -28,6 +28,8 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
@@ -35,10 +37,8 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/triedb"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/assert"
 )
 

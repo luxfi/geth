@@ -19,8 +19,8 @@ package ethash
 import (
 	"math/big"
 
-	"github.com/luxfi/geth/core/types"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/core/types"
 )
 
 const (

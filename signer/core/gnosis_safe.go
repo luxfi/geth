@@ -22,8 +22,8 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/signer/core/apitypes"
+	"github.com/luxfi/math"
 )
 
 // GnosisSafeTx is a type to parse the safe-tx returned by the relayer,

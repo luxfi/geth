@@ -31,6 +31,8 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/beacon"
@@ -41,13 +43,11 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/core/vm/program"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/ethdb/pebble"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
-	"github.com/holiman/uint256"
 	"github.com/stretchr/testify/assert"
 )
 
