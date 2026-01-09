@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/bitutil"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/crypto"
 )
 
 type bytesBacked interface {

@@ -22,12 +22,12 @@ import (
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/blocktest"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/uint256"
 )
 
 var newTestHasher = blocktest.NewHasher

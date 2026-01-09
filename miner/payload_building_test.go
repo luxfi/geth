@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/beacon/engine"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus"
@@ -32,7 +33,6 @@ import (
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/txpool/legacypool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/params"
 )

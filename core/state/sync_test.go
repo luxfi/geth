@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"testing"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
@@ -29,7 +30,6 @@ import (
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/hashdb"
 	"github.com/luxfi/geth/triedb/pathdb"
-	"github.com/holiman/uint256"
 )
 
 // testAccount is the data associated with an account used by the state tests.

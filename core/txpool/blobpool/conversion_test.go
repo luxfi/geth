@@ -23,12 +23,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/core/types"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/crypto/kzg4844"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 // createV1BlobTx creates a blob transaction with version 1 sidecar for testing.

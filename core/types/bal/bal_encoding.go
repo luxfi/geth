@@ -26,10 +26,10 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/uint256"
 )
 
 //go:generate go run github.com/luxfi/geth/rlp/rlpgen -out bal_encoding_rlp_generated.go -type BlockAccessList -decoder

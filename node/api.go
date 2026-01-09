@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/internal/debug"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/p2p"

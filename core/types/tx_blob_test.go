@@ -20,10 +20,10 @@ import (
 	"crypto/ecdsa"
 	"testing"
 
-	"github.com/luxfi/geth/common"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/crypto/kzg4844"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 )
 
 // This test verifies that tx.Hash() is not affected by presence of a BlobTxSidecar.

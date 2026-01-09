@@ -29,7 +29,6 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/consensus/beacon"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
@@ -44,6 +43,7 @@ import (
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/hashdb"
 	"github.com/luxfi/geth/triedb/pathdb"
+	"github.com/luxfi/math"
 )
 
 // A BlockTest checks handling of entire blocks.

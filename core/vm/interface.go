@@ -17,6 +17,7 @@
 package vm
 
 import (
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/stateless"
@@ -24,7 +25,6 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie/utils"
-	"github.com/holiman/uint256"
 )
 
 // StateDB is an EVM database for full state querying.
