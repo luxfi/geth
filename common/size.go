@@ -17,6 +17,7 @@
 package common
 
 import (
+	"github.com/luxfi/crypto/address/formatting"
 	"fmt"
 )
 
