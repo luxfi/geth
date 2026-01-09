@@ -26,9 +26,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/crypto"
-	pcsc "github.com/gballet/go-libpcsclite"
 	"golang.org/x/crypto/pbkdf2"
+	pcsc "github.com/gballet/go-libpcsclite"
+	"github.com/luxfi/crypto"
 	"golang.org/x/text/unicode/norm"
 )
 
