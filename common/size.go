@@ -17,8 +17,8 @@
 package common
 
 import (
-	"github.com/luxfi/crypto/address/formatting"
 	"fmt"
+	"github.com/luxfi/crypto/address/formatting"
 )
 
 // StorageSize is a wrapper around a float value that supports user friendly
