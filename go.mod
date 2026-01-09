@@ -46,7 +46,7 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20241212093149-d2f9f49435c7
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/consensus v1.22.51
-	github.com/luxfi/crypto v1.17.37
+	github.com/luxfi/crypto v1.17.38
 	github.com/luxfi/database v1.17.35
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.7
@@ -84,8 +84,10 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
+	github.com/luxfi/mock v0.1.0 // indirect
 	github.com/luxfi/utils v1.1.0 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
+	go.uber.org/mock v0.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
 )
