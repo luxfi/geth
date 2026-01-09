@@ -17,8 +17,8 @@
 package flags
 
 import (
-	"github.com/luxfi/crypto/address/formatting"
 	"fmt"
+	"github.com/luxfi/crypto/address/formatting"
 	"os"
 	"regexp"
 	"sort"
