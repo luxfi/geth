@@ -68,6 +68,8 @@ cmd/verify-headers/verify-headers
 test-badger-persist
 geth
 
+tests/fuzzers/txfetcher/corpus/.*
+
 AGENTS.md
 CLAUDE.md
 GEMINI.md
