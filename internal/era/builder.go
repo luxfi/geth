@@ -24,11 +24,11 @@ import (
 	"io"
 	"math/big"
 
+	"github.com/golang/snappy"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/internal/era/e2store"
 	"github.com/luxfi/geth/rlp"
-	"github.com/golang/snappy"
 )
 
 // Builder is used to create Era1 archives of block data.

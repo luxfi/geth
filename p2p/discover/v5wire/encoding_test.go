@@ -31,9 +31,9 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/common/mclock"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/p2p/enode"
 )
 

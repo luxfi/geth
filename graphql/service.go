@@ -24,12 +24,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/graph-gophers/graphql-go"
+	gqlErrors "github.com/graph-gophers/graphql-go/errors"
 	"github.com/luxfi/geth/eth/filters"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/rpc"
-	"github.com/graph-gophers/graphql-go"
-	gqlErrors "github.com/graph-gophers/graphql-go/errors"
 )
 
 // maxQueryDepth limits the maximum field nesting depth allowed in GraphQL queries.

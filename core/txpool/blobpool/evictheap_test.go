@@ -21,9 +21,9 @@ import (
 	mrand "math/rand"
 	"testing"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 var rnd = mrand.New(mrand.NewSource(1))

@@ -27,9 +27,9 @@ import (
 	"testing"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
+	"github.com/luxfi/math"
 )
 
 type diffTest struct {

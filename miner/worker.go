@@ -23,6 +23,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip1559"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
@@ -34,7 +35,6 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 var (

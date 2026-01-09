@@ -27,10 +27,10 @@ package tracing
 import (
 	"math/big"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 // OpContext provides the context at which the opcode is being

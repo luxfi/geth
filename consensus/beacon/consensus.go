@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math/big"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip1559"
@@ -31,7 +32,6 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
-	"github.com/holiman/uint256"
 )
 
 // Proof-of-stake protocol constants.

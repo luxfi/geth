@@ -27,6 +27,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/state/snapshot"
@@ -38,7 +39,6 @@ import (
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/trie/utils"
-	"github.com/holiman/uint256"
 	"golang.org/x/sync/errgroup"
 )
 

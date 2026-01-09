@@ -27,9 +27,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/common/mclock"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"

@@ -24,8 +24,8 @@ import (
 	"math/bits"
 	"reflect"
 
-	"github.com/luxfi/geth/rlp/internal/rlpstruct"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/rlp/internal/rlpstruct"
 )
 
 var (

@@ -30,14 +30,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/math"
 )
 
 var typedDataReferenceTypeRegexp = regexp.MustCompile(`^[A-Za-z](\w*)(\[\d*\])*$`)

@@ -25,8 +25,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/geth/log"
 	natpmp "github.com/jackpal/go-nat-pmp"
+	"github.com/luxfi/geth/log"
 )
 
 // Interface An implementation of nat.Interface can map local ports to ports

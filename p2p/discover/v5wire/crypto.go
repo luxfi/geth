@@ -25,10 +25,10 @@ import (
 	"fmt"
 	"hash"
 
-	"golang.org/x/crypto/hkdf"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/math"
+	"golang.org/x/crypto/hkdf"
 )
 
 const (

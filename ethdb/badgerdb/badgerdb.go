@@ -244,7 +244,7 @@ type Snapshot interface {
 }
 
 type snapshot struct {
-	db *badger.DB
+	db  *badger.DB
 	txn *badger.Txn
 }
 

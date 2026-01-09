@@ -209,12 +209,12 @@ var (
 		GrayGlacierBlock:        nil,
 		TerminalTotalDifficulty: big.NewInt(0),
 		MergeNetsplitBlock:      big.NewInt(0),
-		ShanghaiTime:            nil,       // Pre-Shanghai chain (EVM 2024)
-		CancunTime:              nil,       // Not activated
-		PragueTime:              nil,       // Not activated
+		ShanghaiTime:            nil, // Pre-Shanghai chain (EVM 2024)
+		CancunTime:              nil, // Not activated
+		PragueTime:              nil, // Not activated
 		OsakaTime:               nil,
-		VerkleTime:              nil,       // Not activated
-		EVMTimestamp:      newUint64(0), // EVM gas accounting from genesis
+		VerkleTime:              nil,          // Not activated
+		EVMTimestamp:            newUint64(0), // EVM gas accounting from genesis
 		DurangoTimestamp:        newUint64(0), // Durango upgrade from genesis
 		Ethash:                  new(EthashConfig),
 	}
@@ -1563,13 +1563,13 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 		// Shanghai is active regardless of merge status. This handles importing
 		// historic blocks that were created with Shanghai EIPs (EIP-3860 init code gas)
 		// but before the merge. For EVM chains, Durango upgrade brings Shanghai EIPs.
-		IsShanghai:       c.IsShanghai(num, timestamp) || c.IsDurango(timestamp),
-		IsCancun:         isMerge && c.IsCancun(num, timestamp),
-		IsPrague:         isMerge && c.IsPrague(num, timestamp),
-		IsOsaka:          isMerge && c.IsOsaka(num, timestamp),
-		IsAmsterdam:      isMerge && c.IsAmsterdam(num, timestamp),
-		IsVerkle:         isVerkle,
-		IsEIP4762:        isVerkle,
+		IsShanghai:  c.IsShanghai(num, timestamp) || c.IsDurango(timestamp),
+		IsCancun:    isMerge && c.IsCancun(num, timestamp),
+		IsPrague:    isMerge && c.IsPrague(num, timestamp),
+		IsOsaka:     isMerge && c.IsOsaka(num, timestamp),
+		IsAmsterdam: isMerge && c.IsAmsterdam(num, timestamp),
+		IsVerkle:    isVerkle,
+		IsEIP4762:   isVerkle,
 	}
 	// Call the hook to populate Payload with chain-specific rules data
 	if rulesHook != nil {

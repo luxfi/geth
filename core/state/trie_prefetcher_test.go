@@ -20,13 +20,13 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/internal/testrand"
 	"github.com/luxfi/geth/triedb"
-	"github.com/holiman/uint256"
 )
 
 func filledStateDB() *StateDB {

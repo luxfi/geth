@@ -21,10 +21,10 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto/kzg4844"
-	"github.com/holiman/uint256"
 )
 
 func TestIsPrimitive(t *testing.T) {

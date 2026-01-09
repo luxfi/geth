@@ -17,9 +17,9 @@
 package blobpool
 
 import (
+	"github.com/holiman/billy"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/billy"
 )
 
 // tryMigrate checks if the billy needs to be migrated and migrates if needed.

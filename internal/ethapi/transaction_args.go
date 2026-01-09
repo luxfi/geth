@@ -25,16 +25,16 @@ import (
 	"math"
 	"math/big"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
-	"github.com/holiman/uint256"
 )
 
 // TransactionArgs represents the arguments to construct a new transaction

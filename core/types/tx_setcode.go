@@ -22,11 +22,11 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/uint256"
 )
 
 // DelegationPrefix is used by code to denote the account is delegating to

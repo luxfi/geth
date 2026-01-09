@@ -24,6 +24,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/ethash"
@@ -31,7 +32,6 @@ import (
 	"github.com/luxfi/geth/core/filtermaps"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/triedb"

@@ -21,6 +21,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/beacon"
@@ -28,7 +29,6 @@ import (
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/params"
 )
 

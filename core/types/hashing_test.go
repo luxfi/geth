@@ -24,10 +24,10 @@ import (
 	mrand "math/rand"
 	"testing"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
 )

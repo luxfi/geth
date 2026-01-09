@@ -24,13 +24,13 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 func TestMemoryGasCost(t *testing.T) {

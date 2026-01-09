@@ -21,10 +21,10 @@ import (
 	"errors"
 	"io"
 
-	"github.com/luxfi/math"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/rlp"
+	"github.com/luxfi/math"
 	"golang.org/x/crypto/sha3"
 )
 

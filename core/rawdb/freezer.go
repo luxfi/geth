@@ -25,10 +25,10 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/gofrs/flock"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/metrics"
-	"github.com/gofrs/flock"
 )
 
 var (

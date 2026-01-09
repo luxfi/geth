@@ -25,11 +25,11 @@ import (
 	"sync"
 	"time"
 
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/beacon/engine"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"

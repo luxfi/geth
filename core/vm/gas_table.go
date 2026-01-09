@@ -21,8 +21,8 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/params"
+	"github.com/luxfi/math"
 )
 
 // memoryGasCost calculates the quadratic gas for memory expansion. It does so

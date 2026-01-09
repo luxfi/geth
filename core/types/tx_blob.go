@@ -24,11 +24,11 @@ import (
 	"math/big"
 	"slices"
 
-	"github.com/luxfi/geth/common"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/crypto/kzg4844"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/uint256"
 )
 
 const (

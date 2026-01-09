@@ -25,8 +25,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/luxfi/geth/common"
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
 )
 
 func tmpKeyStoreIface(t *testing.T, encrypted bool) (dir string, ks keyStore) {
