@@ -24,6 +24,7 @@ import (
 	"slices"
 	"sync/atomic"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/accounts/abi"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
@@ -34,7 +35,6 @@ import (
 	"github.com/luxfi/geth/eth/tracers/internal"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 //go:generate go run github.com/fjl/gencodec -type callFrameWithOpcodes -field-override callFrameWithOpcodesMarshaling -out gen_callframewithopcodes_json.go

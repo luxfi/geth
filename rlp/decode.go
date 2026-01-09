@@ -28,8 +28,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/luxfi/geth/rlp/internal/rlpstruct"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/rlp/internal/rlpstruct"
 )
 
 //lint:ignore ST1012 EOL is not an error.

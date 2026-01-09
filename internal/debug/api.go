@@ -35,9 +35,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hashicorp/go-bexpr"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/log"
-	"github.com/hashicorp/go-bexpr"
 )
 
 // Handler is the global debugging handler.

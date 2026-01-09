@@ -25,8 +25,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/luxfi/geth/common"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/luxfi/geth/common"
 )
 
 // EngineClient is a wrapper around engine-related data.

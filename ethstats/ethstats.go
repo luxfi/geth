@@ -30,6 +30,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/mclock"
@@ -42,7 +43,6 @@ import (
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/rpc"
-	"github.com/gorilla/websocket"
 )
 
 const (

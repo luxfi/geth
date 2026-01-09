@@ -20,13 +20,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/pathdb"
-	"github.com/holiman/uint256"
 )
 
 func TestSizeTracker(t *testing.T) {

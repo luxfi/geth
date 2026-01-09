@@ -19,13 +19,13 @@ package state
 import (
 	"math/big"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie/utils"
-	"github.com/holiman/uint256"
 )
 
 // hookedStateDB represents a statedb which emits calls to tracing-hooks

@@ -23,14 +23,14 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/internal/blocktest"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/math"
 )
 
 // from bcValidBlockTest.json, "SimpleTx"
@@ -390,9 +390,9 @@ func TestLuxMainnetGenesis(t *testing.T) {
 		Bloom:       Bloom{},
 		Difficulty:  big.NewInt(0),
 		Number:      big.NewInt(0),
-		GasLimit:    12000000,            // 0xb71b00
+		GasLimit:    12000000, // 0xb71b00
 		GasUsed:     0,
-		Time:        0x672485c2,          // 1730479554
+		Time:        0x672485c2, // 1730479554
 		Extra:       []byte{},
 		MixDigest:   common.Hash{},
 		Nonce:       BlockNonce{},
@@ -451,13 +451,13 @@ func TestLuxGenesisRawHashPreservation(t *testing.T) {
 
 	// Lux genesis header values
 	stateRoot := common.HexToHash("0x2d1cedac263020c5c56ef962f6abe0da1f5217bdc6468f8c9258a0ea23699e80")
-	timestamp := uint64(0x672485c2)  // 1730479554
-	gasLimit := uint64(0xb71b00)     // 12000000
+	timestamp := uint64(0x672485c2)    // 1730479554
+	gasLimit := uint64(0xb71b00)       // 12000000
 	baseFee := big.NewInt(0x5d21dba00) // 25 gwei
 
 	// Step 1: Create a 16-field header struct (post-London, pre-ExtDataHash format)
 	h16 := hdr16{
-		ParentHash:  common.Hash{},    // zero hash for genesis
+		ParentHash:  common.Hash{}, // zero hash for genesis
 		UncleHash:   EmptyUncleHash,
 		Coinbase:    common.Address{},
 		Root:        stateRoot,
@@ -555,9 +555,9 @@ func TestLuxGenesisHash16(t *testing.T) {
 		Bloom:       Bloom{},
 		Difficulty:  big.NewInt(0),
 		Number:      big.NewInt(0),
-		GasLimit:    0xb71b00,                // 12000000
+		GasLimit:    0xb71b00, // 12000000
 		GasUsed:     0,
-		Time:        0x672485c2,              // 1730479554
+		Time:        0x672485c2, // 1730479554
 		Extra:       []byte{},
 		MixDigest:   common.Hash{},
 		Nonce:       BlockNonce{},

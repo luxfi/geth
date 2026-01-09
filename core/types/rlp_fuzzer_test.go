@@ -22,8 +22,8 @@ import (
 	"math/big"
 	"testing"
 
-	"github.com/luxfi/geth/rlp"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/rlp"
 )
 
 func decodeEncode(input []byte, val interface{}) error {

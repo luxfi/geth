@@ -29,6 +29,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gofrs/flock"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
@@ -39,7 +40,6 @@ import (
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/rpc"
-	"github.com/gofrs/flock"
 )
 
 // Node is a container on which services can be registered.

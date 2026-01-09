@@ -21,9 +21,9 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/holiman/uint256"
 )
 
 func TestPush(t *testing.T) {

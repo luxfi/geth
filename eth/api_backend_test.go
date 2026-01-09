@@ -25,6 +25,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/beacon"
 	"github.com/luxfi/geth/consensus/ethash"
@@ -35,9 +37,7 @@ import (
 	"github.com/luxfi/geth/core/txpool/legacypool"
 	"github.com/luxfi/geth/core/txpool/locals"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 var (

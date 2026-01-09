@@ -22,6 +22,8 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/beacon"
@@ -30,10 +32,8 @@ import (
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
-	"github.com/holiman/uint256"
 	"golang.org/x/crypto/sha3"
 )
 
@@ -454,7 +454,7 @@ func TestEVMGasAccounting(t *testing.T) {
 		BerlinBlock:             big.NewInt(0),
 		LondonBlock:             big.NewInt(0),
 		TerminalTotalDifficulty: big.NewInt(0),
-		EVMTimestamp:      u64(0), // EVM active from genesis
+		EVMTimestamp:            u64(0), // EVM active from genesis
 	}
 
 	// Create standard EIP-1559 config for comparison
@@ -504,7 +504,7 @@ func TestEVMGasAccounting(t *testing.T) {
 		BerlinBlock:             big.NewInt(0),
 		LondonBlock:             big.NewInt(0),
 		TerminalTotalDifficulty: big.NewInt(0),
-		EVMTimestamp:      u64(0), // EVM active from genesis
+		EVMTimestamp:            u64(0), // EVM active from genesis
 		DurangoTimestamp:        u64(0), // Durango active from genesis
 		ShanghaiTime:            nil,    // Shanghai not explicitly set
 	}

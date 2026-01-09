@@ -25,10 +25,10 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/geth/rlp"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/rlp"
 )
 
 var (

@@ -23,8 +23,8 @@ import (
 	"reflect"
 	"sync"
 
-	math "github.com/luxfi/math/big"
 	"github.com/holiman/uint256"
+	math "github.com/luxfi/math/big"
 )
 
 type encBuffer struct {

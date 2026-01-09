@@ -29,6 +29,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/state"
@@ -36,11 +38,9 @@ import (
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
-	"github.com/holiman/uint256"
 )
 
 var (

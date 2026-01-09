@@ -22,8 +22,8 @@ import (
 	"slices"
 	"sort"
 
-	"github.com/luxfi/geth/common"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 )
 
 type revision struct {

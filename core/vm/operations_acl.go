@@ -20,10 +20,10 @@ import (
 	"errors"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
+	"github.com/luxfi/math"
 )
 
 func makeGasSStoreFunc(clearingRefund uint64) gasFunc {

@@ -32,6 +32,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/holiman/billy"
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/misc/eip1559"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
@@ -39,14 +42,11 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/billy"
-	"github.com/holiman/uint256"
 )
 
 const (
