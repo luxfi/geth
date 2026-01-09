@@ -25,11 +25,11 @@ import (
 	"errors"
 	"fmt"
 
+	"golang.org/x/crypto/pbkdf2"
 	"github.com/google/uuid"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
-	"golang.org/x/crypto/pbkdf2"
 )
 
 // creates a Key and stores that in the given KeyStore by decrypting a presale key JSON

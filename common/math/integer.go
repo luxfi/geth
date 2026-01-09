@@ -1,50 +1,58 @@
 // Copyright 2017 The go-ethereum Authors
-// Copyright 2024-2025 Lux Industries Inc.
-// SPDX-License-Identifier: LGPL-3.0
+// This file is part of the go-ethereum library.
+//
+// The go-ethereum library is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// The go-ethereum library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
 
 package math
 
 import (
-	"math"
-	"math/big"
+	"fmt"
+	"math/bits"
 	"strconv"
-)
-
-// Integer limit values.
-const (
-	MaxInt8   = 1<<7 - 1
-	MinInt8   = -1 << 7
-	MaxInt16  = 1<<15 - 1
-	MinInt16  = -1 << 15
-	MaxInt32  = 1<<31 - 1
-	MinInt32  = -1 << 31
-	MaxInt64  = 1<<63 - 1
-	MinInt64  = -1 << 63
-	MaxUint8  = 1<<8 - 1
-	MaxUint16 = 1<<16 - 1
-	MaxUint32 = 1<<32 - 1
-	MaxUint64 = 1<<64 - 1
 )
 
 // HexOrDecimal64 marshals uint64 as hex or decimal.
 type HexOrDecimal64 uint64
 
+// UnmarshalJSON implements json.Unmarshaler.
+//
+// It is similar to UnmarshalText, but allows parsing real decimals too, not just
+// quoted decimal strings.
+func (i *HexOrDecimal64) UnmarshalJSON(input []byte) error {
+	if len(input) > 1 && input[0] == '"' {
+		input = input[1 : len(input)-1]
+	}
+	return i.UnmarshalText(input)
+}
+
 // UnmarshalText implements encoding.TextUnmarshaler.
 func (i *HexOrDecimal64) UnmarshalText(input []byte) error {
-	int, ok := ParseUint64(string(input))
+	n, ok := ParseUint64(string(input))
 	if !ok {
-		return errBadUint64
+		return fmt.Errorf("invalid hex or decimal integer %q", input)
 	}
-	*i = HexOrDecimal64(int)
+	*i = HexOrDecimal64(n)
 	return nil
 }
 
 // MarshalText implements encoding.TextMarshaler.
 func (i HexOrDecimal64) MarshalText() ([]byte, error) {
-	return []byte(strconv.FormatUint(uint64(i), 10)), nil
+	return fmt.Appendf(nil, "%#x", uint64(i)), nil
 }
 
 // ParseUint64 parses s as an integer in decimal or hexadecimal syntax.
+// Leading zeros are accepted. The empty string parses as zero.
 func ParseUint64(s string) (uint64, bool) {
 	if s == "" {
 		return 0, true
@@ -68,73 +76,18 @@ func MustParseUint64(s string) uint64 {
 
 // SafeSub returns x-y and checks for overflow.
 func SafeSub(x, y uint64) (uint64, bool) {
-	diff, borrowOut := subUint64(x, y)
-	return diff, borrowOut == 0
+	diff, borrowOut := bits.Sub64(x, y, 0)
+	return diff, borrowOut != 0
 }
 
 // SafeAdd returns x+y and checks for overflow.
 func SafeAdd(x, y uint64) (uint64, bool) {
-	sum, carryOut := addUint64(x, y)
-	return sum, carryOut == 0
+	sum, carryOut := bits.Add64(x, y, 0)
+	return sum, carryOut != 0
 }
 
 // SafeMul returns x*y and checks for overflow.
 func SafeMul(x, y uint64) (uint64, bool) {
-	if x == 0 || y == 0 {
-		return 0, true
-	}
-	if x > MaxUint64/y {
-		return 0, false
-	}
-	return x * y, true
-}
-
-func addUint64(x, y uint64) (sum, carryOut uint64) {
-	sum = x + y
-	if sum < x {
-		carryOut = 1
-	}
-	return
-}
-
-func subUint64(x, y uint64) (diff, borrowOut uint64) {
-	diff = x - y
-	if diff > x {
-		borrowOut = 1
-	}
-	return
-}
-
-// U256 encodes as a 256 bit two's complement number. This operation is destructive.
-func U256(x *big.Int) *big.Int {
-	return x.And(x, tt256m1)
-}
-
-// U256Bytes converts a big integer to a 256bit EVM number.
-func U256Bytes(n *big.Int) []byte {
-	return PaddedBigBytes(U256(n), 32)
-}
-
-// S256 interprets x as a two's complement number.
-func S256(x *big.Int) *big.Int {
-	if x.Cmp(tt255) < 0 {
-		return x
-	}
-	return new(big.Int).Sub(x, tt256)
-}
-
-// Exp implements exponentiation by squaring.
-func Exp(base, exponent *big.Int) *big.Int {
-	result := big.NewInt(1)
-
-	for _, word := range exponent.Bits() {
-		for i := 0; i < wordBits; i++ {
-			if word&1 == 1 {
-				result.Mul(result, base)
-			}
-			base.Mul(base, base)
-			word >>= 1
-		}
-	}
-	return result
+	hi, lo := bits.Mul64(x, y)
+	return lo, hi != 0
 }
