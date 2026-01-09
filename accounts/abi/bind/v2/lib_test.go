@@ -22,6 +22,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts/abi/bind/backends"
 	"github.com/luxfi/geth/accounts/abi/bind/v2"
 	"github.com/luxfi/geth/accounts/abi/bind/v2/internal/contracts/events"
@@ -29,7 +30,6 @@ import (
 	"github.com/luxfi/geth/accounts/abi/bind/v2/internal/contracts/solc_errors"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/ethclient"
 	"github.com/luxfi/geth/ethclient/simulated"

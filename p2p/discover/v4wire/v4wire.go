@@ -30,10 +30,10 @@ import (
 
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/rlp"
+	"github.com/luxfi/math"
 )
 
 // RPC packet types

@@ -21,8 +21,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/luxfi/geth/rlp"
 	"github.com/golang/snappy"
+	"github.com/luxfi/geth/rlp"
 )
 
 const (

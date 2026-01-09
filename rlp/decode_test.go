@@ -28,8 +28,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/luxfi/math"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/math"
 )
 
 func TestStreamKind(t *testing.T) {

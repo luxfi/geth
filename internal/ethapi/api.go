@@ -27,10 +27,10 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/consensus"
 	"github.com/luxfi/geth/consensus/misc/eip1559"
 	"github.com/luxfi/geth/core"
@@ -38,7 +38,6 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth/gasestimator"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/internal/ethapi/override"
@@ -48,6 +47,7 @@ import (
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/trie"
+	"github.com/luxfi/math"
 )
 
 // estimateGasErrorRatio is the amount of overestimation eth_estimateGas is

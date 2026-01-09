@@ -27,10 +27,10 @@ type BlockHeader = types.Header
 
 // Addresses contains commonly used addresses
 type Addresses struct {
-	Coinbase    common.Address
-	Origin      common.Address
-	Contract    common.Address
-	Caller      common.Address
+	Coinbase common.Address
+	Origin   common.Address
+	Contract common.Address
+	Caller   common.Address
 }
 
 // ChainConfig is the core config for the blockchain

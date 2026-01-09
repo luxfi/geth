@@ -19,8 +19,8 @@ package vm
 import (
 	"math"
 
-	"github.com/luxfi/geth/common"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
 )
 
 // calcMemSize64 calculates the required memory size, and returns

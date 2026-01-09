@@ -21,10 +21,10 @@ import (
 	"math/big"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
+	"github.com/luxfi/math"
 )
 
 //go:generate go run github.com/fjl/gencodec -type DifficultyTest -field-override difficultyTestMarshaling -out gen_difficultytest.go

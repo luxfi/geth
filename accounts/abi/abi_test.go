@@ -26,10 +26,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/internal/testrand"
+	"github.com/luxfi/math"
 )
 
 const jsondata = `

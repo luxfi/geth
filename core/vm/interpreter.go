@@ -19,10 +19,10 @@ package vm
 import (
 	"fmt"
 
-	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
-	"github.com/luxfi/geth/core/tracing"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/common"
+	"github.com/luxfi/geth/core/tracing"
+	"github.com/luxfi/math"
 )
 
 // Config are the configuration options for the Interpreter

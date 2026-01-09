@@ -24,12 +24,12 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/eth/filters"

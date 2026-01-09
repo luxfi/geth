@@ -22,13 +22,13 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/triedb/database"
-	"github.com/holiman/uint256"
 )
 
 var errInvalidRootType = errors.New("invalid root type")

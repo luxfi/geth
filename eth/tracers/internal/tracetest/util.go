@@ -23,11 +23,11 @@ import (
 	"unicode"
 
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
+	"github.com/luxfi/math"
 
 	// Force-load native and js packages, to trigger registration
 	_ "github.com/luxfi/geth/eth/tracers/js"

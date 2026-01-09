@@ -23,10 +23,10 @@ import (
 	"slices"
 	"testing"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/internal/testrand"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/uint256"
 )
 
 func equalBALs(a *BlockAccessList, b *BlockAccessList) bool {

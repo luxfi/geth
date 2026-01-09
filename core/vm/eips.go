@@ -21,10 +21,10 @@ import (
 	"math"
 	"sort"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/params"
-	"github.com/holiman/uint256"
 )
 
 var activators = map[int]func(*JumpTable){

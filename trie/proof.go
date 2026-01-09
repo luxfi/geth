@@ -21,8 +21,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/geth/common"
 	"github.com/luxfi/crypto"
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/log"
 )

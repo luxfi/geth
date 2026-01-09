@@ -22,9 +22,9 @@ import (
 	"encoding/binary"
 	"time"
 
+	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/common/mclock"
-	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/p2p/enode"
 )
 

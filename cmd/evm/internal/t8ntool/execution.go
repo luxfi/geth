@@ -21,9 +21,9 @@ import (
 	stdmath "math"
 	"math/big"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/math"
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/consensus/misc"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
@@ -39,7 +39,7 @@ import (
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
-	"github.com/holiman/uint256"
+	"github.com/luxfi/math"
 	"golang.org/x/crypto/sha3"
 )
 

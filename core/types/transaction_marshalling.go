@@ -21,10 +21,10 @@ import (
 	"errors"
 	"math/big"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	"github.com/luxfi/crypto/kzg4844"
-	"github.com/holiman/uint256"
 )
 
 // txJSON is the JSON representation of transactions.

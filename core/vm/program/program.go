@@ -26,8 +26,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/luxfi/geth/core/vm"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/geth/core/vm"
 )
 
 // Program is a simple bytecode container. It can be used to construct

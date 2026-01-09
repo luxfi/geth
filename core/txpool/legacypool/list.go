@@ -26,9 +26,9 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/holiman/uint256"
 )
 
 // nonceHeap is a heap.Interface implementation over 64bit unsigned integers for

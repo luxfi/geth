@@ -23,6 +23,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/log"
@@ -30,7 +31,6 @@ import (
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/transitiontrie"
 	"github.com/luxfi/geth/trie/trienode"
-	"github.com/holiman/uint256"
 )
 
 type Storage map[common.Hash]common.Hash

@@ -31,6 +31,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/beacon/engine"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
@@ -38,8 +41,6 @@ import (
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/internal/testrand"
@@ -50,7 +51,6 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/trie"
-	"github.com/holiman/uint256"
 )
 
 var (

@@ -26,6 +26,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto"
+	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/consensus/beacon"
 	"github.com/luxfi/geth/consensus/ethash"
@@ -35,14 +38,11 @@ import (
 	"github.com/luxfi/geth/core/txpool/blobpool"
 	"github.com/luxfi/geth/core/txpool/legacypool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/crypto"
-	"github.com/luxfi/crypto/kzg4844"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
-	"github.com/holiman/uint256"
 )
 
 var (
