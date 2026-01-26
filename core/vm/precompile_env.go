@@ -4,10 +4,10 @@
 package vm
 
 import (
+	"context"
 	"math/big"
 
 	"github.com/holiman/uint256"
-	"github.com/luxfi/runtime"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/params"
@@ -41,8 +41,8 @@ type PrecompileEnvironment interface {
 	Gas() uint64
 	// Call executes a call to another contract
 	Call(addr common.Address, input []byte, gas uint64, value *big.Int, opts ...CallOption) ([]byte, uint64, error)
-	// ConsensusContext returns the consensus runtime with chain ID/network ID for warp
-	ConsensusRuntime() *runtime.Runtime
+	// ConsensusContext returns the consensus context (use runtime.FromContext to get runtime)
+	ConsensusContext() context.Context
 }
 
 // CallOption is an option for Call
@@ -168,9 +168,9 @@ func (e *evmPrecompileEnv) Call(addr common.Address, input []byte, gas uint64, v
 	return ret, remainingGas, err
 }
 
-func (e *evmPrecompileEnv) ConsensusRuntime() *runtime.Runtime {
+func (e *evmPrecompileEnv) ConsensusContext() context.Context {
 	if e.evm.Context.ConsensusContext != nil {
 		return e.evm.Context.ConsensusContext
 	}
-	return nil
+	return context.Background()
 }

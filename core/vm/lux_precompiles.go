@@ -4,9 +4,9 @@
 package vm
 
 import (
+	"context"
 	"math/big"
 
-	"github.com/luxfi/runtime"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/precompile/contract"
@@ -75,8 +75,8 @@ func (a *accessibleStateAdapter) GetBlockContext() contract.BlockContext {
 	return &blockContextAdapter{env: a.env}
 }
 
-func (a *accessibleStateAdapter) GetConsensusRuntime() *runtime.Runtime {
-	return a.env.ConsensusRuntime()
+func (a *accessibleStateAdapter) GetConsensusContext() context.Context {
+	return a.env.ConsensusContext()
 }
 
 func (a *accessibleStateAdapter) GetChainConfig() precompileconfig.ChainConfig {
