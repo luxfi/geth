@@ -27,8 +27,8 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/log"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 )
 
 type (
@@ -81,7 +81,7 @@ type BlockContext struct {
 	BlobBaseFee *big.Int       // Provides information for BLOBBASEFEE (0 if vm runs with NoBaseFee flag and 0 blob gas price)
 	Random      *common.Hash   // Provides information for PREVRANDAO
 
-	// Lux: Consensus context for warp precompiles (contains chain ID, network ID)
+	// Lux: Consensus context for warp precompiles (use runtime.FromContext to get runtime)
 	ConsensusContext context.Context
 }
 
