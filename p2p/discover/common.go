@@ -27,7 +27,7 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/common/mclock"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/p2p/netutil"
@@ -79,7 +79,7 @@ func (cfg Config) withDefaults() Config {
 	}
 
 	// Debug/test settings:
-	if cfg.Log == nil {
+	if cfg.Log.IsZero() {
 		cfg.Log = log.Root()
 	}
 	if cfg.ValidSchemes == nil {

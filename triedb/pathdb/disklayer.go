@@ -22,10 +22,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 // diskLayer is a low level persistent layer built on top of a key-value store.
@@ -37,8 +37,8 @@ type diskLayer struct {
 	// These two caches must be maintained separately, because the key
 	// for the root node of the storage trie (accountHash) is identical
 	// to the key for the account data.
-	nodes  *fastcache.Cache // GC friendly memory cache of clean nodes
-	states *fastcache.Cache // GC friendly memory cache of clean states
+	nodes  *bytecache.Cache // GC friendly memory cache of clean nodes
+	states *bytecache.Cache // GC friendly memory cache of clean states
 
 	buffer *buffer // Live buffer to aggregate writes
 	frozen *buffer // Frozen node buffer waiting for flushing
@@ -53,15 +53,15 @@ type diskLayer struct {
 }
 
 // newDiskLayer creates a new disk layer based on the passing arguments.
-func newDiskLayer(root common.Hash, id uint64, db *Database, nodes *fastcache.Cache, states *fastcache.Cache, buffer *buffer, frozen *buffer) *diskLayer {
+func newDiskLayer(root common.Hash, id uint64, db *Database, nodes *bytecache.Cache, states *bytecache.Cache, buffer *buffer, frozen *buffer) *diskLayer {
 	// Initialize the clean caches if the memory allowance is not zero
 	// or reuse the provided caches if they are not nil (inherited from
 	// the original disk layer).
 	if nodes == nil && db.config.TrieCleanSize != 0 {
-		nodes = fastcache.New(db.config.TrieCleanSize)
+		nodes = bytecache.New(db.config.TrieCleanSize)
 	}
 	if states == nil && db.config.StateCleanSize != 0 {
-		states = fastcache.New(db.config.StateCleanSize)
+		states = bytecache.New(db.config.StateCleanSize)
 	}
 	return &diskLayer{
 		root:   root,

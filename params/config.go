@@ -1519,11 +1519,12 @@ type Rules struct {
 	IsBerlin, IsLondon                                      bool
 	IsMerge, IsShanghai, IsCancun, IsPrague, IsOsaka        bool
 	IsAmsterdam, IsVerkle                                   bool
-	// Payload allows storing extra chain-specific rules data (used by coreth/evm)
+	// Payload allows storing extra chain-specific rules data.
+	// Used by Lux EVM (luxfi/evm) for SubnetEVM compatibility with historic chains.
 	Payload any
 }
 
-// RulesHook is a callback type that allows external code (like coreth) to populate
+// RulesHook is a callback type that allows external code (like luxfi/evm) to populate
 // the Rules.Payload field with chain-specific rules data.
 type RulesHook func(c *ChainConfig, rules *Rules, num *big.Int, isMerge bool, timestamp uint64)
 
@@ -1531,7 +1532,7 @@ type RulesHook func(c *ChainConfig, rules *Rules, num *big.Int, isMerge bool, ti
 var rulesHook RulesHook
 
 // SetRulesHook registers a callback to populate Rules.Payload when Rules() is called.
-// This should be called during init() by packages like coreth.
+// This should be called during init() by packages like luxfi/evm.
 func SetRulesHook(hook RulesHook) {
 	rulesHook = hook
 }

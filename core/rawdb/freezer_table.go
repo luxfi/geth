@@ -31,7 +31,7 @@ import (
 
 	"github.com/golang/snappy"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 )
 

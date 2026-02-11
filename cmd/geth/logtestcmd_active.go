@@ -27,7 +27,7 @@ import (
 
 	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

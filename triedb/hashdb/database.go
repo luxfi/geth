@@ -23,12 +23,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
@@ -79,7 +79,7 @@ var Defaults = &Config{
 // periodically flush a couple tries to disk, garbage collecting the remainder.
 type Database struct {
 	diskdb  ethdb.Database              // Persistent storage for matured trie nodes
-	cleans  *fastcache.Cache            // GC friendly memory cache of clean node RLPs
+	cleans  *bytecache.Cache            // GC friendly memory cache of clean node RLPs
 	dirties map[common.Hash]*cachedNode // Data and references relationships of dirty trie nodes
 	oldest  common.Hash                 // Oldest tracked node, flush-list head
 	newest  common.Hash                 // Newest tracked node, flush-list tail
@@ -128,9 +128,9 @@ func New(diskdb ethdb.Database, config *Config) *Database {
 	if config == nil {
 		config = Defaults
 	}
-	var cleans *fastcache.Cache
+	var cleans *bytecache.Cache
 	if config.CleanCacheSize > 0 {
-		cleans = fastcache.New(config.CleanCacheSize)
+		cleans = bytecache.New(config.CleanCacheSize)
 	}
 	return &Database{
 		diskdb:  diskdb,
@@ -210,6 +210,15 @@ func (db *Database) node(hash common.Hash) ([]byte, error) {
 		}
 		return enc, nil
 	}
+	// Log diagnostic info when a node is not found anywhere
+	hasCleans := db.cleans != nil
+	db.lock.RLock()
+	dirtyCount := len(db.dirties)
+	db.lock.RUnlock()
+	log.Debug("hashdb node not found",
+		"hash", hash.Hex(),
+		"hasCleanCache", hasCleans,
+		"dirtyNodes", dirtyCount)
 	return nil, errors.New("not found")
 }
 
@@ -420,6 +429,15 @@ func (db *Database) Commit(node common.Hash, report bool) error {
 	if err := batch.Write(); err != nil {
 		log.Error("Failed to write trie to disk", "err", err)
 		return err
+	}
+	// Verify the committed root node is readable from disk
+	verifyEnc := rawdb.ReadLegacyTrieNode(db.diskdb, node)
+	if len(verifyEnc) == 0 {
+		log.Error("CRITICAL: root node NOT readable from disk after batch.Write",
+			"root", node.Hex())
+	} else {
+		log.Info("Root node verified readable from disk after commit",
+			"root", node.Hex(), "size", len(verifyEnc))
 	}
 	// Uncache any leftovers in the last batch
 	if err := batch.Replay(uncacher); err != nil {

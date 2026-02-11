@@ -30,7 +30,7 @@ import (
 	"unicode"
 
 	"github.com/luxfi/geth/accounts/abi"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 var (

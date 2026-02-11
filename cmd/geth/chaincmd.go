@@ -43,7 +43,7 @@ import (
 	"github.com/luxfi/geth/internal/era"
 	"github.com/luxfi/geth/internal/era/eradl"
 	"github.com/luxfi/geth/internal/flags"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/params"
 	"github.com/urfave/cli/v2"
