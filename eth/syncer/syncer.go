@@ -27,7 +27,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/rpc"
 )

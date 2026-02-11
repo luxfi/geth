@@ -24,7 +24,7 @@ import (
 	"log/slog"
 	"sync"
 
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 const (
@@ -40,13 +40,13 @@ type T interface {
 	Helper()
 }
 
-// logger implements log.Logger such that all output goes to the unit test log via
+// logger implements log.SlogLogger such that all output goes to the unit test log via
 // t.Logf(). All methods in between logger.Trace, logger.Debug, etc. are marked as test
 // helpers, so the file and line number in unit test output correspond to the call site
 // which emitted the log message.
 type logger struct {
 	t  T
-	l  log.Logger
+	l  log.SlogLogger
 	mu *sync.Mutex
 	h  *bufHandler
 }
@@ -86,7 +86,7 @@ func (h *bufHandler) WithGroup(_ string) slog.Handler {
 }
 
 // Logger returns a logger which logs to the unit test log of t.
-func Logger(t T, level slog.Level) log.Logger {
+func Logger(t T, level slog.Level) log.SlogLogger {
 	handler := bufHandler{
 		buf:   []slog.Record{},
 		attrs: []slog.Attr{},
@@ -166,12 +166,12 @@ func (l *logger) Crit(msg string, ctx ...interface{}) {
 	l.flush()
 }
 
-func (l *logger) With(ctx ...interface{}) log.Logger {
+func (l *logger) With(ctx ...interface{}) log.SlogLogger {
 	newLogger := l.l.With(ctx...)
 	return &logger{l.t, newLogger, l.mu, newLogger.Handler().(*bufHandler)}
 }
 
-func (l *logger) New(ctx ...interface{}) log.Logger {
+func (l *logger) New(ctx ...interface{}) log.SlogLogger {
 	return l.With(ctx...)
 }
 

@@ -23,7 +23,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 // historyType represents the category of historical data.

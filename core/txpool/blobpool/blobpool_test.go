@@ -909,7 +909,7 @@ func TestOpenHeap(t *testing.T) {
 	store, _ := billy.Open(billy.Options{Path: filepath.Join(storage, pendingTransactionStore)}, newSlotter(testMaxBlobsPerBlock), nil)
 
 	// Insert a few transactions from a few accounts. To remove randomness from
-	// the heap initialization, use a deterministic account/tx/priority ordering.
+	// the heap initialization, use a deterministic account/tx/priority utils.
 	var (
 		key1, _ = crypto.GenerateKey()
 		key2, _ = crypto.GenerateKey()

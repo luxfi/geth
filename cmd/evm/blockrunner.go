@@ -28,7 +28,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/tests"
 	"github.com/urfave/cli/v2"
 )
@@ -102,7 +102,7 @@ func runBlockTest(ctx *cli.Context, fname string) ([]testResult, error) {
 
 	// Suppress INFO logs during fuzzing
 	if ctx.IsSet(FuzzFlag.Name) {
-		log.SetDefault(log.NewLogger(log.DiscardHandler()))
+		log.SetSlogDefault(log.NewLogger(log.DiscardHandler()))
 	}
 
 	// Pull out keys to sort and ensure tests are run in order.

@@ -25,7 +25,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 // measurementImpact is the impact a single measurement has on a peer's final
@@ -410,7 +410,7 @@ func (t *Trackers) tune() {
 
 	t.tuned = time.Now()
 	t.log.Debug("Recalculated msgrate QoS values", "rtt", t.roundtrip, "confidence", t.confidence, "ttl", t.targetTimeout(), "next", t.tuned.Add(t.roundtrip))
-	if t.log.Enabled(context.Background(), log.LevelTrace) {
+	if t.log.Enabled(context.Background(), log.SlogLevelTrace) {
 		t.log.Trace("Debug dump of mean capacities", "caps", t.meanCapacities())
 	}
 }

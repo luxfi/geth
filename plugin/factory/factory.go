@@ -4,10 +4,10 @@
 package factory
 
 import (
-	"github.com/luxfi/consensus/engine/chain/block"
 	"github.com/luxfi/geth/plugin/evm"
 	"github.com/luxfi/ids"
-	"github.com/luxfi/log"
+	log "github.com/luxfi/log"
+	"github.com/luxfi/vm/chain"
 )
 
 var (
@@ -21,6 +21,6 @@ func (*Factory) New(logger log.Logger) (interface{}, error) {
 	return &evm.VM{}, nil
 }
 
-func NewPluginVM() block.ChainVM {
+func NewPluginVM() chain.ChainVM {
 	return &evm.VM{IsPlugin: true}
 }
