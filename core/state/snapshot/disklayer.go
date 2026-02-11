@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"sync"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
@@ -33,7 +33,7 @@ import (
 type diskLayer struct {
 	diskdb ethdb.KeyValueStore // Key-value store containing the base snapshot
 	triedb *triedb.Database    // Trie node cache for reconstruction purposes
-	cache  *fastcache.Cache    // Cache to avoid hitting the disk for direct access
+	cache  *bytecache.Cache    // Cache to avoid hitting the disk for direct access
 
 	root  common.Hash // Root hash of the base snapshot
 	stale bool        // Signals that the layer became stale (state progressed)

@@ -24,7 +24,7 @@ import (
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 // Prove constructs a merkle proof for key. The result contains all encoded nodes

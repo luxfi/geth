@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/ethdb/memorydb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"golang.org/x/sync/errgroup"
 )
 

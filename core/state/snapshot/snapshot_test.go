@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
@@ -94,7 +94,7 @@ func TestDiskLayerExternalInvalidationFullFlatten(t *testing.T) {
 	base := &diskLayer{
 		diskdb: rawdb.NewMemoryDatabase(),
 		root:   common.HexToHash("0x01"),
-		cache:  fastcache.New(1024 * 500),
+		cache:  bytecache.New(1024 * 500),
 	}
 	snaps := &Tree{
 		layers: map[common.Hash]snapshot{
@@ -138,7 +138,7 @@ func TestDiskLayerExternalInvalidationPartialFlatten(t *testing.T) {
 	base := &diskLayer{
 		diskdb: rawdb.NewMemoryDatabase(),
 		root:   common.HexToHash("0x01"),
-		cache:  fastcache.New(1024 * 500),
+		cache:  bytecache.New(1024 * 500),
 	}
 	snaps := &Tree{
 		layers: map[common.Hash]snapshot{
@@ -192,7 +192,7 @@ func TestDiffLayerExternalInvalidationPartialFlatten(t *testing.T) {
 	base := &diskLayer{
 		diskdb: rawdb.NewMemoryDatabase(),
 		root:   common.HexToHash("0x01"),
-		cache:  fastcache.New(1024 * 500),
+		cache:  bytecache.New(1024 * 500),
 	}
 	snaps := &Tree{
 		layers: map[common.Hash]snapshot{
@@ -255,7 +255,7 @@ func TestPostCapBasicDataAccess(t *testing.T) {
 	base := &diskLayer{
 		diskdb: rawdb.NewMemoryDatabase(),
 		root:   common.HexToHash("0x01"),
-		cache:  fastcache.New(1024 * 500),
+		cache:  bytecache.New(1024 * 500),
 	}
 	snaps := &Tree{
 		layers: map[common.Hash]snapshot{
@@ -349,7 +349,7 @@ func TestSnaphots(t *testing.T) {
 	base := &diskLayer{
 		diskdb: rawdb.NewMemoryDatabase(),
 		root:   makeRoot(1),
-		cache:  fastcache.New(1024 * 500),
+		cache:  bytecache.New(1024 * 500),
 	}
 	snaps := &Tree{
 		layers: map[common.Hash]snapshot{
@@ -448,7 +448,7 @@ func TestReadStateDuringFlattening(t *testing.T) {
 	base := &diskLayer{
 		diskdb: rawdb.NewMemoryDatabase(),
 		root:   common.HexToHash("0x01"),
-		cache:  fastcache.New(1024 * 500),
+		cache:  bytecache.New(1024 * 500),
 	}
 	snaps := &Tree{
 		layers: map[common.Hash]snapshot{

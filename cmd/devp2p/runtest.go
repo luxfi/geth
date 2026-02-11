@@ -22,7 +22,7 @@ import (
 	"github.com/luxfi/geth/cmd/devp2p/internal/v4test"
 	"github.com/luxfi/geth/internal/flags"
 	"github.com/luxfi/geth/internal/utesting"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 
@@ -86,7 +86,7 @@ func runTests(ctx *cli.Context, tests []utesting.Test) error {
 	}
 	// Disable logging unless explicitly enabled.
 	if !ctx.IsSet("verbosity") && !ctx.IsSet("vmodule") {
-		log.SetDefault(log.NewLogger(log.DiscardHandler()))
+		log.SetSlogDefault(log.NewLogger(log.DiscardHandler()))
 	}
 	// Run the tests.
 	var run = utesting.RunTests

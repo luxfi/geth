@@ -23,11 +23,11 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/rlp"
 )
@@ -419,7 +419,7 @@ func (s *stateSet) decode(r *rlp.Stream) error {
 }
 
 // write flushes state mutations into the provided database batch as a whole.
-func (s *stateSet) write(batch ethdb.Batch, genMarker []byte, clean *fastcache.Cache) (int, int) {
+func (s *stateSet) write(batch ethdb.Batch, genMarker []byte, clean *bytecache.Cache) (int, int) {
 	return writeStates(batch, genMarker, s.accountData, s.storageData, clean)
 }
 

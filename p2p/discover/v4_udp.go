@@ -31,7 +31,7 @@ import (
 
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/discover/v4wire"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/netutil"

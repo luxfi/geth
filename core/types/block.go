@@ -534,6 +534,14 @@ func (h *Header) EmptyReceipts() bool {
 	return h.ReceiptHash == EmptyReceiptsHash
 }
 
+// NumberU64 returns the block number as a uint64.
+func (h *Header) NumberU64() uint64 {
+	if h.Number == nil {
+		return 0
+	}
+	return h.Number.Uint64()
+}
+
 // Body is a simple (mutable, non-safe) data container for storing and moving
 // a block's data contents (transactions and uncles) together.
 type Body struct {
