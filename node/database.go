@@ -23,7 +23,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/ethdb/badgerdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 // DatabaseOptions contains the options to apply when opening a database.

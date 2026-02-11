@@ -5,9 +5,13 @@ package evm
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/luxfi/consensus/engine/chain/block"
 	"github.com/luxfi/ids"
+	"github.com/luxfi/version"
+	"github.com/luxfi/vm"
+	"github.com/luxfi/vm/chain"
 )
 
 // VM implements the Snowman ChainVM interface for the C-Chain
@@ -16,19 +20,12 @@ type VM struct {
 }
 
 // Ensure VM implements ChainVM
-var _ block.ChainVM = (*VM)(nil)
+var _ chain.ChainVM = (*VM)(nil)
 
 // Initialize implements the snowman.ChainVM interface
 func (vm *VM) Initialize(
 	ctx context.Context,
-	chainCtx interface{},
-	db interface{},
-	genesisBytes []byte,
-	upgradeBytes []byte,
-	configBytes []byte,
-	msgChan interface{},
-	fxs []interface{},
-	appSender interface{},
+	init vm.Init,
 ) error {
 	// TODO: Initialize the unified EVM
 	return nil
@@ -50,17 +47,17 @@ func (vm *VM) Version(ctx context.Context) (string, error) {
 }
 
 // NewHTTPHandler returns the HTTP handlers for the VM
-func (vm *VM) NewHTTPHandler(ctx context.Context) (interface{}, error) {
+func (vm *VM) NewHTTPHandler(ctx context.Context) (http.Handler, error) {
 	return nil, nil
 }
 
 // HealthCheck returns health status of the VM
-func (vm *VM) HealthCheck(ctx context.Context) (interface{}, error) {
-	return nil, nil
+func (vm *VM) HealthCheck(ctx context.Context) (block.HealthCheckResult, error) {
+	return block.HealthCheckResult{}, nil
 }
 
 // Connected is called when a new node is connected
-func (vm *VM) Connected(ctx context.Context, nodeID ids.NodeID, nodeVersion interface{}) error {
+func (vm *VM) Connected(ctx context.Context, nodeID ids.NodeID, nodeVersion *version.Application) error {
 	return nil
 }
 
@@ -70,17 +67,17 @@ func (vm *VM) Disconnected(ctx context.Context, nodeID ids.NodeID) error {
 }
 
 // GetBlock returns a block by its ID
-func (vm *VM) GetBlock(ctx context.Context, blkID ids.ID) (block.Block, error) {
+func (vm *VM) GetBlock(ctx context.Context, blkID ids.ID) (chain.Block, error) {
 	return nil, nil
 }
 
 // ParseBlock parses a block from bytes
-func (vm *VM) ParseBlock(ctx context.Context, b []byte) (block.Block, error) {
+func (vm *VM) ParseBlock(ctx context.Context, b []byte) (chain.Block, error) {
 	return nil, nil
 }
 
 // BuildBlock builds a new block
-func (vm *VM) BuildBlock(ctx context.Context) (block.Block, error) {
+func (vm *VM) BuildBlock(ctx context.Context) (chain.Block, error) {
 	return nil, nil
 }
 
@@ -100,6 +97,6 @@ func (vm *VM) GetBlockIDAtHeight(ctx context.Context, height uint64) (ids.ID, er
 }
 
 // WaitForEvent blocks until an event occurs that should trigger block building
-func (vm *VM) WaitForEvent(ctx context.Context) (interface{}, error) {
-	return nil, nil
+func (vm *VM) WaitForEvent(ctx context.Context) (block.Message, error) {
+	return block.Message{}, nil
 }

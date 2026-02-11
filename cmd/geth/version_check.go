@@ -27,7 +27,7 @@ import (
 	"strings"
 
 	"github.com/jedisct1/go-minisign"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

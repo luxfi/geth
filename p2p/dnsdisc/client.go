@@ -30,7 +30,7 @@ import (
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/common/mclock"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"golang.org/x/sync/singleflight"
@@ -87,7 +87,7 @@ func (cfg Config) withDefaults() Config {
 	if cfg.Resolver == nil {
 		cfg.Resolver = new(net.Resolver)
 	}
-	if cfg.Logger == nil {
+	if cfg.Logger.IsZero() {
 		cfg.Logger = log.Root()
 	}
 	return cfg

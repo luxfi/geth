@@ -33,7 +33,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/mclock"
 	"github.com/luxfi/geth/event"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/netutil"
@@ -448,7 +448,7 @@ func (tab *Table) loadSeedNodes() {
 	seeds = append(seeds, tab.nursery...)
 	for i := range seeds {
 		seed := seeds[i]
-		if tab.log.Enabled(context.Background(), log.LevelTrace) {
+		if tab.log.Enabled(context.Background(), log.SlogLevelTrace) {
 			age := time.Since(tab.db.LastPongReceived(seed.ID(), seed.IPAddr()))
 			addr, _ := seed.UDPEndpoint()
 			tab.log.Trace("Found seed node in database", "id", seed.ID(), "addr", addr, "age", age)

@@ -26,7 +26,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/internal/utesting"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

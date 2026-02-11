@@ -5,7 +5,7 @@ package p2p
 import (
 	"crypto/ecdsa"
 
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/nat"
 	"github.com/luxfi/geth/p2p/netutil"
@@ -158,7 +158,7 @@ func (c *Config) UnmarshalTOML(unmarshal func(interface{}) error) error {
 	if dec.EnableMsgEvents != nil {
 		c.EnableMsgEvents = *dec.EnableMsgEvents
 	}
-	if dec.Logger != nil {
+	if !dec.Logger.IsZero() {
 		c.Logger = dec.Logger
 	}
 	return nil

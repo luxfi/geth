@@ -23,11 +23,11 @@ import (
 	"io"
 	"maps"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie/trienode"
 )
@@ -274,7 +274,7 @@ func (s *nodeSet) decode(r *rlp.Stream) error {
 }
 
 // write flushes nodes into the provided database batch as a whole.
-func (s *nodeSet) write(batch ethdb.Batch, clean *fastcache.Cache) int {
+func (s *nodeSet) write(batch ethdb.Batch, clean *bytecache.Cache) int {
 	nodes := make(map[common.Hash]map[string]*trienode.Node)
 	if len(s.accountNodes) > 0 {
 		nodes[common.Hash{}] = s.accountNodes

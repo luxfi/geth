@@ -18,14 +18,13 @@ package flags
 
 import (
 	"fmt"
-	"github.com/luxfi/formatting"
 	"os"
 	"regexp"
 	"sort"
 	"strings"
 
 	"github.com/luxfi/geth/internal/version"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/mattn/go-isatty"
 	"github.com/urfave/cli/v2"
 )

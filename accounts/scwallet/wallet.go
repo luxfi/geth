@@ -39,7 +39,7 @@ import (
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/status-im/keycard-go/derivationpath"
 )
 
