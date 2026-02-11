@@ -31,7 +31,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 // Each trie node history entry consists of three parts (stored in three freezer

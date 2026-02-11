@@ -30,7 +30,7 @@ import (
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/internal/flags"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

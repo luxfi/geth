@@ -27,7 +27,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/ethdb/pebble"
+	"github.com/luxfi/geth/ethdb/badgerdb"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/math"
 )
@@ -182,7 +182,7 @@ func benchInsertChain(b *testing.B, disk bool, gen func(int, *BlockGen)) {
 	if !disk {
 		db = rawdb.NewMemoryDatabase()
 	} else {
-		pdb, err := pebble.New(b.TempDir(), 128, 128, "", false)
+		pdb, err := badgerdb.New(b.TempDir(), 128, 128, "", false)
 		if err != nil {
 			b.Fatalf("cannot create temporary database: %v", err)
 		}
@@ -302,7 +302,7 @@ func makeChainForBench(db ethdb.Database, genesis *Genesis, full bool, count uin
 func benchWriteChain(b *testing.B, full bool, count uint64) {
 	genesis := &Genesis{Config: params.AllEthashProtocolChanges}
 	for b.Loop() {
-		pdb, err := pebble.New(b.TempDir(), 1024, 128, "", false)
+		pdb, err := badgerdb.New(b.TempDir(), 1024, 128, "", false)
 		if err != nil {
 			b.Fatalf("error opening database: %v", err)
 		}
@@ -315,7 +315,7 @@ func benchWriteChain(b *testing.B, full bool, count uint64) {
 func benchReadChain(b *testing.B, full bool, count uint64) {
 	dir := b.TempDir()
 
-	pdb, err := pebble.New(dir, 1024, 128, "", false)
+	pdb, err := badgerdb.New(dir, 1024, 128, "", false)
 	if err != nil {
 		b.Fatalf("error opening database: %v", err)
 	}
@@ -327,7 +327,7 @@ func benchReadChain(b *testing.B, full bool, count uint64) {
 	options := DefaultConfig().WithArchive(true)
 	b.ReportAllocs()
 	for b.Loop() {
-		pdb, err = pebble.New(dir, 1024, 128, "", false)
+		pdb, err = badgerdb.New(dir, 1024, 128, "", false)
 		if err != nil {
 			b.Fatalf("error opening database: %v", err)
 		}

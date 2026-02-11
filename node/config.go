@@ -27,7 +27,7 @@ import (
 
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/rpc"
 )
@@ -420,7 +420,7 @@ func (c *Config) checkLegacyFile(path string) {
 		return
 	}
 	logger := c.Logger
-	if logger == nil {
+	if logger.IsZero() {
 		logger = log.Root()
 	}
 	switch fname := filepath.Base(path); fname {

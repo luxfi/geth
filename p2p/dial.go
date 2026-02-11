@@ -30,7 +30,7 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/common/mclock"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/p2p/netutil"
@@ -145,7 +145,7 @@ func (cfg dialConfig) withDefaults() dialConfig {
 	if cfg.maxActiveDials == 0 {
 		cfg.maxActiveDials = defaultMaxPendingPeers
 	}
-	if cfg.log == nil {
+	if cfg.log.IsZero() {
 		cfg.log = log.Root()
 	}
 	if cfg.clock == nil {

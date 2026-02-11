@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb/memorydb"
@@ -102,7 +102,7 @@ func TestDiskMerge(t *testing.T) {
 		layers: map[common.Hash]snapshot{
 			baseRoot: &diskLayer{
 				diskdb: db,
-				cache:  fastcache.New(500 * 1024),
+				cache:  bytecache.New(500 * 1024),
 				root:   baseRoot,
 			},
 		},
@@ -300,7 +300,7 @@ func TestDiskPartialMerge(t *testing.T) {
 			layers: map[common.Hash]snapshot{
 				baseRoot: &diskLayer{
 					diskdb: db,
-					cache:  fastcache.New(500 * 1024),
+					cache:  bytecache.New(500 * 1024),
 					root:   baseRoot,
 				},
 			},
@@ -464,7 +464,7 @@ func TestDiskGeneratorPersistence(t *testing.T) {
 		layers: map[common.Hash]snapshot{
 			baseRoot: &diskLayer{
 				diskdb:    db,
-				cache:     fastcache.New(500 * 1024),
+				cache:     bytecache.New(500 * 1024),
 				root:      baseRoot,
 				genMarker: genMarker,
 			},
@@ -547,7 +547,7 @@ func TestDiskSeek(t *testing.T) {
 		layers: map[common.Hash]snapshot{
 			baseRoot: &diskLayer{
 				diskdb: db,
-				cache:  fastcache.New(500 * 1024),
+				cache:  bytecache.New(500 * 1024),
 				root:   baseRoot,
 			},
 		},

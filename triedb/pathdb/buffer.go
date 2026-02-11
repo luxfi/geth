@@ -21,11 +21,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/trie/trienode"
 )
 
@@ -132,7 +132,7 @@ func (b *buffer) size() uint64 {
 
 // flush persists the in-memory dirty trie node into the disk if the configured
 // memory threshold is reached. Note, all data must be written atomically.
-func (b *buffer) flush(root common.Hash, db ethdb.KeyValueStore, freezer ethdb.AncientWriter, progress []byte, nodesCache, statesCache *fastcache.Cache, id uint64, postFlush func()) {
+func (b *buffer) flush(root common.Hash, db ethdb.KeyValueStore, freezer ethdb.AncientWriter, progress []byte, nodesCache, statesCache *bytecache.Cache, id uint64, postFlush func()) {
 	if b.done != nil {
 		panic("duplicated flush operation")
 	}

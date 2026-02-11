@@ -29,7 +29,7 @@ import (
 	"github.com/luxfi/geth/common/mclock"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 const (

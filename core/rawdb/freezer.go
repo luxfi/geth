@@ -27,7 +27,7 @@ import (
 
 	"github.com/gofrs/flock"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 )
 

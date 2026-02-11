@@ -25,7 +25,7 @@ import (
 	"sync"
 	"unicode"
 
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 var (

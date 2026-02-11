@@ -24,7 +24,7 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 // queue manages nonce-gapped transactions that have been validated but are

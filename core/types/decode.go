@@ -479,7 +479,7 @@ type hdr21 struct {
 }
 
 // Lux 22-field header (21 + ParentBeaconRoot)
-// Uses value types for BlobGasUsed, ExcessBlobGas, ParentBeaconRoot to preserve zero values during roundtrip
+// Uses pointer types for optional fields to handle nil values from coreth encoder
 type hdr22 struct {
 	ParentHash       common.Hash
 	UncleHash        common.Hash
@@ -500,13 +500,13 @@ type hdr22 struct {
 	ExtDataHash      *common.Hash `rlp:"nil"`
 	ExtDataGasUsed   *big.Int
 	BlockGasCost     *big.Int
-	BlobGasUsed      uint64
-	ExcessBlobGas    uint64
-	ParentBeaconRoot common.Hash
+	BlobGasUsed      *uint64      `rlp:"nil"`
+	ExcessBlobGas    *uint64      `rlp:"nil"`
+	ParentBeaconRoot *common.Hash `rlp:"nil"`
 }
 
 // Lux 23-field header (22 + WithdrawalsHash)
-// Uses value types for BlobGasUsed and ExcessBlobGas to preserve zero values during roundtrip
+// Uses pointer types for optional fields to handle nil values from coreth encoder
 type hdr23 struct {
 	ParentHash       common.Hash
 	UncleHash        common.Hash
@@ -527,14 +527,14 @@ type hdr23 struct {
 	ExtDataHash      *common.Hash `rlp:"nil"`
 	ExtDataGasUsed   *big.Int
 	BlockGasCost     *big.Int
-	BlobGasUsed      uint64
-	ExcessBlobGas    uint64
-	ParentBeaconRoot common.Hash
-	WithdrawalsHash  common.Hash
+	BlobGasUsed      *uint64      `rlp:"nil"`
+	ExcessBlobGas    *uint64      `rlp:"nil"`
+	ParentBeaconRoot *common.Hash `rlp:"nil"`
+	WithdrawalsHash  *common.Hash `rlp:"nil"`
 }
 
 // Lux 24-field header (23 + RequestsHash)
-// Uses value types for BlobGasUsed and ExcessBlobGas to preserve zero values during roundtrip
+// Uses pointer types for optional fields to handle nil values from coreth encoder
 type hdr24 struct {
 	ParentHash       common.Hash
 	UncleHash        common.Hash
@@ -555,11 +555,11 @@ type hdr24 struct {
 	ExtDataHash      *common.Hash `rlp:"nil"`
 	ExtDataGasUsed   *big.Int
 	BlockGasCost     *big.Int
-	BlobGasUsed      uint64
-	ExcessBlobGas    uint64
-	ParentBeaconRoot common.Hash
-	WithdrawalsHash  common.Hash
-	RequestsHash     common.Hash
+	BlobGasUsed      *uint64      `rlp:"nil"`
+	ExcessBlobGas    *uint64      `rlp:"nil"`
+	ParentBeaconRoot *common.Hash `rlp:"nil"`
+	WithdrawalsHash  *common.Hash `rlp:"nil"`
+	RequestsHash     *common.Hash `rlp:"nil"`
 }
 
 // Standard Ethereum 20-field header (EIP-4844: Shanghai + Cancun)
@@ -972,9 +972,18 @@ func decode22(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
-	// Convert value types to pointers for Header
+	// hdr22 uses pointer types for optional fields.
+	// For BlobGasUsed and ExcessBlobGas, the rlp:"nil" tag causes zero values
+	// to decode as nil. Since these fields were present in the encoding (22 fields),
+	// we should restore them as pointer-to-zero rather than nil.
 	blobGasUsed := h.BlobGasUsed
+	if blobGasUsed == nil {
+		blobGasUsed = new(uint64) // pointer to zero
+	}
 	excessBlobGas := h.ExcessBlobGas
+	if excessBlobGas == nil {
+		excessBlobGas = new(uint64) // pointer to zero
+	}
 	return &Header{
 		ParentHash:       h.ParentHash,
 		UncleHash:        h.UncleHash,
@@ -995,9 +1004,9 @@ func decode22(data []byte) (*Header, error) {
 		ExtDataHash:      h.ExtDataHash,
 		ExtDataGasUsed:   h.ExtDataGasUsed,
 		BlockGasCost:     h.BlockGasCost,
-		BlobGasUsed:      &blobGasUsed,
-		ExcessBlobGas:    &excessBlobGas,
-		ParentBeaconRoot: &h.ParentBeaconRoot,
+		BlobGasUsed:      blobGasUsed,
+		ExcessBlobGas:    excessBlobGas,
+		ParentBeaconRoot: h.ParentBeaconRoot,
 	}, nil
 }
 
@@ -1006,9 +1015,18 @@ func decode23(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
-	// Convert value types to pointers for Header
+	// hdr23 uses pointer types for optional fields.
+	// For BlobGasUsed and ExcessBlobGas, the rlp:"nil" tag causes zero values
+	// to decode as nil. Since these fields were present in the encoding (23 fields),
+	// we should restore them as pointer-to-zero rather than nil.
 	blobGasUsed := h.BlobGasUsed
+	if blobGasUsed == nil {
+		blobGasUsed = new(uint64) // pointer to zero
+	}
 	excessBlobGas := h.ExcessBlobGas
+	if excessBlobGas == nil {
+		excessBlobGas = new(uint64) // pointer to zero
+	}
 	return &Header{
 		ParentHash:       h.ParentHash,
 		UncleHash:        h.UncleHash,
@@ -1029,10 +1047,10 @@ func decode23(data []byte) (*Header, error) {
 		ExtDataHash:      h.ExtDataHash,
 		ExtDataGasUsed:   h.ExtDataGasUsed,
 		BlockGasCost:     h.BlockGasCost,
-		BlobGasUsed:      &blobGasUsed,
-		ExcessBlobGas:    &excessBlobGas,
-		ParentBeaconRoot: &h.ParentBeaconRoot,
-		WithdrawalsHash:  &h.WithdrawalsHash,
+		BlobGasUsed:      blobGasUsed,
+		ExcessBlobGas:    excessBlobGas,
+		ParentBeaconRoot: h.ParentBeaconRoot,
+		WithdrawalsHash:  h.WithdrawalsHash,
 	}, nil
 }
 
@@ -1041,9 +1059,17 @@ func decode24(data []byte) (*Header, error) {
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
-	// Convert value types to pointers for Header
+	// For BlobGasUsed and ExcessBlobGas, the rlp:"nil" tag causes zero values
+	// to decode as nil. Since these fields were present in the encoding (24 fields),
+	// we should restore them as pointer-to-zero rather than nil.
 	blobGasUsed := h.BlobGasUsed
+	if blobGasUsed == nil {
+		blobGasUsed = new(uint64) // pointer to zero
+	}
 	excessBlobGas := h.ExcessBlobGas
+	if excessBlobGas == nil {
+		excessBlobGas = new(uint64) // pointer to zero
+	}
 	return &Header{
 		ParentHash:       h.ParentHash,
 		UncleHash:        h.UncleHash,
@@ -1064,11 +1090,11 @@ func decode24(data []byte) (*Header, error) {
 		ExtDataHash:      h.ExtDataHash,
 		ExtDataGasUsed:   h.ExtDataGasUsed,
 		BlockGasCost:     h.BlockGasCost,
-		BlobGasUsed:      &blobGasUsed,
-		ExcessBlobGas:    &excessBlobGas,
-		ParentBeaconRoot: &h.ParentBeaconRoot,
-		WithdrawalsHash:  &h.WithdrawalsHash,
-		RequestsHash:     &h.RequestsHash,
+		BlobGasUsed:      blobGasUsed,
+		ExcessBlobGas:    excessBlobGas,
+		ParentBeaconRoot: h.ParentBeaconRoot,
+		WithdrawalsHash:  h.WithdrawalsHash,
+		RequestsHash:     h.RequestsHash,
 	}, nil
 }
 

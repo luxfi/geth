@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/trienode"

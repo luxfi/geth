@@ -32,7 +32,7 @@ import (
 	"github.com/cockroachdb/pebble/bloom"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 )
 

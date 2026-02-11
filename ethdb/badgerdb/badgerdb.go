@@ -202,6 +202,10 @@ func (i *iterator) Next() bool {
 		i.first = false
 		return i.iter.Valid()
 	}
+	// Check if iterator is still valid before advancing
+	if !i.iter.Valid() {
+		return false
+	}
 	// On subsequent calls, advance and check
 	i.iter.Next()
 	return i.iter.Valid()

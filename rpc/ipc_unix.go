@@ -27,7 +27,7 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 const (

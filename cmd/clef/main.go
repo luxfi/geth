@@ -44,7 +44,7 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/internal/flags"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
@@ -493,7 +493,7 @@ func initialize(c *cli.Context) error {
 		output = colorable.NewColorable(logOutput)
 	}
 	verbosity := log.FromLegacyLevel(c.Int(logLevelFlag.Name))
-	log.SetDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(output, verbosity, usecolor)))
+	log.SetSlogDefault(log.NewLogger(log.NewTerminalHandlerWithLevel(output, verbosity, usecolor)))
 
 	return nil
 }

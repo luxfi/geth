@@ -22,7 +22,7 @@ import (
 	"math/rand"
 	"testing"
 
-	"github.com/VictoriaMetrics/fastcache"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb/memorydb"
 )
@@ -200,7 +200,7 @@ func TestInsertAndMerge(t *testing.T) {
 func emptyLayer() *diskLayer {
 	return &diskLayer{
 		diskdb: memorydb.New(),
-		cache:  fastcache.New(500 * 1024),
+		cache:  bytecache.New(500 * 1024),
 	}
 }
 

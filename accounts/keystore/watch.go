@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/luxfi/geth/log"
+	log "github.com/luxfi/log"
 )
 
 type watcher struct {
