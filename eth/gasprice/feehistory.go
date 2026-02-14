@@ -30,8 +30,8 @@ import (
 	"github.com/luxfi/geth/consensus/misc/eip1559"
 	"github.com/luxfi/geth/consensus/misc/eip4844"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 var (

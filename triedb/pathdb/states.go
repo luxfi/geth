@@ -27,9 +27,9 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 // counter helps in tracking items and their corresponding sizes.

@@ -34,10 +34,10 @@ import (
 	"github.com/luxfi/geth/eth/protocols/snap"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/triedb"
+	log "github.com/luxfi/log"
 )
 
 var (

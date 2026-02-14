@@ -34,8 +34,8 @@ import (
 	"github.com/luxfi/geth/internal/jsre"
 	"github.com/luxfi/geth/internal/jsre/deps"
 	"github.com/luxfi/geth/internal/web3ext"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 	"github.com/mattn/go-colorable"
 	"github.com/peterh/liner"
 )

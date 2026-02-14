@@ -19,8 +19,8 @@ package rawdb
 import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 // ReadSkeletonSyncStatus retrieves the serialized sync status saved at shutdown.

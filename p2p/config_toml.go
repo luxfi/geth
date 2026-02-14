@@ -5,10 +5,10 @@ package p2p
 import (
 	"crypto/ecdsa"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/nat"
 	"github.com/luxfi/geth/p2p/netutil"
+	log "github.com/luxfi/log"
 )
 
 var _ = (*configMarshaling)(nil)

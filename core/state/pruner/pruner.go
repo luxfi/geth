@@ -32,10 +32,10 @@ import (
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
+	log "github.com/luxfi/log"
 )
 
 const (

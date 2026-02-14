@@ -27,9 +27,9 @@ import (
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/vm"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params/forks"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 // ForkchoiceUpdatedWithWitnessV1 is analogous to ForkchoiceUpdatedV1, only it

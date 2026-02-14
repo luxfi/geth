@@ -33,10 +33,10 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/internal/ethapi"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/signer/core/apitypes"
 	"github.com/luxfi/geth/signer/storage"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/math"
 )
 

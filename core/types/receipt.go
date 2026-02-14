@@ -26,9 +26,9 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 //go:generate go run github.com/fjl/gencodec -type Receipt -field-override receiptMarshaling -out gen_receipt_json.go

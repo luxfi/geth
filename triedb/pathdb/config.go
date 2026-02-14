@@ -20,8 +20,8 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 )
 
 const (

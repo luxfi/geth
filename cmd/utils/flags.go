@@ -59,7 +59,6 @@ import (
 	"github.com/luxfi/geth/graphql"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/internal/flags"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/metrics/exp"
 	"github.com/luxfi/geth/metrics/influxdb"
@@ -74,6 +73,7 @@ import (
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/hashdb"
 	"github.com/luxfi/geth/triedb/pathdb"
+	log "github.com/luxfi/log"
 	gopsutil "github.com/shirou/gopsutil/mem"
 	"github.com/urfave/cli/v2"
 )

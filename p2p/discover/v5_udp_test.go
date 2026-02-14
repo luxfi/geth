@@ -30,12 +30,12 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/internal/testlog"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/discover/v4wire"
 	"github.com/luxfi/geth/p2p/discover/v5wire"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 	"github.com/stretchr/testify/require"
 )
 

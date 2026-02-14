@@ -26,11 +26,11 @@ import (
 	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/transitiontrie"
 	"github.com/luxfi/geth/trie/trienode"
+	log "github.com/luxfi/log"
 )
 
 type Storage map[common.Hash]common.Hash

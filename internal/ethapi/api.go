@@ -41,12 +41,12 @@ import (
 	"github.com/luxfi/geth/eth/gasestimator"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/internal/ethapi/override"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/trie"
+	log "github.com/luxfi/log"
 	"github.com/luxfi/math"
 )
 

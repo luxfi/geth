@@ -22,8 +22,8 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/eth"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/node"
+	log "github.com/luxfi/log"
 )
 
 // FullSyncTester is an auxiliary service that allows Geth to perform full sync

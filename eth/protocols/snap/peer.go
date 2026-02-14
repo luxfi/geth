@@ -18,8 +18,8 @@ package snap
 
 import (
 	"github.com/luxfi/geth/common"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p"
+	log "github.com/luxfi/log"
 )
 
 // Peer is a collection of relevant information we have about a `snap` peer.

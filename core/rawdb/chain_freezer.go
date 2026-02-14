@@ -25,8 +25,8 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb/eradb"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 )
 
 const (

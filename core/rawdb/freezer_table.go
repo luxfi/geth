@@ -31,8 +31,8 @@ import (
 
 	"github.com/golang/snappy"
 	"github.com/luxfi/geth/common"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 var (
