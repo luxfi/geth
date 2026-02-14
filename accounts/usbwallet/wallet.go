@@ -30,8 +30,8 @@ import (
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/hid"
+	log "github.com/luxfi/log"
 )
 
 // Maximum time between wallet health checks to detect USB unplugs.

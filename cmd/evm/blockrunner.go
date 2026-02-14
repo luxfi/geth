@@ -28,8 +28,8 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/rawdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/tests"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

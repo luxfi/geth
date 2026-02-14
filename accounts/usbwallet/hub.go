@@ -25,8 +25,8 @@ import (
 
 	"github.com/luxfi/geth/accounts"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/hid"
+	log "github.com/luxfi/log"
 )
 
 // LedgerScheme is the protocol scheme prefixing account and wallet URLs.

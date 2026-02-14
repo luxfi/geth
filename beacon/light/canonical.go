@@ -22,8 +22,8 @@ import (
 
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 // canonicalStore stores instances of the given type in a database and caches
