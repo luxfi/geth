@@ -33,8 +33,8 @@ import (
 	"github.com/luxfi/geth/ethclient"
 	"github.com/luxfi/geth/internal/debug"
 	"github.com/luxfi/geth/internal/flags"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/node"
+	log "github.com/luxfi/log"
 	"go.uber.org/automaxprocs/maxprocs"
 
 	// Force-load the tracer engines to trigger registration
