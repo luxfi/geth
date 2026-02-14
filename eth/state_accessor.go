@@ -29,9 +29,9 @@ import (
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
+	log "github.com/luxfi/log"
 )
 
 // noopReleaser is returned in case there is no operation expected

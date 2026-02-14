@@ -9,9 +9,9 @@ import (
 	"net/http"
 	"sync"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/metrics/prometheus"
+	log "github.com/luxfi/log"
 )
 
 type exp struct {

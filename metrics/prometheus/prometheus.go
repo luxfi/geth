@@ -22,8 +22,8 @@ import (
 	"net/http"
 	"sort"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 // Handler returns an HTTP handler which dump metrics in Prometheus format.

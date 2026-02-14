@@ -34,11 +34,11 @@ import (
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/tracing"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/trie/utils"
+	log "github.com/luxfi/log"
 	"golang.org/x/sync/errgroup"
 )
 

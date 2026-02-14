@@ -25,8 +25,8 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/internal/ethapi"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/signer/core/apitypes"
+	log "github.com/luxfi/log"
 )
 
 type AuditLogger struct {

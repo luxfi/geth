@@ -29,8 +29,8 @@ import (
 	"github.com/luxfi/geth/core/filtermaps"
 	"github.com/luxfi/geth/core/history"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 // Filter can be used to retrieve and filter logs.

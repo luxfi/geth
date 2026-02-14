@@ -24,9 +24,9 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/mclock"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/p2p"
+	log "github.com/luxfi/log"
 )
 
 const (

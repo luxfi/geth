@@ -27,8 +27,8 @@ import (
 
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/internal/era"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 const openFileLimit = 64

@@ -31,8 +31,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/gorilla/websocket"
 	"github.com/luxfi/geth/internal/testlog"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 	"github.com/stretchr/testify/assert"
 )
 

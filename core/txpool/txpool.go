@@ -27,8 +27,8 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 )
 
 // TxStatus is the current status of a transaction as seen by the pool.
