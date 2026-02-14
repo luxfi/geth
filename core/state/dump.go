@@ -25,10 +25,10 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/trie/bintrie"
+	log "github.com/luxfi/log"
 )
 
 // DumpConfig is a set of options to control what portions of the state will be

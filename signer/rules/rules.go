@@ -26,9 +26,9 @@ import (
 	"github.com/dop251/goja"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/internal/jsre/deps"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/signer/core"
 	"github.com/luxfi/geth/signer/storage"
+	log "github.com/luxfi/log"
 )
 
 // consoleOutput is an override for the console.log and console.error methods to

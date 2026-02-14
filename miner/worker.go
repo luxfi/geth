@@ -33,8 +33,8 @@ import (
 	"github.com/luxfi/geth/core/txpool"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 )
 
 var (

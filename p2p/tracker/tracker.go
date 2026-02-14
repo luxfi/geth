@@ -22,8 +22,8 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 const (

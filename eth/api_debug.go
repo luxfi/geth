@@ -29,10 +29,10 @@ import (
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/internal/ethapi"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/trie"
+	log "github.com/luxfi/log"
 )
 
 // DebugAPI is the collection of Ethereum full node APIs for debugging the

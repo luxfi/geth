@@ -31,8 +31,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 	"github.com/rs/cors"
 )
 

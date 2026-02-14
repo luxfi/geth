@@ -20,8 +20,8 @@ import (
 	"context"
 	"net"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/netutil"
+	log "github.com/luxfi/log"
 )
 
 // ServeListener accepts connections on l, serving JSON-RPC on them.

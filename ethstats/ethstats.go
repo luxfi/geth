@@ -39,10 +39,10 @@ import (
 	"github.com/luxfi/geth/core/types"
 	ethproto "github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 const (

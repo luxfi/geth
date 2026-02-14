@@ -6,8 +6,8 @@ import (
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 type v2Reporter struct {
