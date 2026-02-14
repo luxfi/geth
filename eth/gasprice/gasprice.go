@@ -28,9 +28,9 @@ import (
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 const sampleNumber = 3 // Number of transactions sampled in a block

@@ -25,8 +25,8 @@ import (
 	"strings"
 
 	"github.com/luxfi/geth/common"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 var accountTrieLeavesAtDepth [16]*metrics.Counter

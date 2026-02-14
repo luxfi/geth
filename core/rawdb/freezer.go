@@ -27,8 +27,8 @@ import (
 
 	"github.com/gofrs/flock"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 var (

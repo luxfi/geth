@@ -26,8 +26,8 @@ import (
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/state"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 )
 
 var (

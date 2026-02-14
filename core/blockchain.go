@@ -49,13 +49,13 @@ import (
 	"github.com/luxfi/geth/event"
 	"github.com/luxfi/geth/internal/syncx"
 	"github.com/luxfi/geth/internal/version"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/hashdb"
 	"github.com/luxfi/geth/triedb/pathdb"
+	log "github.com/luxfi/log"
 )
 
 var (

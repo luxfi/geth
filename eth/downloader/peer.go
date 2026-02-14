@@ -27,8 +27,8 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/msgrate"
+	log "github.com/luxfi/log"
 )
 
 const (

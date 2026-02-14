@@ -24,11 +24,11 @@ import (
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/internal/debug"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/p2p/discover"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 // apis returns the collection of built-in RPC APIs.

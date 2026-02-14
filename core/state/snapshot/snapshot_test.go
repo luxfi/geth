@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luxfi/cache/bytecache"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/cache/bytecache"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"

@@ -34,10 +34,10 @@ import (
 	"github.com/luxfi/geth/eth/protocols/eth"
 	"github.com/luxfi/geth/eth/protocols/snap"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
+	log "github.com/luxfi/log"
 )
 
 // downloadTester is a test simulator for mocking out local block chain.

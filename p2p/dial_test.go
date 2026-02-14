@@ -30,9 +30,9 @@ import (
 
 	"github.com/luxfi/geth/common/mclock"
 	"github.com/luxfi/geth/internal/testlog"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/netutil"
+	log "github.com/luxfi/log"
 )
 
 // This test checks that dynamic dials are launched from discovery results.

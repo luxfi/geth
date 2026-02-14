@@ -37,9 +37,9 @@ import (
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/ethdb/memorydb"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 // Node is a container on which services can be registered.

@@ -22,10 +22,10 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/common/mclock"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/nat"
 	"github.com/luxfi/geth/p2p/netutil"
+	log "github.com/luxfi/log"
 )
 
 //go:generate go run github.com/fjl/gencodec -type Config -field-override configMarshaling -formats toml -out config_toml.go

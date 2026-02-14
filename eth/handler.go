@@ -40,10 +40,10 @@ import (
 	"github.com/luxfi/geth/eth/protocols/snap"
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/p2p"
 	"github.com/luxfi/geth/p2p/enode"
+	log "github.com/luxfi/log"
 )
 
 const (

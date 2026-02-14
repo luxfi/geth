@@ -25,9 +25,9 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/trie/trienode"
 	"github.com/luxfi/geth/triedb/database"
+	log "github.com/luxfi/log"
 	"golang.org/x/sync/errgroup"
 )
 

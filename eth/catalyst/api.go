@@ -35,7 +35,6 @@ import (
 	"github.com/luxfi/geth/eth"
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/internal/version"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/miner"
 	"github.com/luxfi/geth/node"
@@ -43,6 +42,7 @@ import (
 	"github.com/luxfi/geth/params/forks"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 // Register adds the engine API to the full node.

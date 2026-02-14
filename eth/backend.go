@@ -52,7 +52,6 @@ import (
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/internal/shutdowncheck"
 	"github.com/luxfi/geth/internal/version"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/miner"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/p2p"
@@ -62,6 +61,7 @@ import (
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"
 	gethversion "github.com/luxfi/geth/version"
+	log "github.com/luxfi/log"
 )
 
 const (
