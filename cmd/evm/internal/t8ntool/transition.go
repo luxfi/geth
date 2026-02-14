@@ -38,12 +38,12 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/logger"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/tests"
 	"github.com/luxfi/geth/trie/bintrie"
 	"github.com/luxfi/geth/triedb"
 	"github.com/luxfi/geth/triedb/database"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 
