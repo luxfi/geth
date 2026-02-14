@@ -28,9 +28,9 @@ import (
 	"github.com/luxfi/geth/common/hexutil"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
 	"github.com/luxfi/geth/signer/core/apitypes"
+	log "github.com/luxfi/log"
 )
 
 type ExternalBackend struct {

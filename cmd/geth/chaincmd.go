@@ -43,9 +43,9 @@ import (
 	"github.com/luxfi/geth/internal/era"
 	"github.com/luxfi/geth/internal/era/eradl"
 	"github.com/luxfi/geth/internal/flags"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

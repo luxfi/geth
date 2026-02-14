@@ -22,8 +22,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
+	log "github.com/luxfi/log"
 )
 
 type crawler struct {

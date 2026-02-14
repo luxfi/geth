@@ -28,8 +28,8 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/common/hexutil"
 	ctypes "github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 type engineClient struct {

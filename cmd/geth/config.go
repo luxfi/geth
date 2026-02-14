@@ -40,10 +40,10 @@ import (
 	"github.com/luxfi/geth/eth/ethconfig"
 	"github.com/luxfi/geth/internal/flags"
 	"github.com/luxfi/geth/internal/version"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/node"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 	"github.com/naoina/toml"
 	"github.com/urfave/cli/v2"
 )

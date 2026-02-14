@@ -31,8 +31,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/route53"
 	"github.com/aws/aws-sdk-go-v2/service/route53/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/dnsdisc"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

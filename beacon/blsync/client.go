@@ -27,8 +27,8 @@ import (
 	"github.com/luxfi/geth/common/mclock"
 	"github.com/luxfi/geth/ethdb/memorydb"
 	"github.com/luxfi/geth/event"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 type Client struct {
