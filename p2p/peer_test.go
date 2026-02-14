@@ -28,9 +28,9 @@ import (
 	"testing"
 	"time"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
+	log "github.com/luxfi/log"
 )
 
 var discard = Protocol{

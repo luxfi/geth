@@ -20,8 +20,8 @@ import (
 	"context"
 
 	"github.com/luxfi/geth/internal/ethapi"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 type StdIOUI struct {

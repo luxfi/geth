@@ -33,9 +33,9 @@ import (
 	"github.com/luxfi/geth/core/state/pruner"
 	"github.com/luxfi/geth/core/state/snapshot"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/trie"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

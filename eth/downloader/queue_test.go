@@ -30,9 +30,9 @@ import (
 	"github.com/luxfi/geth/consensus/ethash"
 	"github.com/luxfi/geth/core"
 	"github.com/luxfi/geth/core/types"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
+	log "github.com/luxfi/log"
 )
 
 // makeChain creates a chain of n blocks starting at and including parent.

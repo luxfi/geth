@@ -40,10 +40,10 @@ import (
 	"github.com/luxfi/geth/ethdb"
 	"github.com/luxfi/geth/internal/ethapi"
 	"github.com/luxfi/geth/internal/ethapi/override"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 )
 
 const (

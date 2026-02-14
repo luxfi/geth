@@ -27,10 +27,10 @@ import (
 	"time"
 
 	"github.com/luxfi/geth/common/mclock"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/enode"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/p2p/netutil"
+	log "github.com/luxfi/log"
 )
 
 // UDPConn is a network connection on which discovery can operate.

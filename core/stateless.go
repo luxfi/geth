@@ -25,10 +25,10 @@ import (
 	"github.com/luxfi/geth/core/stateless"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/core/vm"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
 	"github.com/luxfi/geth/triedb"
+	log "github.com/luxfi/log"
 )
 
 // ExecuteStateless runs a stateless execution based on a witness, verifies

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	client "github.com/influxdata/influxdb1-client/v2"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 type reporter struct {

@@ -32,8 +32,8 @@ import (
 	"github.com/cockroachdb/pebble/bloom"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
+	log "github.com/luxfi/log"
 )
 
 const (

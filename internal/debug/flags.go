@@ -28,9 +28,9 @@ import (
 	"runtime"
 
 	"github.com/luxfi/geth/internal/flags"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/metrics/exp"
+	log "github.com/luxfi/log"
 	"github.com/mattn/go-colorable"
 	"github.com/mattn/go-isatty"
 	"github.com/urfave/cli/v2"

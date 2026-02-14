@@ -33,8 +33,8 @@ import (
 	"github.com/luxfi/geth/core/vm"
 	"github.com/luxfi/geth/eth/tracers"
 	"github.com/luxfi/geth/eth/tracers/internal"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
+	log "github.com/luxfi/log"
 )
 
 //go:generate go run github.com/fjl/gencodec -type callFrameWithOpcodes -field-override callFrameWithOpcodesMarshaling -out gen_callframewithopcodes_json.go

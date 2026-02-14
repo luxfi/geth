@@ -25,9 +25,9 @@ import (
 	"github.com/luxfi/geth/core/history"
 	"github.com/luxfi/geth/internal/flags"
 	"github.com/luxfi/geth/internal/utesting"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rpc"
+	log "github.com/luxfi/log"
 	"github.com/urfave/cli/v2"
 )
 

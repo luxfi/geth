@@ -31,10 +31,10 @@ import (
 	"github.com/luxfi/geth/common/prque"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/eth/ethconfig"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/metrics"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 const (

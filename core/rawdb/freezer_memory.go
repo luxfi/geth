@@ -24,8 +24,8 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/ethdb"
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/rlp"
+	log "github.com/luxfi/log"
 )
 
 // memoryTable is used to store a list of sequential items in memory.

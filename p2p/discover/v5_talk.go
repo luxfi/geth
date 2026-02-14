@@ -22,9 +22,9 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/luxfi/log"
 	"github.com/luxfi/geth/p2p/discover/v5wire"
 	"github.com/luxfi/geth/p2p/enode"
+	log "github.com/luxfi/log"
 )
 
 // This is a limit for the number of concurrent talk requests.
