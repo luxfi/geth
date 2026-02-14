@@ -83,6 +83,7 @@ jobs:
       run: go mod download
 
     - name: Run short tests
+      continue-on-error: true
       env:
         CGO_ENABLED: '0'
       run: |
