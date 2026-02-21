@@ -168,10 +168,11 @@ func calcExcessBlobGas(isOsaka bool, bcfg *BlobConfig, parent *types.Header) uin
 }
 
 // CalcBlobFee calculates the blobfee from the header's excess blob gas field.
+// Returns nil if the blob fee fork (Cancun) is not active, instead of panicking.
 func CalcBlobFee(config *params.ChainConfig, header *types.Header) *big.Int {
 	blobConfig := latestBlobConfig(config, header.Time)
 	if blobConfig == nil {
-		panic("calculating blob fee on unsupported fork")
+		return nil
 	}
 	return blobConfig.blobBaseFee(*header.ExcessBlobGas)
 }
