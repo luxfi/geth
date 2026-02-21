@@ -485,7 +485,7 @@ func (miner *Miner) fillTransactions(interrupt *atomic.Int32, env *environment) 
 	if env.header.BaseFee != nil {
 		filter.BaseFee = uint256.MustFromBig(env.header.BaseFee)
 	}
-	if env.header.ExcessBlobGas != nil {
+	if env.header.ExcessBlobGas != nil && miner.chainConfig.IsCancun(env.header.Number, env.header.Time) {
 		filter.BlobFee = uint256.MustFromBig(eip4844.CalcBlobFee(miner.chainConfig, env.header))
 	}
 	if miner.chainConfig.IsOsaka(env.header.Number, env.header.Time) {
