@@ -707,6 +707,9 @@ func (b *Block) resolveHeader(ctx context.Context) (*types.Header, error) {
 	if err != nil {
 		return nil, err
 	}
+	if b.header == nil {
+		return nil, nil
+	}
 	if b.hash == (common.Hash{}) {
 		b.hash = b.header.Hash()
 	}
@@ -1034,10 +1037,15 @@ func (b *Block) OmmerAt(ctx context.Context, args struct{ Index Long }) (*Block,
 }
 
 func (b *Block) WithdrawalsRoot(ctx context.Context) (*common.Hash, error) {
-	header, err := b.resolveHeader(ctx)
-	if err != nil {
+	// Use the full block to get the correctly-interpreted header.
+	// This is necessary because 17-field headers may be incorrectly decoded
+	// as Lux format (ExtDataHash) instead of Ethereum format (WithdrawalsHash)
+	// when read in isolation. ReadBlock applies the necessary reinterpretation.
+	block, err := b.resolve(ctx)
+	if err != nil || block == nil {
 		return nil, err
 	}
+	header := block.Header()
 	// Pre-shanghai blocks
 	if header.WithdrawalsHash == nil {
 		return nil, nil

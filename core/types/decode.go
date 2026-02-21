@@ -63,6 +63,7 @@ const (
 	RLPFormat15      RLPFormat = 15 // Pre-London
 	RLPFormat16      RLPFormat = 16 // Post-London (genesis)
 	RLPFormat17      RLPFormat = 17 // With ExtDataHash (pointer)
+	RLPFormat17Eth   RLPFormat = 27 // Ethereum Shanghai (with WithdrawalsHash)
 	RLPFormat18      RLPFormat = 18 // With ExtDataGasUsed
 	RLPFormat19Lux   RLPFormat = 19 // Lux 19-field (ExtDataHash as VALUE)
 	RLPFormat19Ptr   RLPFormat = 29 // 19-field with ExtDataHash as pointer (internal)
@@ -218,8 +219,24 @@ func DecodeBlock(data []byte) (*Block, error) {
 	}
 
 	var withdrawals []*Withdrawal
-	if len(items) > 3 {
+	hasWithdrawalsField := len(items) > 3
+	if hasWithdrawalsField {
 		rlp.DecodeBytes(items[3], &withdrawals) // optional
+	}
+
+	// Handle 17-field format ambiguity: if the block has a withdrawals field
+	// (even if empty), but header was decoded as Lux format (ExtDataHash at pos 16),
+	// reinterpret as Ethereum format (WithdrawalsHash at pos 16). This is necessary
+	// because 17-field headers cannot be distinguished by structure alone.
+	//
+	// In Ethereum Shanghai blocks, the withdrawals list is ALWAYS present (even if empty).
+	// In Lux blocks, there's no withdrawals field until Lux enables Shanghai.
+	if hasWithdrawalsField && header.rlpFormat == RLPFormat17 && header.ExtDataHash != nil {
+		// Withdrawals field present means this is Ethereum Shanghai format.
+		// Move ExtDataHash to WithdrawalsHash field.
+		header.WithdrawalsHash = header.ExtDataHash
+		header.ExtDataHash = nil
+		header.rlpFormat = RLPFormat17Eth
 	}
 
 	block := NewBlockWithHeader(header).WithBody(Body{
@@ -349,6 +366,28 @@ type hdr19 struct {
 	ExtDataHash    *common.Hash `rlp:"nil"`
 	ExtDataGasUsed *big.Int
 	BlockGasCost   *big.Int
+}
+
+// hdr17eth is the standard Ethereum Shanghai 17-field format.
+// Field order: Core(15) + BaseFee(pos 15) + WithdrawalsHash(pos 16)
+type hdr17eth struct {
+	ParentHash      common.Hash
+	UncleHash       common.Hash
+	Coinbase        common.Address
+	Root            common.Hash
+	TxHash          common.Hash
+	ReceiptHash     common.Hash
+	Bloom           Bloom
+	Difficulty      *big.Int
+	Number          *big.Int
+	GasLimit        uint64
+	GasUsed         uint64
+	Time            uint64
+	Extra           []byte
+	MixDigest       common.Hash
+	Nonce           BlockNonce
+	BaseFee         *big.Int
+	WithdrawalsHash *common.Hash `rlp:"nil"`
 }
 
 // hdr17coreth is the coreth/evm 17-field format with ExtDataHash BEFORE BaseFee.
@@ -734,10 +773,15 @@ func decode17(data []byte) (*Header, error) {
 	}
 
 	// Fall back to geth format (BaseFee at pos 15, ExtDataHash at pos 16)
+	// For Lux, 17-field headers are always Lux format with ExtDataHash.
+	// Ethereum Shanghai 17-field format (with WithdrawalsHash) cannot be
+	// reliably distinguished by value, so we prioritize Lux format.
+	// Ethereum headers with 20+ fields are handled in their own decode functions.
 	var h hdr17
 	if err := rlp.DecodeBytes(data, &h); err != nil {
 		return nil, err
 	}
+
 	return &Header{
 		ParentHash:  h.ParentHash,
 		UncleHash:   h.UncleHash,
