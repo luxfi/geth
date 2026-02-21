@@ -90,8 +90,9 @@ func TestBlockFromJSON(t *testing.T) {
 			if execBlock.NumberU64() != test.wantBlockNumber {
 				t.Errorf("wrong block number: %v", execBlock.NumberU64())
 			}
-			if execBlock.Hash() != test.wantBlockHash {
-				t.Errorf("wrong block hash: %v", execBlock.Hash())
+			// Use HashEth() for Ethereum mainnet blocks (without Lux-specific fields)
+			if execBlock.HashEth() != test.wantBlockHash {
+				t.Errorf("wrong block hash: %v", execBlock.HashEth())
 			}
 		})
 	}

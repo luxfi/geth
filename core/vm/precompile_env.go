@@ -41,7 +41,7 @@ type PrecompileEnvironment interface {
 	Gas() uint64
 	// Call executes a call to another contract
 	Call(addr common.Address, input []byte, gas uint64, value *big.Int, opts ...CallOption) ([]byte, uint64, error)
-	// ConsensusContext returns the consensus context (use runtime.FromContext to get runtime)
+	// ConsensusContext returns the consensus context with chain ID/network ID for warp
 	ConsensusContext() context.Context
 }
 

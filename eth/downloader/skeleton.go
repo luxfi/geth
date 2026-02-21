@@ -642,7 +642,7 @@ func (s *skeleton) processNewHead(head *types.Header, final *types.Header) error
 		// If the chain is down to a single beacon header, and it is re-announced
 		// once more, ignore it instead of tearing down sync for a noop.
 		if lastchain.Head == lastchain.Tail {
-			if current := rawdb.ReadSkeletonHeader(s.db, number); current.Hash() == head.Hash() {
+			if current := rawdb.ReadSkeletonHeader(s.db, number); current != nil && current.Hash() == head.Hash() {
 				return nil
 			}
 		}
@@ -652,8 +652,12 @@ func (s *skeleton) processNewHead(head *types.Header, final *types.Header) error
 	if lastchain.Head+1 < number {
 		return fmt.Errorf("%w, head: %d, newHead: %d", errChainGapped, lastchain.Head, number)
 	}
-	if parent := rawdb.ReadSkeletonHeader(s.db, number-1); parent.Hash() != head.ParentHash {
-		return fmt.Errorf("%w, ancestor: %d, hash: %s, want: %s", errChainForked, number-1, parent.Hash(), head.ParentHash)
+	if parent := rawdb.ReadSkeletonHeader(s.db, number-1); parent == nil || parent.Hash() != head.ParentHash {
+		var parentHash common.Hash
+		if parent != nil {
+			parentHash = parent.Hash()
+		}
+		return fmt.Errorf("%w, ancestor: %d, hash: %s, want: %s", errChainForked, number-1, parentHash, head.ParentHash)
 	}
 	// New header seems to be in the last subchain range. Unwind any extra headers
 	// from the chain tip and insert the new head. We won't delete any trimmed

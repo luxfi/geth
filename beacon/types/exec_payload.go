@@ -67,7 +67,8 @@ func convertPayload[T payloadType](payload T, parentRoot *zrntcommon.Root, reque
 		header.RequestsHash = &reqHash
 	}
 	block := types.NewBlockWithHeader(&header).WithBody(types.Body{Transactions: transactions, Withdrawals: withdrawals})
-	if hash := block.Hash(); hash != expectedHash {
+	// Use HashEth() for Ethereum-compatible hash (without Lux-specific fields)
+	if hash := block.HashEth(); hash != expectedHash {
 		return nil, fmt.Errorf("sanity check failed, payload hash does not match (expected %x, got %x)", expectedHash, hash)
 	}
 	return block, nil

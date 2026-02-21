@@ -679,6 +679,16 @@ func ReadBlock(db ethdb.Reader, hash common.Hash, number uint64) *types.Block {
 	if body == nil {
 		return nil
 	}
+	// Handle 17-field format ambiguity: if the header was decoded as Lux format
+	// (RLPFormat17 with ExtDataHash) but the body has withdrawals, reinterpret
+	// the header as Ethereum Shanghai format (WithdrawalsHash at pos 16).
+	// This matches the logic in types.DecodeBlock.
+	if len(body.Withdrawals) > 0 || body.Withdrawals != nil {
+		if header.GetRLPFormat() == types.RLPFormat17 && header.ExtDataHash != nil {
+			header.WithdrawalsHash = header.ExtDataHash
+			header.ExtDataHash = nil
+		}
+	}
 	return types.NewBlockWithHeader(header).WithBody(*body)
 }
 

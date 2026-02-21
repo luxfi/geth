@@ -21,7 +21,6 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
-	"reflect"
 	"sync"
 	"time"
 
@@ -114,7 +113,16 @@ func (s *Suite) TestStatus(t *utesting.T) {
 
 // headersMatch returns whether the received headers match the given request
 func headersMatch(expected []*types.Header, headers []*types.Header) bool {
-	return reflect.DeepEqual(expected, headers)
+	if len(expected) != len(headers) {
+		return false
+	}
+	for i := range expected {
+		// Compare by hash to avoid issues with internal fields (rawRLP, rlpFormat)
+		if expected[i].Hash() != headers[i].Hash() {
+			return false
+		}
+	}
+	return true
 }
 
 func (s *Suite) TestGetBlockHeaders(t *utesting.T) {
