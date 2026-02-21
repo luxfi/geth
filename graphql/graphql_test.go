@@ -374,9 +374,10 @@ func TestWithdrawals(t *testing.T) {
 	var (
 		key, _ = crypto.GenerateKey()
 		addr   = common.PubkeyToAddress(key.PublicKey)
-
+		// Create a local copy of AllEthashProtocolChanges to avoid mutating the global
+		config  = *params.AllEthashProtocolChanges
 		genesis = &core.Genesis{
-			Config:     params.AllEthashProtocolChanges,
+			Config:     &config,
 			GasLimit:   11500000,
 			Difficulty: common.Big1,
 			Alloc: types.GenesisAlloc{
@@ -504,7 +505,7 @@ func newGQLService(t *testing.T, stack *node.Node, shanghai bool, gspec *core.Ge
 		t.Fatalf("could not create eth backend: %v", err)
 	}
 	// Create some blocks and import them
-	chain, _ := core.GenerateChain(params.AllEthashProtocolChanges, ethBackend.BlockChain().Genesis(),
+	chain, _ := core.GenerateChain(gspec.Config, ethBackend.BlockChain().Genesis(),
 		engine, ethBackend.ChainDb(), genBlocks, genfunc)
 	_, err = ethBackend.BlockChain().InsertChain(chain)
 	if err != nil {

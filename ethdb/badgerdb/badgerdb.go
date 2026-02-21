@@ -202,11 +202,10 @@ func (i *iterator) Next() bool {
 		i.first = false
 		return i.iter.Valid()
 	}
-	// Check if iterator is still valid before advancing
+	// On subsequent calls, only advance if currently valid
 	if !i.iter.Valid() {
 		return false
 	}
-	// On subsequent calls, advance and check
 	i.iter.Next()
 	return i.iter.Valid()
 }
@@ -216,14 +215,14 @@ func (i *iterator) Error() error {
 }
 
 func (i *iterator) Key() []byte {
-	if i.iter == nil {
+	if i.iter == nil || !i.iter.Valid() {
 		return nil
 	}
 	return i.iter.Item().KeyCopy(nil)
 }
 
 func (i *iterator) Value() []byte {
-	if i.iter == nil {
+	if i.iter == nil || !i.iter.Valid() {
 		return nil
 	}
 	val, _ := i.iter.Item().ValueCopy(nil)

@@ -18,7 +18,6 @@ package rawdb
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/luxfi/geth/common"
@@ -65,24 +64,11 @@ func ReadChainConfig(db ethdb.KeyValueReader, hash common.Hash) *params.ChainCon
 		log.Error("Invalid chain config JSON", "hash", hash, "err", err)
 		return nil
 	}
-	// DEBUG: Check what was read and the hash
-	if config.ShanghaiTime != nil {
-		log.Info("DEBUG: Read config", "hash", hash.Hex(), "shanghaiTime", *config.ShanghaiTime)
-	} else {
-		log.Info("DEBUG: Read config", "hash", hash.Hex(), "shanghaiTime", "nil")
-	}
 	return &config
 }
 
 // WriteChainConfig writes the chain config settings to the database.
 func WriteChainConfig(db ethdb.KeyValueWriter, hash common.Hash, cfg *params.ChainConfig) {
-	var shanghai string
-	if cfg != nil && cfg.ShanghaiTime != nil {
-		shanghai = fmt.Sprintf("%d", *cfg.ShanghaiTime)
-	} else {
-		shanghai = "nil"
-	}
-	log.Info("DEBUG: Writing config", "hash", hash.Hex(), "shanghai", shanghai)
 	if cfg == nil {
 		return
 	}
