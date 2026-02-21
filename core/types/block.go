@@ -194,22 +194,28 @@ type headerMarshaling struct {
 //     ExtDataHash as value type to match original coreth encoding.
 //  4. Default: Uses standard RLP encoding.
 func (h *Header) Hash() common.Hash {
-	// Genesis block: ALWAYS use 16-field format to match original chain genesis hash.
-	// This MUST come first because genesis blocks loaded from DB have rawRLP set,
-	// but we need consistent hashing regardless of how the block was stored.
-	// The original Lux mainnet genesis was computed with only 16 fields (15 base + BaseFee).
-	if h.Number != nil && h.Number.Sign() == 0 {
-		return h.Hash16()
-	}
-	// For non-genesis blocks, use rawRLP if set (preserves imported block hashes)
+	// For blocks with rawRLP set (from decoding), use stored bytes to preserve hash
 	if len(h.rawRLP) > 0 {
 		return rlpHashBytes(h.rawRLP)
+	}
+	// Genesis block handling: detect format based on fields present
+	if h.Number != nil && h.Number.Sign() == 0 {
+		// Check if this is a standard Ethereum genesis (has Eth2 fields)
+		if h.isEthFormat() {
+			return h.HashEth()
+		}
+		// Lux mainnet genesis: use 16-field format
+		return h.Hash16()
 	}
 	// Lux block detection: has ExtDataGasUsed or BlockGasCost set, but no Eth2 fields
 	// For newly constructed blocks (no rawRLP), use Hash19() to match coreth format
 	// This must match the logic in isLux19Format() and EncodeRLP()
 	if h.isLux19Format() {
 		return h.Hash19()
+	}
+	// Use Ethereum format for blocks with Eth2 fields but no Lux fields
+	if h.isEthFormat() {
+		return h.HashEth()
 	}
 	return rlpHash(h)
 }
@@ -272,6 +278,62 @@ func (h *Header) Hash19() common.Hash {
 	})
 }
 
+// hdrEth is the standard Ethereum header format (without Lux-specific fields).
+// Used for computing hashes compatible with Ethereum mainnet.
+type hdrEth struct {
+	ParentHash       common.Hash
+	UncleHash        common.Hash
+	Coinbase         common.Address
+	Root             common.Hash
+	TxHash           common.Hash
+	ReceiptHash      common.Hash
+	Bloom            Bloom
+	Difficulty       *big.Int
+	Number           *big.Int
+	GasLimit         uint64
+	GasUsed          uint64
+	Time             uint64
+	Extra            []byte
+	MixDigest        common.Hash
+	Nonce            BlockNonce
+	BaseFee          *big.Int       `rlp:"optional"`
+	WithdrawalsHash  *common.Hash   `rlp:"optional"`
+	BlobGasUsed      *uint64        `rlp:"optional"`
+	ExcessBlobGas    *uint64        `rlp:"optional"`
+	ParentBeaconRoot *common.Hash   `rlp:"optional"`
+	RequestsHash     *common.Hash   `rlp:"optional"`
+}
+
+// HashEth returns the hash using standard Ethereum header field order.
+// This excludes Lux-specific fields (ExtDataHash, ExtDataGasUsed, BlockGasCost)
+// and uses the Ethereum field order: BaseFee, WithdrawalsHash, BlobGasUsed,
+// ExcessBlobGas, ParentBeaconRoot, RequestsHash.
+func (h *Header) HashEth() common.Hash {
+	return rlpHash(&hdrEth{
+		ParentHash:       h.ParentHash,
+		UncleHash:        h.UncleHash,
+		Coinbase:         h.Coinbase,
+		Root:             h.Root,
+		TxHash:           h.TxHash,
+		ReceiptHash:      h.ReceiptHash,
+		Bloom:            h.Bloom,
+		Difficulty:       h.Difficulty,
+		Number:           h.Number,
+		GasLimit:         h.GasLimit,
+		GasUsed:          h.GasUsed,
+		Time:             h.Time,
+		Extra:            h.Extra,
+		MixDigest:        h.MixDigest,
+		Nonce:            h.Nonce,
+		BaseFee:          h.BaseFee,
+		WithdrawalsHash:  h.WithdrawalsHash,
+		BlobGasUsed:      h.BlobGasUsed,
+		ExcessBlobGas:    h.ExcessBlobGas,
+		ParentBeaconRoot: h.ParentBeaconRoot,
+		RequestsHash:     h.RequestsHash,
+	})
+}
+
 // SetRawRLP sets the raw RLP bytes for hash computation.
 // This is used when decoding blocks to preserve the original hash.
 func (h *Header) SetRawRLP(raw []byte) {
@@ -287,31 +349,37 @@ func (h *Header) RawRLP() []byte {
 // The format is determined by rlpFormat (set during decode) or detected from fields.
 //
 // Format handling (in priority order):
-//  1. Genesis blocks (Number == 0): ALWAYS uses 16-field format to match original
-//     Lux mainnet genesis. This ensures cryptographic compatibility regardless of
-//     what fork fields are set in the header struct.
-//  2. rlpFormat set (from decode): Uses the format detected during decode
+//  1. rlpFormat set (from decode): Uses the format detected during decode
+//  2. Genesis blocks (Number == 0): Uses format based on fields present
 //  3. Lux 19-field format: If ExtDataGasUsed or BlockGasCost set (but no Eth2 fields)
-//  4. Default: Standard encoding with all non-nil fields
+//  4. Ethereum format: If Eth2 fields present but no Lux fields
+//  5. Default: Standard encoding with all non-nil fields
 func (h *Header) EncodeRLP(w io.Writer) error {
-	// Genesis blocks: ALWAYS use 16-field format for cryptographic compatibility.
-	// The original Lux mainnet genesis was created with only 16 fields, and we must
-	// maintain this encoding regardless of fork fields set by newer chain configs.
-	if h.Number != nil && h.Number.Sign() == 0 {
-		return h.encodeRLP16(w)
-	}
-
 	switch h.rlpFormat {
 	case RLPFormat17:
 		return h.encodeRLP17(w)
+	case RLPFormat17Eth:
+		return h.encodeRLP17Eth(w)
 	case RLPFormat18:
 		return h.encodeRLP18(w)
 	case RLPFormat19Lux:
 		return h.encodeRLP19Lux(w)
+	case RLPFormat20Eth:
+		return h.encodeRLPEth(w)
+	case RLPFormat21Eth:
+		return h.encodeRLPEth(w)
 	default:
 		// Auto-detect format for new headers
 		if h.isLux19Format() {
 			return h.encodeRLP19Lux(w)
+		}
+		// Use Ethereum format for blocks with Eth2 fields but no Lux fields
+		if h.isEthFormat() {
+			return h.encodeRLPEth(w)
+		}
+		// Genesis blocks without Eth2 fields: use 16-field Lux format
+		if h.Number != nil && h.Number.Sign() == 0 {
+			return h.encodeRLP16(w)
 		}
 		return h.encodeRLPDefault(w)
 	}
@@ -324,6 +392,15 @@ func (h *Header) isLux19Format() bool {
 	hasEth2Fields := h.BlobGasUsed != nil || h.ExcessBlobGas != nil ||
 		h.ParentBeaconRoot != nil || h.WithdrawalsHash != nil || h.RequestsHash != nil
 	return hasLuxFields && !hasEth2Fields
+}
+
+// isEthFormat returns true if this header uses standard Ethereum format.
+// Detection: has Eth2 fields but no Lux-specific fields.
+func (h *Header) isEthFormat() bool {
+	hasLuxFields := h.ExtDataHash != nil || h.ExtDataGasUsed != nil || h.BlockGasCost != nil
+	hasEth2Fields := h.BlobGasUsed != nil || h.ExcessBlobGas != nil ||
+		h.ParentBeaconRoot != nil || h.WithdrawalsHash != nil || h.RequestsHash != nil
+	return hasEth2Fields && !hasLuxFields
 }
 
 // ClearInternalFields clears internal fields used for decode/encode operations.
@@ -379,6 +456,30 @@ func (h *Header) encodeRLP17(w io.Writer) error {
 	})
 }
 
+// encodeRLP17Eth encodes using Ethereum Shanghai 17-field format.
+// Field order: Core(15) + BaseFee(pos 15) + WithdrawalsHash(pos 16)
+func (h *Header) encodeRLP17Eth(w io.Writer) error {
+	return rlp.Encode(w, &hdrEth{
+		ParentHash:      h.ParentHash,
+		UncleHash:       h.UncleHash,
+		Coinbase:        h.Coinbase,
+		Root:            h.Root,
+		TxHash:          h.TxHash,
+		ReceiptHash:     h.ReceiptHash,
+		Bloom:           h.Bloom,
+		Difficulty:      h.Difficulty,
+		Number:          h.Number,
+		GasLimit:        h.GasLimit,
+		GasUsed:         h.GasUsed,
+		Time:            h.Time,
+		Extra:           h.Extra,
+		MixDigest:       h.MixDigest,
+		Nonce:           h.Nonce,
+		BaseFee:         h.BaseFee,
+		WithdrawalsHash: h.WithdrawalsHash,
+	})
+}
+
 // encodeRLP18 encodes using 18-field format (+ ExtDataGasUsed).
 func (h *Header) encodeRLP18(w io.Writer) error {
 	return rlp.Encode(w, &hdr18{
@@ -429,6 +530,34 @@ func (h *Header) encodeRLP19Lux(w io.Writer) error {
 		ExtDataHash:    extHash,
 		ExtDataGasUsed: h.ExtDataGasUsed,
 		BlockGasCost:   h.BlockGasCost,
+	})
+}
+
+// encodeRLPEth encodes using standard Ethereum format (no Lux-specific fields).
+// Field order: BaseFee, WithdrawalsHash, BlobGasUsed, ExcessBlobGas, ParentBeaconRoot, RequestsHash
+func (h *Header) encodeRLPEth(w io.Writer) error {
+	return rlp.Encode(w, &hdrEth{
+		ParentHash:       h.ParentHash,
+		UncleHash:        h.UncleHash,
+		Coinbase:         h.Coinbase,
+		Root:             h.Root,
+		TxHash:           h.TxHash,
+		ReceiptHash:      h.ReceiptHash,
+		Bloom:            h.Bloom,
+		Difficulty:       h.Difficulty,
+		Number:           h.Number,
+		GasLimit:         h.GasLimit,
+		GasUsed:          h.GasUsed,
+		Time:             h.Time,
+		Extra:            h.Extra,
+		MixDigest:        h.MixDigest,
+		Nonce:            h.Nonce,
+		BaseFee:          h.BaseFee,
+		WithdrawalsHash:  h.WithdrawalsHash,
+		BlobGasUsed:      h.BlobGasUsed,
+		ExcessBlobGas:    h.ExcessBlobGas,
+		ParentBeaconRoot: h.ParentBeaconRoot,
+		RequestsHash:     h.RequestsHash,
 	})
 }
 
@@ -985,6 +1114,13 @@ func (b *Block) Hash() common.Hash {
 	h := b.header.Hash()
 	b.hash.Store(&h)
 	return h
+}
+
+// HashEth returns the keccak256 hash using standard Ethereum header format.
+// This excludes Lux-specific fields and uses Ethereum field ordering.
+// Not cached - use for compatibility checks with Ethereum mainnet only.
+func (b *Block) HashEth() common.Hash {
+	return b.header.HashEth()
 }
 
 type Blocks []*Block

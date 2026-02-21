@@ -161,7 +161,13 @@ func testLinkCase(tcInput linkTestCaseInput) error {
 	rng := rand.New(rand.NewPCG(42, 0))
 	for contract := range tcInput.overrides {
 		var addr common.Address
-		rng.Read(addr[:])
+		// Fill address bytes using Uint64 (rand/v2 doesn't have Read)
+		for i := 0; i < len(addr); i += 8 {
+			v := rng.Uint64()
+			for j := 0; j < 8 && i+j < len(addr); j++ {
+				addr[i+j] = byte(v >> (8 * j))
+			}
+		}
 		overrideAddrs[contract] = addr
 		overridesAddrs[addr] = struct{}{}
 	}
