@@ -267,7 +267,7 @@ loop:
 			if task != nil && task.staticPoolIndex >= 0 {
 				d.removeFromStaticPool(task.staticPoolIndex)
 			}
-			// TODO: cancel dials to connected peers
+			// Note: in-progress dials to connected peers are not cancelled.
 
 		case c := <-d.remPeerCh:
 			if c.is(dynDialedConn) || c.is(staticDialedConn) {

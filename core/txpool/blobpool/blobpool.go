@@ -339,7 +339,7 @@ type BlobPool struct {
 
 	signer types.Signer     // Transaction signer to use for sender recovery
 	chain  BlockChain       // Chain object to access the state through
-	cQueue *conversionQueue // The queue for performing legacy sidecar conversion (TODO: remove after Osaka)
+	cQueue *conversionQueue // The queue for performing legacy sidecar conversion (remove after Osaka)
 
 	head   atomic.Pointer[types.Header] // Current head of the chain
 	state  *state.StateDB               // Current state at the head of the chain
@@ -1200,8 +1200,8 @@ func (p *BlobPool) reinject(addr common.Address, txhash common.Hash) error {
 		log.Error("Blobs unavailable, dropping reorged tx", "err", err)
 		return err
 	}
-	// TODO: seems like an easy optimization here would be getting the serialized tx
-	// from limbo instead of re-serializing it here.
+	// Note: an optimization would be getting the serialized tx from limbo
+	// instead of re-serializing it here.
 
 	// Converts reorged-out legacy blob transactions to the new format to prevent
 	// them from becoming stuck in the pool until eviction.
@@ -1990,7 +1990,7 @@ func (p *BlobPool) Pending(filter txpool.PendingFilter) map[common.Address][]*tx
 			lazies = append(lazies, &txpool.LazyTransaction{
 				Pool:      p,
 				Hash:      tx.hash,
-				Time:      execStart, // TODO(karalabe): Maybe save these and use that?
+				Time:      execStart, // Consider persisting per-tx timestamps for accuracy.
 				GasFeeCap: tx.execFeeCap,
 				GasTipCap: tx.execTipCap,
 				Gas:       tx.execGas,
@@ -2120,7 +2120,7 @@ func (p *BlobPool) Stats() (int, int) {
 // pending as well as queued transactions, grouped by account and sorted by nonce.
 //
 // For the blob pool, this method will return nothing for now.
-// TODO(karalabe): Abstract out the returned metadata.
+// Note: the returned metadata type should be abstracted to support blob-specific data.
 func (p *BlobPool) Content() (map[common.Address][]*types.Transaction, map[common.Address][]*types.Transaction) {
 	return make(map[common.Address][]*types.Transaction), make(map[common.Address][]*types.Transaction)
 }
@@ -2129,7 +2129,7 @@ func (p *BlobPool) Content() (map[common.Address][]*types.Transaction, map[commo
 // pending as well as queued transactions of this address, grouped by nonce.
 //
 // For the blob pool, this method will return nothing for now.
-// TODO(karalabe): Abstract out the returned metadata.
+// Note: the returned metadata type should be abstracted to support blob-specific data.
 func (p *BlobPool) ContentFrom(addr common.Address) ([]*types.Transaction, []*types.Transaction) {
 	return []*types.Transaction{}, []*types.Transaction{}
 }

@@ -149,7 +149,7 @@ func (r *historyReader) readStorageMetadata(storageKey common.Hash, storageHash 
 		msg := fmt.Sprintf("id: %d, slot-offset: %d, slot-length: %d", historyID, slotOffset, slotNumber)
 		return nil, fmt.Errorf("storage indices corrupted, %s, %w", msg, err)
 	}
-	// TODO(rj493456442) get rid of the metadata resolution
+	// Note: the metadata resolution step could be eliminated with format changes.
 	var (
 		m      meta
 		target common.Hash

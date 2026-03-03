@@ -131,7 +131,7 @@ var (
 		Usage: "`stdin` or file name of where to find the transactions list in RLP form.",
 		Value: "txs.rlp",
 	}
-	// TODO(@CPerezz): rename `Name` of the file in a follow-up PR (relays on EEST -> https://github.com/ethereum/execution-spec-tests/tree/verkle/main)
+	// Note: the flag Name "input.vkt" should be renamed once EEST (execution-spec-tests) stabilizes.
 	InputBTFlag = &cli.StringFlag{
 		Name:  "input.vkt",
 		Usage: "`stdin` or file name of where to find the prestate BT.",

@@ -204,8 +204,8 @@ func runCmd(ctx *cli.Context) error {
 		sender      = common.BytesToAddress([]byte("sender"))
 		receiver    = common.BytesToAddress([]byte("receiver"))
 		preimages   = ctx.Bool(DumpFlag.Name)
-		blobHashes  []common.Hash  // TODO (MariusVanDerWijden) implement blob hashes in state tests
-		blobBaseFee = new(big.Int) // TODO (MariusVanDerWijden) implement blob fee in state tests
+		blobHashes  []common.Hash  // Blob hashes are not yet supported in state tests.
+		blobBaseFee = new(big.Int) // Blob fee is not yet supported in state tests.
 	)
 	tracer = tracerFromFlags(ctx)
 	initialGas := ctx.Uint64(GasFlag.Name)

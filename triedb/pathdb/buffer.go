@@ -189,10 +189,9 @@ func (b *buffer) flush(root common.Hash, db ethdb.KeyValueStore, freezer ethdb.A
 		commitTimeTimer.UpdateSince(start)
 
 		// The content in the frozen buffer is kept for consequent state access,
-		// TODO (rjl493456442) measure the gc overhead for holding this struct.
-		// TODO (rjl493456442) can we somehow get rid of it after flushing??
-		// TODO (rjl493456442) buffer itself is not thread-safe, add the lock
-		// protection if try to reset the buffer here.
+		// Note: the frozen buffer is kept for consequent state access, which
+		// may incur GC overhead. The buffer is not thread-safe; resetting
+		// after flush would require lock protection.
 		// b.reset()
 		log.Debug("Persisted buffer content", "nodes", nodes, "accounts", accounts, "slots", slots, "bytes", common.StorageSize(size), "elapsed", common.PrettyDuration(time.Since(start)))
 	}()

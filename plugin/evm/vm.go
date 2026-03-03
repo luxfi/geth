@@ -27,7 +27,7 @@ func (vm *VM) Initialize(
 	ctx context.Context,
 	init vm.Init,
 ) error {
-	// TODO: Initialize the unified EVM
+	// Unified EVM initialization is not yet implemented.
 	return nil
 }
 

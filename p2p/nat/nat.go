@@ -152,8 +152,7 @@ func (ExtIP) DeleteMapping(string, int, int) error { return nil }
 // Any returns a port mapper that tries to discover any supported
 // mechanism on the local network.
 func Any() Interface {
-	// TODO: attempt to discover whether the local machine has an
-	// Internet-class address. Return ExtIP in this case.
+	// Note: could check for Internet-class addresses and return ExtIP directly.
 	return startautodisc("any", func() Interface {
 		found := make(chan Interface, 2)
 		go func() { found <- discoverUPnP() }()
@@ -200,7 +199,7 @@ type autodisc struct {
 }
 
 func startautodisc(what string, doit func() Interface) Interface {
-	// TODO: monitor network configuration and rerun doit when it changes.
+	// Note: network configuration changes are not monitored; discovery runs once.
 	return &autodisc{what: what, doit: doit}
 }
 
