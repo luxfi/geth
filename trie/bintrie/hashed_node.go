@@ -26,7 +26,7 @@ import (
 type HashedNode common.Hash
 
 func (h HashedNode) Get(_ []byte, _ NodeResolverFn) ([]byte, error) {
-	panic("not implemented") // TODO: Implement
+	return nil, errors.New("Get is not implemented for HashedNode")
 }
 
 func (h HashedNode) Insert(key []byte, value []byte, resolver NodeResolverFn, depth int) (BinaryNode, error) {

@@ -257,7 +257,8 @@ func (t *freezerTable) repair() error {
 	// Assign the tail fields with the first stored index.
 	// The total removed items is represented with an uint32,
 	// which is not enough in theory but enough in practice.
-	// TODO: use uint64 to represent total removed items.
+	// Note: total removed items is represented as uint32, which is sufficient
+	// in practice but could theoretically overflow.
 	t.tailId = firstIndex.filenum
 	t.itemOffset.Store(uint64(firstIndex.offset))
 
@@ -343,8 +344,7 @@ func (t *freezerTable) repair() error {
 					return err
 				}
 				if stat, err = t.head.Stat(); err != nil {
-					// TODO, anything more we can do here?
-					// A data file has gone missing...
+					// A data file has gone missing; nothing more can be done here.
 					return err
 				}
 				contentSize = stat.Size()

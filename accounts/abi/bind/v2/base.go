@@ -480,9 +480,8 @@ func (c *BoundContract) FilterLogs(opts *FilterOpts, name string, query ...[]any
 	if opts.End != nil {
 		config.ToBlock = new(big.Int).SetUint64(*opts.End)
 	}
-	/* TODO(karalabe): Replace the rest of the method below with this when supported
-	sub, err := c.filterer.SubscribeFilterLogs(ensureContext(opts.Context), config, logs)
-	*/
+	// Note: once SubscribeFilterLogs is supported, replace the polling below with:
+	// sub, err := c.filterer.SubscribeFilterLogs(ensureContext(opts.Context), config, logs)
 	buff, err := c.filterer.FilterLogs(ensureContext(opts.Context), config)
 	if err != nil {
 		return nil, nil, err

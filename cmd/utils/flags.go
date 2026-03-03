@@ -1452,7 +1452,7 @@ func SetNodeConfig(ctx *cli.Context, cfg *node.Config) {
 		log.Info(fmt.Sprintf("Using %s as db engine", dbEngine))
 		cfg.DBEngine = dbEngine
 	}
-	// deprecation notice for log debug flags (TODO: find a more appropriate place to put these?)
+	// Deprecation notice for log debug flags.
 	if ctx.IsSet(LogBacktraceAtFlag.Name) {
 		log.Warn("Option --log.backtrace flag is deprecated")
 	}
@@ -2397,8 +2397,8 @@ func MakeTrieDatabase(ctx *cli.Context, stack *node.Node, disk ethdb.Database, p
 	}
 	if scheme == rawdb.HashScheme {
 		// Read-only mode is not implemented in hash mode,
-		// ignore the parameter silently. TODO(rjl493456442)
-		// please config it if read mode is implemented.
+		// Read-only mode is not implemented in hash mode,
+		// ignore the parameter silently.
 		config.HashDB = hashdb.Defaults
 		return triedb.NewDatabase(disk, config)
 	}

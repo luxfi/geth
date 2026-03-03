@@ -71,9 +71,8 @@ func writeNodes(batch ethdb.Batch, nodes map[common.Hash]map[string]*trienode.No
 // This function assumes the background generator is already terminated and states
 // before the supplied marker has been correctly generated.
 //
-// TODO(rjl493456442) do we really need this generation marker? The state updates
-// after the marker can also be written and will be fixed by generator later if
-// it's outdated.
+// Note: the generation marker may be unnecessary since state updates after the
+// marker can also be written and will be corrected by the generator if outdated.
 func writeStates(batch ethdb.Batch, genMarker []byte, accountData map[common.Hash][]byte, storageData map[common.Hash]map[common.Hash][]byte, clean *bytecache.Cache) (int, int) {
 	var (
 		accounts int

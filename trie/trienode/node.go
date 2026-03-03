@@ -182,13 +182,13 @@ func (set *NodeSet) Merge(other *NodeSet) error {
 			set.Origins[path] = other.Origins[path]
 		}
 	}
-	// TODO leaves are not aggregated, as they are not used in storage tries.
-	// TODO(rjl493456442) deprecate the leaves along with the legacy hash mode.
+	// Note: leaves are not aggregated, as they are not used in storage tries.
+	// They should be deprecated along with the legacy hash mode.
 	return nil
 }
 
-// AddLeaf adds the provided leaf node into set. TODO(rjl493456442) how can
-// we get rid of it?
+// AddLeaf adds the provided leaf node into set. This exists for legacy hash mode
+// and should be removed when that mode is deprecated.
 func (set *NodeSet) AddLeaf(parent common.Hash, blob []byte) {
 	set.Leaves = append(set.Leaves, &leaf{Blob: blob, Parent: parent})
 }

@@ -203,7 +203,7 @@ func (hub *Hub) refreshWallets() {
 	// Retrieve all the smart card reader to check for cards
 	readers, err := hub.context.ListReaders()
 	if err != nil {
-		// This is a perverted hack, the scard library returns an error if no card
+		// The scard library returns an error if no card
 		// readers are present instead of simply returning an empty list. We don't
 		// want to fill the user's log with errors, so filter those out.
 		if err.Error() != "scard: Cannot find a smart card reader." {
@@ -284,7 +284,7 @@ func (hub *Hub) Subscribe(sink chan<- accounts.WalletEvent) event.Subscription {
 // by the smart card hub, and for firing wallet addition/removal events.
 func (hub *Hub) updater() {
 	for {
-		// TODO: Wait for a USB hotplug event (not supported yet) or a refresh timeout
+		// Wait for a USB hotplug event (not supported yet) or a refresh timeout.
 		// <-hub.changes
 		time.Sleep(refreshCycle)
 

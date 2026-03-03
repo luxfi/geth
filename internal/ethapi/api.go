@@ -1653,8 +1653,7 @@ func (api *TransactionAPI) SendRawTransaction(ctx context.Context, input hexutil
 		return common.Hash{}, err
 	}
 
-	// Convert legacy blob transaction proofs.
-	// TODO: remove in go-ethereum v1.17.x
+	// Convert legacy blob transaction proofs (backward compat for v0 sidecars).
 	if sc := tx.BlobTxSidecar(); sc != nil {
 		exp := api.currentBlobSidecarVersion()
 		if sc.Version == types.BlobSidecarVersion0 && exp == types.BlobSidecarVersion1 {
@@ -1676,8 +1675,7 @@ func (api *TransactionAPI) SendRawTransactionSync(ctx context.Context, input hex
 		return nil, err
 	}
 
-	// Convert legacy blob transaction proofs.
-	// TODO: remove in go-ethereum v1.17.x
+	// Convert legacy blob transaction proofs (backward compat for v0 sidecars).
 	if sc := tx.BlobTxSidecar(); sc != nil {
 		exp := api.currentBlobSidecarVersion()
 		if sc.Version == types.BlobSidecarVersion0 && exp == types.BlobSidecarVersion1 {

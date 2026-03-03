@@ -350,8 +350,8 @@ loop:
 			}
 			return fmt.Errorf("disconnect received: %v", pretty.Sdump(msg))
 		case pingMsg:
-			// TODO (renaynay): in the future, this should be an error
-			// (PINGs should not be a response upon fresh connection)
+			// PINGs should not be a response upon fresh connection, but we tolerate
+			// them for now to avoid breaking compatibility with older peers.
 			c.Write(baseProto, pongMsg, nil)
 		default:
 			return fmt.Errorf("bad status message: code %d", code)

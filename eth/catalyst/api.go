@@ -213,10 +213,9 @@ func (api *ConsensusAPI) ForkchoiceUpdatedV3(update engine.ForkchoiceStateV1, pa
 			return engine.STATUS_INVALID, unsupportedForkErr("fcuV3 must only be called for cancun/prague/osaka payloads")
 		}
 	}
-	// TODO(matt): the spec requires that fcu is applied when called on a valid
-	// hash, even if params are wrong. To do this we need to split up
-	// forkchoiceUpdate into a function that only updates the head and then a
-	// function that kicks off block construction.
+	// Note: the spec requires that fcu is applied when called on a valid hash,
+	// even if params are wrong. This would require splitting forkchoiceUpdate
+	// into head-update and block-construction phases.
 	return api.forkchoiceUpdated(update, params, engine.PayloadV3, false)
 }
 
@@ -227,7 +226,7 @@ func (api *ConsensusAPI) forkchoiceUpdated(update engine.ForkchoiceStateV1, payl
 	log.Trace("Engine API request received", "method", "ForkchoiceUpdated", "head", update.HeadBlockHash, "finalized", update.FinalizedBlockHash, "safe", update.SafeBlockHash)
 	if update.HeadBlockHash == (common.Hash{}) {
 		log.Warn("Forkchoice requested update to zero hash")
-		return engine.STATUS_INVALID, nil // TODO(karalabe): Why does someone send us this?
+		return engine.STATUS_INVALID, nil // Zero hash forkchoice update is invalid.
 	}
 	// Stash away the last update to warn the user if the beacon client goes offline
 	api.lastForkchoiceUpdate.Store(time.Now().Unix())
@@ -917,7 +916,7 @@ func (api *ConsensusAPI) invalid(err error, latestValid *types.Header) engine.Pa
 // received in the last while. If not - or if they but strange ones - it warns the
 // user that something might be off with their consensus node.
 //
-// TODO(karalabe): Spin this goroutine down somehow
+// Note: this goroutine currently runs for the lifetime of the process.
 func (api *ConsensusAPI) heartbeat() {
 	// Sleep a bit on startup since there's obviously no beacon client yet
 	// attached, so no need to print scary warnings to the user.

@@ -937,9 +937,9 @@ func (b *Block) Raw(ctx context.Context) (hexutil.Bytes, error) {
 
 // BlockNumberArgs encapsulates arguments to accessors that specify a block number.
 type BlockNumberArgs struct {
-	// TODO: Ideally we could use input unions to allow the query to specify the
-	// block parameter by hash, block number, or tag but input unions aren't part of the
-	// standard GraphQL schema SDL yet, see: https://github.com/graphql/graphql-spec/issues/488
+	// Note: input unions would allow specifying blocks by hash, number, or tag,
+	// but they aren't part of the GraphQL schema SDL yet.
+	// See: https://github.com/graphql/graphql-spec/issues/488
 	Block *Long
 }
 

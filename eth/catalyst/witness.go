@@ -77,10 +77,9 @@ func (api *ConsensusAPI) ForkchoiceUpdatedWithWitnessV3(update engine.Forkchoice
 			return engine.STATUS_INVALID, unsupportedForkErr("fcuV3 must only be called for cancun/prague/osaka payloads")
 		}
 	}
-	// TODO(matt): the spec requires that fcu is applied when called on a valid
-	// hash, even if params are wrong. To do this we need to split up
-	// forkchoiceUpdate into a function that only updates the head and then a
-	// function that kicks off block construction.
+	// Note: the spec requires that fcu is applied when called on a valid hash,
+	// even if params are wrong. This would require splitting forkchoiceUpdate
+	// into head-update and block-construction phases.
 	return api.forkchoiceUpdated(update, params, engine.PayloadV3, true)
 }
 
