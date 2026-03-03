@@ -82,7 +82,7 @@ func (s *SerializedSyncCommittee) UnmarshalJSON(input []byte) error {
 // Root calculates the root hash of the binary tree representation of a sync
 // committee provided in serialized format.
 //
-// TODO(zsfelfoldi): Get rid of this when SSZ encoding lands.
+// NOTE:zsfelfoldi): Get rid of this when SSZ encoding lands.
 func (s *SerializedSyncCommittee) Root() common.Hash {
 	var (
 		hasher  = sha256.New()

@@ -619,7 +619,7 @@ func (f *TxFetcher) loop() {
 			f.scheduleFetches(timeoutTimer, timeoutTrigger, nil)
 
 			// No idea if we scheduled something or not, trigger the timer if needed
-			// TODO(karalabe): this is kind of lame, can't we dump it into scheduleFetches somehow?
+			// NOTE:karalabe): this is kind of lame, can't we dump it into scheduleFetches somehow?
 			f.rescheduleTimeout(timeoutTimer, timeoutTrigger)
 
 		case delivery := <-f.cleanup:
@@ -641,7 +641,7 @@ func (f *TxFetcher) loop() {
 									// However, due to the RLP vs consensus format messyness, allow a few bytes
 									// wiggle-room where we only warn, but don't drop.
 									//
-									// TODO(karalabe): Get rid of this relaxation when clients are proven stable.
+									// NOTE:karalabe): Get rid of this relaxation when clients are proven stable.
 									f.dropPeer(peer)
 								}
 							}
@@ -667,7 +667,7 @@ func (f *TxFetcher) loop() {
 									// However, due to the RLP vs consensus format messyness, allow a few bytes
 									// wiggle-room where we only warn, but don't drop.
 									//
-									// TODO(karalabe): Get rid of this relaxation when clients are proven stable.
+									// NOTE:karalabe): Get rid of this relaxation when clients are proven stable.
 									f.dropPeer(peer)
 								}
 							}

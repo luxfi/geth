@@ -76,7 +76,7 @@ type headerMarshaling struct {
 
 // Hash calculates the block root of the header.
 //
-// TODO(zsfelfoldi): Remove this when an SSZ encoder lands.
+// NOTE:zsfelfoldi): Remove this when an SSZ encoder lands.
 func (h *Header) Hash() common.Hash {
 	var values [16]merkle.Value // values corresponding to indices 8 to 15 of the beacon header tree
 	binary.LittleEndian.PutUint64(values[headerIndexSlot][:8], h.Slot)
