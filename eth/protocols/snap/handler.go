@@ -342,9 +342,9 @@ func ServiceGetStorageRangesQuery(chain *core.BlockChain, req *GetStorageRangesP
 	if req.Bytes > softResponseLimit {
 		req.Bytes = softResponseLimit
 	}
-	// TODO(karalabe): Do we want to enforce > 0 accounts and 1 account if origin is set?
-	// TODO(karalabe):   - Logging locally is not ideal as remote faults annoy the local user
-	// TODO(karalabe):   - Dropping the remote peer is less flexible wrt client bugs (slow is better than non-functional)
+	// NOTE:karalabe): Do we want to enforce > 0 accounts and 1 account if origin is set?
+	// NOTE:karalabe):   - Logging locally is not ideal as remote faults annoy the local user
+	// NOTE:karalabe):   - Dropping the remote peer is less flexible wrt client bugs (slow is better than non-functional)
 
 	// Calculate the hard limit at which to abort, even if mid storage trie
 	hardLimit := uint64(float64(req.Bytes) * (1 + stateLookupSlack))

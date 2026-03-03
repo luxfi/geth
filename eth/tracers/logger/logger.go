@@ -337,7 +337,7 @@ func (l *StructLogger) OnExit(depth int, output []byte, gasUsed uint64, err erro
 	}
 	l.output = output
 	l.err = err
-	// TODO @holiman, should we output the per-scope output?
+	// @holiman, should we output the per-scope output?
 	//if l.cfg.Debug {
 	//	fmt.Printf("%#x\n", output)
 	//	if err != nil {

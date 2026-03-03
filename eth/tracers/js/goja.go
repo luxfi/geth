@@ -470,7 +470,7 @@ func wrapError(context string, err error) error {
 // It depends on type converters having been set up.
 func (t *jsTracer) setBuiltinFunctions() {
 	vm := t.vm
-	// TODO: load console from goja-nodejs
+	// NOTE: load console from goja-nodejs
 	vm.Set("toHex", func(v goja.Value) string {
 		b, err := t.fromBuf(vm, v, false)
 		if err != nil {
@@ -575,7 +575,7 @@ func (t *jsTracer) setBuiltinFunctions() {
 // suitable for JS consumption.
 func (t *jsTracer) setTypeConverters() error {
 	// Inject bigint logic.
-	// TODO: To be replaced after goja adds support for native JS bigint.
+	// NOTE: To be replaced after goja adds support for native JS bigint.
 	toBigCode, err := t.vm.RunProgram(getBigIntProgram())
 	if err != nil {
 		return err
