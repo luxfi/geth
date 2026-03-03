@@ -46,8 +46,8 @@ var (
 
 // timestampThreshold is the Ethereum mainnet genesis timestamp. It is used to
 // differentiate if a forkid.next field is a block number or a timestamp. Whilst
-// very hacky, something's needed to split the validation during the transition
-// period (block forks -> time forks).
+// This threshold differentiates block-number forks from timestamp forks during
+// the transition period.
 const timestampThreshold = 1438269973
 
 // Blockchain defines all necessary method to build a forkID.

@@ -71,7 +71,7 @@ type Trie interface {
 	// GetKey returns the sha3 preimage of a hashed key that was previously used
 	// to store a value.
 	//
-	// TODO(fjl): remove this when StateTrie is removed
+	// GetKey can be removed when StateTrie is removed.
 	GetKey([]byte) []byte
 
 	// GetAccount abstracts an account read from the trie. It retrieves the

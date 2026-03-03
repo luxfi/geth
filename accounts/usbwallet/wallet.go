@@ -416,7 +416,7 @@ func (w *wallet) selfDerive() {
 			}
 		}
 		// Shift the self-derivation forward
-		// TODO(karalabe): don't overwrite changes from wallet.SelfDerive
+		// Note: this overwrites any changes from wallet.SelfDerive.
 		w.deriveNextAddrs = nextAddrs
 		w.deriveNextPaths = nextPaths
 		w.stateLock.Unlock()
@@ -553,7 +553,7 @@ func (w *wallet) SignData(account accounts.Account, mimeType string, data []byte
 	defer func() { w.commsLock <- struct{}{} }()
 
 	// Ensure the device isn't screwed with while user confirmation is pending
-	// TODO(karalabe): remove if hotplug lands on Windows
+	// Workaround for lack of USB hotplug support on Windows.
 	w.hub.commsLock.Lock()
 	w.hub.commsPend++
 	w.hub.commsLock.Unlock()
@@ -607,7 +607,7 @@ func (w *wallet) SignTx(account accounts.Account, tx *types.Transaction, chainID
 	defer func() { w.commsLock <- struct{}{} }()
 
 	// Ensure the device isn't screwed with while user confirmation is pending
-	// TODO(karalabe): remove if hotplug lands on Windows
+	// Workaround for lack of USB hotplug support on Windows.
 	w.hub.commsLock.Lock()
 	w.hub.commsPend++
 	w.hub.commsLock.Unlock()

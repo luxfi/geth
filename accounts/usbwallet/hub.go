@@ -62,7 +62,7 @@ type Hub struct {
 
 	stateLock sync.RWMutex // Protects the internals of the hub from racey access
 
-	// TODO(karalabe): remove if hotplug lands on Windows
+	// Workaround for lack of USB hotplug support on Windows.
 	commsPend int           // Number of operations blocking enumeration
 	commsLock sync.Mutex    // Lock protecting the pending counter and enumeration
 	enumFails atomic.Uint32 // Number of times enumeration has failed
@@ -159,7 +159,7 @@ func (hub *Hub) refreshWallets() {
 		// is a bug acknowledged at Ledger, but it won't be fixed on old devices so we
 		// need to prevent concurrent comms ourselves. The more elegant solution would
 		// be to ditch enumeration in favor of hotplug events, but that don't work yet
-		// on Windows so if we need to hack it anyway, this is more elegant for now.
+		// on Windows so this workaround is needed until hotplug support lands.
 		hub.commsLock.Lock()
 		if hub.commsPend > 0 { // A confirmation is pending, don't refresh
 			hub.commsLock.Unlock()
@@ -258,7 +258,7 @@ func (hub *Hub) Subscribe(sink chan<- accounts.WalletEvent) event.Subscription {
 // by the USB hub, and for firing wallet addition/removal events.
 func (hub *Hub) updater() {
 	for {
-		// TODO: Wait for a USB hotplug event (not supported yet) or a refresh timeout
+		// Wait for a USB hotplug event (not supported yet) or a refresh timeout.
 		// <-hub.changes
 		time.Sleep(refreshCycle)
 

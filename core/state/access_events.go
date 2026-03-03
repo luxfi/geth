@@ -72,7 +72,7 @@ func (ae *AccessEvents) Merge(other *AccessEvents) {
 // Keys returns, predictably, the list of keys that were touched during the
 // buildup of the access witness.
 func (ae *AccessEvents) Keys() [][]byte {
-	// TODO: consider if parallelizing this is worth it, probably depending on len(ae.chunks).
+	// Note: parallelizing this may be worthwhile for large chunk sets.
 	keys := make([][]byte, 0, len(ae.chunks))
 	for chunk := range ae.chunks {
 		basePoint := ae.pointCache.Get(chunk.addr[:])

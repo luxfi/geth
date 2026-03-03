@@ -110,8 +110,8 @@ func discoverPMP() Interface {
 	return nil
 }
 
-// TODO: improve this. We currently assume that (on most networks)
-// the router is X.X.X.1 in a local LAN range.
+// potentialGateways assumes the router is X.X.X.1 in a local LAN range.
+// This heuristic works on most networks but is not comprehensive.
 func potentialGateways() (gws []net.IP) {
 	ifaces, err := net.Interfaces()
 	if err != nil {

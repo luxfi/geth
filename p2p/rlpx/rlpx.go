@@ -359,7 +359,7 @@ const (
 
 var (
 	// this is used in place of actual frame header data.
-	// TODO: replace this when Msg contains the protocol type code.
+	// This placeholder is used in place of actual frame header data.
 	zeroHeader = []byte{0xC2, 0x80, 0x80}
 
 	// errPlainMessageTooLarge is returned if a decompressed message length exceeds
@@ -657,7 +657,7 @@ func importPublicKey(pubKey []byte) (*ecies.PublicKey, error) {
 	default:
 		return nil, fmt.Errorf("invalid public key length %v (expect 64/65)", len(pubKey))
 	}
-	// TODO: fewer pointless conversions
+	// Note: the pubkey conversion chain here could be simplified.
 	pub, err := crypto.UnmarshalPubkey(pubKey65)
 	if err != nil {
 		return nil, err

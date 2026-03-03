@@ -481,7 +481,8 @@ func BinTrieRoot(ctx *cli.Context) error {
 	return nil
 }
 
-// TODO(@CPerezz): Should this go to `bintrie` module?
+// genBinTrieFromAlloc could live in the bintrie module but resides here
+// to avoid import cycles with core.GenesisAlloc.
 func genBinTrieFromAlloc(alloc core.GenesisAlloc, db database.NodeDatabase) (*bintrie.BinaryTrie, error) {
 	bt, err := bintrie.NewBinaryTrie(types.EmptyBinaryHash, db)
 	if err != nil {

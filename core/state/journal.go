@@ -122,8 +122,8 @@ func (j *journal) revert(statedb *StateDB, snapshot int) {
 }
 
 // dirty explicitly sets an address to dirty, even if the change entries would
-// otherwise suggest it as clean. This method is an ugly hack to handle the RIPEMD
-// precompile consensus exception.
+// otherwise suggest it as clean. This handles the RIPEMD precompile consensus
+// exception where the precompile address must be marked dirty.
 func (j *journal) dirty(addr common.Address) {
 	j.dirties[addr]++
 }

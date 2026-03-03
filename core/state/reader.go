@@ -291,19 +291,14 @@ func newTrieReader(root common.Hash, db *triedb.Database, cache *utils.PointCach
 			}
 			tr = transitiontrie.NewTransitionTrie(mpt, binTrie, false)
 		} else {
-			// HACK: Use TransitionTrie with nil base as a wrapper to make BinaryTrie
+			// Use TransitionTrie with nil base as a wrapper to make BinaryTrie
 			// satisfy the Trie interface. This works around the import cycle between
 			// trie and trie/bintrie packages.
 			//
-			// TODO: In future PRs, refactor the package structure to avoid this hack:
-			// - Option 1: Move common interfaces (Trie, NodeIterator) to a separate
-			//   package that both trie and trie/bintrie can import
-			// - Option 2: Create a factory function in the trie package that returns
-			//   BinaryTrie as a Trie interface without direct import
-			// - Option 3: Move BinaryTrie to the main trie package
-			//
-			// The current approach works but adds unnecessary overhead and complexity
-			// by using TransitionTrie when there's no actual transition happening.
+			// Possible future refactors to eliminate this wrapper:
+			// - Move common interfaces (Trie, NodeIterator) to a separate package
+			// - Create a factory function in the trie package
+			// - Move BinaryTrie to the main trie package
 			tr = transitiontrie.NewTransitionTrie(nil, binTrie, false)
 		}
 	}

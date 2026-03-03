@@ -740,7 +740,7 @@ func (bctx *buildContext) makeOp(name *types.Named, typ types.Type, tags rlpstru
 		if bctx.isDecoder(typ) {
 			return nil, fmt.Errorf("type %v implements rlp.Decoder with non-pointer receiver", typ)
 		}
-		// TODO: same check for encoder?
+		// Note: a similar check for the Encoder interface could be added here.
 		return bctx.makeOp(typ, typ.Underlying(), tags)
 	case *types.Pointer:
 		if isBigInt(typ.Elem()) {

@@ -35,8 +35,7 @@ import (
 	"github.com/luxfi/geth/rlp"
 )
 
-// TODO concurrent WHOAREYOU tie-breaker
-// TODO rehandshake after X packets
+// Note: concurrent WHOAREYOU tie-breaking and periodic rehandshake are not yet implemented.
 
 // Header represents a packet header.
 type Header struct {
@@ -358,7 +357,7 @@ func (c *Codec) encodeHandshakeHeader(toID enode.ID, addr string, challenge *Who
 		return Header{}, nil, fmt.Errorf("can't generate nonce: %v", err)
 	}
 
-	// TODO: this should happen when the first authenticated message is received
+	// Note: session storage should ideally happen when the first authenticated message is received.
 	c.sc.storeNewSession(toID, addr, session, challenge.Node)
 
 	// Encode the auth header.
