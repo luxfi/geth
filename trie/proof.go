@@ -541,7 +541,7 @@ func VerifyRangeProof(rootHash common.Hash, firstKey []byte, keys [][]byte, valu
 	if bytes.Compare(firstKey, lastKey) >= 0 {
 		return false, errors.New("invalid edge keys")
 	}
-	// todo(rjl493456442) different length edge keys should be supported
+	// Note: different length edge keys are not yet supported.
 	if len(firstKey) != len(lastKey) {
 		return false, errors.New("inconsistent edge keys")
 	}
