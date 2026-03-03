@@ -574,7 +574,7 @@ func (s *skeleton) initSync(head *types.Header) {
 			// head header. We won't delete any trimmed skeleton headers since
 			// those will be outside the index space of the many subchains and
 			// the database space will be reclaimed eventually when processing
-			// blocks above the current head (TODO(karalabe): don't forget).
+			// blocks above the current head.
 			batch := s.db.NewBatch()
 
 			rawdb.WriteSkeletonHeader(batch, head)
@@ -663,7 +663,7 @@ func (s *skeleton) processNewHead(head *types.Header, final *types.Header) error
 	// from the chain tip and insert the new head. We won't delete any trimmed
 	// skeleton headers since those will be outside the index space of the many
 	// subchains and the database space will be reclaimed eventually when processing
-	// blocks above the current head (TODO(karalabe): don't forget).
+	// blocks above the current head.
 	batch := s.db.NewBatch()
 
 	rawdb.WriteSkeletonHeader(batch, head)
