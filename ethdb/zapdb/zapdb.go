@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 
-	badger "github.com/luxfi/zapdb/v4"
 	"github.com/luxfi/geth/ethdb"
+	badger "github.com/luxfi/zapdb/v4"
 )
 
 var (
@@ -31,9 +31,9 @@ func New(path string, cache int, handles int, namespace string, readonly bool) (
 	opts.SyncWrites = false
 	opts.NumCompactors = 4
 	opts.NumMemtables = 5
-	opts.MemTableSize = 64 << 20      // 64 MB
-	opts.BlockCacheSize = 256 << 20   // 256 MB
-	opts.IndexCacheSize = 100 << 20   // 100 MB
+	opts.MemTableSize = 64 << 20    // 64 MB
+	opts.BlockCacheSize = 256 << 20 // 256 MB
+	opts.IndexCacheSize = 100 << 20 // 100 MB
 	opts.BloomFalsePositive = 0.01
 	opts.DetectConflicts = false
 	opts.NumVersionsToKeep = 1
@@ -321,13 +321,13 @@ func (d *Database) ModifyAncients(fn func(ethdb.AncientWriteOp) error) (int64, e
 
 func (d *Database) TruncateHead(n uint64) (uint64, error) { return 0, nil }
 func (d *Database) TruncateTail(n uint64) (uint64, error) { return 0, nil }
-func (d *Database) SyncAncient() error                     { return nil }
+func (d *Database) SyncAncient() error                    { return nil }
 
 func (d *Database) MigrateTable(s string, f func([]byte) ([]byte, error)) error { return nil }
 
-func (d *Database) AncientOffSet() uint64                { return 0 }
-func (d *Database) Ancients() (uint64, error)            { return 0, nil }
-func (d *Database) Tail() (uint64, error)                { return 0, nil }
+func (d *Database) AncientOffSet() uint64                   { return 0 }
+func (d *Database) Ancients() (uint64, error)               { return 0, nil }
+func (d *Database) Tail() (uint64, error)                   { return 0, nil }
 func (d *Database) AncientSize(kind string) (uint64, error) { return 0, nil }
 
 func (d *Database) AncientRange(kind string, start, count, maxBytes uint64) ([][]byte, error) {
@@ -340,4 +340,4 @@ func (d *Database) AncientBytes(kind string, id, offset, length uint64) ([]byte,
 
 func (d *Database) HasAncient(kind string, number uint64) (bool, error) { return false, nil }
 func (d *Database) Ancient(kind string, number uint64) ([]byte, error)  { return nil, errNotSupported }
-func (d *Database) AncientBatch() ethdb.AncientWriteOp                 { return nil }
+func (d *Database) AncientBatch() ethdb.AncientWriteOp                  { return nil }

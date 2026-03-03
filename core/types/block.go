@@ -296,12 +296,12 @@ type hdrEth struct {
 	Extra            []byte
 	MixDigest        common.Hash
 	Nonce            BlockNonce
-	BaseFee          *big.Int       `rlp:"optional"`
-	WithdrawalsHash  *common.Hash   `rlp:"optional"`
-	BlobGasUsed      *uint64        `rlp:"optional"`
-	ExcessBlobGas    *uint64        `rlp:"optional"`
-	ParentBeaconRoot *common.Hash   `rlp:"optional"`
-	RequestsHash     *common.Hash   `rlp:"optional"`
+	BaseFee          *big.Int     `rlp:"optional"`
+	WithdrawalsHash  *common.Hash `rlp:"optional"`
+	BlobGasUsed      *uint64      `rlp:"optional"`
+	ExcessBlobGas    *uint64      `rlp:"optional"`
+	ParentBeaconRoot *common.Hash `rlp:"optional"`
+	RequestsHash     *common.Hash `rlp:"optional"`
 }
 
 // HashEth returns the hash using standard Ethereum header field order.
