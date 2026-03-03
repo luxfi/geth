@@ -104,7 +104,7 @@ func (t *VerkleTrie) GetAccount(addr common.Address) (*types.StateAccount, error
 	acc.Balance = new(uint256.Int).SetBytes(basicData[utils.BasicDataBalanceOffset : utils.BasicDataBalanceOffset+16])
 	acc.CodeHash = values[utils.CodeHashLeafKey]
 
-	// TODO account.Root is leave as empty. How should we handle the legacy account?
+	// Note: account.Root is left empty; legacy account root handling in verkle is unresolved.
 	return acc, nil
 }
 
@@ -298,10 +298,9 @@ func (t *VerkleTrie) Commit(_ bool) (common.Hash, *trienode.NodeSet) {
 // NodeIterator implements state.Trie, returning an iterator that returns
 // nodes of the trie. Iteration starts at the key after the given start key.
 //
-// TODO(gballet, rjl493456442) implement it.
+// NodeIterator is not yet implemented for VerkleTrie.
 func (t *VerkleTrie) NodeIterator(startKey []byte) (NodeIterator, error) {
-	// TODO(@CPerezz): remove.
-	return nil, errors.New("not implemented")
+	return nil, errors.New("NodeIterator is not implemented for VerkleTrie")
 }
 
 // Prove implements state.Trie, constructing a Merkle proof for key. The result
@@ -312,9 +311,9 @@ func (t *VerkleTrie) NodeIterator(startKey []byte) (NodeIterator, error) {
 // nodes of the longest existing prefix of the key (at least the root), ending
 // with the node that proves the absence of the key.
 //
-// TODO(gballet, rjl493456442) implement it.
+// Prove is not yet implemented for VerkleTrie.
 func (t *VerkleTrie) Prove(key []byte, proofDb ethdb.KeyValueWriter) error {
-	panic("not implemented")
+	return errors.New("Prove is not implemented for VerkleTrie")
 }
 
 // Copy returns a deep-copied verkle tree.

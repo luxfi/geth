@@ -33,7 +33,7 @@ var (
 	SepoliaGenesisHash    = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
 	HoodiGenesisHash      = common.HexToHash("0xbbe312868b376a3001692a646dd2d7d1e4406380dfd86b98aa8a34d1557c971b")
 	LuxMainnetGenesisHash = common.HexToHash("0x3f4fa2a0b0ce089f52bf0ae9199c75ffdd76ecafc987794050cb0d286f1ec61e")
-	LuxTestnetGenesisHash = common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000") // TODO: Add actual testnet genesis hash
+	LuxTestnetGenesisHash = common.HexToHash("0x0000000000000000000000000000000000000000000000000000000000000000") // Placeholder: update with actual testnet genesis hash once generated.
 )
 
 func newUint64(val uint64) *uint64 { return &val }

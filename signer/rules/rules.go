@@ -61,7 +61,7 @@ func NewRuleEvaluator(next core.UIClientAPI, jsbackend storage.Storage) (*rulese
 }
 func (r *rulesetUI) RegisterUIServer(api *core.UIServerAPI) {
 	r.next.RegisterUIServer(api)
-	// TODO, make it possible to query from js
+	// Note: querying the UI server API from JS is not yet supported.
 }
 
 func (r *rulesetUI) Init(javascriptRules string) error {

@@ -189,7 +189,7 @@ func (l *lookup) addLayer(diff *diffLayer) {
 		for accountHash := range diff.states.accountData {
 			list, exists := l.accounts[accountHash]
 			if !exists {
-				list = make([]common.Hash, 0, 16) // TODO(rjl493456442) use sync pool
+				list = make([]common.Hash, 0, 16) // Consider using sync.Pool for allocation reuse.
 			}
 			list = append(list, state)
 			l.accounts[accountHash] = list
@@ -204,7 +204,7 @@ func (l *lookup) addLayer(diff *diffLayer) {
 				key := storageKey(accountHash, slotHash)
 				list, exists := l.storages[key]
 				if !exists {
-					list = make([]common.Hash, 0, 16) // TODO(rjl493456442) use sync pool
+					list = make([]common.Hash, 0, 16) // Consider using sync.Pool for allocation reuse.
 				}
 				list = append(list, state)
 				l.storages[key] = list

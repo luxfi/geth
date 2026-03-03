@@ -238,7 +238,7 @@ func verifyState(ctx *cli.Context) error {
 		}
 		log.Info("Verified the state", "root", root)
 
-		// TODO(rjl493456442) implement dangling checks in pathdb.
+		// Note: dangling checks are not yet implemented in pathdb.
 		return nil
 	} else {
 		snapConfig := snapshot.Config{
