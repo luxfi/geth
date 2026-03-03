@@ -138,6 +138,14 @@ func MustSignNewTx(prv *ecdsa.PrivateKey, s Signer, txdata TxData) *Transaction 
 // Sender may cache the address, allowing it to be used regardless of
 // signing method. The cache is invalidated if the cached signer does
 // not match the signer used in the current call.
+// CacheSender stores a pre-recovered sender address in the transaction's cache.
+// This bypasses crypto.Ecrecover for transactions whose senders were recovered
+// externally (e.g., GPU batch ecrecover). The cached value is used by subsequent
+// Sender() calls, avoiding redundant signature recovery.
+func CacheSender(signer Signer, tx *Transaction, addr common.Address) {
+	tx.from.Store(&sigCache{signer: signer, from: addr})
+}
+
 func Sender(signer Signer, tx *Transaction) (common.Address, error) {
 	if sigCache := tx.from.Load(); sigCache != nil {
 		// If the signer used to derive from in a previous
