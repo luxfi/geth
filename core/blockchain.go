@@ -179,7 +179,7 @@ type BlockChainConfig struct {
 	// State snapshot related options
 	SnapshotLimit   int  // Memory allowance (MB) to use for caching snapshot entries in memory
 	SnapshotNoBuild bool // Whether the background generation is allowed
-	SnapshotWait    bool // Wait for snapshot construction on startup. TODO(karalabe): This is a dirty hack for testing, nuke it
+	SnapshotWait    bool // Wait for snapshot construction on startup (used in tests).
 
 	// This defines the cutoff block for history expiry.
 	// Blocks before this number may be unavailable in the chain database.
@@ -259,9 +259,9 @@ func (cfg *BlockChainConfig) triedbConfig(isVerkle bool) *triedb.Config {
 			StateCleanSize:      cfg.SnapshotLimit * 1024 * 1024,
 			JournalDirectory:    cfg.TrieJournalDirectory,
 
-			// TODO(rjl493456442): The write buffer represents the memory limit used
-			// for flushing both trie data and state data to disk. The config name
-			// should be updated to eliminate the confusion.
+			// Note: the write buffer represents the memory limit used for flushing
+			// both trie data and state data to disk. The config name (TrieDirtyLimit)
+			// is misleading and should be renamed.
 			WriteBufferSize: cfg.TrieDirtyLimit * 1024 * 1024,
 			NoAsyncFlush:    cfg.TrieNoAsyncFlush,
 		}
@@ -1134,7 +1134,7 @@ func (bc *BlockChain) setHeadBeyondRoot(head uint64, time uint64, root common.Ha
 			rawdb.DeleteBody(db, hash, num)
 			rawdb.DeleteReceipts(db, hash, num)
 		}
-		// Todo(rjl493456442) txlookup, log index, etc
+		// Note: txlookup and log index cleanup is not yet implemented here.
 	}
 	// If SetHead was only called as a chain reparation method, try to skip
 	// touching the header chain altogether, unless the freezer is broken
@@ -2602,7 +2602,7 @@ func (bc *BlockChain) reorg(oldHead *types.Header, newHead *types.Header) error 
 	// Deleted log emission on the API uses forward order, which is borked, but
 	// we'll leave it in for legacy reasons.
 	//
-	// TODO(karalabe): This should be nuked out, no idea how, deprecate some APIs?
+	// Note: deleted log emission uses forward order for legacy API compatibility.
 	{
 		for i := len(oldChain) - 1; i >= 0; i-- {
 			block := bc.GetBlock(oldChain[i].Hash(), oldChain[i].Number.Uint64())
@@ -2636,7 +2636,7 @@ func (bc *BlockChain) reorg(oldHead *types.Header, newHead *types.Header) error 
 			// Emit revertals latest first, older then
 			slices.Reverse(logs)
 
-			// TODO(karalabe): Hook into the reverse emission part
+			// Note: reverse emission hook for deleted logs is not yet wired up.
 		}
 	}
 	// Apply new blocks in forward order
@@ -2888,9 +2888,9 @@ func (bc *BlockChain) InsertHeadersBeforeCutoff(headers []*types.Header) (int, e
 	if len(headers) == 0 {
 		return 0, nil
 	}
-	// TODO(rjl493456442): Headers before the configured cutoff have already
-	// been verified by the hash of cutoff header. Theoretically, header validation
-	// could be skipped here.
+	// Note: headers before the configured cutoff have already been verified
+	// by the hash of the cutoff header. Header validation could theoretically
+	// be skipped here for performance.
 	if n, err := bc.hc.ValidateHeaderChain(headers); err != nil {
 		return n, err
 	}

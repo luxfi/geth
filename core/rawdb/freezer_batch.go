@@ -221,7 +221,7 @@ func (batch *freezerTableBatch) commit() error {
 	batch.t.sizeGauge.Inc(dataSize + indexSize)
 	batch.t.writeMeter.Mark(dataSize + indexSize)
 
-	// Periodically sync the table, todo (rjl493456442) make it configurable?
+	// Periodically sync the table. The threshold is currently hardcoded.
 	batch.t.uncommitted += items
 	if batch.t.uncommitted > freezerTableFlushThreshold && time.Since(batch.t.lastSync) > 30*time.Second {
 		batch.t.uncommitted = 0
