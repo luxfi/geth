@@ -139,7 +139,7 @@ type Downloader struct {
 	pivotHeader *types.Header // Pivot block header to dynamically push the syncing state root
 	pivotLock   sync.RWMutex  // Lock protecting pivot header reads from updates
 
-	SnapSyncer     *snap.Syncer // TODO(karalabe): make private! hack for now
+	SnapSyncer     *snap.Syncer // Exported for snap sync integration
 	stateSyncStart chan *stateSync
 
 	// Cancellation and termination
@@ -534,7 +534,7 @@ func (d *Downloader) syncToHead() (err error) {
 		// For non-merged networks, if there is a checkpoint available, then calculate
 		// the ancientLimit through that. Otherwise calculate the ancient limit through
 		// the advertised height of the remote peer. This is mostly a fallback for
-		// legacy networks, but should eventually be dropped. TODO(karalabe).
+		// legacy networks, but should eventually be dropped.
 		//
 		// Beacon sync, use the latest finalized block as the ancient limit
 		// or a reasonable height if no finalized block is yet announced.
@@ -1187,7 +1187,7 @@ func (d *Downloader) reportSnapSyncProgress(force bool) {
 	}
 	if latest == nil {
 		// This should really never happen, but add some defensive code for now.
-		// TODO(karalabe): Remove it eventually if we don't see it blow.
+		// NOTE:karalabe): Remove it eventually if we don't see it blow.
 		log.Error("Nil latest block in sync progress report")
 		return
 	}
