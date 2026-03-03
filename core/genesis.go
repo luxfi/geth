@@ -403,8 +403,8 @@ func SetupGenesisBlockWithOverride(db ethdb.Database, triedb *triedb.Database, g
 		return nil, common.Hash{}, nil, err
 	}
 
-	// TODO(rjl493456442) better to define the comparator of chain config
-	// and short circuit if the chain config is not changed.
+	// Note: a chain config comparator would allow short-circuiting here
+	// when the config is unchanged.
 	compatErr := storedCfg.CheckCompatible(newCfg, head.Number.Uint64(), head.Time)
 	if compatErr != nil && ((head.Number.Uint64() != 0 && compatErr.RewindToBlock != 0) || (head.Time != 0 && compatErr.RewindToTime != 0)) {
 		return newCfg, ghash, compatErr, nil

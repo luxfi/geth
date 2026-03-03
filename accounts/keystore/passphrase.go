@@ -356,9 +356,8 @@ func getKDFKey(cryptoJSON CryptoJSON, auth string) ([]byte, error) {
 	return nil, fmt.Errorf("unsupported KDF: %s", cryptoJSON.KDF)
 }
 
-// TODO: can we do without this when unmarshalling dynamic JSON?
-// why do integers in KDF params end up as float64 and not int after
-// unmarshal?
+// ensureInt handles the JSON unmarshalling quirk where integers in KDF params
+// end up as float64 instead of int.
 func ensureInt(x interface{}) int {
 	res, ok := x.(int)
 	if !ok {

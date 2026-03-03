@@ -342,12 +342,9 @@ func bindType(kind abi.Type, structs map[string]*tmplStruct) string {
 func bindTopicType(kind abi.Type, structs map[string]*tmplStruct) string {
 	bound := bindType(kind, structs)
 
-	// todo(rjl493456442) according solidity documentation, indexed event
-	// parameters that are not value types i.e. arrays and structs are not
-	// stored directly but instead a keccak256-hash of an encoding is stored.
-	//
-	// We only convert strings and bytes to hash, still need to deal with
-	// array(both fixed-size and dynamic-size) and struct.
+	// Per Solidity documentation, indexed event parameters that are not value
+	// types (arrays and structs) are stored as keccak256 hashes. Currently only
+	// strings and bytes are converted to hash; arrays and structs are not yet handled.
 	if bound == "string" || bound == "[]byte" {
 		bound = "common.Hash"
 	}

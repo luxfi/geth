@@ -84,7 +84,7 @@ func (s *ExecuteStats) reportMetrics() {
 	triedbCommitTimer.Update(s.TrieDBCommit)                // Trie database commits are complete, we can mark them
 	blockWriteTimer.Update(s.BlockWrite)                    // The time spent on block write
 	blockInsertTimer.Update(s.TotalTime)                    // The total time spent on block execution
-	chainMgaspsMeter.Update(time.Duration(s.MgasPerSecond)) // TODO(rjl493456442) generalize the ResettingTimer
+	chainMgaspsMeter.Update(time.Duration(s.MgasPerSecond)) // Note: ResettingTimer should be generalized for Mgas/s tracking.
 
 	// Cache hit rates
 	accountCacheHitPrefetchMeter.Mark(s.StatePrefetchCacheStats.AccountCacheHit)
