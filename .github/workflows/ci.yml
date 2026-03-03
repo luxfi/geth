@@ -8,9 +8,6 @@ on:
 
 env:
   GO_VERSION: '1.26.1'
-  GOPRIVATE: github.com/luxfi/*
-  GONOSUMDB: github.com/luxfi/*
-  GOTOOLCHAIN: local
 
 jobs:
   lint:
