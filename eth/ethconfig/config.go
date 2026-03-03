@@ -179,16 +179,16 @@ type Config struct {
 	// send-transaction variants. The unit is ether.
 	RPCTxFeeCap float64
 
-	// OverrideOsaka (TODO: remove after the fork)
+	// OverrideOsaka overrides the Osaka fork timestamp (remove after the fork).
 	OverrideOsaka *uint64 `toml:",omitempty"`
 
-	// OverrideBPO1 (TODO: remove after the fork)
+	// OverrideBPO1 overrides the BPO1 fork timestamp (remove after the fork).
 	OverrideBPO1 *uint64 `toml:",omitempty"`
 
-	// OverrideBPO2 (TODO: remove after the fork)
+	// OverrideBPO2 overrides the BPO2 fork timestamp (remove after the fork).
 	OverrideBPO2 *uint64 `toml:",omitempty"`
 
-	// OverrideVerkle (TODO: remove after the fork)
+	// OverrideVerkle overrides the Verkle fork timestamp (remove after the fork).
 	OverrideVerkle *uint64 `toml:",omitempty"`
 
 	// EIP-7966: eth_sendRawTransactionSync timeouts

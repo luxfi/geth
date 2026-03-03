@@ -71,7 +71,7 @@ func (g *GoToolchain) goTool(command string, args ...string) *exec.Cmd {
 	tool.Env = append(tool.Env, "GOROOT="+g.Root)
 
 	// Forward environment variables to the tool, but skip compiler target settings.
-	// TODO: what about GOARM?
+	// Note: GOARM is not forwarded; cross-compilation for ARM may need adjustment.
 	skip := map[string]struct{}{"GOROOT": {}, "GOARCH": {}, "GOOS": {}, "GOBIN": {}, "CC": {}}
 	for _, e := range os.Environ() {
 		if i := strings.IndexByte(e, '='); i >= 0 {

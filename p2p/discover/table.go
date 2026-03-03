@@ -547,7 +547,7 @@ func (tab *Table) handleAddNode(req addNodeOp) bool {
 // addReplacement adds n to the replacement cache of bucket b.
 func (tab *Table) addReplacement(b *bucket, n *enode.Node) {
 	if containsID(b.replacements, n.ID()) {
-		// TODO: update ENR
+		// Note: ENR is not updated for existing replacement entries.
 		return
 	}
 	if !tab.addIP(b, n.IPAddr()) {

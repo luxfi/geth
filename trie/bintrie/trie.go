@@ -210,7 +210,7 @@ func (t *BinaryTrie) GetAccount(addr common.Address) (*types.StateAccount, error
 	// An account can be partially migrated, where storage slots were moved to the binary
 	// but not yet the account. This means some account information as (header) storage slots
 	// are in the binary trie but basic account information must be read in the base tree (MPT).
-	// TODO: we can simplify this logic depending if the conversion is in progress or finished.
+	// Note: this logic can be simplified once the MPT-to-Binary conversion is complete.
 	emptyAccount := true
 	for i := 0; values != nil && i <= CodeHashLeafKey && emptyAccount; i++ {
 		emptyAccount = emptyAccount && values[i] == nil
@@ -257,8 +257,8 @@ func (t *BinaryTrie) UpdateAccount(addr common.Address, acc *types.StateAccount,
 	// the extra values. This happens in devmode, where
 	// 0xff**HashSize is allocated to the developer account.
 	balanceBytes := acc.Balance.Bytes()
-	// TODO: reduce the size of the allocation in devmode, then panic instead
-	// of truncating.
+	// Note: in devmode, the allocation can exceed 16 bytes (0xff**HashSize).
+	// Truncating instead of panicking for now; reduce the devmode allocation to fix.
 	if len(balanceBytes) > 16 {
 		balanceBytes = balanceBytes[16:]
 	}
@@ -366,9 +366,9 @@ func (t *BinaryTrie) Copy() *BinaryTrie {
 
 // IsVerkle returns true if the trie is a Verkle tree.
 func (t *BinaryTrie) IsVerkle() bool {
-	// TODO @gballet This is technically NOT a verkle tree, but it has the same
-	// behavior and basic structure, so for all intents and purposes, it can be
-	// treated as such. Rename this when verkle gets removed.
+	// This is technically not a verkle tree, but it has the same behavior and
+	// basic structure. For interface compatibility, it reports as verkle.
+	// Rename this when verkle is fully removed.
 	return true
 }
 

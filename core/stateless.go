@@ -39,7 +39,7 @@ import (
 //   - It cannot be placed in core/stateless, because state.New prodces a circular dep
 //   - It cannot be placed outside of core, because it needs to construct a dud headerchain
 //
-// TODO(karalabe): Would be nice to resolve both issues above somehow and move it.
+// Note: resolving the circular dependency and moving this function is desirable but non-trivial.
 func ExecuteStateless(config *params.ChainConfig, vmconfig vm.Config, block *types.Block, witness *stateless.Witness) (common.Hash, common.Hash, error) {
 	// Sanity check if the supplied block accidentally contains a set root or
 	// receipt hash. If so, be very loud, but still continue.
