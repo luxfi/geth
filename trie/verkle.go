@@ -22,8 +22,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/luxfi/crypto/verkle"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto/verkle"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
