@@ -21,8 +21,8 @@ import (
 	"sync"
 
 	"github.com/crate-crypto/go-ipa/bandersnatch/fr"
-	"github.com/luxfi/crypto/verkle"
 	"github.com/holiman/uint256"
+	"github.com/luxfi/crypto/verkle"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/metrics"
 )
