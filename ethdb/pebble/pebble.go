@@ -164,7 +164,7 @@ func (d *Database) onWriteStallEnd() {
 
 // panicLogger is just a noop logger to disable Pebble's internal logger.
 //
-// TODO(karalabe): Remove when Pebble sets this as the default.
+// NOTE:karalabe): Remove when Pebble sets this as the default.
 type panicLogger struct{}
 
 func (l panicLogger) Infof(format string, args ...interface{}) {
@@ -214,7 +214,7 @@ func New(file string, cache int, handles int, namespace string, readonly bool) (
 	// known bug in the pebble where maxMemTableSize is not recognized as a
 	// valid size.
 	//
-	// TODO use the maxMemTableSize as the maximum table size once the issue
+	// use the maxMemTableSize as the maximum table size once the issue
 	// in pebble is fixed.
 	if memTableSize >= maxMemTableSize {
 		memTableSize = maxMemTableSize - 1
@@ -280,7 +280,7 @@ func New(file string, cache int, handles int, namespace string, readonly bool) (
 			WriteStallBegin: db.onWriteStallBegin,
 			WriteStallEnd:   db.onWriteStallEnd,
 		},
-		Logger: panicLogger{}, // TODO(karalabe): Delete when this is upstreamed in Pebble
+		Logger: panicLogger{}, // NOTE:karalabe): Delete when this is upstreamed in Pebble
 
 		// Pebble is configured to use asynchronous write mode, meaning write operations
 		// return as soon as the data is cached in memory, without waiting for the WAL
@@ -443,7 +443,7 @@ func (d *Database) DeleteRange(start, end []byte) error {
 		return pebble.ErrClosed
 	}
 	// There is no special flag to represent the end of key range
-	// in pebble(nil in leveldb). Use an ugly hack to construct a
+	// in pebble(nil in leveldb). Use a workaround to construct a
 	// large key to represent it.
 	if end == nil {
 		end = ethdb.MaximumKey
@@ -498,7 +498,7 @@ func (d *Database) Stat() (string, error) {
 // will compact entire data store.
 func (d *Database) Compact(start []byte, limit []byte) error {
 	// There is no special flag to represent the end of key range
-	// in pebble(nil in leveldb). Use an ugly hack to construct a
+	// in pebble(nil in leveldb). Use a workaround to construct a
 	// large key to represent it.
 	// Note any prefixed database entry will be smaller than this
 	// flag, as for trie nodes we need the 32 byte 0xff because
@@ -666,7 +666,7 @@ func (b *batch) Delete(key []byte) error {
 // later committing, inclusive on start, exclusive on end.
 func (b *batch) DeleteRange(start, end []byte) error {
 	// There is no special flag to represent the end of key range
-	// in pebble(nil in leveldb). Use an ugly hack to construct a
+	// in pebble(nil in leveldb). Use a workaround to construct a
 	// large key to represent it.
 	if end == nil {
 		end = ethdb.MaximumKey

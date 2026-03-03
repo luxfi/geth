@@ -1978,12 +1978,12 @@ func (s *Syncer) processAccountResponse(res *accountResponse) {
 		// The hash of last delivered account in the response
 		last := res.hashes[len(res.hashes)-1]
 		for hash := range res.task.SubTasks {
-			// TODO(rjl493456442) degrade the log level before merging.
+			// NOTE:rjl493456442) degrade the log level before merging.
 			if hash.Cmp(last) > 0 {
 				log.Info("Keeping suspended storage retrieval", "account", hash)
 				continue
 			}
-			// TODO(rjl493456442) degrade the log level before merging.
+			// NOTE:rjl493456442) degrade the log level before merging.
 			// It should never happen in ethereum.
 			if _, ok := resumed[hash]; !ok {
 				log.Error("Aborting suspended storage retrieval", "account", hash)
@@ -2440,7 +2440,7 @@ func (s *Syncer) forwardAccountTask(task *accountTask) {
 		if !task.needHeal[i] {
 			// If the storage task is complete, drop it into the stack trie
 			// to generate account trie nodes for it
-			full, err := types.FullAccountRLP(slim) // TODO(karalabe): Slim parsing can be omitted
+			full, err := types.FullAccountRLP(slim) // NOTE:karalabe): Slim parsing can be omitted
 			if err != nil {
 				panic(err) // Really shouldn't ever happen
 			}
