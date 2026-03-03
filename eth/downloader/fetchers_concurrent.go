@@ -183,7 +183,7 @@ func (d *Downloader) concurrentFetch(queue typedQueue) error {
 					// Although all peer removal operations return allocated tasks
 					// to the queue, that is async, and we can do better here by
 					// immediately pushing the unfulfilled requests.
-					queue.unreserve(peer.id) // TODO(karalabe): This needs a non-expiration method
+					queue.unreserve(peer.id) // NOTE:karalabe): This needs a non-expiration method
 					continue
 				}
 				pending[peer.id] = req
@@ -224,7 +224,7 @@ func (d *Downloader) concurrentFetch(queue typedQueue) error {
 			// A peer left, any existing requests need to be untracked, pending
 			// tasks returned and possible reassignment checked
 			if req, ok := pending[peerid]; ok {
-				queue.unreserve(peerid) // TODO(karalabe): This needs a non-expiration method
+				queue.unreserve(peerid) // NOTE:karalabe): This needs a non-expiration method
 				delete(pending, peerid)
 				req.Close()
 
