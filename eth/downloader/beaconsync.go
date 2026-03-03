@@ -84,7 +84,7 @@ func (b *beaconBackfiller) resume() {
 	b.lock.Lock()
 	if b.filling {
 		// If a previous filling cycle is still running, just ignore this start
-		// request. // TODO(karalabe): We should make this channel driven
+		// request. // NOTE:karalabe): We should make this channel driven
 		b.lock.Unlock()
 		return
 	}
