@@ -945,7 +945,7 @@ func (s *Session) initialize(seed []byte) error {
 		return err
 	}
 
-	// Nasty hack to force the top-level struct tag to be context-specific
+	// Force the top-level struct tag to be context-specific (ASN.1 requirement).
 	data[0] = 0xA1
 
 	_, err = s.Channel.transmitEncrypted(claSCWallet, insLoadKey, 0x02, 0, data)

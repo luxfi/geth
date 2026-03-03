@@ -249,15 +249,10 @@ func (r *HistoricalStateReader) AccountRLP(address common.Address) ([]byte, erro
 		historicalAccountReadTimer.UpdateSince(start)
 	}(time.Now())
 
-	// TODO(rjl493456442): Theoretically, the obtained disk layer could become stale
-	// within a very short time window.
-	//
-	// While reading the account data while holding `db.tree.lock` can resolve
-	// this issue, but it will introduce a heavy contention over the lock.
-	//
-	// Let's optimistically assume the situation is very unlikely to happen,
-	// and try to define a low granularity lock if the current approach doesn't
-	// work later.
+	// Note: the obtained disk layer could theoretically become stale within a
+	// very short time window. Holding db.tree.lock during reads would fix this
+	// but introduce heavy contention. The current optimistic approach assumes
+	// this is unlikely; a finer-grained lock can be introduced if needed.
 	dl := r.db.tree.bottom()
 	hash := common.Keccak256Hash(address.Bytes())
 	latest, err := dl.account(hash, 0)
@@ -299,15 +294,10 @@ func (r *HistoricalStateReader) Storage(address common.Address, key common.Hash)
 		historicalStorageReadTimer.UpdateSince(start)
 	}(time.Now())
 
-	// TODO(rjl493456442): Theoretically, the obtained disk layer could become stale
-	// within a very short time window.
-	//
-	// While reading the account data while holding `db.tree.lock` can resolve
-	// this issue, but it will introduce a heavy contention over the lock.
-	//
-	// Let's optimistically assume the situation is very unlikely to happen,
-	// and try to define a low granularity lock if the current approach doesn't
-	// work later.
+	// Note: the obtained disk layer could theoretically become stale within a
+	// very short time window. Holding db.tree.lock during reads would fix this
+	// but introduce heavy contention. The current optimistic approach assumes
+	// this is unlikely; a finer-grained lock can be introduced if needed.
 	dl := r.db.tree.bottom()
 	addrHash := common.Keccak256Hash(address.Bytes())
 	keyHash := common.Keccak256Hash(key.Bytes())

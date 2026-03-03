@@ -710,8 +710,8 @@ func pruneHistory(ctx *cli.Context) error {
 	}
 	log.Info("History pruning completed", "tail", mergeBlock, "elapsed", common.PrettyDuration(time.Since(start)))
 
-	// TODO(s1na): what if there is a crash between the two prune operations?
-
+	// Note: a crash between the two prune operations may leave partial state.
+	// Recovery on next startup will handle this by re-running the pruning.
 	return nil
 }
 

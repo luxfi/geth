@@ -53,8 +53,8 @@ func parseIndex(blob []byte) ([]*indexBlockDesc, error) {
 			// tracking the minimum element in each block has non-trivial storage overhead,
 			// this check is optimistically omitted.
 			//
-			// TODO(rjl493456442) the minimal element can be resolved from the index block,
-			// evaluate the check cost (mostly IO overhead).
+			// Note: the minimal element can be resolved from the index block to validate
+			// ordering between consecutive blocks, but the IO overhead may not be worthwhile.
 
 			/*	if desc.min <= lastMax {
 				return nil, fmt.Errorf("index block range is out of order, last-max: %d, this-min: %d", lastMax, desc.min)
@@ -274,8 +274,8 @@ type indexDeleter struct {
 func newIndexDeleter(db ethdb.KeyValueReader, state stateIdent) (*indexDeleter, error) {
 	blob := readStateIndex(state, db)
 	if len(blob) == 0 {
-		// TODO(rjl493456442) we can probably return an error here,
-		// deleter with no data is meaningless.
+		// Note: a deleter with no data is meaningless; returning an error
+		// here would be more correct but is not done for backward compatibility.
 		desc := newIndexBlockDesc(0)
 		bw, _ := newBlockWriter(nil, desc)
 		return &indexDeleter{

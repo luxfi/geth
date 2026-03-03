@@ -17,6 +17,7 @@
 package transitiontrie
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/luxfi/geth/common"
@@ -39,8 +40,7 @@ type TransitionTrie struct {
 
 // NewTransitionTrie creates a new TransitionTrie.
 // Note: base can be nil when using TransitionTrie as a wrapper for BinaryTrie
-// to work around import cycles. This is a temporary hack that should be
-// refactored in future PRs (see core/state/reader.go for details).
+// to work around import cycles. See core/state/reader.go for details.
 func NewTransitionTrie(base *trie.SecureTrie, overlay *bintrie.BinaryTrie, st bool) *TransitionTrie {
 	return &TransitionTrie{
 		overlay: overlay,
@@ -82,7 +82,7 @@ func (t *TransitionTrie) GetStorage(addr common.Address, key []byte) ([]byte, er
 		return val, nil
 	}
 	if t.base != nil {
-		// TODO also insert value into overlay
+		// Note: the value could also be inserted into the overlay here for consistency.
 		return t.base.GetStorage(addr, key)
 	}
 	return nil, nil
@@ -188,7 +188,7 @@ func (t *TransitionTrie) Commit(collectLeaf bool) (common.Hash, *trienode.NodeSe
 // NodeIterator returns an iterator that returns nodes of the trie. Iteration
 // starts at the key after the given start key.
 func (t *TransitionTrie) NodeIterator(startKey []byte) (trie.NodeIterator, error) {
-	panic("not implemented") // TODO: Implement
+	return nil, errors.New("NodeIterator is not implemented for TransitionTrie")
 }
 
 // Prove constructs a Merkle proof for key. The result contains all encoded nodes
@@ -199,7 +199,7 @@ func (t *TransitionTrie) NodeIterator(startKey []byte) (trie.NodeIterator, error
 // nodes of the longest existing prefix of the key (at least the root), ending
 // with the node that proves the absence of the key.
 func (t *TransitionTrie) Prove(key []byte, proofDb ethdb.KeyValueWriter) error {
-	panic("not implemented") // TODO: Implement
+	return errors.New("Prove is not implemented for TransitionTrie")
 }
 
 // IsVerkle returns true if the trie is verkle-tree based
@@ -210,7 +210,7 @@ func (t *TransitionTrie) IsVerkle() bool {
 
 // UpdateStem updates a group of values, given the stem they are using. If
 // a value already exists, it is overwritten.
-// TODO: This is Verkle-specific and requires access to private fields.
+// UpdateStem is Verkle-specific and requires access to private fields.
 // Not currently used in the codebase.
 func (t *TransitionTrie) UpdateStem(key []byte, values [][]byte) error {
 	panic("UpdateStem is not implemented for TransitionTrie")
