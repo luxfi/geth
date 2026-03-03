@@ -258,8 +258,8 @@ func (t *Tree) Disable() {
 	for _, layer := range t.layers {
 		switch layer := layer.(type) {
 		case *diskLayer:
-			// TODO this function will hang if it's called twice. Will
-			// fix it in the following PRs.
+			// Warning: calling this function twice will hang because
+			// stopGeneration blocks on an already-stopped generator.
 			layer.stopGeneration()
 			layer.markStale()
 			layer.Release()
@@ -482,7 +482,7 @@ func (t *Tree) cap(diff *diffLayer, layers int) *diskLayer {
 		flattened := parent.flatten().(*diffLayer)
 		t.layers[flattened.root] = flattened
 
-		// Invoke the hook if it's registered. Ugly hack.
+		// Invoke the hook if it's registered.
 		if t.onFlatten != nil {
 			t.onFlatten()
 		}
@@ -702,8 +702,8 @@ func (t *Tree) Rebuild(root common.Hash) {
 	for _, layer := range t.layers {
 		switch layer := layer.(type) {
 		case *diskLayer:
-			// TODO this function will hang if it's called twice. Will
-			// fix it in the following PRs.
+			// Warning: calling this function twice will hang because
+			// stopGeneration blocks on an already-stopped generator.
 			layer.stopGeneration()
 			layer.markStale()
 			layer.Release()

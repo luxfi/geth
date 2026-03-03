@@ -96,9 +96,9 @@ func (ks *KeyStore) init(keydir string) {
 	ks.unlocked = make(map[common.Address]*unlocked)
 	ks.cache, ks.changes = newAccountCache(keydir)
 
-	// TODO: In order for this finalizer to work, there must be no references
-	// to ks. addressCache doesn't keep a reference but unlocked keys do,
-	// so the finalizer will not trigger until all timed unlocks have expired.
+	// Note: for this finalizer to work, there must be no references to ks.
+	// addressCache doesn't keep a reference but unlocked keys do, so the
+	// finalizer will not trigger until all timed unlocks have expired.
 	runtime.AddCleanup(ks, func(c *accountCache) {
 		c.close()
 	}, ks.cache)

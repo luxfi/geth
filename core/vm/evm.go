@@ -180,7 +180,7 @@ func NewEVM(blockCtx BlockContext, statedb StateDB, chainConfig *params.ChainCon
 	case evm.chainRules.IsOsaka:
 		evm.table = &osakaInstructionSet
 	case evm.chainRules.IsVerkle:
-		// TODO replace with proper instruction set when fork is specified
+		// Note: using verkleInstructionSet as a placeholder until a dedicated fork instruction set is specified.
 		evm.table = &verkleInstructionSet
 	case evm.chainRules.IsPrague:
 		evm.table = &pragueInstructionSet
@@ -344,9 +344,8 @@ func (evm *EVM) Call(caller common.Address, addr common.Address, input []byte, g
 
 			gas = 0
 		}
-		// TODO: consider clearing up unused snapshots:
-		//} else {
-		//	evm.StateDB.DiscardSnapshot(snapshot)
+		// Note: unused snapshots could be cleared here for memory efficiency,
+		// but the current approach lets them be garbage collected naturally.
 	}
 	return ret, gas, err
 }

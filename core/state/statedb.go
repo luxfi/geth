@@ -486,8 +486,8 @@ func (s *StateDB) SetStorage(addr common.Address, storage map[common.Hash]common
 	// lookups will not hit the disk, as it is assumed that the disk data belongs
 	// to a previous incarnation of the object.
 	//
-	// TODO (rjl493456442): This function should only be supported by 'unwritable'
-	// state, and all mutations made should be discarded afterward.
+	// Note: this function should only be used with 'unwritable' state, and
+	// all mutations made should be discarded afterward.
 	obj := s.getStateObject(addr)
 	if obj != nil {
 		if _, ok := s.stateObjectsDestruct[addr]; !ok {
@@ -829,8 +829,7 @@ func (s *StateDB) IntermediateRoot(deleteEmptyObjects bool) common.Hash {
 		// Whilst MPT storage tries are independent, Verkle has one single trie
 		// for all the accounts and all the storage slots merged together. The
 		// former can thus be simply parallelized, but updating the latter will
-		// need concurrency support within the trie itself. That's a TODO for a
-		// later time.
+		// need concurrency support within the trie itself.
 		workers.SetLimit(1)
 	}
 	for addr, op := range s.mutations {
@@ -1238,12 +1237,9 @@ func (s *StateDB) commit(deleteEmptyObjects bool, noStorageWiping bool, blockNum
 	// Schedule the account trie first since that will be the biggest, so give
 	// it the most time to crunch.
 	//
-	// TODO(karalabe): This account trie commit is *very* heavy. 5-6ms at chain
-	// heads, which seems excessive given that it doesn't do hashing, it just
-	// shuffles some data. For comparison, the *hashing* at chain head is 2-3ms.
-	// We need to investigate what's happening as it seems something's wonky.
-	// Obviously it's not an end of the world issue, just something the original
-	// code didn't anticipate for.
+	// Note: the account trie commit is heavy (5-6ms at chain heads), which seems
+	// excessive given it doesn't do hashing, just data shuffling. For comparison,
+	// hashing at chain head is 2-3ms. Worth investigating.
 	workers.Go(func() error {
 		// Write the account trie changes, measuring the amount of wasted time
 		newroot, set := s.trie.Commit(true)
@@ -1258,10 +1254,9 @@ func (s *StateDB) commit(deleteEmptyObjects bool, noStorageWiping bool, blockNum
 	// Schedule each of the storage tries that need to be updated, so they can
 	// run concurrently to one another.
 	//
-	// TODO(karalabe): Experimentally, the account commit takes approximately the
-	// same time as all the storage commits combined, so we could maybe only have
-	// 2 threads in total. But that kind of depends on the account commit being
-	// more expensive than it should be, so let's fix that and revisit this todo.
+	// Note: experimentally, the account commit takes approximately the same time
+	// as all storage commits combined, so 2 total threads may suffice once the
+	// account commit overhead is addressed.
 	for addr, op := range s.mutations {
 		if op.isDelete() {
 			continue

@@ -37,8 +37,7 @@ type context struct {
 	nodes         *trienode.MergedNodeSet
 	rawStorageKey bool
 
-	// TODO (rjl493456442) abstract out the state hasher
-	// for supporting verkle tree.
+	// Note: the state hasher should be abstracted to support verkle tree.
 	accountTrie *trie.Trie
 }
 

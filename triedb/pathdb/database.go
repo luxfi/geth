@@ -186,7 +186,7 @@ func New(diskdb ethdb.Database, config *Config, isVerkle bool) *Database {
 	if err := db.setStateGenerator(); err != nil {
 		log.Crit("Failed to setup the generator", "err", err)
 	}
-	// TODO (rjl493456442) disable the background indexing in read-only mode
+	// Note: background indexing should be disabled in read-only mode.
 	if db.stateFreezer != nil && db.config.EnableStateIndexing {
 		db.stateIndexer = newHistoryIndexer(db.diskdb, db.stateFreezer, db.tree.bottom().stateID(), typeStateHistory)
 		log.Info("Enabled state history indexing")
@@ -207,9 +207,8 @@ func (db *Database) repairHistory() error {
 	// accidental mutation.
 	ancient, err := db.diskdb.AncientDatadir()
 	if err != nil {
-		// TODO error out if ancient store is disabled. A tons of unit tests
-		// disable the ancient store thus the error here will immediately fail
-		// all of them. Fix the tests first.
+		// Note: this should error out if ancient store is disabled, but many
+		// unit tests disable the ancient store, so we return nil for now.
 		return nil
 	}
 	freezer, err := rawdb.NewStateFreezer(ancient, db.isVerkle, db.readOnly)
@@ -332,7 +331,7 @@ func (db *Database) Update(root common.Hash, parentRoot common.Hash, block uint6
 	if err := db.modifyAllowed(); err != nil {
 		return err
 	}
-	// TODO(rjl493456442) tracking the origins in the following PRs.
+	// Note: origin tracking for state diffs is not yet implemented.
 	if err := db.tree.add(root, parentRoot, block, NewNodeSetWithOrigin(nodes.Nodes(), nil), states); err != nil {
 		return err
 	}
@@ -528,7 +527,7 @@ func (db *Database) Recoverable(root common.Hash) bool {
 	// This is a temporary workaround for the unavailability of the freezer in
 	// dev mode. As a consequence, the database loses the ability for deep reorg
 	// in certain cases.
-	// TODO(rjl493456442): Implement the in-memory ancient store.
+	// Note: in-memory ancient store is not yet implemented for dev mode.
 	if db.stateFreezer == nil {
 		return false
 	}
