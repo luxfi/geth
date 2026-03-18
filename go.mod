@@ -18,7 +18,6 @@ require (
 	github.com/dchest/siphash v1.2.3
 	github.com/deckarep/golang-set/v2 v2.8.0
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0
-	github.com/dgraph-io/badger/v4 v4.9.0
 	github.com/donovanhide/eventsource v0.0.0-20210830082556-c59027999da0
 	github.com/dop251/goja v0.0.0-20251201205617-2bb4c724c0f9
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab
@@ -53,6 +52,7 @@ require (
 	github.com/luxfi/log v1.4.1
 	github.com/luxfi/math/big v0.1.0
 	github.com/luxfi/version v1.0.1
+	github.com/luxfi/zapdb/v4 v4.9.1
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
@@ -82,12 +82,19 @@ require (
 )
 
 require (
-	github.com/Masterminds/semver/v3 v3.4.0 // indirect
+	github.com/ALTree/bigfloat v0.2.0 // indirect
+	github.com/ChainSafe/go-schnorrkel v1.1.0 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
+	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d // indirect
+	github.com/cronokirby/saferith v0.33.0 // indirect
+	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
+	github.com/gtank/merlin v0.1.1-0.20191105220539-8318aed1a79f // indirect
+	github.com/gtank/ristretto255 v0.1.2 // indirect
 	github.com/luxfi/accel v1.0.1 // indirect
 	github.com/luxfi/atomic v1.0.0 // indirect
 	github.com/luxfi/codec v1.1.3 // indirect
@@ -95,13 +102,19 @@ require (
 	github.com/luxfi/concurrent v0.0.3 // indirect
 	github.com/luxfi/constants v1.4.3 // indirect
 	github.com/luxfi/container v0.0.4 // indirect
+	github.com/luxfi/lattice/v7 v7.0.0 // indirect
 	github.com/luxfi/mock v0.1.1 // indirect
+	github.com/luxfi/ringtail v0.2.0 // indirect
 	github.com/luxfi/runtime v1.0.1 // indirect
+	github.com/luxfi/threshold v1.5.5 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
 	github.com/luxfi/validators v1.0.0 // indirect
-	github.com/luxfi/zapdb/v4 v4.9.1 // indirect
+	github.com/mimoo/StrobeGo v0.0.0-20181016162300-f8f6d4d2b643 // indirect
+	github.com/montanaflynn/stats v0.7.1 // indirect
 	github.com/onsi/gomega v1.39.1 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
+	github.com/x448/float16 v0.8.4 // indirect
+	github.com/zeebo/blake3 v0.2.4 // indirect
 	go.uber.org/mock v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a // indirect
 )

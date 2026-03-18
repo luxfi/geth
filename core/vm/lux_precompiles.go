@@ -9,16 +9,11 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
-	"github.com/luxfi/precompile/blake3"
-	"github.com/luxfi/precompile/cggmp21"
 	"github.com/luxfi/precompile/contract"
-	"github.com/luxfi/precompile/frost"
 	"github.com/luxfi/precompile/mldsa"
 	"github.com/luxfi/precompile/pqcrypto"
 	"github.com/luxfi/precompile/precompileconfig"
-	ringtailthreshold "github.com/luxfi/precompile/ringtail"
 	"github.com/luxfi/precompile/slhdsa"
-	"github.com/luxfi/precompile/sr25519"
 )
 
 // precompileAdapter wraps a precompiles.StatefulPrecompiledContract to implement
@@ -142,8 +137,23 @@ func (b *blockContextAdapter) GetPredicateResults(txHash common.Hash, precompile
 	return nil // Not needed for PQ crypto precompiles
 }
 
-// LuxPrecompiles returns a map of Lux-specific precompiles (PQ crypto, etc.)
-// These should be merged with the standard precompiles at chain initialization.
+// NewPrecompileAdapter wraps a luxfi/precompile StatefulPrecompiledContract
+// into a geth-compatible StatefulPrecompiledContract. Exported so that L1
+// chains can assemble their own precompile sets via PrecompileOverrider
+// without requiring changes to geth itself.
+func NewPrecompileAdapter(name string, address common.Address, inner contract.StatefulPrecompiledContract, gasFunc func([]byte) uint64) StatefulPrecompiledContract {
+	return &precompileAdapter{
+		name:    name,
+		address: address,
+		inner:   inner,
+		gasFunc: gasFunc,
+	}
+}
+
+// LuxPrecompiles returns the baseline Lux precompiles that every Lux chain
+// should support. Currently this is the post-quantum crypto suite.
+// L1 chains can add additional precompiles (DEX, sr25519, FROST, etc.)
+// by implementing PrecompileOverrider in their Rules.Payload.
 func LuxPrecompiles() PrecompiledContracts {
 	return PrecompiledContracts{
 		// ML-DSA (Post-Quantum Signatures - FIPS 204)
@@ -168,46 +178,6 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: pqcrypto.ContractAddress,
 			inner:   pqcrypto.PQCryptoPrecompile,
 			gasFunc: pqcrypto.PQCryptoPrecompile.RequiredGas,
-		},
-
-		// FROST (Threshold Schnorr Signatures - secp256k1/Ed25519)
-		frost.ContractFROSTVerifyAddress: &precompileAdapter{
-			name:    "frost",
-			address: frost.ContractFROSTVerifyAddress,
-			inner:   frost.FROSTVerifyPrecompile,
-			gasFunc: frost.FROSTVerifyPrecompile.RequiredGas,
-		},
-
-		// CGGMP21 (Threshold ECDSA - secp256k1)
-		cggmp21.ContractCGGMP21VerifyAddress: &precompileAdapter{
-			name:    "cggmp21",
-			address: cggmp21.ContractCGGMP21VerifyAddress,
-			inner:   cggmp21.CGGMP21VerifyPrecompile,
-			gasFunc: cggmp21.CGGMP21VerifyPrecompile.RequiredGas,
-		},
-
-		// Ringtail (Post-Quantum Threshold Signatures - Ring-LWE)
-		ringtailthreshold.ContractRingtailThresholdAddress: &precompileAdapter{
-			name:    "ringtail",
-			address: ringtailthreshold.ContractRingtailThresholdAddress,
-			inner:   ringtailthreshold.RingtailThresholdPrecompile,
-			gasFunc: ringtailthreshold.RingtailThresholdPrecompile.RequiredGas,
-		},
-
-		// SR25519 (Schnorrkel - Substrate→EVM migration)
-		sr25519.ContractAddress: &precompileAdapter{
-			name:    "sr25519",
-			address: sr25519.ContractAddress,
-			inner:   sr25519.SR25519VerifyPrecompile,
-			gasFunc: sr25519.SR25519VerifyPrecompile.RequiredGas,
-		},
-
-		// Blake3 (Fast hashing)
-		blake3.ContractAddress: &precompileAdapter{
-			name:    "blake3",
-			address: blake3.ContractAddress,
-			inner:   blake3.Blake3Precompile,
-			gasFunc: blake3.Blake3Precompile.RequiredGas,
 		},
 	}
 }
