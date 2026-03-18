@@ -70,12 +70,12 @@ require (
 	github.com/urfave/cli/v2 v2.27.7
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/goleak v1.3.0
-	golang.org/x/crypto v0.47.0
+	golang.org/x/crypto v0.48.0
 	golang.org/x/sync v0.19.0
-	golang.org/x/sys v0.40.0
-	golang.org/x/text v0.33.0
+	golang.org/x/sys v0.41.0
+	golang.org/x/text v0.34.0
 	golang.org/x/time v0.14.0
-	golang.org/x/tools v0.41.0
+	golang.org/x/tools v0.42.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 	gopkg.in/yaml.v3 v3.0.1
@@ -86,6 +86,7 @@ require (
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
+	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/luxfi/accel v1.0.1 // indirect
 	github.com/luxfi/atomic v1.0.0 // indirect
@@ -99,16 +100,17 @@ require (
 	github.com/luxfi/utils v1.1.4 // indirect
 	github.com/luxfi/validators v1.0.0 // indirect
 	github.com/luxfi/zapdb/v4 v4.9.1 // indirect
+	github.com/onsi/gomega v1.39.1 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
 	go.uber.org/mock v0.6.0 // indirect
-	golang.org/x/exp v0.0.0-20260112195511-716be5621a96 // indirect
+	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a // indirect
 )
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.20.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.11.2 // indirect
 	github.com/DataDog/zstd v1.5.7 // indirect
-	github.com/ProjectZKM/Ziren/crates/go-runtime/zkvm_runtime v0.0.0-20251230134950-44c893854e3f // indirect
+	github.com/ProjectZKM/Ziren/crates/go-runtime/zkvm_runtime v0.0.0-20260215031811-a0ab0b218a81 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.17 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.17 // indirect
@@ -130,7 +132,7 @@ require (
 	github.com/cockroachdb/redact v1.1.6 // indirect
 	github.com/cockroachdb/tokenbucket v0.0.0-20250429170803-42689b6311bb // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.7 // indirect
-	github.com/crate-crypto/go-eth-kzg v1.4.0 // indirect
+	github.com/crate-crypto/go-eth-kzg v1.5.0 // indirect
 	github.com/dgraph-io/ristretto/v2 v2.4.0 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -147,17 +149,17 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/flatbuffers v25.12.19+incompatible // indirect
 	github.com/google/go-querystring v1.2.0 // indirect
-	github.com/google/pprof v0.0.0-20251213031049-b05bdaca462f // indirect
+	github.com/google/pprof v0.0.0-20260115054156-294ebfa9ad83 // indirect
 	github.com/influxdata/line-protocol v0.0.0-20210922203350-b1ad95c89adf // indirect
 	github.com/kilic/bls12-381 v0.1.0 // indirect
-	github.com/klauspost/compress v1.18.3 // indirect
+	github.com/klauspost/compress v1.18.4 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/luxfi/math v1.2.3
 	github.com/luxfi/metric v1.5.0 // indirect
 	github.com/luxfi/p2p v1.18.9 // indirect
-	github.com/luxfi/precompile v0.4.7
+	github.com/luxfi/precompile v0.4.11-0.20260318170726-6b8c6d276dd1
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/vm v1.0.36
 	github.com/luxfi/warp v1.18.5 // indirect
@@ -186,12 +188,12 @@ require (
 	github.com/xrash/smetrics v0.0.0-20250705151800-55b8f293f342 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
-	go.opentelemetry.io/otel v1.39.0 // indirect
-	go.opentelemetry.io/otel/metric v1.39.0 // indirect
-	go.opentelemetry.io/otel/trace v1.39.0 // indirect
+	go.opentelemetry.io/otel v1.40.0 // indirect
+	go.opentelemetry.io/otel/metric v1.40.0 // indirect
+	go.opentelemetry.io/otel/trace v1.40.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
-	golang.org/x/mod v0.32.0 // indirect
-	golang.org/x/net v0.49.0 // indirect
+	golang.org/x/mod v0.33.0 // indirect
+	golang.org/x/net v0.50.0 // indirect
 	gonum.org/v1/gonum v0.16.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
