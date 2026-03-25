@@ -24,7 +24,7 @@ import (
 	"os"
 	"slices"
 
-	"github.com/ethereum/go-verkle"
+	"github.com/luxfi/crypto/verkle"
 	"github.com/luxfi/geth/cmd/utils"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/rawdb"
