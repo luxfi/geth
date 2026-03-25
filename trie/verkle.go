@@ -22,7 +22,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ethereum/go-verkle"
+	"github.com/luxfi/crypto/verkle"
 	"github.com/holiman/uint256"
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/core/types"
