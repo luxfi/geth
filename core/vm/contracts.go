@@ -30,7 +30,7 @@ import (
 	bls12381 "github.com/consensys/gnark-crypto/ecc/bls12-381"
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fp"
 	"github.com/consensys/gnark-crypto/ecc/bls12-381/fr"
-	patched_big "github.com/ethereum/go-bigmodexpfix/src/math/big"
+	patched_big "github.com/luxfi/crypto/bigmodexp"
 	"github.com/holiman/uint256"
 	"github.com/luxfi/crypto"
 	"github.com/luxfi/crypto/blake2b"
