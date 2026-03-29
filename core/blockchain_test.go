@@ -45,7 +45,7 @@ import (
 	"github.com/luxfi/geth/core/vm/program"
 	"github.com/luxfi/geth/eth/tracers/logger"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/ethdb/badgerdb"
+	zapdb "github.com/luxfi/geth/ethdb/zapdb"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/geth/trie"
 	"github.com/stretchr/testify/assert"
@@ -2511,7 +2511,7 @@ func testSideImportPrunedBlocks(t *testing.T, scheme string) {
 	datadir := t.TempDir()
 	ancient := path.Join(datadir, "ancient")
 
-	pdb, err := badgerdb.New(datadir, 0, 0, "", false)
+	pdb, err := zapdb.New(datadir, 0, 0, "", false)
 	if err != nil {
 		t.Fatalf("Failed to create persistent key-value database: %v", err)
 	}
