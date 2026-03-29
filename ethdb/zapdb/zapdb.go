@@ -1,13 +1,13 @@
 // Copyright (C) 2025, Lux Industries, Inc. All rights reserved.
 // See the file LICENSE for licensing terms.
 
-package badgerdb
+package zapdb
 
 import (
 	"errors"
 	"fmt"
 
-	badger "github.com/dgraph-io/badger/v4"
+	badger "github.com/luxfi/zapdb/v4"
 	"github.com/luxfi/geth/ethdb"
 )
 
@@ -16,16 +16,28 @@ var (
 	errNotSupported = errors.New("this operation is not supported")
 )
 
-// Database is a badgerdb implementation of ethdb.Database
+// Database is a zapdb (badgerdb fork) implementation of ethdb.Database
 type Database struct {
 	db *badger.DB
 }
 
-// New creates a new badgerdb database
+// New creates a new zapdb-backed database
 func New(path string, cache int, handles int, namespace string, readonly bool) (ethdb.Database, error) {
 	opts := badger.DefaultOptions(path)
 	opts.ReadOnly = readonly
-	opts.Logger = nil // Disable badger logging
+	opts.Logger = nil // Disable logging
+
+	// Performance tuning for EVM workloads
+	opts.SyncWrites = false
+	opts.NumCompactors = 4
+	opts.NumMemtables = 5
+	opts.MemTableSize = 64 << 20      // 64 MB
+	opts.BlockCacheSize = 256 << 20   // 256 MB
+	opts.IndexCacheSize = 100 << 20   // 100 MB
+	opts.BloomFalsePositive = 0.01
+	opts.DetectConflicts = false
+	opts.NumVersionsToKeep = 1
+	opts.CompactL0OnClose = true
 
 	db, err := badger.Open(opts)
 	if err != nil {
@@ -95,13 +107,11 @@ func (d *Database) NewBatchWithSize(size int) ethdb.Batch {
 // NewIterator creates a new iterator
 func (d *Database) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
 	if d.db == nil {
-		// Return empty iterator if database is nil
 		return &iterator{iter: nil, txn: nil}
 	}
 
 	txn := d.db.NewTransaction(false)
 	if txn == nil {
-		// Return empty iterator if transaction creation failed
 		return &iterator{iter: nil, txn: nil}
 	}
 
@@ -120,7 +130,7 @@ func (d *Database) NewIterator(prefix []byte, start []byte) ethdb.Iterator {
 	return &iterator{
 		iter:  iter,
 		txn:   txn,
-		first: true, // First call to Next() should check Valid() without advancing
+		first: true,
 	}
 }
 
@@ -165,7 +175,6 @@ func (b *batch) Write() error {
 	if err := b.wb.Flush(); err != nil {
 		return err
 	}
-	// CRITICAL: Sync to disk to ensure data persists
 	return b.db.Sync()
 }
 
@@ -176,12 +185,10 @@ func (b *batch) Reset() {
 }
 
 func (b *batch) DeleteRange(start, end []byte) error {
-	// Not efficiently supported by BadgerDB batches
 	return nil
 }
 
 func (b *batch) Replay(w ethdb.KeyValueWriter) error {
-	// BadgerDB doesn't support replay
 	return nil
 }
 
@@ -189,20 +196,17 @@ func (b *batch) Replay(w ethdb.KeyValueWriter) error {
 type iterator struct {
 	iter  *badger.Iterator
 	txn   *badger.Txn
-	first bool // true if we haven't returned the first item yet
+	first bool
 }
 
 func (i *iterator) Next() bool {
 	if i.iter == nil {
 		return false
 	}
-	// On first call after NewIterator, the iterator is already positioned
-	// at the first item (via Rewind/Seek), so just check Valid()
 	if i.first {
 		i.first = false
 		return i.iter.Valid()
 	}
-	// On subsequent calls, only advance if currently valid
 	if !i.iter.Valid() {
 		return false
 	}
@@ -238,8 +242,7 @@ func (i *iterator) Release() {
 	}
 }
 
-// Ancients/Freezer stubs
-
+// Snapshot support
 type Snapshot interface {
 	Has(key []byte) (bool, error)
 	Get(key []byte) ([]byte, error)
@@ -297,75 +300,44 @@ func (d *Database) DeleteRange(start, end []byte) error {
 	})
 }
 
-func (d *Database) AncientDatadir() (string, error) {
-	return "", nil
+// Sync flushes all pending writes to disk
+func (d *Database) Sync() error {
+	return d.db.Sync()
 }
 
-func (d *Database) ReadAncients(fn func(ethdb.AncientReaderOp) error) error {
-	return nil
+func (d *Database) SyncKeyValue() error {
+	return d.db.Sync()
 }
+
+// Ancient/Freezer stubs (zapdb doesn't use freezer)
+
+func (d *Database) AncientDatadir() (string, error) { return "", nil }
+
+func (d *Database) ReadAncients(fn func(ethdb.AncientReaderOp) error) error { return nil }
 
 func (d *Database) ModifyAncients(fn func(ethdb.AncientWriteOp) error) (int64, error) {
 	return 0, nil
 }
 
-func (d *Database) TruncateHead(n uint64) (uint64, error) {
-	return 0, nil
-}
+func (d *Database) TruncateHead(n uint64) (uint64, error) { return 0, nil }
+func (d *Database) TruncateTail(n uint64) (uint64, error) { return 0, nil }
+func (d *Database) SyncAncient() error                     { return nil }
 
-func (d *Database) TruncateTail(n uint64) (uint64, error) {
-	return 0, nil
-}
+func (d *Database) MigrateTable(s string, f func([]byte) ([]byte, error)) error { return nil }
 
-func (d *Database) Sync() error {
-	return d.db.Sync()
-}
-
-func (d *Database) SyncAncient() error {
-	return nil
-}
-
-func (d *Database) SyncKeyValue() error {
-	return nil
-}
-
-func (d *Database) MigrateTable(s string, f func([]byte) ([]byte, error)) error {
-	return nil
-}
-
-func (d *Database) AncientOffSet() uint64 {
-	return 0
-}
-
-func (d *Database) Ancients() (uint64, error) {
-	return 0, nil
-}
-
-func (d *Database) Tail() (uint64, error) {
-	return 0, nil
-}
-
-func (d *Database) AncientSize(kind string) (uint64, error) {
-	return 0, nil
-}
+func (d *Database) AncientOffSet() uint64                { return 0 }
+func (d *Database) Ancients() (uint64, error)            { return 0, nil }
+func (d *Database) Tail() (uint64, error)                { return 0, nil }
+func (d *Database) AncientSize(kind string) (uint64, error) { return 0, nil }
 
 func (d *Database) AncientRange(kind string, start, count, maxBytes uint64) ([][]byte, error) {
 	return nil, errNotSupported
 }
 
-// AncientBytes retrieves the value segment of the element specified by the id and value offsets.
 func (d *Database) AncientBytes(kind string, id, offset, length uint64) ([]byte, error) {
 	return nil, errNotSupported
 }
 
-func (d *Database) HasAncient(kind string, number uint64) (bool, error) {
-	return false, nil
-}
-
-func (d *Database) Ancient(kind string, number uint64) ([]byte, error) {
-	return nil, errNotSupported
-}
-
-func (d *Database) AncientBatch() ethdb.AncientWriteOp {
-	return nil
-}
+func (d *Database) HasAncient(kind string, number uint64) (bool, error) { return false, nil }
+func (d *Database) Ancient(kind string, number uint64) ([]byte, error)  { return nil, errNotSupported }
+func (d *Database) AncientBatch() ethdb.AncientWriteOp                 { return nil }
