@@ -34,7 +34,7 @@ import (
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/core/types"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/ethdb/badgerdb"
+	zapdb "github.com/luxfi/geth/ethdb/zapdb"
 	"github.com/luxfi/geth/params"
 )
 
@@ -65,7 +65,7 @@ func (basic *snapshotTestBasic) prepare(t *testing.T) (*BlockChain, []*types.Blo
 	datadir := t.TempDir()
 	ancient := filepath.Join(datadir, "ancient")
 
-	pdb, err := badgerdb.New(datadir, 0, 0, "", false)
+	pdb, err := zapdb.New(datadir, 0, 0, "", false)
 	if err != nil {
 		t.Fatalf("Failed to create persistent key-value database: %v", err)
 	}
@@ -260,7 +260,7 @@ func (snaptest *crashSnapshotTest) test(t *testing.T) {
 	chain.triedb.Close()
 
 	// Start a new blockchain back up and see where the repair leads us
-	pdb, err := badgerdb.New(snaptest.datadir, 0, 0, "", false)
+	pdb, err := zapdb.New(snaptest.datadir, 0, 0, "", false)
 	if err != nil {
 		t.Fatalf("Failed to create persistent key-value database: %v", err)
 	}

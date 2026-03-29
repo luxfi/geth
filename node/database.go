@@ -22,7 +22,7 @@ import (
 
 	"github.com/luxfi/geth/core/rawdb"
 	"github.com/luxfi/geth/ethdb"
-	"github.com/luxfi/geth/ethdb/badgerdb"
+	zapdb "github.com/luxfi/geth/ethdb/zapdb"
 	log "github.com/luxfi/log"
 )
 
@@ -137,7 +137,7 @@ func openKeyValueDatabase(o internalOpenOptions) (ethdb.KeyValueStore, error) {
 // newBadgerDBDatabase creates a persistent key-value database without a freezer
 // moving immutable chain segments into cold storage.
 func newBadgerDBDatabase(file string, cache int, handles int, namespace string, readonly bool) (ethdb.KeyValueStore, error) {
-	db, err := badgerdb.New(file, cache, handles, namespace, readonly)
+	db, err := zapdb.New(file, cache, handles, namespace, readonly)
 	if err != nil {
 		return nil, err
 	}
