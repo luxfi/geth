@@ -19,7 +19,9 @@ package vm
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math/big"
+	"os"
 	"sync/atomic"
 
 	"github.com/holiman/uint256"
@@ -164,6 +166,15 @@ func NewEVM(blockCtx BlockContext, statedb StateDB, chainConfig *params.ChainCon
 		hasher:      common.NewKeccakState(),
 	}
 	evm.precompiles = activePrecompiledContracts(evm.chainRules)
+
+	// Debug: trace jump table selection
+	if f, err := os.OpenFile("/tmp/evm-debug.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644); err == nil {
+		fmt.Fprintf(f, "[NewEVM] block=%v time=%v random=%v IsCancun=%v IsShanghai=%v IsMerge=%v cancunTime=%v\n",
+			blockCtx.BlockNumber, blockCtx.Time, blockCtx.Random != nil,
+			evm.chainRules.IsCancun, evm.chainRules.IsShanghai, evm.chainRules.IsMerge,
+			chainConfig.CancunTime)
+		f.Close()
+	}
 
 	switch {
 	case evm.chainRules.IsOsaka:
