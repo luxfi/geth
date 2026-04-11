@@ -50,7 +50,7 @@ require (
 	github.com/luxfi/log v1.4.1
 	github.com/luxfi/math/big v0.1.0
 	github.com/luxfi/version v1.0.1
-	github.com/luxfi/zapdb/v4 v4.9.3
+	github.com/luxfi/zapdb v1.0.0
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
