@@ -8,7 +8,7 @@ import (
 	"fmt"
 
 	"github.com/luxfi/geth/ethdb"
-	badger "github.com/luxfi/zapdb/v4"
+	badger "github.com/luxfi/zapdb"
 )
 
 var (
