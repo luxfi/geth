@@ -50,7 +50,7 @@ require (
 	github.com/luxfi/log v1.4.1
 	github.com/luxfi/math/big v0.1.0
 	github.com/luxfi/version v1.0.1
-	github.com/luxfi/zapdb v1.0.0
+	github.com/luxfi/zapdb v1.8.0
 	github.com/mattn/go-colorable v0.1.14
 	github.com/mattn/go-isatty v0.0.20
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
@@ -80,14 +80,18 @@ require (
 )
 
 require (
+	filippo.io/hpke v0.4.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
+	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
+	github.com/klauspost/crc32 v1.3.0 // indirect
 	github.com/luxfi/accel v1.0.7 // indirect
+	github.com/luxfi/age v1.4.0 // indirect
 	github.com/luxfi/atomic v1.0.0 // indirect
 	github.com/luxfi/codec v1.1.4 // indirect
 	github.com/luxfi/compress v0.0.5 // indirect
@@ -98,8 +102,16 @@ require (
 	github.com/luxfi/runtime v1.0.1 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
 	github.com/luxfi/validators v1.0.0 // indirect
+	github.com/luxfi/zapdb/v4 v4.9.3 // indirect
+	github.com/minio/crc64nvme v1.1.1 // indirect
+	github.com/minio/md5-simd v1.1.2 // indirect
+	github.com/minio/minio-go/v7 v7.0.100 // indirect
+	github.com/philhofer/fwd v1.2.0 // indirect
+	github.com/rs/xid v1.6.0 // indirect
+	github.com/tinylib/msgp v1.6.1 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
 	go.uber.org/mock v0.6.0 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
 )
 
