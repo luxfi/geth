@@ -102,7 +102,7 @@ require (
 	github.com/luxfi/runtime v1.0.1 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
 	github.com/luxfi/validators v1.0.0 // indirect
-	github.com/luxfi/zapdb/v4 v4.9.3 // indirect
+	github.com/luxfi/zapdb v1.8.0 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v7 v7.0.100 // indirect
