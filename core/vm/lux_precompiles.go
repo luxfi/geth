@@ -11,7 +11,7 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/precompile/contract"
 	"github.com/luxfi/precompile/mldsa"
-	"github.com/luxfi/precompile/pqcrypto"
+	"github.com/luxfi/precompile/mlkem"
 	"github.com/luxfi/precompile/precompileconfig"
 	"github.com/luxfi/precompile/slhdsa"
 )
@@ -172,12 +172,12 @@ func LuxPrecompiles() PrecompiledContracts {
 			gasFunc: slhdsa.SLHDSAVerifyPrecompile.RequiredGas,
 		},
 
-		// PQCrypto (General Post-Quantum Operations including ML-KEM)
-		pqcrypto.ContractAddress: &precompileAdapter{
-			name:    "pqcrypto",
-			address: pqcrypto.ContractAddress,
-			inner:   pqcrypto.PQCryptoPrecompile,
-			gasFunc: pqcrypto.PQCryptoPrecompile.RequiredGas,
+		// ML-KEM (FIPS 203 — post-quantum key encapsulation)
+		mlkem.ContractAddress: &precompileAdapter{
+			name:    "mlkem",
+			address: mlkem.ContractAddress,
+			inner:   mlkem.MLKEMPrecompile,
+			gasFunc: mlkem.MLKEMPrecompile.RequiredGas,
 		},
 	}
 }
