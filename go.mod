@@ -42,8 +42,8 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20241212093149-d2f9f49435c7
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/cache v1.2.1
-	github.com/luxfi/consensus v1.22.70
-	github.com/luxfi/crypto v1.17.45
+	github.com/luxfi/consensus v1.22.84
+	github.com/luxfi/crypto v1.18.1
 	github.com/luxfi/database v1.17.44
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.9
@@ -90,7 +90,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
-	github.com/luxfi/accel v1.0.7 // indirect
+	github.com/luxfi/accel v1.0.8 // indirect
 	github.com/luxfi/age v1.4.0 // indirect
 	github.com/luxfi/atomic v1.0.0 // indirect
 	github.com/luxfi/codec v1.1.4 // indirect
@@ -102,7 +102,7 @@ require (
 	github.com/luxfi/runtime v1.0.1 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
 	github.com/luxfi/validators v1.0.0 // indirect
-	github.com/luxfi/zapdb v1.8.0 // indirect
+	github.com/luxfi/zapdb/v4 v4.9.3 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v7 v7.0.100 // indirect
@@ -168,7 +168,7 @@ require (
 	github.com/luxfi/math v1.2.4
 	github.com/luxfi/metric v1.5.1 // indirect
 	github.com/luxfi/p2p v1.19.2 // indirect
-	github.com/luxfi/precompile v0.5.6
+	github.com/luxfi/precompile v0.5.14
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/vm v1.0.40
 	github.com/luxfi/warp v1.18.5 // indirect
