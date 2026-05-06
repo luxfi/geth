@@ -699,9 +699,9 @@ func (vm *VM) Initialize(
     toEngine chan<- common.Message,
 ) error
 
-func (vm *VM) BuildBlock(ctx context.Context) (snowman.Block, error)
-func (vm *VM) ParseBlock(ctx context.Context, bytes []byte) (snowman.Block, error)
-func (vm *VM) GetBlock(ctx context.Context, id ids.ID) (snowman.Block, error)
+func (vm *VM) BuildBlock(ctx context.Context) (chain.Block, error)
+func (vm *VM) ParseBlock(ctx context.Context, bytes []byte) (chain.Block, error)
+func (vm *VM) GetBlock(ctx context.Context, id ids.ID) (chain.Block, error)
 ```
 
 #### Validator Management (`/plugin/evm/validators`)
