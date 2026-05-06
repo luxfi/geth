@@ -539,13 +539,13 @@ type ChainConfig struct {
 	AmsterdamTime *uint64 `json:"amsterdamTime,omitempty"` // Amsterdam switch time (nil = no fork, 0 = already on amsterdam)
 	VerkleTime    *uint64 `json:"verkleTime,omitempty"`    // Verkle switch time (nil = no fork, 0 = already on verkle)
 
-	// EVM compatibility fields - for chains migrated from ava-labs/evm
-	// When EVMTimestamp or SubnetEVMTimestamp is set, the chain uses EVM gas accounting:
-	// - Coinbase receives full gas payment (no EIP-1559 burning)
-	// - Gas refunds are disabled (ApricotPhase1 behavior)
-	EVMTimestamp       *uint64 `json:"evmTimestamp,omitempty"`       // EVM activation time (nil = standard geth, 0 = always EVM)
-	SubnetEVMTimestamp *uint64 `json:"subnetEVMTimestamp,omitempty"` // SubnetEVM activation time (alias for EVMTimestamp)
-	DurangoTimestamp   *uint64 `json:"durangoTimestamp,omitempty"`   // Durango upgrade time (for future compatibility)
+	// Lux EVM activation. When EVMTimestamp is set, the chain uses Lux EVM
+	// gas accounting:
+	//   - Coinbase receives full gas payment (no EIP-1559 burning)
+	//   - Gas refunds are disabled (ApricotPhase1 behavior)
+	// Single canonical field — no aliases. Old `subnetEVMTimestamp` is gone.
+	EVMTimestamp     *uint64 `json:"evmTimestamp,omitempty"`     // EVM activation time (nil = standard geth, 0 = always EVM)
+	DurangoTimestamp *uint64 `json:"durangoTimestamp,omitempty"` // Durango upgrade time
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
 	// the network that triggers the consensus upgrade.
@@ -1005,12 +1005,11 @@ func (c *ChainConfig) IsVerkleGenesis() bool {
 }
 
 // IsEVM returns whether time is either equal to the EVM activation time or greater.
-// When active, the chain uses EVM-compatible gas accounting:
-// - Coinbase receives full gas payment (no EIP-1559 base fee burning)
-// - Gas refunds are disabled (ApricotPhase1 behavior)
-// Checks both EVMTimestamp (preferred) and SubnetEVMTimestamp (legacy compat)
+// When active, the chain uses Lux EVM gas accounting:
+//   - Coinbase receives full gas payment (no EIP-1559 base fee burning)
+//   - Gas refunds are disabled (ApricotPhase1 behavior)
 func (c *ChainConfig) IsEVM(time uint64) bool {
-	return isTimestampForked(c.EVMTimestamp, time) || isTimestampForked(c.SubnetEVMTimestamp, time)
+	return isTimestampForked(c.EVMTimestamp, time)
 }
 
 // IsDurango returns whether time is either equal to the Durango upgrade time or greater.
@@ -1148,10 +1147,10 @@ func (c *ChainConfig) CheckConfigForkOrder() error {
 		}
 		if cur.timestamp != nil {
 			// If the fork is configured, a blob schedule must be defined for it.
-			// Exception: Lux L2 chains (EVMTimestamp or SubnetEVMTimestamp set) don't use
-			// blob transactions, so they don't need blobSchedule. This allows importing
-			// historic chains with their original genesis that predates blob transaction support.
-			isLuxL2Chain := c.EVMTimestamp != nil || c.SubnetEVMTimestamp != nil
+			// Exception: Lux L2 chains (EVMTimestamp set) don't use blob transactions,
+			// so they don't need blobSchedule. This allows importing historic chains
+			// with their original genesis that predates blob transaction support.
+			isLuxL2Chain := c.EVMTimestamp != nil
 			if cur.config == nil && !isLuxL2Chain {
 				return fmt.Errorf("invalid chain configuration: missing entry for fork %q in blobSchedule", cur.name)
 			}

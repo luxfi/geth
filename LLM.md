@@ -961,7 +961,7 @@ type ChainConfig struct {
     // ... existing fields ...
 
     // SubnetEVM compatibility fields
-    SubnetEVMTimestamp *uint64 `json:"subnetEVMTimestamp,omitempty"` // nil = standard geth, 0 = always SubnetEVM
+    EVMTimestamp *uint64 `json:"evmTimestamp,omitempty"` // nil = standard geth, 0 = always SubnetEVM
     DurangoTimestamp   *uint64 `json:"durangoTimestamp,omitempty"`   // Durango upgrade time
 }
 
@@ -1006,7 +1006,7 @@ For SubnetEVM chains (like Lux Mainnet), include these fields in genesis.json:
 {
   "config": {
     "chainId": 96369,
-    "subnetEVMTimestamp": 0,
+    "evmTimestamp": 0,
     "durangoTimestamp": 0,
     // ... other fields
   }
@@ -1022,7 +1022,7 @@ go test -v ./core/... -run "TestSubnetEVMGasAccounting"
 
 ### Files Modified
 
-1. `params/config.go` - Added SubnetEVMTimestamp and DurangoTimestamp fields, IsSubnetEVM() and IsDurango() methods
+1. `params/config.go` - Added EVMTimestamp and DurangoTimestamp fields, IsSubnetEVM() and IsDurango() methods
 2. `core/state_transition.go` - Modified coinbase payment and gas refund calculation
 3. `core/state_processor_test.go` - Added TestSubnetEVMGasAccounting test
 
