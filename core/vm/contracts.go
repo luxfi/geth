@@ -293,6 +293,13 @@ func (c *ecrecover) RequiredGas(input []byte) uint64 {
 }
 
 func (c *ecrecover) Run(input []byte) ([]byte, error) {
+	// Strict-PQ chains forbid classical contract-auth at the precompile
+	// boundary. The active LuxSecurityProfile is installed once at
+	// chain bootstrap; default (nil) preserves classical semantics.
+	if forbidClassicalContractAuth() {
+		return nil, ErrClassicalAuthForbidden
+	}
+
 	const ecRecoverInputLength = 128
 
 	input = common.RightPadBytes(input, ecRecoverInputLength)
