@@ -349,6 +349,9 @@ func (c *sha256hash) RequiredGas(input []byte) uint64 {
 	return uint64(len(input)+31)/32*params.Sha256PerWordGas + params.Sha256BaseGas
 }
 func (c *sha256hash) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpSHA256); err != nil {
+		return nil, err
+	}
 	h := sha256.Sum256(input)
 	return h[:], nil
 }
@@ -368,6 +371,9 @@ func (c *ripemd160hash) RequiredGas(input []byte) uint64 {
 	return uint64(len(input)+31)/32*params.Ripemd160PerWordGas + params.Ripemd160BaseGas
 }
 func (c *ripemd160hash) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpRIPEMD160); err != nil {
+		return nil, err
+	}
 	ripemd := ripemd160.New()
 	ripemd.Write(input)
 	return common.LeftPadBytes(ripemd.Sum(nil), 32), nil
@@ -720,6 +726,9 @@ func (c *bn256AddIstanbul) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bn256AddIstanbul) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBn256Add); err != nil {
+		return nil, err
+	}
 	return runBn256Add(input)
 }
 
@@ -737,6 +746,9 @@ func (c *bn256AddByzantium) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bn256AddByzantium) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBn256Add); err != nil {
+		return nil, err
+	}
 	return runBn256Add(input)
 }
 
@@ -766,6 +778,9 @@ func (c *bn256ScalarMulIstanbul) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bn256ScalarMulIstanbul) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBn256ScalarMul); err != nil {
+		return nil, err
+	}
 	return runBn256ScalarMul(input)
 }
 
@@ -783,6 +798,9 @@ func (c *bn256ScalarMulByzantium) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bn256ScalarMulByzantium) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBn256ScalarMul); err != nil {
+		return nil, err
+	}
 	return runBn256ScalarMul(input)
 }
 
@@ -842,6 +860,9 @@ func (c *bn256PairingIstanbul) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bn256PairingIstanbul) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBn256Pairing); err != nil {
+		return nil, err
+	}
 	return runBn256Pairing(input)
 }
 
@@ -859,6 +880,9 @@ func (c *bn256PairingByzantium) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bn256PairingByzantium) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBn256Pairing); err != nil {
+		return nil, err
+	}
 	return runBn256Pairing(input)
 }
 
@@ -889,6 +913,9 @@ var (
 )
 
 func (c *blake2F) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBlake2F); err != nil {
+		return nil, err
+	}
 	// Make sure the input is valid (correct length and final flag)
 	if len(input) != blake2FInputLength {
 		return nil, errBlake2FInvalidInputLength
@@ -947,6 +974,9 @@ func (c *bls12381G1Add) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bls12381G1Add) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBLS12381G1Add); err != nil {
+		return nil, err
+	}
 	// Implements EIP-2537 G1Add precompile.
 	// > G1 addition call expects `256` bytes as an input that is interpreted as byte concatenation of two G1 points (`128` bytes each).
 	// > Output is an encoding of addition operation result - single G1 point (`128` bytes).
@@ -1001,6 +1031,9 @@ func (c *bls12381G1MultiExp) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bls12381G1MultiExp) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBLS12381G1MSM); err != nil {
+		return nil, err
+	}
 	// Implements EIP-2537 G1MultiExp precompile.
 	// G1 multiplication call expects `160*k` bytes as an input that is interpreted as byte concatenation of `k` slices each of them being a byte concatenation of encoding of G1 point (`128` bytes) and encoding of a scalar value (`32` bytes).
 	// Output is an encoding of multiexponentiation operation result - single G1 point (`128` bytes).
@@ -1051,6 +1084,9 @@ func (c *bls12381G2Add) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bls12381G2Add) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBLS12381G2Add); err != nil {
+		return nil, err
+	}
 	// Implements EIP-2537 G2Add precompile.
 	// > G2 addition call expects `512` bytes as an input that is interpreted as byte concatenation of two G2 points (`256` bytes each).
 	// > Output is an encoding of addition operation result - single G2 point (`256` bytes).
@@ -1106,6 +1142,9 @@ func (c *bls12381G2MultiExp) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bls12381G2MultiExp) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBLS12381G2MSM); err != nil {
+		return nil, err
+	}
 	// Implements EIP-2537 G2MultiExp precompile logic
 	// > G2 multiplication call expects `288*k` bytes as an input that is interpreted as byte concatenation of `k` slices each of them being a byte concatenation of encoding of G2 point (`256` bytes) and encoding of a scalar value (`32` bytes).
 	// > Output is an encoding of multiexponentiation operation result - single G2 point (`256` bytes).
@@ -1156,6 +1195,9 @@ func (c *bls12381Pairing) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bls12381Pairing) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBLS12381Pairing); err != nil {
+		return nil, err
+	}
 	// Implements EIP-2537 Pairing precompile logic.
 	// > Pairing call expects `384*k` bytes as an inputs that is interpreted as byte concatenation of `k` slices. Each slice has the following structure:
 	// > - `128` bytes of G1 point encoding
@@ -1312,6 +1354,9 @@ func (c *bls12381MapG1) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bls12381MapG1) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBLS12381MapG1); err != nil {
+		return nil, err
+	}
 	// Implements EIP-2537 Map_To_G1 precompile.
 	// > Field-to-curve call expects an `64` bytes input that is interpreted as an element of the base field.
 	// > Output of this call is `128` bytes and is G1 point following respective encoding rules.
@@ -1345,6 +1390,9 @@ func (c *bls12381MapG2) RequiredGas(input []byte) uint64 {
 }
 
 func (c *bls12381MapG2) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpBLS12381MapG2); err != nil {
+		return nil, err
+	}
 	// Implements EIP-2537 Map_FP2_TO_G2 precompile logic.
 	// > Field-to-curve call expects an `128` bytes input that is interpreted as an element of the quadratic extension field.
 	// > Output of this call is `256` bytes and is G2 point following respective encoding rules.
@@ -1395,6 +1443,9 @@ var (
 
 // Run executes the point evaluation precompile.
 func (b *kzgPointEvaluation) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpKZGPointEval); err != nil {
+		return nil, err
+	}
 	if len(input) != blobVerifyInputLength {
 		return nil, errBlobVerifyInvalidInputLength
 	}
@@ -1452,6 +1503,9 @@ func (c *p256Verify) RequiredGas(input []byte) uint64 {
 
 // Run executes the precompiled contract with given 160 bytes of param, returning the output and the used gas
 func (c *p256Verify) Run(input []byte) ([]byte, error) {
+	if err := refuse(OpP256Verify); err != nil {
+		return nil, err
+	}
 	const p256VerifyInputLength = 160
 	if len(input) != p256VerifyInputLength {
 		return nil, nil
