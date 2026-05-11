@@ -293,11 +293,15 @@ func (c *ecrecover) RequiredGas(input []byte) uint64 {
 }
 
 func (c *ecrecover) Run(input []byte) ([]byte, error) {
-	// Strict-PQ chains forbid classical contract-auth at the precompile
-	// boundary. The active LuxSecurityProfile is installed once at
-	// chain bootstrap; default (nil) preserves classical semantics.
-	if forbidClassicalContractAuth() {
-		return nil, ErrClassicalAuthForbidden
+	// PQ chains forbid classical contract-auth at the precompile
+	// boundary. The active PQProfile is installed once at chain
+	// bootstrap; default (nil profile, no PQ required) preserves
+	// classical semantics. When PQ has been required but the projection
+	// is not installed, fail closed with ErrMissingPQProfile so a
+	// misordered or incomplete bootstrap never silently runs classical
+	// ecrecover.
+	if err := classicalContractAuthCheck(); err != nil {
+		return nil, err
 	}
 
 	const ecRecoverInputLength = 128
