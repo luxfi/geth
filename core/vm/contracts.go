@@ -300,7 +300,7 @@ func (c *ecrecover) Run(input []byte) ([]byte, error) {
 	// is not installed, fail closed with ErrMissingPQProfile so a
 	// misordered or incomplete bootstrap never silently runs classical
 	// ecrecover.
-	if err := classicalContractAuthCheck(); err != nil {
+	if err := refuse(OpEcrecover); err != nil {
 		return nil, err
 	}
 
