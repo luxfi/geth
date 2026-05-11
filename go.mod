@@ -99,6 +99,7 @@ require (
 	github.com/luxfi/constants v1.4.7 // indirect
 	github.com/luxfi/container v0.0.4 // indirect
 	github.com/luxfi/mock v0.1.1 // indirect
+	github.com/luxfi/pq v0.0.0-20260511232911-de15d6ce2f0f // indirect
 	github.com/luxfi/runtime v1.0.1 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
 	github.com/luxfi/validators v1.0.0 // indirect
