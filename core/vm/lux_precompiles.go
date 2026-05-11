@@ -12,7 +12,9 @@ import (
 	"github.com/luxfi/precompile/contract"
 	"github.com/luxfi/precompile/mldsa"
 	"github.com/luxfi/precompile/mlkem"
+	"github.com/luxfi/precompile/p3q"
 	"github.com/luxfi/precompile/precompileconfig"
+	"github.com/luxfi/precompile/pulsar"
 	"github.com/luxfi/precompile/slhdsa"
 )
 
@@ -151,12 +153,33 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 }
 
 // LuxPrecompiles returns the baseline Lux precompiles that every Lux chain
-// should support. Currently this is the post-quantum crypto suite.
+// should support. This is the LP-4200 unified PQCrypto block: ML-KEM,
+// ML-DSA, SLH-DSA, Pulsar (threshold ML-DSA), and P3Q (strict-PQ STARK).
 // L1 chains can add additional precompiles (DEX, sr25519, FROST, etc.)
 // by implementing PrecompileOverrider in their Rules.Payload.
+//
+// Addresses (LP-4200 unified block):
+//
+//	0x012201 = ML-KEM   (FIPS 203 — post-quantum KEM)
+//	0x012202 = ML-DSA   (FIPS 204 — single-party PQ signatures)
+//	0x012203 = SLH-DSA  (FIPS 205 — stateless hash-based signatures)
+//	0x012204 = Pulsar   (threshold FIPS 204, byte-equal to ML-DSA)
+//	0x012205 = P3Q      (strict-PQ STARK / FRI / cSHAKE256 verifier)
+//
+// All five are always available regardless of PQ profile; the profile
+// gate only constrains the *classical* precompiles (ecrecover, sha256,
+// alt_bn128, BLS12-381, KZG) — it never disables PQ primitives.
 func LuxPrecompiles() PrecompiledContracts {
 	return PrecompiledContracts{
-		// ML-DSA (Post-Quantum Signatures - FIPS 204)
+		// ML-KEM (FIPS 203 — post-quantum key encapsulation)
+		mlkem.ContractAddress: &precompileAdapter{
+			name:    "mlkem",
+			address: mlkem.ContractAddress,
+			inner:   mlkem.MLKEMPrecompile,
+			gasFunc: mlkem.MLKEMPrecompile.RequiredGas,
+		},
+
+		// ML-DSA (FIPS 204 — single-party post-quantum signatures)
 		mldsa.ContractMLDSAVerifyAddress: &precompileAdapter{
 			name:    "mldsa",
 			address: mldsa.ContractMLDSAVerifyAddress,
@@ -164,7 +187,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			gasFunc: mldsa.MLDSAVerifyPrecompile.RequiredGas,
 		},
 
-		// SLH-DSA (Hash-based Signatures - FIPS 205)
+		// SLH-DSA (FIPS 205 — stateless hash-based signatures)
 		slhdsa.ContractSLHDSAVerifyAddress: &precompileAdapter{
 			name:    "slhdsa",
 			address: slhdsa.ContractSLHDSAVerifyAddress,
@@ -172,12 +195,23 @@ func LuxPrecompiles() PrecompiledContracts {
 			gasFunc: slhdsa.SLHDSAVerifyPrecompile.RequiredGas,
 		},
 
-		// ML-KEM (FIPS 203 — post-quantum key encapsulation)
-		mlkem.ContractAddress: &precompileAdapter{
-			name:    "mlkem",
-			address: mlkem.ContractAddress,
-			inner:   mlkem.MLKEMPrecompile,
-			gasFunc: mlkem.MLKEMPrecompile.RequiredGas,
+		// Pulsar (threshold FIPS 204 — Module-LWE threshold ML-DSA)
+		// Byte-equal output to single-party ML-DSA per the Class N1
+		// manifesto; the underlying verifier dispatches to luxfi/crypto/mldsa.
+		pulsar.ContractPulsarVerifyAddress: &precompileAdapter{
+			name:    "pulsar",
+			address: pulsar.ContractPulsarVerifyAddress,
+			inner:   pulsar.PulsarVerifyPrecompile,
+			gasFunc: pulsar.PulsarVerifyPrecompile.RequiredGas,
+		},
+
+		// P3Q (strict-PQ STARK / FRI / cSHAKE256 / Goldilocks)
+		// Verifier callback wired at node init via p3q.RegisterVerifier.
+		p3q.ContractP3QVerifyAddress: &precompileAdapter{
+			name:    "p3q",
+			address: p3q.ContractP3QVerifyAddress,
+			inner:   p3q.P3QVerifyPrecompile,
+			gasFunc: p3q.P3QVerifyPrecompile.RequiredGas,
 		},
 	}
 }
