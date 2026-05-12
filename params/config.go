@@ -24,6 +24,7 @@ import (
 
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params/forks"
+	"github.com/luxfi/pq"
 )
 
 // Genesis hashes to enforce below configs on.
@@ -570,6 +571,22 @@ type ChainConfig struct {
 	Ethash             *EthashConfig       `json:"ethash,omitempty"`
 	Clique             *CliqueConfig       `json:"clique,omitempty"`
 	BlobScheduleConfig *BlobScheduleConfig `json:"blobSchedule,omitempty"`
+
+	// PQ is the chain-scoped strict-PQ profile. nil = classical
+	// semantics (every precompile admitted). Non-nil profiles refuse
+	// the configured classical primitive families at the EVM
+	// precompile boundary; see (*pq.Profile).RefuseUnder.
+	//
+	// Installed once at chain bootstrap by the host VM. Lives on
+	// ChainConfig — not on a package-global — so multi-chain hosts
+	// (one process running strict-PQ and permissive chains side-by-
+	// side) get the right gate per EVM instance.
+	//
+	// Not persisted: json tag is "-" because the profile is an
+	// operational projection from chain identity, not consensus state.
+	// (Header-published Profile.Hash() is the consensus contract; this
+	// field is the runtime knob that drives it.)
+	PQ *pq.Profile `json:"-"`
 }
 
 // EthashConfig is the consensus engine configs for proof-of-work based sealing.
