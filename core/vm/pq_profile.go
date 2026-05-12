@@ -14,14 +14,12 @@ import (
 // core/vm read naturally (vm.PQProfile, vm.OpEcrecover, etc.) without
 // the package qualifier.
 //
-// Naming symmetry: every name in luxfi/pq has a vm-local alias with
-// the "PQ" prefix where needed to disambiguate from existing vm
-// identifiers (Op collides with the opcode type, so we keep the full
-// pq.Op constants like OpEcrecover unprefixed only because vm has no
-// OpEcrecover of its own).
-//
-// One way only: chain bootstrap calls vm.SetPQProfile (= pq.SetActive),
-// each gated precompile calls refuse() (= pq.Refuse).
+// One way only: the host VM installs a *PQProfile on ChainConfig.PQ at
+// chain bootstrap; (*EVM).runPrecompile reads chainConfig.PQ and calls
+// (*PQProfile).RefuseUnder(op) before dispatching the precompile. The
+// per-precompile Run() methods stay clean — no global, no atomic load.
+// Multi-chain hosts (strict-PQ and permissive chains in one process)
+// get the right gate per EVM instance.
 
 // PQProfile aliases [pq.Profile]: the strict-PQ profile value.
 type PQProfile = pq.Profile
@@ -66,15 +64,63 @@ var (
 // [pq.Strict]).
 func AllForbidden() *PQProfile { return pq.Strict() }
 
-// SetPQProfile installs the chain-wide projection (alias for
-// [pq.SetActive]). Called once at chain bootstrap.
+// SetPQProfile installs the deprecated package-global PQ projection.
+//
+// Deprecated: process-global PQ state has last-writer-wins semantics
+// across chains hosted in one binary. Set [params.ChainConfig.PQ]
+// instead and let (*EVM).runPrecompile gate per chain. Retained as a
+// shim that delegates to [pq.SetActive].
 func SetPQProfile(p *PQProfile) { pq.SetActive(p) }
 
-// ActivePQProfile returns the chain-wide projection (alias for
-// [pq.Active]).
+// ActivePQProfile returns the deprecated package-global PQ projection.
+//
+// Deprecated: see [SetPQProfile].
 func ActivePQProfile() *PQProfile { return pq.Active() }
 
-// refuse is the single profile gate every classical precompile calls
-// at the top of its Run(). Hot path: one atomic load plus one switch
-// dispatch inside [pq.Refuse].
-func refuse(op Op) error { return pq.Refuse(op) }
+// opForPrecompile maps a precompile implementation to its [pq.Op]
+// classification. Returns OpUnknown for precompiles that are not gated
+// by the strict-PQ profile (dataCopy, bigModExp, stateful custom
+// precompiles installed by overriders). OpUnknown is always admitted
+// by [(*PQProfile).RefuseUnder], so the dispatch is fail-open for
+// unrecognized types.
+//
+// Type-switch dispatch (not address dispatch) so the mapping is robust
+// to precompile remapping via [PrecompileOverrider] and to ad-hoc test
+// setups that install precompile types at non-standard addresses.
+func opForPrecompile(p PrecompiledContract) Op {
+	switch p.(type) {
+	case *ecrecover:
+		return OpEcrecover
+	case *sha256hash:
+		return OpSHA256
+	case *ripemd160hash:
+		return OpRIPEMD160
+	case *blake2F:
+		return OpBlake2F
+	case *bn256AddIstanbul, *bn256AddByzantium:
+		return OpBn256Add
+	case *bn256ScalarMulIstanbul, *bn256ScalarMulByzantium:
+		return OpBn256ScalarMul
+	case *bn256PairingIstanbul, *bn256PairingByzantium:
+		return OpBn256Pairing
+	case *bls12381G1Add:
+		return OpBLS12381G1Add
+	case *bls12381G1MultiExp:
+		return OpBLS12381G1MSM
+	case *bls12381G2Add:
+		return OpBLS12381G2Add
+	case *bls12381G2MultiExp:
+		return OpBLS12381G2MSM
+	case *bls12381Pairing:
+		return OpBLS12381Pairing
+	case *bls12381MapG1:
+		return OpBLS12381MapG1
+	case *bls12381MapG2:
+		return OpBLS12381MapG2
+	case *kzgPointEvaluation:
+		return OpKZGPointEval
+	case *p256Verify:
+		return OpP256Verify
+	}
+	return OpUnknown
+}

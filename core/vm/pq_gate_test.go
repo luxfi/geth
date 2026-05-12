@@ -5,32 +5,40 @@ package vm
 
 import (
 	"errors"
+	"math/big"
 	"testing"
+
+	"github.com/luxfi/geth/params"
 )
 
 // pq_gate_test.go — coverage for the cross-family PQ gate.
 //
 // Each gate case names a precompile, the Op it reports, and the
-// family-specific error refuse() must return when AllForbidden() is
-// the active profile. resetGate restores the prior profile after each
-// test so package state never leaks.
+// family-specific error (*EVM).runPrecompile must return when
+// AllForbidden() is the chain-config profile. Each test constructs a
+// test EVM whose ChainConfig.PQ holds the per-case profile.
 
-func resetGate(t *testing.T) {
+// newGateEVM constructs a minimal EVM whose chain config has the
+// supplied profile installed. State is nil; runPrecompile does not
+// touch state.
+func newGateEVM(t *testing.T, p *PQProfile) *EVM {
 	t.Helper()
-	prev := ActivePQProfile()
-	t.Cleanup(func() { SetPQProfile(prev) })
+	cc := *params.TestChainConfig
+	cc.PQ = p
+	return NewEVM(BlockContext{BlockNumber: big.NewInt(0)}, nil, &cc, Config{})
 }
 
 // gateCase is one row of the gate matrix.
 type gateCase struct {
 	name    string
-	run     func() error
+	p       PrecompiledContract
+	input   []byte
 	op      Op
 	wantErr error
 }
 
-// gateCases enumerates every gated precompile and the error refuse()
-// must return for that op under AllForbidden().
+// gateCases enumerates every gated precompile and the error
+// runPrecompile must return for that op under AllForbidden().
 func gateCases() []gateCase {
 	// Inputs are size-conforming but otherwise zero. The gate fires
 	// before the precompile interprets them; cryptographic output is
@@ -46,39 +54,47 @@ func gateCases() []gateCase {
 	zero384 := make([]byte, 384)
 
 	return []gateCase{
-		{"ecrecover", func() error { _, e := (&ecrecover{}).Run(zero128); return e }, OpEcrecover, ErrEcrecoverForbidden},
-		{"sha256", func() error { _, e := (&sha256hash{}).Run(zero64); return e }, OpSHA256, ErrSHA256Forbidden},
-		{"ripemd160", func() error { _, e := (&ripemd160hash{}).Run(zero64); return e }, OpRIPEMD160, ErrRIPEMD160Forbidden},
-		{"blake2F", func() error { _, e := (&blake2F{}).Run(zero213); return e }, OpBlake2F, ErrBlake2FForbidden},
-		{"bn256AddIstanbul", func() error { _, e := (&bn256AddIstanbul{}).Run(zero128); return e }, OpBn256Add, ErrBn256Forbidden},
-		{"bn256AddByzantium", func() error { _, e := (&bn256AddByzantium{}).Run(zero128); return e }, OpBn256Add, ErrBn256Forbidden},
-		{"bn256ScalarMulIstanbul", func() error { _, e := (&bn256ScalarMulIstanbul{}).Run(zero96); return e }, OpBn256ScalarMul, ErrBn256Forbidden},
-		{"bn256ScalarMulByzantium", func() error { _, e := (&bn256ScalarMulByzantium{}).Run(zero96); return e }, OpBn256ScalarMul, ErrBn256Forbidden},
-		{"bn256PairingIstanbul", func() error { _, e := (&bn256PairingIstanbul{}).Run(zero192); return e }, OpBn256Pairing, ErrBn256Forbidden},
-		{"bn256PairingByzantium", func() error { _, e := (&bn256PairingByzantium{}).Run(zero192); return e }, OpBn256Pairing, ErrBn256Forbidden},
-		{"bls12381G1Add", func() error { _, e := (&bls12381G1Add{}).Run(zero256); return e }, OpBLS12381G1Add, ErrBLS12381Forbidden},
-		{"bls12381G1MultiExp", func() error { _, e := (&bls12381G1MultiExp{}).Run(zero160); return e }, OpBLS12381G1MSM, ErrBLS12381Forbidden},
-		{"bls12381G2Add", func() error { _, e := (&bls12381G2Add{}).Run(zero384); return e }, OpBLS12381G2Add, ErrBLS12381Forbidden},
-		{"bls12381G2MultiExp", func() error { _, e := (&bls12381G2MultiExp{}).Run(zero288); return e }, OpBLS12381G2MSM, ErrBLS12381Forbidden},
-		{"bls12381Pairing", func() error { _, e := (&bls12381Pairing{}).Run(zero384); return e }, OpBLS12381Pairing, ErrBLS12381Forbidden},
-		{"bls12381MapG1", func() error { _, e := (&bls12381MapG1{}).Run(zero64); return e }, OpBLS12381MapG1, ErrBLS12381Forbidden},
-		{"bls12381MapG2", func() error { _, e := (&bls12381MapG2{}).Run(zero128); return e }, OpBLS12381MapG2, ErrBLS12381Forbidden},
-		{"p256Verify", func() error { _, e := (&p256Verify{}).Run(zero160); return e }, OpP256Verify, ErrP256VerifyForbidden},
-		{"kzgPointEvaluation", func() error { _, e := (&kzgPointEvaluation{}).Run(zero192); return e }, OpKZGPointEval, ErrKZGForbidden},
+		{"ecrecover", &ecrecover{}, zero128, OpEcrecover, ErrEcrecoverForbidden},
+		{"sha256", &sha256hash{}, zero64, OpSHA256, ErrSHA256Forbidden},
+		{"ripemd160", &ripemd160hash{}, zero64, OpRIPEMD160, ErrRIPEMD160Forbidden},
+		{"blake2F", &blake2F{}, zero213, OpBlake2F, ErrBlake2FForbidden},
+		{"bn256AddIstanbul", &bn256AddIstanbul{}, zero128, OpBn256Add, ErrBn256Forbidden},
+		{"bn256AddByzantium", &bn256AddByzantium{}, zero128, OpBn256Add, ErrBn256Forbidden},
+		{"bn256ScalarMulIstanbul", &bn256ScalarMulIstanbul{}, zero96, OpBn256ScalarMul, ErrBn256Forbidden},
+		{"bn256ScalarMulByzantium", &bn256ScalarMulByzantium{}, zero96, OpBn256ScalarMul, ErrBn256Forbidden},
+		{"bn256PairingIstanbul", &bn256PairingIstanbul{}, zero192, OpBn256Pairing, ErrBn256Forbidden},
+		{"bn256PairingByzantium", &bn256PairingByzantium{}, zero192, OpBn256Pairing, ErrBn256Forbidden},
+		{"bls12381G1Add", &bls12381G1Add{}, zero256, OpBLS12381G1Add, ErrBLS12381Forbidden},
+		{"bls12381G1MultiExp", &bls12381G1MultiExp{}, zero160, OpBLS12381G1MSM, ErrBLS12381Forbidden},
+		{"bls12381G2Add", &bls12381G2Add{}, zero384, OpBLS12381G2Add, ErrBLS12381Forbidden},
+		{"bls12381G2MultiExp", &bls12381G2MultiExp{}, zero288, OpBLS12381G2MSM, ErrBLS12381Forbidden},
+		{"bls12381Pairing", &bls12381Pairing{}, zero384, OpBLS12381Pairing, ErrBLS12381Forbidden},
+		{"bls12381MapG1", &bls12381MapG1{}, zero64, OpBLS12381MapG1, ErrBLS12381Forbidden},
+		{"bls12381MapG2", &bls12381MapG2{}, zero128, OpBLS12381MapG2, ErrBLS12381Forbidden},
+		{"p256Verify", &p256Verify{}, zero160, OpP256Verify, ErrP256VerifyForbidden},
+		{"kzgPointEvaluation", &kzgPointEvaluation{}, zero192, OpKZGPointEval, ErrKZGForbidden},
 	}
+}
+
+// runGate executes the precompile through runPrecompile with the
+// supplied profile, supplying enough gas that the gate is the only
+// possible failure mode.
+func runGate(t *testing.T, profile *PQProfile, c gateCase) error {
+	t.Helper()
+	evm := newGateEVM(t, profile)
+	gas := c.p.RequiredGas(c.input)
+	_, _, err := evm.runPrecompile(c.p, c.input, gas*2)
+	return err
 }
 
 // TestStrictPQRefusesEveryClassicalPrecompile asserts AllForbidden()
 // refuses every gated precompile with the family-specific error.
 func TestStrictPQRefusesEveryClassicalPrecompile(t *testing.T) {
-	resetGate(t)
-	SetPQProfile(AllForbidden())
-
 	for _, tc := range gateCases() {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.run()
+			err := runGate(t, AllForbidden(), tc)
 			if err == nil {
-				t.Fatalf("strict-PQ profile must refuse Run, got nil")
+				t.Fatalf("strict-PQ profile must refuse, got nil")
 			}
 			if !errors.Is(err, tc.wantErr) {
 				t.Fatalf("want %v, got %v", tc.wantErr, err)
@@ -87,21 +103,17 @@ func TestStrictPQRefusesEveryClassicalPrecompile(t *testing.T) {
 	}
 }
 
-// TestNilProfileAdmitsEveryPrecompile asserts the default state
-// (no profile installed) lets every precompile reach its math.
+// TestNilProfileAdmitsEveryPrecompile asserts the default state (no
+// profile installed) lets every precompile reach its math.
 func TestNilProfileAdmitsEveryPrecompile(t *testing.T) {
-	resetGate(t)
-	SetPQProfile(nil)
-
 	gateErrors := []error{
 		ErrEcrecoverForbidden, ErrP256VerifyForbidden,
 		ErrSHA256Forbidden, ErrRIPEMD160Forbidden, ErrBlake2FForbidden,
 		ErrBn256Forbidden, ErrBLS12381Forbidden, ErrKZGForbidden,
 	}
-
 	for _, tc := range gateCases() {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.run()
+			err := runGate(t, nil, tc)
 			for _, ge := range gateErrors {
 				if errors.Is(err, ge) {
 					t.Fatalf("nil profile must not refuse; got %v", err)
@@ -115,18 +127,14 @@ func TestNilProfileAdmitsEveryPrecompile(t *testing.T) {
 // Forbid* false (the zero value) admits every precompile, just like
 // the nil case.
 func TestEmptyProfileAdmitsEveryPrecompile(t *testing.T) {
-	resetGate(t)
-	SetPQProfile(&PQProfile{})
-
 	gateErrors := []error{
 		ErrEcrecoverForbidden, ErrP256VerifyForbidden,
 		ErrSHA256Forbidden, ErrRIPEMD160Forbidden, ErrBlake2FForbidden,
 		ErrBn256Forbidden, ErrBLS12381Forbidden, ErrKZGForbidden,
 	}
-
 	for _, tc := range gateCases() {
 		t.Run(tc.name, func(t *testing.T) {
-			err := tc.run()
+			err := runGate(t, &PQProfile{}, tc)
 			for _, ge := range gateErrors {
 				if errors.Is(err, ge) {
 					t.Fatalf("empty profile must not refuse; got %v", err)
@@ -140,8 +148,6 @@ func TestEmptyProfileAdmitsEveryPrecompile(t *testing.T) {
 // own family. Setting ForbidBn256 alone must not refuse BLS12-381,
 // SHA-256, or any other family.
 func TestPerFamilyIsolation(t *testing.T) {
-	resetGate(t)
-
 	cases := []struct {
 		name    string
 		profile *PQProfile
@@ -160,8 +166,7 @@ func TestPerFamilyIsolation(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			SetPQProfile(c.profile)
-			if err := refuse(c.op); !errors.Is(err, c.wantErr) {
+			if err := c.profile.RefuseUnder(c.op); !errors.Is(err, c.wantErr) {
 				t.Fatalf("want %v, got %v", c.wantErr, err)
 			}
 			// Every other op must pass under this single-flag profile.
@@ -177,11 +182,10 @@ func TestPerFamilyIsolation(t *testing.T) {
 				if op == c.op {
 					continue
 				}
-				// Skip ops in the same family as the forbidden one.
 				if sameFamily(op, c.op) {
 					continue
 				}
-				if err := refuse(op); err != nil {
+				if err := c.profile.RefuseUnder(op); err != nil {
 					t.Errorf("single-flag profile %s also refused %v: %v", c.name, op, err)
 				}
 			}
@@ -233,14 +237,21 @@ func TestAllForbiddenSetsAllFlags(t *testing.T) {
 	}
 }
 
-// TestRefuseUnknownOpIsPermissive documents that refuse(OpUnknown)
-// returns nil even under strict-PQ. Callers MUST use a recognized Op;
-// the gate cannot fail-closed on unknown ops without breaking callers
-// who have not been ported yet.
+// TestRefuseUnknownOpIsPermissive documents that
+// (*PQProfile).RefuseUnder(OpUnknown) returns nil even under strict-PQ.
+// Callers MUST use a recognized Op; the gate cannot fail-closed on
+// unknown ops without breaking callers who have not been ported yet.
+// opForPrecompile returns OpUnknown for unrecognized precompile types
+// (e.g. dataCopy, bigModExp, stateful custom precompiles).
 func TestRefuseUnknownOpIsPermissive(t *testing.T) {
-	resetGate(t)
-	SetPQProfile(AllForbidden())
-	if err := refuse(OpUnknown); err != nil {
-		t.Errorf("refuse(OpUnknown) must be nil; got %v", err)
+	if err := AllForbidden().RefuseUnder(OpUnknown); err != nil {
+		t.Errorf("AllForbidden.RefuseUnder(OpUnknown) must be nil; got %v", err)
+	}
+	// And via runPrecompile with a non-classical precompile (dataCopy
+	// is not in the strict-PQ matrix).
+	evm := newGateEVM(t, AllForbidden())
+	_, _, err := evm.runPrecompile(&dataCopy{}, []byte("anything"), (&dataCopy{}).RequiredGas([]byte("anything")))
+	if err != nil {
+		t.Errorf("runPrecompile(dataCopy, AllForbidden) must be nil; got %v", err)
 	}
 }

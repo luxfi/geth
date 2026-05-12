@@ -316,7 +316,7 @@ func (evm *EVM) Call(caller common.Address, addr common.Address, input []byte, g
 			env := NewPrecompileEnvironment(evm, caller, addr, gas, evm.readOnly)
 			ret, gas, err = stateful.RunStateful(env, input, gas)
 		} else {
-			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+			ret, gas, err = evm.runPrecompile(p, input, gas)
 		}
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
@@ -385,7 +385,7 @@ func (evm *EVM) CallCode(caller common.Address, addr common.Address, input []byt
 			env := NewPrecompileEnvironment(evm, caller, addr, gas, evm.readOnly)
 			ret, gas, err = stateful.RunStateful(env, input, gas)
 		} else {
-			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+			ret, gas, err = evm.runPrecompile(p, input, gas)
 		}
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
@@ -435,7 +435,7 @@ func (evm *EVM) DelegateCall(originCaller common.Address, caller common.Address,
 			env := NewPrecompileEnvironment(evm, originCaller, caller, gas, evm.readOnly)
 			ret, gas, err = stateful.RunStateful(env, input, gas)
 		} else {
-			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+			ret, gas, err = evm.runPrecompile(p, input, gas)
 		}
 	} else {
 		// Initialise a new contract and make initialise the delegate values
@@ -494,7 +494,7 @@ func (evm *EVM) StaticCall(caller common.Address, addr common.Address, input []b
 			env := NewPrecompileEnvironment(evm, caller, addr, gas, true)
 			ret, gas, err = stateful.RunStateful(env, input, gas)
 		} else {
-			ret, gas, err = RunPrecompiledContract(p, input, gas, evm.Config.Tracer)
+			ret, gas, err = evm.runPrecompile(p, input, gas)
 		}
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
@@ -707,6 +707,34 @@ func (evm *EVM) resolveCodeHash(addr common.Address) common.Hash {
 
 // ChainConfig returns the environment's chain configuration
 func (evm *EVM) ChainConfig() *params.ChainConfig { return evm.chainConfig }
+
+// runPrecompile dispatches a non-stateful precompile through the
+// strict-PQ gate. The profile lives on ChainConfig (chainConfig.PQ),
+// so multi-chain hosts get the correct posture per EVM instance.
+//
+// Gas is charged unconditionally — even on refusal — to match the
+// classical-EVM observable: a precompile call always burns its
+// RequiredGas, and the strict-PQ refusal must not be detectable via
+// gas timing (see TestStrictPQ_GasIsStillCharged).
+func (evm *EVM) runPrecompile(p PrecompiledContract, input []byte, suppliedGas uint64) (ret []byte, remainingGas uint64, err error) {
+	gasCost := p.RequiredGas(input)
+	if suppliedGas < gasCost {
+		return nil, 0, ErrOutOfGas
+	}
+	tracer := evm.Config.Tracer
+	if tracer != nil && tracer.OnGasChange != nil {
+		tracer.OnGasChange(suppliedGas, suppliedGas-gasCost, tracing.GasChangeCallPrecompiledContract)
+	}
+	suppliedGas -= gasCost
+
+	// Profile gate: per-chain refusal of classical precompile families.
+	// nil profile (the default) admits every op — classical semantics.
+	if err := evm.chainConfig.PQ.RefuseUnder(opForPrecompile(p)); err != nil {
+		return nil, suppliedGas, err
+	}
+	output, err := p.Run(input)
+	return output, suppliedGas, err
+}
 
 func (evm *EVM) captureBegin(depth int, typ OpCode, from common.Address, to common.Address, input []byte, startGas uint64, value *big.Int) {
 	tracer := evm.Config.Tracer
