@@ -13,7 +13,6 @@ require (
 	github.com/cloudflare/cloudflare-go v0.116.0
 	github.com/cockroachdb/pebble v1.1.5
 	github.com/consensys/gnark-crypto v0.20.1
-	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/dchest/siphash v1.2.3
 	github.com/deckarep/golang-set/v2 v2.8.0
@@ -49,6 +48,7 @@ require (
 	github.com/luxfi/ids v1.2.9
 	github.com/luxfi/log v1.4.1
 	github.com/luxfi/math/big v0.1.0
+	github.com/luxfi/pq v0.0.0-20260511232911-de15d6ce2f0f
 	github.com/luxfi/version v1.0.1
 	github.com/luxfi/zapdb v1.8.0
 	github.com/mattn/go-colorable v0.1.14
@@ -84,6 +84,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
+	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab // indirect
 	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
@@ -99,7 +100,6 @@ require (
 	github.com/luxfi/constants v1.4.7 // indirect
 	github.com/luxfi/container v0.0.4 // indirect
 	github.com/luxfi/mock v0.1.1 // indirect
-	github.com/luxfi/pq v0.0.0-20260511232911-de15d6ce2f0f // indirect
 	github.com/luxfi/runtime v1.0.1 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
 	github.com/luxfi/validators v1.0.0 // indirect
@@ -169,7 +169,7 @@ require (
 	github.com/luxfi/math v1.2.4
 	github.com/luxfi/metric v1.5.1 // indirect
 	github.com/luxfi/p2p v1.19.2 // indirect
-	github.com/luxfi/precompile v0.5.14
+	github.com/luxfi/precompile v0.5.16
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/vm v1.0.40
 	github.com/luxfi/warp v1.18.5 // indirect

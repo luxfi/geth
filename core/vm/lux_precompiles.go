@@ -12,7 +12,9 @@ import (
 	"github.com/luxfi/precompile/contract"
 	"github.com/luxfi/precompile/mldsa"
 	"github.com/luxfi/precompile/mlkem"
+	"github.com/luxfi/precompile/p3q"
 	"github.com/luxfi/precompile/precompileconfig"
+	"github.com/luxfi/precompile/pulsar"
 	"github.com/luxfi/precompile/slhdsa"
 )
 
@@ -193,11 +195,25 @@ func LuxPrecompiles() PrecompiledContracts {
 			gasFunc: slhdsa.SLHDSAVerifyPrecompile.RequiredGas,
 		},
 
-		// Pulsar (threshold FIPS 204) and P3Q (STARK/FRI) precompiles
-		// register here once luxfi/precompile tags a release that
-		// includes their packages. Until then, callers that need them
-		// must wire them via MergeLuxPrecompiles from a separate
-		// registration site.
+		// Pulsar (threshold FIPS 204 — Module-LWE threshold ML-DSA).
+		// Byte-equal output to single-party ML-DSA per the NIST MPTC
+		// Class N1 manifesto; the underlying verifier dispatches to
+		// luxfi/crypto/mldsa.
+		pulsar.ContractPulsarVerifyAddress: &precompileAdapter{
+			name:    "pulsar",
+			address: pulsar.ContractPulsarVerifyAddress,
+			inner:   pulsar.PulsarVerifyPrecompile,
+			gasFunc: pulsar.PulsarVerifyPrecompile.RequiredGas,
+		},
+
+		// P3Q (strict-PQ STARK / FRI / cSHAKE256 / Goldilocks).
+		// Verifier callback wired at node init via p3q.RegisterVerifier.
+		p3q.ContractP3QVerifyAddress: &precompileAdapter{
+			name:    "p3q",
+			address: p3q.ContractP3QVerifyAddress,
+			inner:   p3q.P3QVerifyPrecompile,
+			gasFunc: p3q.P3QVerifyPrecompile.RequiredGas,
+		},
 	}
 }
 
