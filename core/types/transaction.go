@@ -50,6 +50,24 @@ const (
 	DynamicFeeTxType = 0x02
 	BlobTxType       = 0x03
 	SetCodeTxType    = 0x04
+	// MLDSATxType — strict-PQ Liquid transaction envelope. Carries
+	// a FIPS 204 ML-DSA-65 signature (3293 bytes) + public key
+	// (1952 bytes) instead of the classical ECDSA secp256k1
+	// (v, r, s) triple. Sender address is sha256(pubkey)[:20] — a
+	// new address space distinct from the classical
+	// keccak256(secp256k1-pub)[12:] EOA space.
+	//
+	// The 0x42 byte matches NodeIDSchemeMLDSA65 in luxfi/ids, so
+	// the same scheme tag identifies the validator identity on the
+	// wire AND a strict-PQ transaction on the same chain — one
+	// constant, one meaning, one place to grep.
+	//
+	// A strict-PQ chain profile refuses every classical tx type
+	// (0x00..0x04) at the tx-pool admission boundary; classical
+	// chains continue to accept those types and additionally
+	// admit MLDSATxType for clients that opt into strict-PQ
+	// signing during a migration window.
+	MLDSATxType = 0x42
 )
 
 // Transaction is an Ethereum transaction.
@@ -212,6 +230,8 @@ func (tx *Transaction) decodeTyped(b []byte) (TxData, error) {
 		inner = new(BlobTx)
 	case SetCodeTxType:
 		inner = new(SetCodeTx)
+	case MLDSATxType:
+		inner = new(MLDSATx)
 	default:
 		return nil, ErrTxTypeNotSupported
 	}
