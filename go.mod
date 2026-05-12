@@ -48,7 +48,7 @@ require (
 	github.com/luxfi/ids v1.2.9
 	github.com/luxfi/log v1.4.1
 	github.com/luxfi/math/big v0.1.0
-	github.com/luxfi/pq v0.0.0-20260511232911-de15d6ce2f0f
+	github.com/luxfi/pq v1.0.1-0.20260512064747-3d4c9414e15e
 	github.com/luxfi/version v1.0.1
 	github.com/luxfi/zapdb v1.8.0
 	github.com/mattn/go-colorable v0.1.14
