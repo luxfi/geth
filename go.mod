@@ -42,7 +42,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/cache v1.2.1
 	github.com/luxfi/consensus v1.22.84
-	github.com/luxfi/crypto v1.18.7
+	github.com/luxfi/crypto v1.19.0
 	github.com/luxfi/database v1.17.44
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.9
