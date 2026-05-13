@@ -42,7 +42,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/cache v1.2.1
 	github.com/luxfi/consensus v1.22.84
-	github.com/luxfi/crypto v1.18.1
+	github.com/luxfi/crypto v1.18.7
 	github.com/luxfi/database v1.17.44
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.9
@@ -84,9 +84,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
-	github.com/crate-crypto/go-ipa v0.0.0-20240724233137-53bbb0ceb27a // indirect
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab // indirect
-	github.com/ethereum/go-verkle v0.2.2 // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
