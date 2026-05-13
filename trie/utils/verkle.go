@@ -20,7 +20,7 @@ import (
 	"encoding/binary"
 	"sync"
 
-		"github.com/holiman/uint256"
+	"github.com/holiman/uint256"
 	"github.com/luxfi/crypto/verkle"
 	"github.com/luxfi/geth/common/lru"
 	"github.com/luxfi/geth/metrics"
