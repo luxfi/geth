@@ -97,6 +97,7 @@ require (
 	github.com/luxfi/concurrent v0.0.3 // indirect
 	github.com/luxfi/constants v1.4.7 // indirect
 	github.com/luxfi/container v0.0.4 // indirect
+	github.com/luxfi/crypto/ipa v1.2.4 // indirect
 	github.com/luxfi/mock v0.1.1 // indirect
 	github.com/luxfi/runtime v1.0.1 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
