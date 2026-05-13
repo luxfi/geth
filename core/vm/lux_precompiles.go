@@ -238,3 +238,23 @@ func MergeLuxPrecompiles(base PrecompiledContracts) PrecompiledContracts {
 // PrecompiledContractsLux contains all precompiles for Lux chains.
 // This includes standard Ethereum precompiles plus Lux-specific ones.
 var PrecompiledContractsLux = MergeLuxPrecompiles(PrecompiledContractsCancun)
+
+// init registers a safe-refuse stub for the P3Q strict-PQ STARK
+// verifier at boot.
+//
+// The real verifier is a CGO bridge into the Rust crate at
+// ~/work/lux/p3q (Plonky3 fork, FRI over Goldilocks, cSHAKE256).
+// That crate doesn't yet ship a `cdylib` build target + Go FFI; until
+// it does, every node boots without a registered verifier and the
+// precompile returns p3q.ErrVerifierNotRegistered — safe-refuse, no
+// forgery oracle.
+//
+// To wire the real verifier when the Rust FFI lands, replace the
+// stub closure with the cgo entry point and rebuild geth. The
+// registration call here is the single seam.
+func init() {
+	p3q.RegisterVerifier(func(version byte, proof, pubInputs []byte) (bool, error) {
+		// Refuse-by-default. Real verifier slots in here.
+		return false, p3q.ErrVerifierNotRegistered
+	})
+}
