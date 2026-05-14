@@ -10,6 +10,7 @@ import (
 	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/precompile/contract"
+	coronathreshold "github.com/luxfi/precompile/corona"
 	"github.com/luxfi/precompile/mldsa"
 	"github.com/luxfi/precompile/mlkem"
 	"github.com/luxfi/precompile/p3q"
@@ -154,19 +155,21 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 
 // LuxPrecompiles returns the baseline Lux precompiles that every Lux chain
 // should support. This is the LP-4200 unified PQCrypto block: ML-KEM,
-// ML-DSA, SLH-DSA, Pulsar (threshold ML-DSA), and P3Q (strict-PQ STARK).
+// ML-DSA, SLH-DSA, Pulsar (Module-LWE threshold ML-DSA), P3Q (strict-PQ
+// STARK), and Corona (Ring-LWE threshold).
 // L1 chains can add additional precompiles (DEX, sr25519, FROST, etc.)
 // by implementing PrecompileOverrider in their Rules.Payload.
 //
 // Addresses (LP-4200 unified block):
 //
-//	0x012201 = ML-KEM   (FIPS 203 — post-quantum KEM)
-//	0x012202 = ML-DSA   (FIPS 204 — single-party PQ signatures)
+//	0x012201 = ML-KEM   (FIPS 203 — Module-LWE KEM)
+//	0x012202 = ML-DSA   (FIPS 204 — Module-LWE single-party signatures)
 //	0x012203 = SLH-DSA  (FIPS 205 — stateless hash-based signatures)
-//	0x012204 = Pulsar   (threshold FIPS 204, byte-equal to ML-DSA)
+//	0x012204 = Pulsar   (Module-LWE threshold FIPS 204, byte-equal to ML-DSA)
 //	0x012205 = P3Q      (strict-PQ STARK / FRI / cSHAKE256 verifier)
+//	0x012206 = Corona   (Ring-LWE threshold)
 //
-// All five are always available regardless of PQ profile; the profile
+// All six are always available regardless of PQ profile; the profile
 // gate only constrains the *classical* precompiles (ecrecover, sha256,
 // alt_bn128, BLS12-381, KZG) — it never disables PQ primitives.
 func LuxPrecompiles() PrecompiledContracts {
@@ -213,6 +216,16 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: p3q.ContractP3QVerifyAddress,
 			inner:   p3q.P3QVerifyPrecompile,
 			gasFunc: p3q.P3QVerifyPrecompile.RequiredGas,
+		},
+
+		// Corona (Ring-LWE threshold). Distinct algebra from Pulsar:
+		// Pulsar is Module-LWE (FIPS 204 byte-equal); Corona is Ring-LWE
+		// over a single ring. Both are NIST MPTC Class N1 candidates.
+		coronathreshold.ContractCoronaThresholdAddress: &precompileAdapter{
+			name:    "corona",
+			address: coronathreshold.ContractCoronaThresholdAddress,
+			inner:   coronathreshold.CoronaThresholdPrecompile,
+			gasFunc: coronathreshold.CoronaThresholdPrecompile.RequiredGas,
 		},
 	}
 }
