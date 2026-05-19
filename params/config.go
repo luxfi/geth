@@ -540,7 +540,6 @@ type ChainConfig struct {
 	// Lux EVM activation. When EVMTimestamp is set, the chain uses Lux EVM
 	// gas accounting:
 	//   - Coinbase receives full gas payment (no EIP-1559 burning)
-	//   - Gas refunds are disabled (ApricotPhase1 behavior)
 	// Single canonical field — no aliases. Old `subnetEVMTimestamp` is gone.
 	EVMTimestamp *uint64 `json:"evmTimestamp,omitempty"` // EVM activation time (nil = standard geth, 0 = always EVM)
 
@@ -1020,7 +1019,6 @@ func (c *ChainConfig) IsVerkleGenesis() bool {
 // IsEVM returns whether time is either equal to the EVM activation time or greater.
 // When active, the chain uses Lux EVM gas accounting:
 //   - Coinbase receives full gas payment (no EIP-1559 base fee burning)
-//   - Gas refunds are disabled (ApricotPhase1 behavior)
 func (c *ChainConfig) IsEVM(time uint64) bool {
 	return isTimestampForked(c.EVMTimestamp, time)
 }
