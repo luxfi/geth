@@ -11,6 +11,8 @@ import (
 	"github.com/luxfi/geth/params"
 	"github.com/luxfi/precompile/contract"
 	coronathreshold "github.com/luxfi/precompile/corona"
+	"github.com/luxfi/precompile/hqc"
+	"github.com/luxfi/precompile/magnetar"
 	"github.com/luxfi/precompile/mldsa"
 	"github.com/luxfi/precompile/mlkem"
 	"github.com/luxfi/precompile/p3q"
@@ -156,7 +158,8 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 // LuxPrecompiles returns the baseline Lux precompiles that every Lux chain
 // should support. This is the LP-4200 unified PQCrypto block: ML-KEM,
 // ML-DSA, SLH-DSA, Pulsar (Module-LWE threshold ML-DSA), P3Q (strict-PQ
-// STARK), and Corona (Ring-LWE threshold).
+// STARK), Corona (Ring-LWE threshold), Magnetar (public-DKG MPC threshold
+// SLH-DSA), and HQC (code-based KEM).
 // L1 chains can add additional precompiles (DEX, sr25519, FROST, etc.)
 // by implementing PrecompileOverrider in their Rules.Payload.
 //
@@ -168,8 +171,10 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 //	0x012204 = Pulsar   (Module-LWE threshold FIPS 204, byte-equal to ML-DSA)
 //	0x012205 = P3Q      (strict-PQ STARK / FRI / cSHAKE256 verifier)
 //	0x012206 = Corona   (Ring-LWE threshold)
+//	0x012207 = Magnetar (public-DKG MPC threshold SLH-DSA, FIPS 205 byte-equal)
+//	0x012208 = HQC      (code-based KEM, family-disjoint backup)
 //
-// All six are always available regardless of PQ profile; the profile
+// All eight are always available regardless of PQ profile; the profile
 // gate only constrains the *classical* precompiles (ecrecover, sha256,
 // alt_bn128, BLS12-381, KZG) — it never disables PQ primitives.
 func LuxPrecompiles() PrecompiledContracts {
@@ -226,6 +231,32 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: coronathreshold.ContractCoronaThresholdAddress,
 			inner:   coronathreshold.CoronaThresholdPrecompile,
 			gasFunc: coronathreshold.CoronaThresholdPrecompile.RequiredGas,
+		},
+
+		// Magnetar (public-DKG MPC threshold SLH-DSA, FIPS 205 byte-equal).
+		// The MPC ceremony (Pedersen-VSS DKG + MPC evaluation over the
+		// WOTS+/FORS/Merkle signing tree of FIPS 205) produces a signature
+		// byte-equal to a single-party FIPS 205 SLH-DSA signature on the
+		// same message and group public key. Verification IS the standard
+		// FIPS 205 verifier. Distinct slot from SLH-DSA for gas-tier
+		// separation, telemetry, and forward-compatibility.
+		magnetar.ContractMagnetarVerifyAddress: &precompileAdapter{
+			name:    "magnetar",
+			address: magnetar.ContractMagnetarVerifyAddress,
+			inner:   magnetar.MagnetarVerifyPrecompile,
+			gasFunc: magnetar.MagnetarVerifyPrecompile.RequiredGas,
+		},
+
+		// HQC (Hamming Quasi-Cyclic, NIST PQC4-round selected backup KEM).
+		// Code-based, family-disjoint from Module-LWE ML-KEM: a structural
+		// break in lattice cryptography would not compromise HQC, and
+		// vice-versa. Encapsulation only — decapsulation MUST be performed
+		// off-chain (private key in calldata is public on-chain).
+		hqc.ContractAddress: &precompileAdapter{
+			name:    "hqc",
+			address: hqc.ContractAddress,
+			inner:   hqc.HQCPrecompile,
+			gasFunc: hqc.HQCPrecompile.RequiredGas,
 		},
 	}
 }
