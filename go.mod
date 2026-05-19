@@ -81,12 +81,14 @@ require (
 
 require (
 	filippo.io/hpke v0.4.0 // indirect
+	github.com/ALTree/bigfloat v0.2.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab // indirect
 	github.com/go-ini/ini v1.67.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
 	github.com/luxfi/accel v1.0.8 // indirect
@@ -97,7 +99,9 @@ require (
 	github.com/luxfi/concurrent v0.0.3 // indirect
 	github.com/luxfi/constants v1.4.7 // indirect
 	github.com/luxfi/container v0.0.4 // indirect
+	github.com/luxfi/corona v0.4.1 // indirect
 	github.com/luxfi/crypto/ipa v1.2.4 // indirect
+	github.com/luxfi/lattice/v7 v7.1.0 // indirect
 	github.com/luxfi/mock v0.1.1 // indirect
 	github.com/luxfi/runtime v1.0.1 // indirect
 	github.com/luxfi/utils v1.1.4 // indirect
@@ -106,10 +110,12 @@ require (
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v7 v7.0.100 // indirect
+	github.com/montanaflynn/stats v0.9.0 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/tinylib/msgp v1.6.1 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
+	github.com/zeebo/blake3 v0.2.4 // indirect
 	go.uber.org/mock v0.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
@@ -165,10 +171,10 @@ require (
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
-	github.com/luxfi/math v1.2.4
+	github.com/luxfi/math v1.4.0
 	github.com/luxfi/metric v1.5.1 // indirect
 	github.com/luxfi/p2p v1.19.2 // indirect
-	github.com/luxfi/precompile v0.5.16
+	github.com/luxfi/precompile v0.5.19
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/vm v1.0.40
 	github.com/luxfi/warp v1.18.5 // indirect
