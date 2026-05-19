@@ -186,11 +186,9 @@ var (
 		},
 	}
 
-	// LuxMainnetChainConfig contains the chain parameters for Lux mainnet (network ID 96369).
-	// This genesis matches the migrated EVM blockchain data.
-	// IMPORTANT: Shanghai/Cancun/Prague are disabled (nil) to match the original
-	// EVM chain which was pre-Shanghai (2024). This ensures proper state root
-	// verification when importing historical blocks.
+	// LuxMainnetChainConfig contains the chain parameters for Lux mainnet
+	// (network ID 96369). Under activate-all-implicitly Shanghai is live from
+	// genesis on Lux; pre-Shanghai historic block import is no longer in scope.
 	LuxMainnetChainConfig = &ChainConfig{
 		ChainID:                 big.NewInt(96369),
 		HomesteadBlock:          big.NewInt(0),
@@ -210,13 +208,12 @@ var (
 		GrayGlacierBlock:        nil,
 		TerminalTotalDifficulty: big.NewInt(0),
 		MergeNetsplitBlock:      big.NewInt(0),
-		ShanghaiTime:            nil, // Pre-Shanghai chain (EVM 2024)
-		CancunTime:              nil, // Not activated
-		PragueTime:              nil, // Not activated
+		ShanghaiTime:            newUint64(0),
+		CancunTime:              nil,
+		PragueTime:              nil,
 		OsakaTime:               nil,
-		VerkleTime:              nil,          // Not activated
-		EVMTimestamp:            newUint64(0), // EVM gas accounting from genesis
-		DurangoTimestamp:        newUint64(0), // Durango upgrade from genesis
+		VerkleTime:              nil,
+		EVMTimestamp:            newUint64(0), // Lux EVM gas accounting from genesis
 		Ethash:                  new(EthashConfig),
 	}
 
@@ -545,8 +542,7 @@ type ChainConfig struct {
 	//   - Coinbase receives full gas payment (no EIP-1559 burning)
 	//   - Gas refunds are disabled (ApricotPhase1 behavior)
 	// Single canonical field — no aliases. Old `subnetEVMTimestamp` is gone.
-	EVMTimestamp     *uint64 `json:"evmTimestamp,omitempty"`     // EVM activation time (nil = standard geth, 0 = always EVM)
-	DurangoTimestamp *uint64 `json:"durangoTimestamp,omitempty"` // Durango upgrade time
+	EVMTimestamp *uint64 `json:"evmTimestamp,omitempty"` // EVM activation time (nil = standard geth, 0 = always EVM)
 
 	// TerminalTotalDifficulty is the amount of total difficulty reached by
 	// the network that triggers the consensus upgrade.
@@ -1027,11 +1023,6 @@ func (c *ChainConfig) IsVerkleGenesis() bool {
 //   - Gas refunds are disabled (ApricotPhase1 behavior)
 func (c *ChainConfig) IsEVM(time uint64) bool {
 	return isTimestampForked(c.EVMTimestamp, time)
-}
-
-// IsDurango returns whether time is either equal to the Durango upgrade time or greater.
-func (c *ChainConfig) IsDurango(time uint64) bool {
-	return isTimestampForked(c.DurangoTimestamp, time)
 }
 
 // IsEIP4762 returns whether eip 4762 has been activated at given block.
@@ -1577,10 +1568,9 @@ func (c *ChainConfig) Rules(num *big.Int, isMerge bool, timestamp uint64) Rules 
 		IsLondon:         c.IsLondon(num),
 		IsMerge:          isMerge,
 		// For Lux networks: If ShanghaiTime is explicitly set in genesis config,
-		// Shanghai is active regardless of merge status. This handles importing
-		// historic blocks that were created with Shanghai EIPs (EIP-3860 init code gas)
-		// but before the merge. For EVM chains, Durango upgrade brings Shanghai EIPs.
-		IsShanghai:  c.IsShanghai(num, timestamp) || c.IsDurango(timestamp),
+		// Shanghai is active regardless of merge status. Lux genesis sets
+		// ShanghaiTime=0 under activate-all-implicitly.
+		IsShanghai:  c.IsShanghai(num, timestamp),
 		IsCancun:    isMerge && c.IsCancun(num, timestamp),
 		IsPrague:    isMerge && c.IsPrague(num, timestamp),
 		IsOsaka:     isMerge && c.IsOsaka(num, timestamp),
