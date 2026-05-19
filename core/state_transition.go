@@ -642,7 +642,6 @@ func (st *stateTransition) applyAuthorization(auth *types.SetCodeAuthorization) 
 
 // calcRefund computes refund counter, capped to a refund quotient.
 func (st *stateTransition) calcRefund() uint64 {
-	// EVM compatibility: gas refunds are disabled (ApricotPhase1 behavior)
 	// This matches coreth/evm where refunds were disabled from genesis
 	if st.evm.ChainConfig().IsEVM(st.evm.Context.Time) {
 		return 0
