@@ -43,10 +43,10 @@ import (
 // canonical encoding means consumers that read by-type-byte route
 // straight to this struct's decode path.
 type MLDSATx struct {
-	ChainID    *big.Int        // EIP-1559 chain id
+	ChainID    *big.Int // EIP-1559 chain id
 	Nonce      uint64
-	GasTipCap  *big.Int        // a.k.a. maxPriorityFeePerGas
-	GasFeeCap  *big.Int        // a.k.a. maxFeePerGas
+	GasTipCap  *big.Int // a.k.a. maxPriorityFeePerGas
+	GasFeeCap  *big.Int // a.k.a. maxFeePerGas
 	Gas        uint64
 	To         *common.Address // nil = contract creation
 	Value      *big.Int
