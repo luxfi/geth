@@ -42,7 +42,7 @@ require (
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/cache v1.2.1
 	github.com/luxfi/consensus v1.22.84
-	github.com/luxfi/crypto v1.19.0
+	github.com/luxfi/crypto v1.19.3
 	github.com/luxfi/database v1.17.44
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.9
@@ -91,7 +91,7 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
-	github.com/luxfi/accel v1.0.8 // indirect
+	github.com/luxfi/accel v1.1.0 // indirect
 	github.com/luxfi/age v1.4.0 // indirect
 	github.com/luxfi/atomic v1.0.0 // indirect
 	github.com/luxfi/codec v1.1.4 // indirect
@@ -125,7 +125,6 @@ require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.21.0 // indirect
 	github.com/Azure/azure-sdk-for-go/sdk/internal v1.12.0 // indirect
 	github.com/DataDog/zstd v1.5.7 // indirect
-	github.com/ProjectZKM/Ziren/crates/go-runtime/zkvm_runtime v0.0.0-20260311194731-d5b7577c683d // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.21 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.21 // indirect
@@ -174,7 +173,7 @@ require (
 	github.com/luxfi/math v1.4.0
 	github.com/luxfi/metric v1.5.1 // indirect
 	github.com/luxfi/p2p v1.19.2 // indirect
-	github.com/luxfi/precompile v0.5.19
+	github.com/luxfi/precompile v0.5.23
 	github.com/luxfi/sampler v1.0.0 // indirect
 	github.com/luxfi/vm v1.0.40
 	github.com/luxfi/warp v1.18.5 // indirect
