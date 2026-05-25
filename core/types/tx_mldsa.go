@@ -170,7 +170,7 @@ func (tx *MLDSATx) sigHash(chainID *big.Int) common.Hash {
 // MLDSASenderFromPubKey returns the 20-byte address derived from
 // an ML-DSA-65 public key: sha256(pubKey)[:20]. The same
 // derivation is used by lx/dex SignedOrderPQ — one address-space
-// shared across the Liquid EVM and Liquid DEX, so a trader has
+// shared across the the regulated EVM and DEX, so a trader has
 // the same identity on both chains under the same key.
 func MLDSASenderFromPubKey(pubKey []byte) common.Address {
 	h := sha256.Sum256(pubKey)
