@@ -40,9 +40,9 @@ import (
 	"sync"
 	"sync/atomic"
 
+	"github.com/golang/snappy"
 	"github.com/luxfi/geth/ethdb"
 	log "github.com/luxfi/log"
-	"github.com/golang/snappy"
 )
 
 // kindByte assigns a stable single-byte marker per table name.
