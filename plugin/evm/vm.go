@@ -14,7 +14,7 @@ import (
 	"github.com/luxfi/vm/chain"
 )
 
-// VM implements the Snowman ChainVM interface for the C-Chain
+// VM implements the linear-chain ChainVM interface for the C-Chain
 type VM struct {
 	IsPlugin bool
 }
@@ -22,7 +22,7 @@ type VM struct {
 // Ensure VM implements ChainVM
 var _ chain.ChainVM = (*VM)(nil)
 
-// Initialize implements the snowman.ChainVM interface
+// Initialize implements the linear-chain ChainVM interface
 func (vm *VM) Initialize(
 	ctx context.Context,
 	init vm.Init,
