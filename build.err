@@ -1,0 +1,36 @@
+# github.com/luxfi/geth/cmd/era
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/ethkey
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/abigen
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/blsync
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/devp2p
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/evm
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/clef
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/workload
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
+# github.com/luxfi/geth/cmd/geth
+ld: warning: search path '/opt/homebrew/opt/lux-gpu/lib' not found
+ld: warning: search path '/usr/local/opt/lux-gpu/lib' not found
+ld: warning: search path '/opt/lux/lib' not found
