@@ -19,6 +19,7 @@ import (
 	"github.com/luxfi/precompile/precompileconfig"
 	"github.com/luxfi/precompile/pulsar"
 	"github.com/luxfi/precompile/slhdsa"
+	"github.com/luxfi/precompile/starkfri"
 )
 
 // precompileAdapter wraps a precompiles.StatefulPrecompiledContract to implement
@@ -157,26 +158,34 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 
 // LuxPrecompiles returns the baseline Lux precompiles that every Lux chain
 // should support. This is the LP-4200 unified PQCrypto block: ML-KEM,
-// ML-DSA, SLH-DSA, Pulsar (Module-LWE threshold ML-DSA), P3Q (strict-PQ
-// STARK), Corona (Ring-LWE threshold), Magnetar (public-DKG MPC threshold
-// SLH-DSA), and HQC (code-based KEM).
+// ML-DSA, SLH-DSA, Pulsar (Module-LWE threshold ML-DSA), P3Q (LP-218
+// "Post-Quantum Pulsar Proof" on-chain verifier), Corona (Ring-LWE
+// threshold), Magnetar (public-DKG MPC threshold SLH-DSA), and HQC
+// (code-based KEM). The strict-PQ STARK / FRI verifier dispatch (formerly
+// misnamed P3Q at slot 0x012205) is now reachable at the dedicated
+// STARK-FRI slot (precompile/starkfri).
 // L1 chains can add additional precompiles (DEX, sr25519, FROST, etc.)
 // by implementing PrecompileOverrider in their Rules.Payload.
 //
 // Addresses (LP-4200 unified block):
 //
-//	0x012201 = ML-KEM   (FIPS 203 — Module-LWE KEM)
-//	0x012202 = ML-DSA   (FIPS 204 — Module-LWE single-party signatures)
-//	0x012203 = SLH-DSA  (FIPS 205 — stateless hash-based signatures)
-//	0x012204 = Pulsar   (Module-LWE threshold FIPS 204, byte-equal to ML-DSA)
-//	0x012205 = P3Q      (strict-PQ STARK / FRI / cSHAKE256 verifier)
-//	0x012206 = Corona   (Ring-LWE threshold)
-//	0x012207 = Magnetar (public-DKG MPC threshold SLH-DSA, FIPS 205 byte-equal)
-//	0x012208 = HQC      (code-based KEM, family-disjoint backup)
+//	0x012201 = ML-KEM    (FIPS 203 — Module-LWE KEM)
+//	0x012202 = ML-DSA    (FIPS 204 — Module-LWE single-party signatures)
+//	0x012203 = SLH-DSA   (FIPS 205 — stateless hash-based signatures)
+//	0x012204 = Pulsar    (Module-LWE threshold FIPS 204, byte-equal to ML-DSA)
+//	0x012205 = P3Q       (LP-218 Post-Quantum Pulsar Proof — Solidity-callable
+//	                      Pulsar / FIPS 204 ML-DSA verifier with 32-byte
+//	                      messageHash input and EVM-ABI bool output)
+//	0x012206 = Corona    (Ring-LWE threshold)
+//	0x012207 = Magnetar  (public-DKG MPC threshold SLH-DSA, FIPS 205 byte-equal)
+//	0x012208 = HQC       (code-based KEM, family-disjoint backup)
+//	0x012220 = STARK-FRI (strict-PQ STARK / FRI / cSHAKE256 verifier dispatch
+//	                      — placeholder slot pending dedicated LP allocation)
 //
-// All eight are always available regardless of PQ profile; the profile
-// gate only constrains the *classical* precompiles (ecrecover, sha256,
-// alt_bn128, BLS12-381, KZG) — it never disables PQ primitives.
+// All eight PQ-signature precompiles + STARK-FRI are always available
+// regardless of PQ profile; the profile gate only constrains the
+// *classical* precompiles (ecrecover, sha256, alt_bn128, BLS12-381, KZG)
+// — it never disables PQ primitives.
 func LuxPrecompiles() PrecompiledContracts {
 	return PrecompiledContracts{
 		// ML-KEM (FIPS 203 — post-quantum key encapsulation)
@@ -214,13 +223,33 @@ func LuxPrecompiles() PrecompiledContracts {
 			gasFunc: pulsar.PulsarVerifyPrecompile.RequiredGas,
 		},
 
-		// P3Q (strict-PQ STARK / FRI / cSHAKE256 / Goldilocks).
-		// Verifier callback wired at node init via p3q.RegisterVerifier.
+		// P3Q (Post-Quantum Pulsar Proof — LP-218). Solidity-callable
+		// on-chain verifier for Pulsar / FIPS 204 ML-DSA threshold
+		// signatures over a 32-byte messageHash. Distinct from the
+		// generic Pulsar precompile at 0x012204 by wire format
+		// (fixed-length hash vs variable-length message) and Solidity
+		// ABI (bool return vs error-based pass/fail). Both share the
+		// same FIPS 204 verifier core (luxfi/crypto/mldsa.VerifySignatureCtx).
 		p3q.ContractP3QVerifyAddress: &precompileAdapter{
 			name:    "p3q",
 			address: p3q.ContractP3QVerifyAddress,
 			inner:   p3q.P3QVerifyPrecompile,
 			gasFunc: p3q.P3QVerifyPrecompile.RequiredGas,
+		},
+
+		// STARK-FRI (strict-PQ STARK / FRI / cSHAKE256 / Goldilocks).
+		// Formerly misnamed "P3Q" at slot 0x012205; the canonical
+		// HANZO-CRYPTO-SUITE §5.2 + LP-218 definition restores P3Q
+		// to its Pulsar-verifier identity. This dispatch lives under
+		// its actual algorithmic identity at slot 0x012220
+		// (placeholder pending dedicated LP allocation).
+		// Verifier callback wired at node init via
+		// starkfri.RegisterVerifier.
+		starkfri.ContractStarkFRIVerifyAddress: &precompileAdapter{
+			name:    "starkfri",
+			address: starkfri.ContractStarkFRIVerifyAddress,
+			inner:   starkfri.StarkFRIVerifyPrecompile,
+			gasFunc: starkfri.StarkFRIVerifyPrecompile.RequiredGas,
 		},
 
 		// Corona (Ring-LWE threshold). Distinct algebra from Pulsar:
@@ -283,22 +312,27 @@ func MergeLuxPrecompiles(base PrecompiledContracts) PrecompiledContracts {
 // This includes standard Ethereum precompiles plus Lux-specific ones.
 var PrecompiledContractsLux = MergeLuxPrecompiles(PrecompiledContractsCancun)
 
-// init registers a safe-refuse stub for the P3Q strict-PQ STARK
+// init registers a safe-refuse stub for the strict-PQ STARK-FRI
 // verifier at boot.
 //
 // The real verifier is a CGO bridge into the Rust crate at
 // ~/work/lux/p3q (Plonky3 fork, FRI over Goldilocks, cSHAKE256).
 // That crate doesn't yet ship a `cdylib` build target + Go FFI; until
 // it does, every node boots without a registered verifier and the
-// precompile returns p3q.ErrVerifierNotRegistered — safe-refuse, no
-// forgery oracle.
+// precompile returns starkfri.ErrVerifierNotRegistered — safe-refuse,
+// no forgery oracle.
 //
 // To wire the real verifier when the Rust FFI lands, replace the
 // stub closure with the cgo entry point and rebuild geth. The
 // registration call here is the single seam.
+//
+// The P3Q precompile at 0x012205 (Post-Quantum Pulsar Proof, LP-218)
+// dispatches directly to the in-tree luxfi/crypto/mldsa verifier and
+// does NOT require an FFI-registered verifier callback. No stub is
+// needed for P3Q.
 func init() {
-	p3q.RegisterVerifier(func(version byte, proof, pubInputs []byte) (bool, error) {
+	starkfri.RegisterVerifier(func(version byte, proof, pubInputs []byte) (bool, error) {
 		// Refuse-by-default. Real verifier slots in here.
-		return false, p3q.ErrVerifierNotRegistered
+		return false, starkfri.ErrVerifierNotRegistered
 	})
 }
