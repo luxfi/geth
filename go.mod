@@ -173,8 +173,8 @@ require (
 	github.com/luxfi/metric v1.5.7 // indirect
 	github.com/luxfi/p2p v1.21.1 // indirect
 	github.com/luxfi/precompile v0.5.37
-	github.com/luxfi/sampler v1.0.0 // indirect
-	github.com/luxfi/vm v1.1.11
+	github.com/luxfi/sampler v1.1.0 // indirect
+	github.com/luxfi/vm v1.2.0
 	github.com/luxfi/warp v1.18.6 // indirect
 	github.com/mattn/go-runewidth v0.0.21 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
