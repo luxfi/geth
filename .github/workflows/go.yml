@@ -10,7 +10,7 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: evo
+    runs-on: [self-hosted, linux, amd64]
     steps:
     - uses: actions/checkout@v5
       with:
@@ -37,7 +37,7 @@ jobs:
   keeper:
     name: Keeper Builds
     needs: test
-    runs-on: evo
+    runs-on: [self-hosted, linux, amd64]
     steps:
       - uses: actions/checkout@v5
         with:
@@ -55,7 +55,7 @@ jobs:
   test-32bit:
     name: "32bit tests"
     needs: test
-    runs-on: evo
+    runs-on: [self-hosted, linux, amd64]
     steps:
       - uses: actions/checkout@v5
         with:
@@ -78,7 +78,7 @@ jobs:
   test:
     name: Test
     needs: lint
-    runs-on: evo
+    runs-on: [self-hosted, linux, amd64]
     strategy:
       matrix:
         go:
