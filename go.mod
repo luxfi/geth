@@ -176,7 +176,7 @@ require (
 	github.com/luxfi/math v1.4.1
 	github.com/luxfi/metric v1.5.8 // indirect
 	github.com/luxfi/p2p v1.21.1 // indirect
-	github.com/luxfi/precompile v0.5.41
+	github.com/luxfi/precompile v0.5.42
 	github.com/luxfi/sampler v1.1.0 // indirect
 	github.com/luxfi/vm v1.2.3
 	github.com/luxfi/warp v1.19.3 // indirect
