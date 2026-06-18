@@ -41,18 +41,18 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20241212093149-d2f9f49435c7
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/cache v1.2.1
-	github.com/luxfi/consensus v1.25.0
+	github.com/luxfi/consensus v1.25.15
 	github.com/luxfi/crypto v1.19.17
-	github.com/luxfi/database v1.18.3
+	github.com/luxfi/database v1.19.0
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.15
-	github.com/luxfi/log v1.4.1
+	github.com/luxfi/log v1.4.3
 	github.com/luxfi/math/big v0.1.0
 	github.com/luxfi/pq v1.0.3
 	github.com/luxfi/version v1.0.1
 	github.com/luxfi/zapdb v1.10.0
-	github.com/mattn/go-colorable v0.1.14
-	github.com/mattn/go-isatty v0.0.20
+	github.com/mattn/go-colorable v0.1.15
+	github.com/mattn/go-isatty v0.0.22
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
 	github.com/peterh/liner v1.2.2
 	github.com/pion/stun/v2 v2.0.0
@@ -83,6 +83,7 @@ require (
 	filippo.io/hpke v0.4.0 // indirect
 	github.com/ALTree/bigfloat v0.2.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
+	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
 	github.com/ethereum/go-bigmodexpfix v0.0.0-20250911101455-f9e208c548ab // indirect
@@ -90,6 +91,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
+	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
 	github.com/luxfi/accel v1.1.9 // indirect
 	github.com/luxfi/age v1.5.0 // indirect
@@ -101,10 +103,13 @@ require (
 	github.com/luxfi/corona v0.7.6 // indirect
 	github.com/luxfi/crypto/ipa v1.2.4 // indirect
 	github.com/luxfi/lattice/v7 v7.1.4 // indirect
+	github.com/luxfi/mdns v0.1.1 // indirect
 	github.com/luxfi/mock v0.1.1 // indirect
-	github.com/luxfi/runtime v1.1.0 // indirect
-	github.com/luxfi/utils v1.1.5 // indirect
+	github.com/luxfi/runtime v1.1.1 // indirect
+	github.com/luxfi/utils v1.2.0 // indirect
 	github.com/luxfi/validators v1.2.0 // indirect
+	github.com/luxfi/zap v0.7.2 // indirect
+	github.com/miekg/dns v1.1.72 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/minio/minio-go/v7 v7.0.100 // indirect
@@ -116,7 +121,7 @@ require (
 	github.com/zeebo/blake3 v0.2.4 // indirect
 	go.uber.org/mock v0.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
+	golang.org/x/exp v0.0.0-20260529124908-c761662dc8c9 // indirect
 )
 
 require (
@@ -164,22 +169,22 @@ require (
 	github.com/google/pprof v0.0.0-20260302011040-a15ffb7f9dcc // indirect
 	github.com/influxdata/line-protocol v0.0.0-20210922203350-b1ad95c89adf // indirect
 	github.com/kilic/bls12-381 v0.1.0 // indirect
-	github.com/klauspost/compress v1.18.5 // indirect
+	github.com/klauspost/compress v1.18.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/luxfi/math v1.4.1
-	github.com/luxfi/metric v1.5.7 // indirect
+	github.com/luxfi/metric v1.5.8 // indirect
 	github.com/luxfi/p2p v1.21.1 // indirect
-	github.com/luxfi/precompile v0.5.37
+	github.com/luxfi/precompile v0.5.41
 	github.com/luxfi/sampler v1.1.0 // indirect
-	github.com/luxfi/vm v1.2.0
+	github.com/luxfi/vm v1.2.3
 	github.com/luxfi/warp v1.19.3 // indirect
 	github.com/mattn/go-runewidth v0.0.21 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/mitchellh/pointerstructure v1.2.1 // indirect
-	github.com/mr-tron/base58 v1.2.0 // indirect
+	github.com/mr-tron/base58 v1.3.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/naoina/go-stringutil v0.1.0 // indirect
 	github.com/oapi-codegen/runtime v1.3.1 // indirect
