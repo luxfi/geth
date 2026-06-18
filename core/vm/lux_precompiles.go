@@ -312,27 +312,35 @@ func MergeLuxPrecompiles(base PrecompiledContracts) PrecompiledContracts {
 // This includes standard Ethereum precompiles plus Lux-specific ones.
 var PrecompiledContractsLux = MergeLuxPrecompiles(PrecompiledContractsCancun)
 
-// init registers a safe-refuse stub for the strict-PQ STARK-FRI
+// init registers a safe-refuse DEFAULT for the strict-PQ STARK-FRI
 // verifier at boot.
 //
 // The real verifier is a CGO bridge into the Rust crate at
-// ~/work/lux/p3q (Plonky3 fork, FRI over Goldilocks, cSHAKE256).
-// That crate doesn't yet ship a `cdylib` build target + Go FFI; until
-// it does, every node boots without a registered verifier and the
-// precompile returns starkfri.ErrVerifierNotRegistered — safe-refuse,
-// no forgery oracle.
+// ~/work/lux/p3q (a post-quantum-only fork of Plonky3: FRI over
+// Goldilocks, cSHAKE256 Merkle). It ships in the precompile package
+// itself (precompile/starkfri/verify_cgo.go) and self-registers via an
+// init() guarded by the `starkfri_p3q` build tag. Build a node with
+// `-tags starkfri_p3q` (and link libp3q_c_abi.a) to get the real
+// verifier; without the tag, the binding is excluded and this default
+// keeps the precompile in safe-refuse (ErrVerifierNotRegistered ⇒ no
+// forgery oracle).
 //
-// To wire the real verifier when the Rust FFI lands, replace the
-// stub closure with the cgo entry point and rebuild geth. The
-// registration call here is the single seam.
+// Why RegisterDefaultVerifier (not RegisterVerifier): Go runs an
+// imported package's init() before the importer's, so the real binding
+// in precompile/starkfri wins the registration FIRST. An unconditional
+// RegisterVerifier here would then CLOBBER the real verifier with the
+// refuse stub. RegisterDefaultVerifier compare-and-swaps against "no
+// verifier yet", so it no-ops when the real binding is present and only
+// engages when it is absent — correct regardless of init order.
 //
 // The P3Q precompile at 0x012205 (Post-Quantum Pulsar Proof, LP-218)
 // dispatches directly to the in-tree luxfi/crypto/mldsa verifier and
-// does NOT require an FFI-registered verifier callback. No stub is
+// does NOT require an FFI-registered verifier callback. No default is
 // needed for P3Q.
 func init() {
-	starkfri.RegisterVerifier(func(version byte, proof, pubInputs []byte) (bool, error) {
-		// Refuse-by-default. Real verifier slots in here.
+	starkfri.RegisterDefaultVerifier(func(version byte, proof, pubInputs []byte) (bool, error) {
+		// Refuse-by-default. The real cgo binding (built with
+		// -tags starkfri_p3q) registers ahead of this and wins the CAS.
 		return false, starkfri.ErrVerifierNotRegistered
 	})
 }
