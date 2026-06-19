@@ -60,8 +60,19 @@ var (
 	ErrKZGForbidden        = pq.ErrKZGForbidden
 )
 
-// AllForbidden returns the canonical strict-PQ profile (alias for
-// [pq.Strict]).
+// AllForbidden returns the maximal strict-PQ profile (alias for
+// [pq.Strict]): every classical precompile family refused, including the
+// standard alt_bn128 (BN254) precompiles at 0x06–0x08.
+//
+// NOTE: a Lux-derived EVM chain does NOT install this maximal profile. It
+// installs its own projection (evm/plugin/evm.LuxStrictPQ) which keeps the
+// standard bn256 precompiles (0x06–0x08) available for Ethereum-compat
+// dapps — Lux's security-critical pairing/DLOG usage lives in CUSTOM
+// precompiles gated separately, not in 0x06–0x08. The per-chain profile is
+// installed on ChainConfig.PQ by the EVM plugin; (*EVM).runPrecompile reads
+// it. AllForbidden remains here only as the library maximal primitive and
+// as a test baseline. core/vm/pq_lux_profile_test.go proves the gate admits
+// bn256 under the bn256-carve-out profile through the real dispatch.
 func AllForbidden() *PQProfile { return pq.Strict() }
 
 // SetPQProfile installs the deprecated package-global PQ projection.
