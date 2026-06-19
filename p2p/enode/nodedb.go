@@ -28,8 +28,8 @@ import (
 	"time"
 
 	"github.com/luxfi/database"
-	"github.com/luxfi/database/badgerdb"
 	"github.com/luxfi/database/memdb"
+	"github.com/luxfi/database/zapdb"
 	"github.com/luxfi/geth/p2p/enr"
 	"github.com/luxfi/geth/rlp"
 )
@@ -57,7 +57,7 @@ const (
 const (
 	dbNodeExpiration = 24 * time.Hour // Time after which an unseen node should be dropped.
 	dbCleanupCycle   = time.Hour      // Time period for running the expiration task.
-	dbVersion        = 10             // Bumped version for badger migration
+	dbVersion        = 10             // Bumped version for zapdb migration
 )
 
 var (
@@ -89,10 +89,10 @@ func newMemoryDB() (*DB, error) {
 	return &DB{db: db, quit: make(chan struct{})}, nil
 }
 
-// newPersistentDB creates/opens a badger backed persistent node database,
+// newPersistentDB creates/opens a zapdb backed persistent node database,
 // also flushing its contents in case of a version mismatch.
 func newPersistentDB(path string) (*DB, error) {
-	db, err := badgerdb.New(path, nil, "nodedb", nil)
+	db, err := zapdb.New(path, nil, "nodedb", nil)
 	if err != nil {
 		return nil, err
 	}
