@@ -1,0 +1,11 @@
+geth (luxfi/geth)
+Copyright (c) 2020-2025 Lux Industries Inc.
+
+This product includes software from go-ethereum (https://github.com/ethereum/go-ethereum), licensed under LGPL-3.0:
+
+    Copyright 2013-2025 The go-ethereum Authors
+
+The go-ethereum library files retain their original GNU Lesser General Public
+License v3.0 (see COPYING.LESSER); the standalone command-line binaries retain
+the GNU General Public License v3.0 (see COPYING). Lux modifications are
+contributed under the same terms.
