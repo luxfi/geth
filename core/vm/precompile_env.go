@@ -43,6 +43,11 @@ type PrecompileEnvironment interface {
 	Call(addr common.Address, input []byte, gas uint64, value *big.Int, opts ...CallOption) ([]byte, uint64, error)
 	// ConsensusContext returns the consensus context with chain ID/network ID for warp
 	ConsensusContext() context.Context
+	// CallIndex returns this precompile invocation's index within the current
+	// transaction (0-based, monotonic per tx). A stateful precompile uses it to
+	// derive a per-invocation content-addressed identity that is unique even when
+	// the same precompile is called multiple times in one transaction.
+	CallIndex() uint32
 }
 
 // CallOption is an option for Call
@@ -73,16 +78,24 @@ type evmPrecompileEnv struct {
 	self     common.Address
 	gas      uint64
 	readOnly bool
+	// callIndex is this invocation's ordinal within the current tx, captured at
+	// construction (one increment of evm.precompileCallIndex per invocation).
+	callIndex uint32
 }
 
-// NewPrecompileEnvironment creates a PrecompileEnvironment from EVM context
+// NewPrecompileEnvironment creates a PrecompileEnvironment from EVM context. It
+// captures and advances the per-tx precompile call index so each invocation gets
+// a distinct, monotonically increasing CallIndex() within the transaction.
 func NewPrecompileEnvironment(evm *EVM, caller, self common.Address, gas uint64, readOnly bool) PrecompileEnvironment {
+	idx := evm.precompileCallIndex
+	evm.precompileCallIndex++
 	return &evmPrecompileEnv{
-		evm:      evm,
-		caller:   caller,
-		self:     self,
-		gas:      gas,
-		readOnly: readOnly,
+		evm:       evm,
+		caller:    caller,
+		self:      self,
+		gas:       gas,
+		readOnly:  readOnly,
+		callIndex: idx,
 	}
 }
 
@@ -173,4 +186,8 @@ func (e *evmPrecompileEnv) ConsensusContext() context.Context {
 		return e.evm.Context.ConsensusContext
 	}
 	return context.Background()
+}
+
+func (e *evmPrecompileEnv) CallIndex() uint32 {
+	return e.callIndex
 }

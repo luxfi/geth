@@ -136,6 +136,17 @@ type EVM struct {
 	// applied in opCall*.
 	callGasTemp uint64
 
+	// precompileCallIndex is a per-transaction monotonic counter, incremented once
+	// per stateful-precompile invocation in the current tx and exposed to the
+	// precompile via PrecompileEnvironment.CallIndex(). It scopes a precompile's
+	// effect within its transaction so a stateful precompile that derives a
+	// content-addressed identity (e.g. the DEX 0x9999 C->D atomic intent UTXO id,
+	// DeriveIntentID(networkID, cChainID, txID, callIndex, ...)) produces a DISTINCT
+	// id for each of its invocations within one tx — without it, two swaps in the
+	// same tx would derive a colliding intent id. Reset to 0 by SetTxContext so it
+	// is naturally tx-scoped (the EVM is reused across a block's txs via that call).
+	precompileCallIndex uint32
+
 	// precompiles holds the precompiled contracts for the current epoch
 	precompiles map[common.Address]PrecompiledContract
 
@@ -234,6 +245,10 @@ func (evm *EVM) SetTxContext(txCtx TxContext) {
 		txCtx.AccessEvents = state.NewAccessEvents(evm.StateDB.PointCache())
 	}
 	evm.TxContext = txCtx
+	// Reset the per-tx precompile call index: each transaction starts its stateful
+	// precompiles' call-index sequence at 0 so a precompile's derived per-call
+	// identity (CallIndex()) is a function of (tx, ordinal-within-tx) only.
+	evm.precompileCallIndex = 0
 }
 
 // Cancel cancels any running EVM operation. This may be called concurrently and
