@@ -28,7 +28,7 @@ func mldsaKeypair(t *testing.T) (*mldsa.PrivateKey, []byte) {
 // replay protection).
 func TestMLDSATx_RoundTrip(t *testing.T) {
 	priv, pubBytes := mldsaKeypair(t)
-	chainID := big.NewInt(8675312)
+	chainID := big.NewInt(424242)
 
 	to := common.HexToAddress("0xdeadbeef00000000000000000000000000000001")
 	inner := &MLDSATx{
@@ -62,7 +62,7 @@ func TestMLDSATx_RoundTrip(t *testing.T) {
 
 	// Different chain id → different digest. Sign + verify under
 	// a wrong-chain signer should fail.
-	wrongSigner := NewMLDSASigner(big.NewInt(8675309))
+	wrongSigner := NewMLDSASigner(big.NewInt(131313))
 	if _, err := wrongSigner.Sender(tx); err == nil {
 		t.Error("wrong-chain MLDSASigner accepted tx")
 	}
