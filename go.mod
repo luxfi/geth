@@ -43,7 +43,7 @@ require (
 	github.com/luxfi/cache v1.2.1
 	github.com/luxfi/consensus v1.25.15
 	github.com/luxfi/crypto v1.19.17
-	github.com/luxfi/database v1.19.0
+	github.com/luxfi/database v1.19.3
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.2.15
 	github.com/luxfi/log v1.4.3
@@ -64,7 +64,7 @@ require (
 	github.com/status-im/keycard-go v0.3.3
 	github.com/stretchr/testify v1.11.1
 	github.com/supranational/blst v0.3.16
-	github.com/syndtr/goleveldb v1.0.1-0.20220614013038-64ee5596c38a
+	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d
 	github.com/urfave/cli/v2 v2.27.7
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/goleak v1.3.0
@@ -83,6 +83,11 @@ require (
 	filippo.io/hpke v0.4.0 // indirect
 	github.com/ALTree/bigfloat v0.2.0 // indirect
 	github.com/Masterminds/semver/v3 v3.4.0 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.5 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.18 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.18 // indirect
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.96.2 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/cockroachdb/errors v1.12.0 // indirect
@@ -92,6 +97,7 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/grandcat/zeroconf v1.0.0 // indirect
+	github.com/hanzoai/vfs v0.4.1 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
 	github.com/luxfi/accel v1.1.9 // indirect
 	github.com/luxfi/age v1.5.0 // indirect
@@ -116,7 +122,7 @@ require (
 	github.com/montanaflynn/stats v0.9.0 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/rs/xid v1.6.0 // indirect
-	github.com/tinylib/msgp v1.6.1 // indirect
+	github.com/tinylib/msgp v1.6.4 // indirect
 	github.com/wlynxg/anet v0.0.5 // indirect
 	github.com/zeebo/blake3 v0.2.4 // indirect
 	go.uber.org/mock v0.6.0 // indirect
