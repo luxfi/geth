@@ -279,10 +279,6 @@ github.com/luxfi/constants v1.5.8 h1:iNP9AWNUcM4Tps7jYnx49CwtCWAC9mYRxJfGou2za0g
 github.com/luxfi/constants v1.5.8/go.mod h1:Pu5jWHdnUtQRbWC43yTUjU/pbIIKMDOd2a2yroSfo48=
 github.com/luxfi/container v0.0.4 h1:BXhF82WyfqVP5mjlNcr7tP0Fcnvl0Ap1rkiu+rq5XuM=
 github.com/luxfi/container v0.0.4/go.mod h1:Z3SpmMF5d4t77MM0nHYXURpn+EMVaeu1fhbd/3BGaek=
-github.com/luxfi/corona v0.7.6 h1:CJP6smygD55dL0HHkKkWryL9H24a+wXvs+L+WchK7Nc=
-github.com/luxfi/corona v0.7.6/go.mod h1:4aD7+ZqnlZ2aVuU/DBQ5aspIagv5ux45LW2sJ4+siY8=
-github.com/luxfi/corona v0.10.2 h1:pIS5uJq2lHnk6NFjoaBN8CvjPp9wwFHek91rV0u3jHk=
-github.com/luxfi/corona v0.10.2/go.mod h1:gx0nrRq4TB/scQm1kNU10lyRDQhKLMAYK1fIrfCrZ9s=
 github.com/luxfi/corona v0.10.3 h1:Yi1oAkW0HEsf5fvst/tUN0AjRVg6DoNHB/IC0qrFWZE=
 github.com/luxfi/corona v0.10.3/go.mod h1:xe5qRir0p+FA6eETpyGDv4LjYySg1zVB13kmHpy9x94=
 github.com/luxfi/crypto v1.19.17 h1:l2LLu7UFyICtJVfraLDLRi+lFGiDXKHSL18M9/m1gsQ=
