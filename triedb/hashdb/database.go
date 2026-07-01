@@ -63,6 +63,20 @@ var (
 // Config contains the settings for database.
 type Config struct {
 	CleanCacheSize int // Maximum memory allowance (in bytes) for caching clean nodes
+
+	// ReferenceRootAtomicallyOnUpdate, when true, adds a reference to the state
+	// root node in the same locked section as Update inserts it. Callers that
+	// manage trie lifetime purely through Reference/Dereference on state roots
+	// (e.g. coreth/evm's block-accept pruning: tipBuffer + RejectTrie + reprocess)
+	// rely on every accepted root carrying a live reference so that a later
+	// Dereference decrements it to zero exactly once. Without this, a state root
+	// is inserted with parents==0 and the FIRST Dereference of it (a reorg reject,
+	// a tip-buffer eviction, or the reprocess previousRoot deref) deletes it and
+	// cascades into shared children, corrupting a still-live sibling/head trie.
+	// Referencing atomically inside Update (rather than via a separate Reference
+	// call) closes the window where a concurrent Cap could evict the just-written
+	// root before it is pinned.
+	ReferenceRootAtomicallyOnUpdate bool
 }
 
 // Defaults is the default setting for database if it's not specified.
@@ -94,6 +108,10 @@ type Database struct {
 
 	dirtiesSize  common.StorageSize // Storage size of the dirty node cache (exc. metadata)
 	childrenSize common.StorageSize // Storage size of the external children tracking
+
+	// referenceRootAtomicallyOnUpdate mirrors Config.ReferenceRootAtomicallyOnUpdate.
+	// When set, Update pins the state root it just inserted (see Config docs).
+	referenceRootAtomicallyOnUpdate bool
 
 	lock sync.RWMutex
 }
@@ -133,9 +151,10 @@ func New(diskdb ethdb.Database, config *Config) *Database {
 		cleans = bytecache.New(config.CleanCacheSize)
 	}
 	return &Database{
-		diskdb:  diskdb,
-		cleans:  cleans,
-		dirties: make(map[common.Hash]*cachedNode),
+		diskdb:                          diskdb,
+		cleans:                          cleans,
+		dirties:                         make(map[common.Hash]*cachedNode),
+		referenceRootAtomicallyOnUpdate: config.ReferenceRootAtomicallyOnUpdate,
 	}
 }
 
@@ -599,6 +618,15 @@ func (db *Database) Update(root common.Hash, parent common.Hash, block uint64, n
 				db.reference(account.Root, n.Parent)
 			}
 		}
+	}
+	// Pin the state root in the same locked section that inserted it, so that
+	// lifetime managers driving pruning solely through root Reference/Dereference
+	// (coreth/evm's tipBuffer + RejectTrie + reprocess) always find the root with a
+	// live reference. Referencing here — rather than via a separate Reference call —
+	// is atomic with the insert, closing the window where a concurrent Cap could
+	// evict the root before it is pinned. Skips the empty root (nothing inserted).
+	if db.referenceRootAtomicallyOnUpdate && root != types.EmptyRootHash {
+		db.reference(root, common.Hash{})
 	}
 	return nil
 }
