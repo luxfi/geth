@@ -1,7 +1,7 @@
 {
     "private": true,
     "dependencies": {
-        "@babel/core": "7.3.4",
+        "@babel/core": "7.29.6",
         "@babel/plugin-proposal-class-properties": "7.3.4",
         "@babel/plugin-proposal-function-bind": "7.2.0",
         "@babel/plugin-transform-flow-strip-types": "7.3.4",
@@ -48,7 +48,7 @@
         "webpack": "4.29.6",
         "webpack-cli": "3.2.3",
         "webpack-dashboard": "3.0.0",
-        "webpack-dev-server": "3.2.1",
+        "webpack-dev-server": "5.2.6",
         "webpack-merge": "4.2.1"
     },
     "scripts": {
