@@ -50,7 +50,7 @@ require (
 	github.com/luxfi/math/big v0.1.0
 	github.com/luxfi/pq v1.1.0
 	github.com/luxfi/version v1.0.1
-	github.com/luxfi/zapdb v1.10.1
+	github.com/luxfi/zapdb v1.10.6
 	github.com/mattn/go-colorable v0.1.15
 	github.com/mattn/go-isatty v0.0.22
 	github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416
@@ -98,7 +98,9 @@ require (
 	github.com/gorilla/rpc v1.2.1 // indirect
 	github.com/grandcat/zeroconf v1.0.0 // indirect
 	github.com/hanzoai/vfs v0.4.3 // indirect
-	github.com/hanzos3/go-sdk v1.0.2 // indirect
+	github.com/hanzos3/crc64nvme v1.1.2 // indirect
+	github.com/hanzos3/go v1.0.2 // indirect
+	github.com/hanzos3/md5-simd v1.1.3 // indirect
 	github.com/klauspost/crc32 v1.3.0 // indirect
 	github.com/luxfi/accel v1.2.4 // indirect
 	github.com/luxfi/age v1.6.0 // indirect
@@ -118,8 +120,6 @@ require (
 	github.com/luxfi/validators v1.3.1 // indirect
 	github.com/luxfi/zap v1.2.6 // indirect
 	github.com/miekg/dns v1.1.72 // indirect
-	github.com/minio/crc64nvme v1.1.1 // indirect
-	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/montanaflynn/stats v0.9.0 // indirect
 	github.com/philhofer/fwd v1.2.0 // indirect
 	github.com/rs/xid v1.6.0 // indirect
