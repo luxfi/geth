@@ -71,6 +71,5 @@ geth
 tests/fuzzers/txfetcher/corpus/.*
 
 AGENTS.md
-CLAUDE.md
 GEMINI.md
 QWEN.md
