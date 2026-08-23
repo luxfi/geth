@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@hanzo/font':
+        specifier: ^1.8.0
+        version: 1.8.2(next@16.2.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))
       fumadocs-core:
         specifier: ^15.8.5
         version: 15.8.5(@types/react@19.2.3)(lucide-react@0.468.0(react@19.2.0))(next@16.2.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -246,6 +249,11 @@ packages:
 
   '@formatjs/intl-localematcher@0.6.2':
     resolution: {integrity: sha512-XOMO2Hupl0wdd172Y06h6kLpBz6Dv+J4okPLl4LPtzbr8f66WbIoy4ev98EBuZ6ZK4h5ydTN6XneT4QVpD7cdA==}
+
+  '@hanzo/font@1.8.2':
+    resolution: {integrity: sha512-Ag9gldPYdVoBn7sXIyXFf7GQtruW2hbs8UDwFPmr1JQX78V8n9wcFrwrRVySkepAb3DrJZ2VQ7Lj3gy1yRqq9Q==}
+    peerDependencies:
+      next: '>=13.2.0'
 
   '@img/colour@1.1.0':
     resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
@@ -2059,6 +2067,10 @@ snapshots:
   '@formatjs/intl-localematcher@0.6.2':
     dependencies:
       tslib: 2.8.1
+
+  '@hanzo/font@1.8.2(next@16.2.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0))':
+    dependencies:
+      next: 16.2.6(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
 
   '@img/colour@1.1.0':
     optional: true
