@@ -270,6 +270,17 @@ func (t *freezerTable) refreshLocked() error {
 	}
 	// A trailing partial write is not an entry yet.
 	entries := stat.Size() / indexEntrySize
+	// Only trust the index as far as the writer has flushed it. Above that line
+	// an entry can name payload bytes that a power loss left unwritten — the
+	// writer discards exactly those on its next boot, and a reader that came up
+	// first would otherwise serve them. The cost is lagging the writer by up to
+	// one flush, which does not matter here: everything in this store is older
+	// than the freeze threshold, and the reader keeps its own copy of the hot
+	// window. It matters that pruning follows this same line, which it does —
+	// prune never passes what the reader can see.
+	if flushed := t.metadata.flushOffset / indexEntrySize; flushed < entries {
+		entries = flushed
+	}
 	if entries < 1 {
 		// The writer has created the index but not yet written the leading
 		// sentinel. There is nothing to read here yet.

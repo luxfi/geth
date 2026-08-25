@@ -71,6 +71,13 @@ type Freezer struct {
 	tables       map[string]*freezerTable // Data tables for storing everything
 	instanceLock *flock.Flock             // File-system lock to prevent double opens
 	closeOnce    sync.Once
+
+	// shared marks a reader that is following a writer in another process over
+	// the same directory. It holds no file lock and re-reads the tables as the
+	// writer extends them. See freezer_shared.go.
+	shared      bool
+	refreshLock sync.Mutex
+	refreshed   atomic.Int64 // unix nanos of the last pass over the tables
 }
 
 // NewFreezer creates a freezer instance for maintaining immutable ordered
@@ -169,8 +176,11 @@ func (f *Freezer) Close() error {
 				errs = append(errs, err)
 			}
 		}
-		if err := f.instanceLock.Unlock(); err != nil {
-			errs = append(errs, err)
+		// A shared reader never took a lock to give back.
+		if f.instanceLock != nil {
+			if err := f.instanceLock.Unlock(); err != nil {
+				errs = append(errs, err)
+			}
 		}
 	})
 	return errors.Join(errs...)
@@ -184,7 +194,22 @@ func (f *Freezer) AncientDatadir() (string, error) {
 // Ancient retrieves an ancient binary blob from the append-only immutable files.
 func (f *Freezer) Ancient(kind string, number uint64) ([]byte, error) {
 	if table := f.tables[kind]; table != nil {
-		return table.Retrieve(number)
+		if number >= f.frozen.Load() {
+			f.track()
+		}
+		data, err := table.Retrieve(number)
+		if err != nil && f.shared {
+			// The writer truncates the index in place, so a read that raced one
+			// sees a file that no longer describes what it did a moment ago.
+			// A private freezer's caller falls back to its own key/value copy;
+			// this reader deleted that copy precisely because the store holds
+			// the block, so failing here would report it missing. Re-read the
+			// index and ask once more.
+			if rerr := table.refresh(); rerr == nil {
+				return table.Retrieve(number)
+			}
+		}
+		return data, err
 	}
 	return nil, errUnknownTable
 }
@@ -197,6 +222,9 @@ func (f *Freezer) Ancient(kind string, number uint64) ([]byte, error) {
 //   - if maxBytes is not specified, 'count' items will be returned if they are present.
 func (f *Freezer) AncientRange(kind string, start, count, maxBytes uint64) ([][]byte, error) {
 	if table := f.tables[kind]; table != nil {
+		if start+count > f.frozen.Load() {
+			f.track()
+		}
 		return table.RetrieveItems(start, count, maxBytes)
 	}
 	return nil, errUnknownTable
@@ -206,6 +234,9 @@ func (f *Freezer) AncientRange(kind string, start, count, maxBytes uint64) ([][]
 // and value offsets.
 func (f *Freezer) AncientBytes(kind string, id, offset, length uint64) ([]byte, error) {
 	if table := f.tables[kind]; table != nil {
+		if id >= f.frozen.Load() {
+			f.track()
+		}
 		return table.RetrieveBytes(id, offset, length)
 	}
 	return nil, errUnknownTable
@@ -213,11 +244,13 @@ func (f *Freezer) AncientBytes(kind string, id, offset, length uint64) ([]byte, 
 
 // Ancients returns the length of the frozen items.
 func (f *Freezer) Ancients() (uint64, error) {
+	f.track()
 	return f.frozen.Load(), nil
 }
 
 // Tail returns the number of first stored item in the freezer.
 func (f *Freezer) Tail() (uint64, error) {
+	f.track()
 	return f.tail.Load(), nil
 }
 
@@ -325,6 +358,11 @@ func (f *Freezer) TruncateTail(tail uint64) (uint64, error) {
 
 // SyncAncient flushes all data tables to disk.
 func (f *Freezer) SyncAncient() error {
+	if f.readonly {
+		// A reader buffers nothing, so there is nothing to flush, and its file
+		// handles cannot be synced anyway.
+		return nil
+	}
 	var errs []error
 	for _, table := range f.tables {
 		if err := table.Sync(); err != nil {
