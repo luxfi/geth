@@ -24,6 +24,7 @@
 package rawdb
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -40,6 +41,14 @@ import (
 // reads per table.
 const sharedRefreshInterval = 250 * time.Millisecond
 
+// errNoSharedStore says what a reader should do about a store that is not there.
+// A node that shares a store keeps only its hot window, having dropped the rest
+// on the strength of the store holding it, so the history is gone with the
+// directory and refusing to start is the honest answer — starting would serve a
+// chain with a hole in it. Recovering means pointing at the store again, or
+// giving up the sharing and letting the node fetch its own history back.
+const errNoSharedStore = "no ancient store to share at %q: this node keeps only recent blocks and reads the rest from there. Restore the directory, or start without --cchain-ancient-shared to have this node hold its own history again"
+
 // NewSharedFreezer opens an existing ancient store for reading alongside its
 // writer and alongside other readers. Nothing is created: a reader that found
 // no store would be describing an empty chain rather than sharing one, so a
@@ -47,7 +56,7 @@ const sharedRefreshInterval = 250 * time.Millisecond
 func NewSharedFreezer(datadir string, tables map[string]freezerTableConfig) (*Freezer, error) {
 	info, err := os.Lstat(datadir)
 	if err != nil {
-		return nil, fmt.Errorf("shared ancient store %q: %w", datadir, err)
+		return nil, fmt.Errorf(errNoSharedStore+": %w", datadir, err)
 	}
 	if info.Mode()&os.ModeSymlink != 0 {
 		return nil, errSymlinkDatadir
@@ -65,6 +74,11 @@ func NewSharedFreezer(datadir string, tables map[string]freezerTableConfig) (*Fr
 		table, err := openSharedTable(datadir, name, config)
 		if err != nil {
 			freezer.closeTables()
+			if errors.Is(err, os.ErrNotExist) {
+				// The directory is there but the table is not, which is a store
+				// that was emptied rather than one that was never written.
+				return nil, fmt.Errorf(errNoSharedStore+": table %q is missing", datadir, name)
+			}
 			return nil, fmt.Errorf("shared ancient table %q: %w", name, err)
 		}
 		freezer.tables[name] = table
@@ -248,7 +262,7 @@ func (t *freezerTable) refresh() error {
 	// passes is far more than one prune needs.
 	var err error
 	for range 3 {
-		if err = t.refreshLocked(); !os.IsNotExist(err) {
+		if err = t.refreshLocked(); !errors.Is(err, os.ErrNotExist) {
 			return err
 		}
 	}
