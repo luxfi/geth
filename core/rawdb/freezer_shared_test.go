@@ -487,3 +487,55 @@ func TestSharedFreezerStopsAtTheFlushedLine(t *testing.T) {
 	}
 	readAll(t, r, 64, 96)
 }
+
+// TestSharedReaderHoldsItsViewStillDuringARead checks that a read spanning
+// several tables sees one extent rather than two.
+//
+// Callers reach for ReadAncients to read a header, a body and a receipt as one
+// block. The writer is another process, so the lock that name implies cannot
+// hold it still — but a refresh of this reader's own view landing between two of
+// those reads would answer the second from a later extent than the first, and
+// that much is ours to prevent.
+func TestSharedReaderHoldsItsViewStillDuringARead(t *testing.T) {
+	dir := t.TempDir()
+	w := newWriterFreezer(t, dir)
+	defer w.Close()
+	appendItems(t, w, 0, 8)
+
+	r, err := NewSharedFreezer(dir, sharedTestTables)
+	if err != nil {
+		t.Fatalf("open shared reader: %v", err)
+	}
+	defer r.Close()
+
+	// The writer moves on while the reader is mid-read, which is the ordinary
+	// case: this is a live store, not a snapshot.
+	appendItems(t, w, 8, 64)
+
+	var first, second uint64
+	err = r.ReadAncients(func(op ethdb.AncientReaderOp) error {
+		var err error
+		if first, err = op.Ancients(); err != nil {
+			return err
+		}
+		// Make a refresh due. Without one held off, the next call goes back to
+		// disk and answers from the writer's newer extent.
+		r.refreshed.Store(0)
+		second, err = op.Ancients()
+		return err
+	})
+	if err != nil {
+		t.Fatalf("read: %v", err)
+	}
+	if first != second {
+		t.Fatalf("one read saw two extents: %d then %d; a caller reading a header and a body here would pair them across a move", first, second)
+	}
+
+	// The view is held still for the callback, not forever: the next read sees
+	// what the writer has since added.
+	if got, err := r.Ancients(); err != nil {
+		t.Fatalf("ancients after the read: %v", err)
+	} else if got == first {
+		t.Fatalf("the reader is stuck at %d and never picked the writer up again", got)
+	}
+}

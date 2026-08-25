@@ -348,3 +348,60 @@ func TestSharedReaderKeepsHistoryTheStoreDisagreesWith(t *testing.T) {
 		t.Fatal("reader deleted block 1 in favour of a store that holds a different chain")
 	}
 }
+
+// TestFreshReaderSurfacesTheStoresGenesis covers the one case the cross-check in
+// Open cannot: a node with an empty key-value store has no genesis of its own,
+// so there is nothing there to compare the store against.
+//
+// That is not the hole it looks like. The node still has to learn a genesis from
+// somewhere, and what it reads is the store's — core.LoadChainConfig compares
+// that against the genesis the operator configured and returns
+// GenesisMismatchError when they differ, which is the check upstream deliberately
+// left to that layer. What matters here is that the store's genesis is what
+// surfaces, because a value that never surfaced could never be refused.
+func TestFreshReaderSurfacesTheStoresGenesis(t *testing.T) {
+	const (
+		blocks    = 96
+		threshold = 8
+	)
+	ancient := t.TempDir()
+
+	writerKV := memorydb.New()
+	stored := buildChain(t, writerKV, blocks)
+	writer, err := Open(writerKV, OpenOptions{Ancient: ancient, FreezeThreshold: threshold})
+	if err != nil {
+		t.Fatalf("open writer: %v", err)
+	}
+	if err := writer.(*freezerdb).Freeze(); err != nil {
+		t.Fatalf("freeze: %v", err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatalf("close writer: %v", err)
+	}
+
+	// A node created from scratch against a store it did not build. The control
+	// first: with the store taken away this database answers with nothing, so a
+	// genesis read through it afterwards can only have come from the store.
+	freshKV := memorydb.New()
+	if got := ReadCanonicalHash(&nofreezedb{KeyValueStore: freshKV}, 0); got != (common.Hash{}) {
+		t.Fatalf("a fresh database already holds genesis %x; this test would pass without reading the store at all", got)
+	}
+	reader, err := Open(freshKV, OpenOptions{
+		Ancient:         ancient,
+		AncientShared:   true,
+		FreezeThreshold: threshold,
+	})
+	if err != nil {
+		t.Fatalf("a fresh node could not open the store: %v", err)
+	}
+	defer reader.Close()
+
+	if got := ReadCanonicalHash(reader, 0); got != stored[0].Hash() {
+		t.Fatalf("a fresh node reads genesis %x, want the store's %x; nothing upstream can refuse a genesis it never sees", got, stored[0].Hash())
+	}
+	// The rest of the store is readable too, which is what makes the node usable
+	// at all once its configured genesis has been accepted.
+	if got := ReadCanonicalHash(reader, blocks-1-threshold); got != stored[blocks-1-threshold].Hash() {
+		t.Fatalf("a fresh node cannot read the store's history at %d", blocks-1-threshold)
+	}
+}
