@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"sync"
 	"sync/atomic"
+	"strings"
 	"testing"
 	"time"
 
@@ -403,6 +404,16 @@ func TestSharedFreezerFollowsTailPruning(t *testing.T) {
 // TestSharedFreezerNeedsAnExistingStore checks a reader never conjures an empty
 // store: pointed at nothing, it says so instead of reporting a chain with no
 // history in it.
+// NewSharedFreezerErr opens a store and returns only what went wrong.
+func NewSharedFreezerErr(t *testing.T, dir string) error {
+	t.Helper()
+	f, err := NewSharedFreezer(dir, sharedTestTables)
+	if f != nil {
+		f.Close()
+	}
+	return err
+}
+
 func TestSharedFreezerNeedsAnExistingStore(t *testing.T) {
 	missing := filepath.Join(t.TempDir(), "not-there")
 	if _, err := NewSharedFreezer(missing, sharedTestTables); err == nil {
@@ -415,8 +426,17 @@ func TestSharedFreezerNeedsAnExistingStore(t *testing.T) {
 	// An existing but empty directory has no tables in it and is equally not a
 	// store.
 	empty := t.TempDir()
-	if _, err := NewSharedFreezer(empty, sharedTestTables); err == nil {
+	emptyErr := NewSharedFreezerErr(t, empty)
+	if emptyErr == nil {
 		t.Fatal("opening an empty directory as a store should fail")
+	}
+	// A node that shares a store dropped its own history, so this is where an
+	// operator finds out the history is gone with the directory. An error that
+	// only says a file is missing leaves them to work that out.
+	for _, want := range []string{"keeps only recent blocks", "Restore the directory"} {
+		if !strings.Contains(emptyErr.Error(), want) {
+			t.Errorf("the error does not tell an operator %q:\n  %v", want, emptyErr)
+		}
 	}
 	entries, err := os.ReadDir(empty)
 	if err != nil {
