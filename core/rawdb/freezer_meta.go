@@ -123,6 +123,41 @@ func decodeV2(file *os.File) *freezerTableMeta {
 	}
 }
 
+// loadMetadata reads the metadata without ever writing to the file. A shared
+// reader uses it: an empty metadata file means the writer has created the table
+// but not yet described it, which is a state to read again later rather than to
+// repair from another process.
+func loadMetadata(file *os.File) (*freezerTableMeta, error) {
+	stat, err := file.Stat()
+	if err != nil {
+		return nil, err
+	}
+	if stat.Size() == 0 {
+		return &freezerTableMeta{file: file, version: freezerVersion}, nil
+	}
+	if m := decodeV2(file); m != nil {
+		return m, nil
+	}
+	if m := decodeV1(file); m != nil {
+		return m, nil
+	}
+	return nil, errors.New("failed to decode metadata")
+}
+
+// reload re-reads the metadata from disk, keeping the values it already has if
+// the file is momentarily undecodable. The writer rewrites the whole record in
+// place, so a reader can catch it mid-rewrite; the previous tail is a better
+// answer than an error, and the next pass picks up the new one.
+func (m *freezerTableMeta) reload() {
+	if n := decodeV2(m.file); n != nil {
+		m.version, m.virtualTail, m.flushOffset = n.version, n.virtualTail, n.flushOffset
+		return
+	}
+	if n := decodeV1(m.file); n != nil {
+		m.version, m.virtualTail = n.version, n.virtualTail
+	}
+}
+
 // newMetadata initializes the metadata object, either by loading it from the file
 // or by constructing a new one from scratch.
 func newMetadata(file *os.File) (*freezerTableMeta, error) {
