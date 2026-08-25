@@ -49,6 +49,16 @@ type chainFreezer struct {
 	// Optional Era database used as a backup for the pruned chain.
 	eradb *eradb.Store
 
+	// threshold is how many of the most recent blocks stay in the key-value
+	// store. Everything older belongs to the ancient store, and a node that
+	// shares someone else's ancient store keeps no copy of it at all.
+	threshold uint64
+
+	// shared marks a node reading another node's ancient store. It runs prune
+	// instead of freeze: the store already has the history, so all this node
+	// has to do is stop keeping a second copy of it.
+	shared bool
+
 	quit    chan struct{}
 	wg      sync.WaitGroup
 	trigger chan chan struct{} // Manual blocking freeze trigger, test determinism
@@ -60,12 +70,35 @@ type chainFreezer struct {
 //     state freezer (e.g. dev mode).
 //   - if non-empty directory is given, initializes the regular file-based
 //     state freezer.
-func newChainFreezer(datadir string, eraDir string, namespace string, readonly bool) (*chainFreezer, error) {
+//   - if shared is set, the directory belongs to another node's freezer and is
+//     opened for reading alongside it.
+//
+// A threshold of zero means the default retention.
+func newChainFreezer(datadir string, eraDir string, namespace string, readonly, shared bool, threshold uint64) (*chainFreezer, error) {
+	if threshold == 0 {
+		threshold = params.FullImmutabilityThreshold
+	}
 	if datadir == "" {
 		return &chainFreezer{
-			ancients: NewMemoryFreezer(readonly, chainFreezerTableConfigs),
-			quit:     make(chan struct{}),
-			trigger:  make(chan chan struct{}),
+			ancients:  NewMemoryFreezer(readonly, chainFreezerTableConfigs),
+			threshold: threshold,
+			quit:      make(chan struct{}),
+			trigger:   make(chan chan struct{}),
+		}, nil
+	}
+	if shared {
+		freezer, err := NewSharedFreezer(datadir, chainFreezerTableConfigs)
+		if err != nil {
+			return nil, err
+		}
+		// No Era database: it is a writable store, and the node that owns the
+		// ancient directory is the one that keeps it.
+		return &chainFreezer{
+			ancients:  freezer,
+			threshold: threshold,
+			shared:    true,
+			quit:      make(chan struct{}),
+			trigger:   make(chan chan struct{}),
 		}, nil
 	}
 	freezer, err := NewFreezer(datadir, namespace, readonly, freezerTableSize, chainFreezerTableConfigs)
@@ -77,10 +110,11 @@ func newChainFreezer(datadir string, eraDir string, namespace string, readonly b
 		return nil, err
 	}
 	return &chainFreezer{
-		ancients: freezer,
-		eradb:    edb,
-		quit:     make(chan struct{}),
-		trigger:  make(chan chan struct{}),
+		ancients:  freezer,
+		eradb:     edb,
+		threshold: threshold,
+		quit:      make(chan struct{}),
+		trigger:   make(chan chan struct{}),
 	}, nil
 }
 
@@ -130,16 +164,17 @@ func (f *chainFreezer) readFinalizedNumber(db ethdb.KeyValueReader) uint64 {
 	return number
 }
 
-// freezeThreshold returns the threshold for chain freezing. It's determined
-// by formula: max(finality, HEAD-params.FullImmutabilityThreshold).
-func (f *chainFreezer) freezeThreshold(db ethdb.KeyValueReader) (uint64, error) {
+// freezeLimit returns the highest block number eligible for freezing. It's
+// determined by formula: max(finality, HEAD-threshold), where threshold is the
+// number of recent blocks the node keeps in its key-value store.
+func (f *chainFreezer) freezeLimit(db ethdb.KeyValueReader) (uint64, error) {
 	var (
 		head      = f.readHeadNumber(db)
 		final     = f.readFinalizedNumber(db)
 		headLimit uint64
 	)
-	if head > params.FullImmutabilityThreshold {
-		headLimit = head - params.FullImmutabilityThreshold
+	if head > f.threshold {
+		headLimit = head - f.threshold
 	}
 	if final == 0 && headLimit == 0 {
 		return 0, errors.New("freezing threshold is not available")
@@ -187,7 +222,7 @@ func (f *chainFreezer) freeze(db ethdb.KeyValueStore) {
 				return
 			}
 		}
-		threshold, err := f.freezeThreshold(nfdb)
+		threshold, err := f.freezeLimit(nfdb)
 		if err != nil {
 			backoff = true
 			log.Debug("Current full block not old enough to freeze", "err", err)
@@ -299,6 +334,123 @@ func (f *chainFreezer) freeze(db ethdb.KeyValueStore) {
 		if frozen-first < freezerBatchLimit {
 			backoff = true
 		}
+	}
+}
+
+// prune is the counterpart of freeze for a node reading someone else's ancient
+// store. That store already holds the history, so this node has nothing to
+// write; all it does is stop keeping a second copy of what the store has, which
+// is what lets many nodes on one machine share one copy of the chain.
+//
+// It walks down from the newest prunable block and stops at the first block it
+// has already dropped. Pruning always advances contiguously, so that block is
+// the boundary, and a pass costs the blocks it actually removes.
+func (f *chainFreezer) prune(db ethdb.KeyValueStore) {
+	var (
+		backoff   bool
+		triggered chan struct{} // Used in tests
+		nfdb      = &nofreezedb{KeyValueStore: db}
+		timer     = time.NewTimer(freezerRecheckInterval)
+	)
+	defer timer.Stop()
+
+	for {
+		select {
+		case <-f.quit:
+			log.Info("Ancient store reader shutting down")
+			return
+		default:
+		}
+		if backoff {
+			if triggered != nil {
+				triggered <- struct{}{}
+				triggered = nil
+			}
+			select {
+			case <-timer.C:
+				timer.Reset(freezerRecheckInterval)
+			case triggered = <-f.trigger:
+			case <-f.quit:
+				return
+			}
+			backoff = false
+		}
+		backoff = true
+
+		// Ancients() re-reads the store, so this is also how the node learns
+		// the writer has moved on.
+		frozen, err := f.Ancients()
+		if err != nil || frozen == 0 {
+			continue
+		}
+		limit, err := f.freezeLimit(nfdb)
+		if err != nil {
+			log.Debug("Current full block not old enough to prune", "err", err)
+			continue
+		}
+		// Only blocks the shared store actually holds may be dropped, and only
+		// below the retention threshold. limit is inclusive, frozen is a count.
+		if limit > frozen-1 {
+			limit = frozen - 1
+		}
+		// The store's own tail is the floor. Below it the writer has pruned the
+		// bodies and receipts away, so this node's copy is the only one left and
+		// dropping it would lose the block outright. Genesis stays too: every
+		// node keeps the block it started from.
+		tail, err := f.Tail()
+		if err != nil {
+			continue
+		}
+		floor := max(tail, 1)
+		var (
+			start   = time.Now()
+			batch   = db.NewBatch()
+			removed uint64
+			number  = limit
+		)
+		for ; number >= floor; number-- {
+			hash := ReadCanonicalHash(nfdb, number)
+			if hash == (common.Hash{}) {
+				break // already pruned from here down
+			}
+			// Only drop a block the shared store demonstrably holds, and holds
+			// as the same block. The store is written by another process, so
+			// extent is not identity: a store that disagreed at this height
+			// would otherwise have our validated copy deleted in favour of its
+			// own, and the copy that could have contradicted it would be gone.
+			// Stop rather than skip — pruning advances contiguously, and the
+			// next pass reads the boundary from here.
+			stored, err := f.Ancient(ChainFreezerHashTable, number)
+			if err != nil || common.BytesToHash(stored) != hash {
+				log.Warn("Shared ancient store disagrees; keeping local history",
+					"number", number, "local", hash, "err", err)
+				break
+			}
+			// Keep the hash-to-number index: it is what resolves a hash to the
+			// number the ancient store is keyed by.
+			DeleteBlockWithoutNumber(batch, hash, number)
+			DeleteCanonicalHash(batch, number)
+			for _, dangling := range ReadAllHashes(db, number) {
+				if dangling != hash {
+					DeleteBlock(batch, dangling, number)
+				}
+			}
+			removed++
+			if removed >= freezerBatchLimit {
+				break
+			}
+		}
+		if removed == 0 {
+			continue
+		}
+		if err := batch.Write(); err != nil {
+			log.Crit("Failed to prune blocks held by the shared ancient store", "err", err)
+		}
+		log.Debug("Pruned chain segment held by the shared ancient store",
+			"blocks", removed, "highest", limit, "elapsed", common.PrettyDuration(time.Since(start)))
+
+		// More to do right away if this pass filled its batch.
+		backoff = removed < freezerBatchLimit
 	}
 }
 
