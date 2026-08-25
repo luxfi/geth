@@ -426,3 +426,64 @@ func TestSharedFreezerNeedsAnExistingStore(t *testing.T) {
 		t.Fatalf("a failed open wrote %d files into the directory", len(entries))
 	}
 }
+
+// TestSharedFreezerStopsAtTheFlushedLine checks a reader never serves index
+// entries the writer has not flushed. Above that line an entry can name payload
+// bytes a power loss left unwritten, and the writer discards exactly those when
+// it next boots — a reader that came up first must not have served them.
+func TestSharedFreezerStopsAtTheFlushedLine(t *testing.T) {
+	dir := t.TempDir()
+	w := newWriterFreezer(t, dir)
+	defer w.Close()
+	appendItems(t, w, 0, 64)
+	if err := w.SyncAncient(); err != nil {
+		t.Fatalf("sync: %v", err)
+	}
+
+	r, err := NewSharedFreezer(dir, sharedTestTables)
+	if err != nil {
+		t.Fatalf("open shared reader: %v", err)
+	}
+	defer r.Close()
+	flushed, err := r.Ancients()
+	if err != nil {
+		t.Fatalf("ancients: %v", err)
+	}
+	if flushed != 64 {
+		t.Fatalf("reader sees %d flushed items, want 64", flushed)
+	}
+
+	// Written but deliberately not synced: the index may be on disk while the
+	// payload is not, which is the state a power loss leaves behind. Bypasses
+	// appendItems because that helper syncs.
+	if _, err := w.ModifyAncients(func(op ethdb.AncientWriteOp) error {
+		for n := uint64(64); n < 96; n++ {
+			for kind := range sharedTestTables {
+				if err := op.AppendRaw(kind, n, sharedTestItem(n)); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}); err != nil {
+		t.Fatalf("append without sync: %v", err)
+	}
+	if err := r.Refresh(); err != nil {
+		t.Fatalf("refresh: %v", err)
+	}
+	if n, _ := r.Ancients(); n > 64 {
+		t.Fatalf("reader exposed %d items past the flushed line of 64", n)
+	}
+
+	// Once the writer flushes, the reader follows.
+	if err := w.SyncAncient(); err != nil {
+		t.Fatalf("sync: %v", err)
+	}
+	if err := r.Refresh(); err != nil {
+		t.Fatalf("refresh after sync: %v", err)
+	}
+	if n, _ := r.Ancients(); n != 96 {
+		t.Fatalf("reader sees %d items after the writer flushed, want 96", n)
+	}
+	readAll(t, r, 64, 96)
+}
