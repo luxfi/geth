@@ -269,10 +269,22 @@ func (f *Freezer) AncientSize(kind string) (uint64, error) {
 
 // ReadAncients runs the given read operation while ensuring that no writes take place
 // on the underlying freezer.
+//
+// A shared reader qualifies that promise, because the writer is another process
+// and this lock says nothing about it. What such a reader can hold still is its
+// own view. Callers read several tables here and treat the answers as one block,
+// so a refresh landing between two of them would answer from two different
+// extents; refreshes are held off until the callback returns. The store itself
+// can still move underneath, which is why a read that fails because it did
+// re-reads the index and asks again.
 func (f *Freezer) ReadAncients(fn func(ethdb.AncientReaderOp) error) (err error) {
 	f.writeLock.RLock()
 	defer f.writeLock.RUnlock()
 
+	if f.shared {
+		f.refreshLock.Lock()
+		defer f.refreshLock.Unlock()
+	}
 	return fn(f)
 }
 

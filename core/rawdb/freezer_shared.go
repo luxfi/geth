@@ -125,7 +125,13 @@ func (f *Freezer) track() {
 	if !f.shared || f.recentlyRefreshed() {
 		return
 	}
-	f.refreshLock.Lock()
+	// A read spanning several tables holds this lock so its view cannot move
+	// between them. Waiting for it would be worse than skipping: the caller
+	// would get an extent from after the read it is in the middle of. The next
+	// read past the end asks again, so nothing is lost by giving up here.
+	if !f.refreshLock.TryLock() {
+		return
+	}
 	defer f.refreshLock.Unlock()
 	if f.recentlyRefreshed() {
 		return
