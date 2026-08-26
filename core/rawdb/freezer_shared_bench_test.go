@@ -212,9 +212,9 @@ func readLoop(b *testing.B, f *Freezer) {
 }
 
 // BenchmarkSharedReaderRead measures the per-read cost through a shared reader,
-// which is what a node pays for every historical block it no longer stores.
-// Read next to BenchmarkPrivateReaderRead: alone it is a number with nothing to
-// compare it against.
+// which is what a node pays for a block it reads from the shared store rather
+// than its own. Read next to BenchmarkPrivateReaderRead: alone it is a number
+// with nothing to compare it against.
 func BenchmarkSharedReaderRead(b *testing.B) {
 	quiet(b)
 	r, err := NewSharedFreezer(storeOf(b), sharedTestTables)
