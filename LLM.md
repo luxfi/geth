@@ -1077,3 +1077,42 @@ curl -X POST http://127.0.0.1:8545 -H 'Content-Type: application/json' \
 - All Zoo (800) and Lux (1,082,781) blocks encode/decode with identical hashes
 - Header RLP encoding matches between geth and SubnetEVM/EVM
 
+## Shared read-only ancient store
+
+One machine can run many nodes against one copy of the finalized chain. One node
+owns the ancient directory and writes it; any number of others open the same
+directory read-only, take no lock, and drop from their own key-value store
+whatever the shared store already holds. Each node's own database then carries
+only the blocks above the freeze threshold.
+
+**This works on the flat-file freezer and cannot work on an LSM.** The freezer
+writes payload bytes first and the fixed-width index entry second, and never
+rewrites either, so an index entry a reader can see always names bytes already
+on disk and a torn tail can only make the index look shorter. A reader therefore
+needs no coordination: it re-reads the index and is correct. An LSM rewrites
+files under compaction and holds an exclusive lock, so one writer and N readers
+on one directory is impossible there by construction.
+
+What a reader is held to:
+
+- It follows the index by **path**, not by descriptor. Tail pruning publishes a
+  rebuilt index by rename, so a held descriptor would keep reporting the
+  pre-prune size while the metadata advanced past it.
+- It trusts the index only as far as the writer has **flushed** it. Entries above
+  that line can name payload a power loss never wrote.
+- It prunes its own copy by **identity, not extent**: it drops a block only where
+  the store holds the same block, because its own copy is the only thing that
+  could contradict a divergent store.
+- It holds its view still for the length of a `ReadAncients` callback, so a
+  caller reading a header and a body gets them from one extent.
+
+Enabled per node with `--cchain-ancient`, `--cchain-ancient-dir`,
+`--cchain-ancient-shared` and `--cchain-freeze-threshold`. The node merges these
+into the C-Chain's own config, which is how the EVM plugin reads anything, and
+`openChainDatabase` (evm `plugin/evm/vm_database.go`) opens the chain database
+against the store.
+
+Measured, 100 readers on one store: ~5 KiB of heap and ~6 descriptors each, flat
+as the store grows (a 10x larger store costs a reader nothing, because
+descriptors track how many data files the table rolls rather than chain length).
+Reads cost the same as from a private store.
