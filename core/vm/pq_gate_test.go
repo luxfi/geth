@@ -5,9 +5,11 @@ package vm
 
 import (
 	"errors"
+	"math"
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
 )
 
@@ -83,7 +85,7 @@ func runGate(t *testing.T, profile *PQProfile, c gateCase) error {
 	t.Helper()
 	evm := newGateEVM(t, profile)
 	gas := c.p.RequiredGas(c.input)
-	_, _, err := evm.runPrecompile(c.p, c.input, gas*2)
+	_, _, err := evm.runPrecompile(c.p, common.Address{}, common.Address{}, c.input, gas*2, false)
 	return err
 }
 
@@ -237,21 +239,34 @@ func TestAllForbiddenSetsAllFlags(t *testing.T) {
 	}
 }
 
-// TestRefuseUnknownOpIsPermissive documents that
-// (*PQProfile).RefuseUnder(OpUnknown) returns nil even under strict-PQ.
-// Callers MUST use a recognized Op; the gate cannot fail-closed on
-// unknown ops without breaking callers who have not been ported yet.
-// opForPrecompile returns OpUnknown for unrecognized precompile types
-// (e.g. dataCopy, bigModExp, stateful custom precompiles).
-func TestRefuseUnknownOpIsPermissive(t *testing.T) {
-	if err := AllForbidden().RefuseUnder(OpUnknown); err != nil {
-		t.Errorf("AllForbidden.RefuseUnder(OpUnknown) must be nil; got %v", err)
+// TestDeclaredOpNoneIsAdmittedUnderStrict asserts that [OpNone] — the
+// declaration "my soundness rests on nothing a quantum computer
+// breaks" — is admitted even by the strict profile. This is what keeps
+// the post-quantum precompiles running on a strict-PQ chain.
+//
+// It is deliberately NOT the same fact as an *undeclared* precompile
+// being admitted; that one is now false, and
+// TestStrictPQRefusesUnclassifiedStatefulPrecompile pins it.
+func TestDeclaredOpNoneIsAdmittedUnderStrict(t *testing.T) {
+	if err := AllForbidden().RefuseUnder(OpNone); err != nil {
+		t.Errorf("AllForbidden.RefuseUnder(OpNone) must be nil; got %v", err)
 	}
-	// And via runPrecompile with a non-classical precompile (dataCopy
-	// is not in the strict-PQ matrix).
-	evm := newGateEVM(t, AllForbidden())
-	_, _, err := evm.runPrecompile(&dataCopy{}, []byte("anything"), (&dataCopy{}).RequiredGas([]byte("anything")))
-	if err != nil {
-		t.Errorf("runPrecompile(dataCopy, AllForbidden) must be nil; got %v", err)
+	// dataCopy and bigModExp compute rather than verify, so they are
+	// builtins classified OpNone and must survive a strict profile.
+	// bigModExp reads its three lengths from the head of the input, so
+	// it gets a well-formed all-zero header rather than arbitrary bytes.
+	cases := []struct {
+		p     PrecompiledContract
+		input []byte
+	}{
+		{&dataCopy{}, []byte("anything")},
+		{&bigModExp{}, make([]byte, 96)},
+	}
+	for _, c := range cases {
+		evm := newGateEVM(t, AllForbidden())
+		_, _, err := evm.runPrecompile(c.p, common.Address{}, common.Address{}, c.input, math.MaxUint64, false)
+		if err != nil {
+			t.Errorf("runPrecompile(%T, AllForbidden) must be nil; got %v", c.p, err)
+		}
 	}
 }

@@ -19,6 +19,7 @@ package vm
 import (
 	"context"
 	"errors"
+	"fmt"
 	"math/big"
 	"sync/atomic"
 
@@ -300,13 +301,7 @@ func (evm *EVM) Call(caller common.Address, addr common.Address, input []byte, g
 	evm.Context.Transfer(evm.StateDB, caller, addr, value)
 
 	if isPrecompile {
-		// Check if this is a stateful precompile
-		if stateful, ok := p.(StatefulPrecompiledContract); ok {
-			env := NewPrecompileEnvironment(evm, caller, addr, gas, evm.readOnly)
-			ret, gas, err = stateful.RunStateful(env, input, gas)
-		} else {
-			ret, gas, err = evm.runPrecompile(p, input, gas)
-		}
+		ret, gas, err = evm.runPrecompile(p, caller, addr, input, gas, evm.readOnly)
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
 		code := evm.resolveCode(addr)
@@ -369,13 +364,7 @@ func (evm *EVM) CallCode(caller common.Address, addr common.Address, input []byt
 
 	// It is allowed to call precompiles, even via delegatecall
 	if p, isPrecompile := evm.precompile(addr); isPrecompile {
-		// Check if this is a stateful precompile
-		if stateful, ok := p.(StatefulPrecompiledContract); ok {
-			env := NewPrecompileEnvironment(evm, caller, addr, gas, evm.readOnly)
-			ret, gas, err = stateful.RunStateful(env, input, gas)
-		} else {
-			ret, gas, err = evm.runPrecompile(p, input, gas)
-		}
+		ret, gas, err = evm.runPrecompile(p, caller, addr, input, gas, evm.readOnly)
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
 		// The contract is a scoped environment for this execution context only.
@@ -418,14 +407,8 @@ func (evm *EVM) DelegateCall(originCaller common.Address, caller common.Address,
 
 	// It is allowed to call precompiles, even via delegatecall
 	if p, isPrecompile := evm.precompile(addr); isPrecompile {
-		// Check if this is a stateful precompile
-		if stateful, ok := p.(StatefulPrecompiledContract); ok {
-			// In delegate call, originCaller is the original caller, caller is the context
-			env := NewPrecompileEnvironment(evm, originCaller, caller, gas, evm.readOnly)
-			ret, gas, err = stateful.RunStateful(env, input, gas)
-		} else {
-			ret, gas, err = evm.runPrecompile(p, input, gas)
-		}
+		// In delegate call, originCaller is the original caller, caller is the context
+		ret, gas, err = evm.runPrecompile(p, originCaller, caller, input, gas, evm.readOnly)
 	} else {
 		// Initialise a new contract and make initialise the delegate values
 		//
@@ -477,14 +460,8 @@ func (evm *EVM) StaticCall(caller common.Address, addr common.Address, input []b
 	evm.StateDB.AddBalance(addr, new(uint256.Int), tracing.BalanceChangeTouchAccount)
 
 	if p, isPrecompile := evm.precompile(addr); isPrecompile {
-		// Check if this is a stateful precompile
-		if stateful, ok := p.(StatefulPrecompiledContract); ok {
-			// StaticCall is always readOnly
-			env := NewPrecompileEnvironment(evm, caller, addr, gas, true)
-			ret, gas, err = stateful.RunStateful(env, input, gas)
-		} else {
-			ret, gas, err = evm.runPrecompile(p, input, gas)
-		}
+		// StaticCall is always readOnly
+		ret, gas, err = evm.runPrecompile(p, caller, addr, input, gas, true)
 	} else {
 		// Initialise a new contract and set the code that is to be used by the EVM.
 		// The contract is a scoped environment for this execution context only.
@@ -697,15 +674,61 @@ func (evm *EVM) resolveCodeHash(addr common.Address) common.Hash {
 // ChainConfig returns the environment's chain configuration
 func (evm *EVM) ChainConfig() *params.ChainConfig { return evm.chainConfig }
 
-// runPrecompile dispatches a non-stateful precompile through the
-// strict-PQ gate. The profile lives on ChainConfig (chainConfig.PQ),
-// so multi-chain hosts get the correct posture per EVM instance.
+// admit reports whether this chain's profile permits calling p.
 //
-// Gas is charged unconditionally — even on refusal — to match the
-// classical-EVM observable: a precompile call always burns its
-// RequiredGas, and the strict-PQ refusal must not be detectable via
-// gas timing (see TestStrictPQ_GasIsStillCharged).
-func (evm *EVM) runPrecompile(p PrecompiledContract, input []byte, suppliedGas uint64) (ret []byte, remainingGas uint64, err error) {
+// One decision, one place. Classification is total: p either declares
+// its op ([Classified]), or is one of geth's own builtins, or is
+// unclassified — and unclassified is refused by any profile that
+// constrains anything. The default for a precompile nobody classified
+// is deny, not admit.
+//
+// A nil or zero profile constrains nothing and admits everything, so a
+// chain that has not opted into a profile is unaffected by all of this.
+func (evm *EVM) admit(p PrecompiledContract) error {
+	op, known := classify(p)
+	if !known {
+		if constrains(evm.chainConfig.PQ) {
+			return fmt.Errorf("%w: %T", ErrUnclassifiedForbidden, p)
+		}
+		return nil
+	}
+	return evm.chainConfig.PQ.RefuseUnder(op)
+}
+
+// runPrecompile is the only path from the EVM to a precompile, stateless
+// or stateful. Call, CallCode, DelegateCall and StaticCall all arrive
+// here, which is what makes [(*EVM).admit] unavoidable: previously each
+// of those four forked on the stateful interface *before* the gate, so
+// every custom stateful precompile ran unrefused.
+//
+// The three parameters that differ between the four callers — the
+// address the precompile sees as its caller, the address it sees as
+// itself, and whether the frame is read-only — are passed in rather
+// than rediscovered, so the fork does not need to exist.
+//
+// Gas is charged even on refusal, to match the classical-EVM
+// observable: a precompile call always burns its RequiredGas, and a
+// refusal must not be a cheaper probe than execution.
+func (evm *EVM) runPrecompile(p PrecompiledContract, caller, self common.Address, input []byte, suppliedGas uint64, readOnly bool) (ret []byte, remainingGas uint64, err error) {
+	admitErr := evm.admit(p)
+
+	if stateful, ok := p.(StatefulPrecompiledContract); ok {
+		if admitErr != nil {
+			// Only reached on a chain that installed a constraining
+			// profile. RequiredGas is deliberately not called on the
+			// admitted path: a stateful precompile meters itself
+			// inside RunStateful, and calling it here would change
+			// gas accounting for chains that never opted in.
+			gasCost := p.RequiredGas(input)
+			if suppliedGas < gasCost {
+				return nil, 0, ErrOutOfGas
+			}
+			return nil, suppliedGas - gasCost, admitErr
+		}
+		env := NewPrecompileEnvironment(evm, caller, self, suppliedGas, readOnly)
+		return stateful.RunStateful(env, input, suppliedGas)
+	}
+
 	gasCost := p.RequiredGas(input)
 	if suppliedGas < gasCost {
 		return nil, 0, ErrOutOfGas
@@ -715,11 +738,8 @@ func (evm *EVM) runPrecompile(p PrecompiledContract, input []byte, suppliedGas u
 		tracer.OnGasChange(suppliedGas, suppliedGas-gasCost, tracing.GasChangeCallPrecompiledContract)
 	}
 	suppliedGas -= gasCost
-
-	// Profile gate: per-chain refusal of classical precompile families.
-	// nil profile (the default) admits every op — classical semantics.
-	if err := evm.chainConfig.PQ.RefuseUnder(opForPrecompile(p)); err != nil {
-		return nil, suppliedGas, err
+	if admitErr != nil {
+		return nil, suppliedGas, admitErr
 	}
 	output, err := p.Run(input)
 	return output, suppliedGas, err

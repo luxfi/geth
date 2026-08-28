@@ -28,12 +28,19 @@ type precompileAdapter struct {
 	address common.Address
 	inner   contract.StatefulPrecompiledContract
 	gasFunc func([]byte) uint64
+	op      Op
 }
 
 // Name returns the precompile name
 func (p *precompileAdapter) Name() string {
 	return p.name
 }
+
+// PQOp implements [Classified]: it reports the classical primitive
+// family this precompile's soundness reduces to, or [OpNone] for a
+// post-quantum one. The value is supplied at construction and has no
+// default — see [NewPrecompileAdapter].
+func (p *precompileAdapter) PQOp() Op { return p.op }
 
 // RequiredGas returns the gas required for this precompile
 func (p *precompileAdapter) RequiredGas(input []byte) uint64 {
@@ -146,12 +153,23 @@ func (b *blockContextAdapter) GetPredicateResults(txHash common.Hash, precompile
 // into a geth-compatible StatefulPrecompiledContract. Exported so that L1
 // chains can assemble their own precompile sets via PrecompileOverrider
 // without requiring changes to geth itself.
-func NewPrecompileAdapter(name string, address common.Address, inner contract.StatefulPrecompiledContract, gasFunc func([]byte) uint64) StatefulPrecompiledContract {
+//
+// op is required and has no default. That is the point: a precompile
+// reaching the EVM through this constructor cannot omit saying what its
+// soundness rests on, because omitting it does not compile. Pass
+// [OpNone] for a post-quantum primitive, or the classical family
+// ([OpBn256Pairing], [OpEcrecover], …) a strict-PQ chain must refuse.
+//
+// A chain that bypasses this constructor and implements
+// [StatefulPrecompiledContract] directly is unclassified, and a
+// constraining profile refuses it rather than admitting it.
+func NewPrecompileAdapter(name string, address common.Address, inner contract.StatefulPrecompiledContract, gasFunc func([]byte) uint64, op Op) StatefulPrecompiledContract {
 	return &precompileAdapter{
 		name:    name,
 		address: address,
 		inner:   inner,
 		gasFunc: gasFunc,
+		op:      op,
 	}
 }
 
@@ -174,9 +192,11 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 //	0x012207 = Magnetar (public-DKG MPC threshold SLH-DSA, FIPS 205 byte-equal)
 //	0x012208 = HQC      (code-based KEM, family-disjoint backup)
 //
-// All eight are always available regardless of PQ profile; the profile
-// gate only constrains the *classical* precompiles (ecrecover, sha256,
-// alt_bn128, BLS12-381, KZG) — it never disables PQ primitives.
+// All eight declare [OpNone] and so survive every profile, including
+// strict-PQ: each is lattice, code or hash-based, and none has a
+// soundness argument that reduces to a problem Shor solves. That is a
+// claim each one makes, not an exemption the gate grants — see
+// [Classified].
 func LuxPrecompiles() PrecompiledContracts {
 	return PrecompiledContracts{
 		// ML-KEM (FIPS 203 — post-quantum key encapsulation)
@@ -185,6 +205,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: mlkem.ContractAddress,
 			inner:   mlkem.MLKEMPrecompile,
 			gasFunc: mlkem.MLKEMPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 
 		// ML-DSA (FIPS 204 — single-party post-quantum signatures)
@@ -193,6 +214,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: mldsa.ContractMLDSAVerifyAddress,
 			inner:   mldsa.MLDSAVerifyPrecompile,
 			gasFunc: mldsa.MLDSAVerifyPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 
 		// SLH-DSA (FIPS 205 — stateless hash-based signatures)
@@ -201,6 +223,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: slhdsa.ContractSLHDSAVerifyAddress,
 			inner:   slhdsa.SLHDSAVerifyPrecompile,
 			gasFunc: slhdsa.SLHDSAVerifyPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 
 		// Pulsar (threshold FIPS 204 — Module-LWE threshold ML-DSA).
@@ -212,6 +235,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: pulsar.ContractPulsarVerifyAddress,
 			inner:   pulsar.PulsarVerifyPrecompile,
 			gasFunc: pulsar.PulsarVerifyPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 
 		// P3Q (strict-PQ STARK / FRI / cSHAKE256 / Goldilocks).
@@ -221,6 +245,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: p3q.ContractP3QVerifyAddress,
 			inner:   p3q.P3QVerifyPrecompile,
 			gasFunc: p3q.P3QVerifyPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 
 		// Corona (Ring-LWE threshold). Distinct algebra from Pulsar:
@@ -231,6 +256,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: coronathreshold.ContractCoronaThresholdAddress,
 			inner:   coronathreshold.CoronaThresholdPrecompile,
 			gasFunc: coronathreshold.CoronaThresholdPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 
 		// Magnetar (public-DKG MPC threshold SLH-DSA, FIPS 205 byte-equal).
@@ -245,6 +271,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: magnetar.ContractMagnetarVerifyAddress,
 			inner:   magnetar.MagnetarVerifyPrecompile,
 			gasFunc: magnetar.MagnetarVerifyPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 
 		// HQC (Hamming Quasi-Cyclic, NIST PQC4-round selected backup KEM).
@@ -257,6 +284,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			address: hqc.ContractAddress,
 			inner:   hqc.HQCPrecompile,
 			gasFunc: hqc.HQCPrecompile.RequiredGas,
+			op:      OpNone,
 		},
 	}
 }

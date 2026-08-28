@@ -4,6 +4,8 @@
 package vm
 
 import (
+	"errors"
+
 	"github.com/luxfi/pq"
 )
 
@@ -29,7 +31,13 @@ type Op = pq.Op
 
 // Op constants — direct re-export of [pq.Op*].
 const (
-	OpUnknown         = pq.OpUnknown
+	// OpNone is the declaration a precompile makes when its soundness
+	// rests on no problem a quantum computer solves: lattice, code and
+	// hash-based primitives, and precompiles that compute rather than
+	// verify (identity, modexp). It is a claim, not an absence — the
+	// absence of a claim is [classify] returning false, which is
+	// refused rather than admitted.
+	OpNone            = pq.OpUnknown
 	OpEcrecover       = pq.OpEcrecover
 	OpP256Verify      = pq.OpP256Verify
 	OpSHA256          = pq.OpSHA256
@@ -77,50 +85,113 @@ func SetPQProfile(p *PQProfile) { pq.SetActive(p) }
 // Deprecated: see [SetPQProfile].
 func ActivePQProfile() *PQProfile { return pq.Active() }
 
-// opForPrecompile maps a precompile implementation to its [pq.Op]
-// classification. Returns OpUnknown for precompiles that are not gated
-// by the strict-PQ profile (dataCopy, bigModExp, stateful custom
-// precompiles installed by overriders). OpUnknown is always admitted
-// by [(*PQProfile).RefuseUnder], so the dispatch is fail-open for
-// unrecognized types.
+// ErrUnclassifiedForbidden refuses a precompile that has not said what
+// its soundness rests on. It fires only on a chain whose profile
+// constrains something; see [constrains].
+//
+// Lives here rather than in [pq] because it is a property of this
+// dispatcher, not of the profile vocabulary: pq describes which
+// primitive families a chain refuses, and cannot know that a host
+// failed to classify one of its own precompiles.
+var ErrUnclassifiedForbidden = errors.New("unclassified precompile forbidden by chain security profile (PQ)")
+
+// Classified is implemented by a precompile that names the classical
+// primitive family its soundness reduces to.
+//
+// The declaration lives with the implementation because the answer is
+// a property of the verifier's mathematics, not of its address: a
+// module that swaps its proof system changes its own answer and
+// nothing central needs editing. That is the difference from a central
+// type switch, which answered "admit" for every module it had never
+// heard of — which is how a strict-PQ chain came to refuse the native
+// bn256Pairing while admitting a stateful precompile doing the same
+// BN254 pairing internally.
+//
+// The test is not "does it touch an elliptic curve" but "does soundness
+// reduce to a problem Shor solves". Halo2 uses no pairing and is still
+// classical, because inner-product-argument soundness rests on
+// elliptic-curve discrete log. X-Wing performs an X25519 exchange and
+// is still post-quantum, because it is a combiner whose security holds
+// if either half holds.
+type Classified interface {
+	// PQOp names the primitive family. [OpNone] is a valid answer and
+	// declares post-quantum soundness.
+	PQOp() Op
+}
+
+// classify resolves a precompile to the op the profile judges it by.
+//
+// The second result is the whole point: false means "this precompile
+// never said", which is a different fact from [OpNone] ("it said, and
+// the answer is nothing classical"). Conflating those two is what left
+// stateful precompiles ungated — the old central switch returned one
+// value for both and [(*PQProfile).RefuseUnder] admits it.
+func classify(p PrecompiledContract) (Op, bool) {
+	if d, ok := p.(Classified); ok {
+		return d.PQOp(), true
+	}
+	return builtinOp(p)
+}
+
+// constrains reports whether a profile expresses any refusal at all.
+//
+// A nil profile and the zero value both constrain nothing, so they
+// admit an unclassified precompile exactly as they always have. This
+// is what keeps the deny-by-default rule inside the profile: a chain
+// that never opted in sees no change in what it accepts.
+func constrains(p *PQProfile) bool {
+	return p != nil && *p != (PQProfile{})
+}
+
+// builtinOp classifies the precompiles geth itself defines.
+//
+// These are classified centrally rather than by a PQOp method on each
+// type because they are upstream go-ethereum types: a method per type
+// would be a merge conflict per type, forever. The set is closed —
+// it changes only when upstream adds a precompile — and
+// TestEveryPrecompileIsClassified fails when it drifts.
 //
 // Type-switch dispatch (not address dispatch) so the mapping is robust
 // to precompile remapping via [PrecompileOverrider] and to ad-hoc test
 // setups that install precompile types at non-standard addresses.
-func opForPrecompile(p PrecompiledContract) Op {
+func builtinOp(p PrecompiledContract) (Op, bool) {
 	switch p.(type) {
+	// Compute, not verification: no soundness property to reduce.
+	case *dataCopy, *bigModExp:
+		return OpNone, true
+
 	case *ecrecover:
-		return OpEcrecover
+		return OpEcrecover, true
 	case *sha256hash:
-		return OpSHA256
+		return OpSHA256, true
 	case *ripemd160hash:
-		return OpRIPEMD160
+		return OpRIPEMD160, true
 	case *blake2F:
-		return OpBlake2F
+		return OpBlake2F, true
 	case *bn256AddIstanbul, *bn256AddByzantium:
-		return OpBn256Add
+		return OpBn256Add, true
 	case *bn256ScalarMulIstanbul, *bn256ScalarMulByzantium:
-		return OpBn256ScalarMul
+		return OpBn256ScalarMul, true
 	case *bn256PairingIstanbul, *bn256PairingByzantium:
-		return OpBn256Pairing
+		return OpBn256Pairing, true
 	case *bls12381G1Add:
-		return OpBLS12381G1Add
+		return OpBLS12381G1Add, true
 	case *bls12381G1MultiExp:
-		return OpBLS12381G1MSM
+		return OpBLS12381G1MSM, true
 	case *bls12381G2Add:
-		return OpBLS12381G2Add
+		return OpBLS12381G2Add, true
 	case *bls12381G2MultiExp:
-		return OpBLS12381G2MSM
+		return OpBLS12381G2MSM, true
 	case *bls12381Pairing:
-		return OpBLS12381Pairing
+		return OpBLS12381Pairing, true
 	case *bls12381MapG1:
-		return OpBLS12381MapG1
+		return OpBLS12381MapG1, true
 	case *bls12381MapG2:
-		return OpBLS12381MapG2
+		return OpBLS12381MapG2, true
 	case *kzgPointEvaluation:
-		return OpKZGPointEval
+		return OpKZGPointEval, true
 	case *p256Verify:
-		return OpP256Verify
+		return OpP256Verify, true
 	}
-	return OpUnknown
+	return OpNone, false
 }

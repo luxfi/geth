@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"testing"
 
+	"github.com/luxfi/geth/common"
 	"github.com/luxfi/geth/params"
 )
 
@@ -48,7 +49,7 @@ func TestNilProfile_EcrecoverWorks(t *testing.T) {
 	if err != nil {
 		t.Fatalf("hex decode: %v", err)
 	}
-	_, _, err = evm.runPrecompile(p, input, p.RequiredGas(input))
+	_, _, err = evm.runPrecompile(p, common.Address{}, common.Address{}, input, p.RequiredGas(input), false)
 	if errors.Is(err, ErrEcrecoverForbidden) {
 		t.Fatalf("nil profile must not return ErrEcrecoverForbidden; got %v", err)
 	}
@@ -64,7 +65,7 @@ func TestStrictPQ_EcrecoverReturnsError(t *testing.T) {
 	if err != nil {
 		t.Fatalf("hex decode: %v", err)
 	}
-	_, _, err = evm.runPrecompile(p, input, p.RequiredGas(input))
+	_, _, err = evm.runPrecompile(p, common.Address{}, common.Address{}, input, p.RequiredGas(input), false)
 	if !errors.Is(err, ErrEcrecoverForbidden) {
 		t.Fatalf("want ErrEcrecoverForbidden, got %v", err)
 	}
@@ -77,7 +78,7 @@ func TestStrictPQ_EcrecoverReturnsError(t *testing.T) {
 func TestStrictPQ_EcrecoverEmptyInputAlsoRefused(t *testing.T) {
 	evm := newTestEVMWithProfile(t, &PQProfile{ForbidEcrecover: true})
 	p := &ecrecover{}
-	_, _, err := evm.runPrecompile(p, nil, p.RequiredGas(nil))
+	_, _, err := evm.runPrecompile(p, common.Address{}, common.Address{}, nil, p.RequiredGas(nil), false)
 	if !errors.Is(err, ErrEcrecoverForbidden) {
 		t.Fatalf("want ErrEcrecoverForbidden on empty input, got %v", err)
 	}
@@ -92,10 +93,10 @@ func TestStrictPQ_GasIsStillCharged(t *testing.T) {
 	cost := p.RequiredGas(input)
 	// Classical (nil profile).
 	evmClassical := newTestEVMWithProfile(t, nil)
-	_, remainingClassical, _ := evmClassical.runPrecompile(p, input, cost*2)
+	_, remainingClassical, _ := evmClassical.runPrecompile(p, common.Address{}, common.Address{}, input, cost*2, false)
 	// Strict-PQ.
 	evmStrict := newTestEVMWithProfile(t, &PQProfile{ForbidEcrecover: true})
-	_, remainingStrict, _ := evmStrict.runPrecompile(p, input, cost*2)
+	_, remainingStrict, _ := evmStrict.runPrecompile(p, common.Address{}, common.Address{}, input, cost*2, false)
 	if remainingClassical != remainingStrict {
 		t.Fatalf("runPrecompile gas accounting must not depend on profile: classical_remaining=%d strict_remaining=%d (cost=%d)",
 			remainingClassical, remainingStrict, cost)
