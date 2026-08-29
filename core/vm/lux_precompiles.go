@@ -19,6 +19,7 @@ import (
 	"github.com/luxfi/precompile/precompileconfig"
 	"github.com/luxfi/precompile/pulsar"
 	"github.com/luxfi/precompile/slhdsa"
+	"github.com/luxfi/precompile/starkfri"
 )
 
 // precompileAdapter wraps a precompiles.StatefulPrecompiledContract to implement
@@ -175,9 +176,9 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 
 // LuxPrecompiles returns the baseline Lux precompiles that every Lux chain
 // should support. This is the LP-4200 unified PQCrypto block: ML-KEM,
-// ML-DSA, SLH-DSA, Pulsar (Module-LWE threshold ML-DSA), P3Q (unified PQ
-// threshold-signature verifier family), Corona (Module-LWE threshold),
-// Magnetar (public-DKG MPC threshold SLH-DSA), and HQC (code-based KEM).
+// ML-DSA, SLH-DSA, Pulsar (Module-LWE threshold ML-DSA), P3Q (strict-PQ
+// STARK), Corona (Ring-LWE threshold), Magnetar (public-DKG MPC threshold
+// SLH-DSA), and HQC (code-based KEM).
 // L1 chains can add additional precompiles (DEX, sr25519, FROST, etc.)
 // by implementing PrecompileOverrider in their Rules.Payload.
 //
@@ -187,9 +188,8 @@ func NewPrecompileAdapter(name string, address common.Address, inner contract.St
 //	0x012202 = ML-DSA   (FIPS 204 — Module-LWE single-party signatures)
 //	0x012203 = SLH-DSA  (FIPS 205 — stateless hash-based signatures)
 //	0x012204 = Pulsar   (Module-LWE threshold FIPS 204, byte-equal to ML-DSA)
-//	0x012205 = P3Q      (unified PQ threshold-signature verifier family;
-//	                     kind 0x01 Pulsar, 0x02 Corona, 0x03 Magnetar)
-//	0x012206 = Corona   (Module-LWE threshold)
+//	0x012205 = P3Q      (strict-PQ STARK / FRI / cSHAKE256 verifier)
+//	0x012206 = Corona   (Ring-LWE threshold)
 //	0x012207 = Magnetar (public-DKG MPC threshold SLH-DSA, FIPS 205 byte-equal)
 //	0x012208 = HQC      (code-based KEM, family-disjoint backup)
 //
@@ -239,9 +239,7 @@ func LuxPrecompiles() PrecompiledContracts {
 			op:      OpNone,
 		},
 
-		// P3Q (unified PQ threshold-signature verifier family, kind-byte
-		// dispatched per LP-4805; the STARK-FRI verifier is a separate
-		// precompile at 0x012220, LP-4835).
+		// P3Q (strict-PQ STARK / FRI / cSHAKE256 / Goldilocks).
 		// Verifier callback wired at node init via p3q.RegisterVerifier.
 		p3q.ContractP3QVerifyAddress: &precompileAdapter{
 			name:    "p3q",
@@ -251,11 +249,9 @@ func LuxPrecompiles() PrecompiledContracts {
 			op:      OpNone,
 		},
 
-		// Corona (Module-LWE threshold, LP-4440). Sibling of Pulsar
-		// (LP-4450) rather than a distinct algebra: both are Module-LWE,
-		// and they differ by parameter regime and lifecycle — Corona is
-		// the Ringtail-derived permissionless-DKG leg, Pulsar is FIPS 204
-		// byte-equal. Both are NIST MPTC Class N1 candidates.
+		// Corona (Ring-LWE threshold). Distinct algebra from Pulsar:
+		// Pulsar is Module-LWE (FIPS 204 byte-equal); Corona is Ring-LWE
+		// over a single ring. Both are NIST MPTC Class N1 candidates.
 		coronathreshold.ContractCoronaThresholdAddress: &precompileAdapter{
 			name:    "corona",
 			address: coronathreshold.ContractCoronaThresholdAddress,
@@ -330,8 +326,8 @@ var PrecompiledContractsLux = MergeLuxPrecompiles(PrecompiledContractsCancun)
 // stub closure with the cgo entry point and rebuild geth. The
 // registration call here is the single seam.
 func init() {
-	p3q.RegisterVerifier(func(version byte, proof, pubInputs []byte) (bool, error) {
+	starkfri.RegisterDefaultVerifier(func(version byte, proof, pubInputs []byte) (bool, error) {
 		// Refuse-by-default. Real verifier slots in here.
-		return false, p3q.ErrVerifierNotRegistered
+		return false, starkfri.ErrVerifierNotRegistered
 	})
 }
