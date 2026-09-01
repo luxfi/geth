@@ -41,9 +41,9 @@ require (
 	github.com/jedisct1/go-minisign v0.0.0-20241212093149-d2f9f49435c7
 	github.com/kylelemons/godebug v1.1.0
 	github.com/luxfi/cache v1.3.1
-	github.com/luxfi/consensus v1.36.2
+	github.com/luxfi/consensus v1.36.81
 	github.com/luxfi/crypto v1.20.2
-	github.com/luxfi/database v1.21.1
+	github.com/luxfi/database v1.21.5
 	github.com/luxfi/hid v0.9.3
 	github.com/luxfi/ids v1.3.2
 	github.com/luxfi/log v1.4.3
@@ -108,7 +108,7 @@ require (
 	github.com/luxfi/compress v0.1.1 // indirect
 	github.com/luxfi/concurrent v0.1.1 // indirect
 	github.com/luxfi/constants v1.6.2 // indirect
-	github.com/luxfi/container v0.2.1 // indirect
+	github.com/luxfi/container v0.2.2 // indirect
 	github.com/luxfi/corona v0.10.4 // indirect
 	github.com/luxfi/crypto/ipa v1.2.4 // indirect
 	github.com/luxfi/lattice/v7 v7.1.4 // indirect
@@ -185,7 +185,7 @@ require (
 	github.com/luxfi/p2p v1.22.1 // indirect
 	github.com/luxfi/precompile v0.19.3
 	github.com/luxfi/sampler v1.1.0 // indirect
-	github.com/luxfi/vm v1.3.1
+	github.com/luxfi/vm v1.3.16
 	github.com/luxfi/warp v1.24.1 // indirect
 	github.com/mattn/go-runewidth v0.0.21 // indirect
 	github.com/minio/sha256-simd v1.0.1 // indirect
